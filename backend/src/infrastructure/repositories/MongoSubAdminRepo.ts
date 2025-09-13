@@ -5,6 +5,8 @@ import { AdminRole } from "../../domain/entities/AdminRole";
 
 export class MongoSubAdminRepo implements SubAdminRepository {
   async create(admin: SubAdminEntities): Promise<SubAdminEntities> {
+
+    
   
     const doc = await SubAdminModel.create({
       name: admin.name,
@@ -23,7 +25,8 @@ export class MongoSubAdminRepo implements SubAdminRepository {
       doc.role,
       doc.password,
       doc.createdAt,
-      doc.updatedAt
+      doc.updatedAt,
+      doc.blocked
     );
   }
 
@@ -38,7 +41,8 @@ export class MongoSubAdminRepo implements SubAdminRepository {
         doc.role as AdminRole,
         doc.password,
         doc.createdAt,
-        doc.updatedAt
+        doc.updatedAt,
+        doc.blocked
      )
 
   
@@ -55,8 +59,57 @@ async findAll(): Promise<SubAdminEntities[]> {
           doc.role,
           doc.password,
           doc.createdAt,
-          doc.updatedAt
+          doc.updatedAt,
+          doc.blocked
         )
     );
+  }
+
+ async findByPhone(phone: string): Promise<SubAdminEntities | null> {
+    const doc = await SubAdminModel.findOne({ phone });
+    if (!doc) return null;
+    return new SubAdminEntities(
+      doc._id.toString(),
+      doc.name,
+      doc.email,
+      doc.phone,
+      doc.role as AdminRole,
+      doc.password,
+      doc.createdAt,
+      doc.updatedAt,
+      doc.blocked
+    );
+  }
+  async update(id: string, updates: Partial<SubAdminEntities>): Promise<SubAdminEntities | null> {
+      const doc = await SubAdminModel.findByIdAndUpdate(id,updates,{new:true})
+      if(!doc)return null
+      return new SubAdminEntities(
+        doc._id.toString(),
+        doc.name,
+        doc.email,
+        doc.phone,
+        doc.role as AdminRole,
+         doc.password,
+        doc.createdAt,
+        doc.updatedAt,
+        doc.blocked
+      )
+
+  }
+  async findById(id: string): Promise<SubAdminEntities | null> {
+      const doc = await SubAdminModel.findById(id);
+
+        if(!doc)return null
+        return new SubAdminEntities(
+          doc.id.toString(),
+          doc.name,
+          doc.email,
+          doc.phone,
+          doc.role as AdminRole,
+           doc.password,
+        doc.createdAt,
+        doc.updatedAt,
+        doc.blocked
+        )
   }
 }

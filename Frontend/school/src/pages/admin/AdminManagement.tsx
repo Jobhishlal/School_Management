@@ -17,17 +17,17 @@ import {
   
 } from "react-icons/fa";
 
-import { SubAdminCreate, GetSubAdmins } from "../../services/authapi";
+import { SubAdminCreate, GetSubAdmins,UpdateSubAdmin,SubAdminBlock } from "../../services/authapi";
 import { showToast } from "../../utils/toast";
 import { useTheme } from "../../components/layout/ThemeContext";
 
 interface SubAdmin {
-  _id: string;
+  id: string;
   name: string;
   email: string;
   phone: string;
   role: string;
-  status?: string;
+  blocked:boolean;
 }
 
 export function AdminManagement() {
@@ -44,26 +44,54 @@ export function AdminManagement() {
   const [currentPage, setCurrentPage] = useState(1);
   const [filterRole, setFilterRole] = useState("All");
   const [filterStatus, setFilterStatus] = useState("All");
+  const [editingId, setEditingId] = useState<string | null>(null);
   const itemsPerPage = 5;
 
 
+  // const fetchAdmins = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const data = await GetSubAdmins();
+  //     const adminsWithStatus = data.map((admin: SubAdmin) => ({
+  //       ...admin,
+  //       status: admin.status || 'Active'
+  //     }));
+  //     setSubAdmins(adminsWithStatus);
+  //     setFilteredAdmins(adminsWithStatus);
+  //   } catch (error) {
+  //     console.error("Error fetching admins:", error);
+  //     showToast("Error fetching admins", "error");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
+
   const fetchAdmins = async () => {
-    setLoading(true);
-    try {
-      const data = await GetSubAdmins();
-      const adminsWithStatus = data.map((admin: SubAdmin) => ({
-        ...admin,
-        status: admin.status || 'Active'
-      }));
-      setSubAdmins(adminsWithStatus);
-      setFilteredAdmins(adminsWithStatus);
-    } catch (error) {
-      console.error("Error fetching admins:", error);
-      showToast("Error fetching admins", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    const data = await GetSubAdmins();
+
+    const adminsWithStatus = data.map((admin: any) => ({
+      id: admin.id || admin._id,
+      name: admin.name,
+      email: admin.email,
+      phone: admin.phone,
+      role: admin.role,
+      blocked: admin.blocked,       
+      status: admin.blocked ? "Blocked" : "Active",  
+    }));
+
+    setSubAdmins(adminsWithStatus);
+    setFilteredAdmins(adminsWithStatus);
+  } catch (error) {
+    console.error("Error fetching admins:", error);
+    showToast("Error fetching admins", "error");
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchAdmins();
@@ -113,46 +141,79 @@ export function AdminManagement() {
     return true;
   };
 
- 
-  const handleSubmit = async () => {
-    if (!validateForm()) return;
+const handleSubmit = async () => {
+  if (!validateForm()) return;
 
-    setLoading(true);
-    try {
+  setLoading(true);
+  try {
+    if (editingId) {
+     
+      await UpdateSubAdmin(editingId, {
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        role,
+      });
+      showToast("Admin updated successfully", "success");
+    } else {
+    
       await SubAdminCreate(name, email, phone, role);
       showToast("Admin created successfully", "success");
-      
-    
-      setName("");
-      setEmail("");
-      setPhone("");
-      setRole("Finance");
-      setShowModal(false);
-    
-      await fetchAdmins();
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Error creating admin";
-      showToast(errorMessage, "error");
-    } finally {
-      setLoading(false);
     }
-  };
+
+    setEditingId(null);  
+    setName("");
+    setEmail("");
+    setPhone("");
+    setRole("Finance");
+    setShowModal(false);
+
+    await fetchAdmins();
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.message || error.message || "Error saving admin";
+    showToast(errorMessage, "error");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
 
   const handleView = (admin: SubAdmin) => {
     console.log("Viewing admin details:", admin);
     showToast("View functionality to be implemented", "info");
   };
 
-  const handleEdit = (admin: SubAdmin) => {
-    console.log("Editing admin:", admin);
-    showToast("Edit functionality to be implemented", "info");
-  };
+ const handleEdit = (admin: SubAdmin) => {
+  setEditingId(admin.id)
+ 
+  setName(admin.name)
+  setEmail(admin.email)
+  setPhone(admin.phone)
+  setRole(admin.role)
+  setShowModal(true)
+};
 
-  const handleToggleBlock = (admin: SubAdmin) => {
-    const action = admin.status === 'Blocked' ? 'unblock' : 'block';
-    console.log(`${action} admin:`, admin);
-    showToast(`${action} functionality to be implemented`, "info");
-  };
+const handleToggleBlock = async (admin: SubAdmin) => {
+  try {
+    const newStatus = !admin.blocked;
+    await SubAdminBlock(admin.id, newStatus);
+
+    showToast(
+      `Admin ${newStatus ? "blocked" : "unblocked"} successfully`,
+      "success"
+    );
+
+    await fetchAdmins();
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.message || error.message || "Error updating block status";
+    showToast(errorMessage, "error");
+  }
+};
 
   const handleCloseModal = () => {
     setName("");
@@ -350,10 +411,13 @@ export function AdminManagement() {
                           </span>
                         </td>
                         <td className="px-6 py-4">
-                          <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getStatusColor(admin.status || 'Active')}`}>
-                            {admin.status || 'Active'}
+                     <span
+                   className={`px-2 py-1 rounded-md text-xs font-medium border ${getStatusColor(admin.status)}`}
+                      >
+                          {admin.status}
                           </span>
-                        </td>
+                            </td>
+
                         <td className="px-6 py-4">
                           <div className="flex items-center justify-center gap-1">
                             <button
@@ -370,13 +434,14 @@ export function AdminManagement() {
                             >
                               <FaEdit size={14} />
                             </button>
-                            <button
-                              onClick={() => handleToggleBlock(admin)}
-                              className="p-2 rounded-lg hover:bg-red-500/10 text-red-500 transition-colors"
-                              title={admin.status === 'Blocked' ? 'Unblock' : 'Block'}
-                            >
-                              <Ban size={14} />
-                            </button>
+                        <button
+                         onClick={() => handleToggleBlock(admin)}
+                         className="p-2 rounded-lg hover:bg-red-500/10 text-white-500 transition-colors"
+                         title={admin.blocked ? "Unblock" : "Block"}
+                         >
+                       <Ban size={14} />
+                         </button>
+
                           </div>
                         </td>
                       </tr>
@@ -484,7 +549,10 @@ export function AdminManagement() {
             >
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold">Add New Admin</h3>
+               <h3 className="text-xl font-bold">
+                {editingId ? "Edit Admin" : "Add New Admin"}
+              </h3>
+
                   <button
                     onClick={handleCloseModal}
                     className="p-2 rounded-lg hover:bg-gray-500/10 transition-colors"
@@ -589,14 +657,15 @@ export function AdminManagement() {
                       disabled={loading}
                       className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium flex items-center gap-2 transition-colors"
                     >
-                      {loading ? (
+                     {loading ? (
                         <>
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          Creating...
-                        </>
-                      ) : (
-                        'Create Admin'
-                      )}
+                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    {editingId ? "Updating..." : "Creating..."}
+                   </>
+                 ) : (
+                 editingId ? "Update Admin" : "Create Admin"
+                 )}
+
                     </button>
                   </div>
                 </div>

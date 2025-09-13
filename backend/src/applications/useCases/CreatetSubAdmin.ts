@@ -13,7 +13,19 @@ export class CreateSubAdmin {
     email: string;
     phone: string;
     role: AdminRole;
-  }): Promise<SubAdminEntities> {
+    blocked:boolean
+  }): Promise<SubAdminEntities> { 
+
+      const existemail = await this.subAdminRepo.findByEmail(input.email);
+       if (existemail) {
+       throw new Error("This email already exists");
+       }
+
+      const exist = await this.subAdminRepo.findByPhone(input.phone);
+      if (exist) {
+      throw new Error("This phone number already exists");
+      }
+
    
     const tempPassword = genaratePassword();
 
@@ -28,7 +40,9 @@ export class CreateSubAdmin {
       input.role,
       hashed,
       new Date(),
-      new Date()
+      new Date(),
+      input.blocked
+    
     );
 
 

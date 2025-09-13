@@ -4,6 +4,7 @@ import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { ISuperAdminLogin } from "../../../../domain/Interface/ISuperAdminAuthService";
 import { ResendOtp } from "../../../../applications/useCases/ResenOtp";
 import {OtpError} from '../../../../domain/enums/OtpErrorMessage'
+import logger from '../../../../infrastructure/utils/Logger'
 
 
 export class SuperAdminController {
@@ -16,7 +17,9 @@ export class SuperAdminController {
 
   async login(req: Request, res: Response): Promise<void> {
     try {
+     
       const { email, password } = req.body;
+      
       const otpToken = await this.loginUseCase.execute(email, password);
 
       res.status(StatusCodes.OK).json({
@@ -24,6 +27,7 @@ export class SuperAdminController {
         otpToken,
       });
     } catch (error: any) {
+        logger.error(`Error creating SubAdmin: ${error.message}`);
      
       res.status(StatusCodes.UNAUTHORIZED).json({ message: OtpError.INVALID_OTP});
     }

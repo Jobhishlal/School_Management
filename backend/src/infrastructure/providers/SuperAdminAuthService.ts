@@ -4,6 +4,8 @@ import { ISuperAdminLogin } from "../../domain/Interface/ISuperAdminAuthService"
 import { SendEMail } from "./EmailService";
 import { genarateotptoken, verifiedOtptoken, decodedOtptoken } from "../security/otpJwtService";
 import { GenarateOtp } from "../utils/Otpgenarator";
+import { SubAdmin } from "../database/models/SubAdmin";
+import { AdminRole } from "../../domain/entities/AdminRole";
 
 const MAIN_ADMIN_EMAIL = process.env.MAIN_ADMIN_EMAIL!;
 const MAIN_ADMIN_PASS = process.env.MAIN_ADMIN_PASSWORD_HASH!;

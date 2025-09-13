@@ -6,13 +6,18 @@ import { AdminRepository } from "../../infrastructure/repositories/AdminReposito
 import { GenarateOtpP } from "../../applications/useCases/GenarateOpt";
 import { ResendOtp } from "../../applications/useCases/ResenOtp";
 import { CreateSubAdmin } from '../../applications/useCases/CreatetSubAdmin';
+import { UpdateDetails } from "../../applications/useCases/UpdateSubAdmin";
 import { MongoSubAdminRepo } from '../../infrastructure/repositories/MongoSubAdminRepo';
 import { SubAdminCreateController } from '../http/controllers/ADMIN/SupAdmincreateController';
+import { SubAdminBlock } from "../../applications/useCases/SubAdminBlock";
+import logger from "../../infrastructure/utils/Logger";
 
 const repo = new AdminRepository();
 const data = new MongoSubAdminRepo();
 const createSubAdminUseCase = new CreateSubAdmin(data);
-const subAdminController = new SubAdminCreateController(createSubAdminUseCase);
+const updateSubAdminUseCase = new UpdateDetails(data)
+const subadminblockUseCase = new SubAdminBlock(data)
+const subAdminController = new SubAdminCreateController(createSubAdminUseCase,updateSubAdminUseCase,subadminblockUseCase);
 
 const Adminrouter = Router();
 
@@ -37,6 +42,9 @@ Adminrouter.post('/resend-otp',(req,res)=>adminController.resentOtp(req,res))
 
 Adminrouter.get('/admins',(req,res)=>subAdminController.getAllSubAdmins(req,res))
 Adminrouter.post('/admins',(req,res)=>subAdminController.createSubAdmin(req,res))
+Adminrouter.put('/admins/:id', (req,res)=> subAdminController.updatesubAdmin(req,res))
+Adminrouter.put('/admins/:id/block',(req,res)=>subAdminController.subadminblock(req,res))
+
 
 
 export default Adminrouter;

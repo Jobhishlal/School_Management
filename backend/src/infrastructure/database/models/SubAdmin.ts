@@ -12,6 +12,7 @@ password:string
 role:AdminRole;
 createdAt:Date;
 updatedAt:Date;
+blocked:boolean,
 
 }
 
@@ -23,6 +24,7 @@ const SubAdminSchema = new Schema<SubAdmin>(
         phone:{type:String,required:true},
         password:{type:String,required:true},
         role:{type:String,enum:Object.values(AdminRole),required:true},
+        blocked:{type:Boolean,default:false}
     },
     {timestamps:true}
 )

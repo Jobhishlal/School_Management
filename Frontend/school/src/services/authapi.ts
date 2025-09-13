@@ -34,5 +34,18 @@ export const GetSubAdmins = async () => {
 
 export const SubAdminCreate = async(name:string,email:string,phone:string,role:string)=>{
   const res = await api.post("/admin/admins",{name,email,phone,role})
-  return res
+  return res.data
 }
+
+export const UpdateSubAdmin = async (
+  id: string,
+  updates: { name: string; email: string; phone: string; role: string }
+) => {
+  const res = await api.put(`/admin/admins/${id}`, updates);
+  return res.data;
+};
+export const SubAdminBlock = async (id: string, blocked: boolean) => {
+  const res = await api.put(`/admin/admins/${id}/block`, { blocked });
+  return res.data;
+};
+

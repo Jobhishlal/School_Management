@@ -9,7 +9,8 @@ export class SubAdminEntities{
         public role:AdminRole,
         public password:string,
         public createdAt:Date,
-        public updatedAt:Date
+        public updatedAt:Date,
+        public blocked:Boolean=false,
     ){}
     changeRole(newRole:AdminRole){
     if(!Object.values(AdminRole).includes(newRole)){
