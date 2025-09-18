@@ -1,7 +1,7 @@
 
-import { AdminRole } from "../../domain/entities/AdminRole";
+import { AdminRole } from "../../domain/enums/AdminRole";
 import { SubAdminEntities } from "../../domain/entities/SubAdmin";
-import { SubAdminRepository } from "../repositories/SubAdminCreate";
+import { SubAdminRepository } from "../../domain/repositories/SubAdminCreate";
 
 export class UpdateDetails{
     constructor(private subadminrepo:SubAdminRepository){}

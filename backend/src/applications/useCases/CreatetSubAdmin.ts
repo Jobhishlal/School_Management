@@ -1,7 +1,7 @@
 import { SubAdminEntities } from "../../domain/entities/SubAdmin";
-import { AdminRole } from "../../domain/entities/AdminRole";
-import { SubAdminRepository } from "../repositories/SubAdminCreate";
-import { genaratePassword } from "../../infrastructure/utils/TempPassGenarator";
+import { AdminRole } from "../../domain/enums/AdminRole";
+import { SubAdminRepository } from "../../domain/repositories/SubAdminCreate";
+import { genaratePassword } from "../../shared/constants/utils/TempPassGenarator";
 import { SendEMail } from "../../infrastructure/providers/EmailService";
 import bcrypt from "bcrypt";
 
@@ -13,7 +13,8 @@ export class CreateSubAdmin {
     email: string;
     phone: string;
     role: AdminRole;
-    blocked:boolean
+    blocked:boolean;
+    major_role:string;
   }): Promise<SubAdminEntities> { 
 
       const existemail = await this.subAdminRepo.findByEmail(input.email);
@@ -41,7 +42,8 @@ export class CreateSubAdmin {
       hashed,
       new Date(),
       new Date(),
-      input.blocked
+      input.blocked,
+      input.major_role
     
     );
 

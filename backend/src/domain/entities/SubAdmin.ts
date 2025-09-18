@@ -1,4 +1,4 @@
-import { AdminRole } from "./AdminRole";
+import { AdminRole } from "../enums/AdminRole";
 
 export class SubAdminEntities{
     constructor(
@@ -11,6 +11,7 @@ export class SubAdminEntities{
         public createdAt:Date,
         public updatedAt:Date,
         public blocked:Boolean=false,
+        public major_role:string
     ){}
     changeRole(newRole:AdminRole){
     if(!Object.values(AdminRole).includes(newRole)){

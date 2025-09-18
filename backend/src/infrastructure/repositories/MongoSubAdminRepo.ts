@@ -1,7 +1,7 @@
-import { SubAdminRepository } from "../../applications/repositories/SubAdminCreate";
+import { SubAdminRepository } from "../../domain/repositories/SubAdminCreate";
 import { SubAdminModel } from "../database/models/SubAdmin";
 import { SubAdminEntities } from "../../domain/entities/SubAdmin";
-import { AdminRole } from "../../domain/entities/AdminRole";
+import { AdminRole } from "../../domain/enums/AdminRole";
 
 export class MongoSubAdminRepo implements SubAdminRepository {
   async create(admin: SubAdminEntities): Promise<SubAdminEntities> {
@@ -14,6 +14,7 @@ export class MongoSubAdminRepo implements SubAdminRepository {
       phone: admin.phone,
       role: admin.role,
       password: admin.password,
+      major_role:admin.major_role
     });
 
   
@@ -26,7 +27,8 @@ export class MongoSubAdminRepo implements SubAdminRepository {
       doc.password,
       doc.createdAt,
       doc.updatedAt,
-      doc.blocked
+      doc.blocked,
+      doc.major_role
     );
   }
 
@@ -42,7 +44,8 @@ export class MongoSubAdminRepo implements SubAdminRepository {
         doc.password,
         doc.createdAt,
         doc.updatedAt,
-        doc.blocked
+        doc.blocked,
+        doc.major_role
      )
 
   
@@ -60,7 +63,8 @@ async findAll(): Promise<SubAdminEntities[]> {
           doc.password,
           doc.createdAt,
           doc.updatedAt,
-          doc.blocked
+          doc.blocked,
+          doc.major_role
         )
     );
   }
@@ -77,7 +81,8 @@ async findAll(): Promise<SubAdminEntities[]> {
       doc.password,
       doc.createdAt,
       doc.updatedAt,
-      doc.blocked
+      doc.blocked,
+      doc.major_role
     );
   }
   async update(id: string, updates: Partial<SubAdminEntities>): Promise<SubAdminEntities | null> {
@@ -92,7 +97,8 @@ async findAll(): Promise<SubAdminEntities[]> {
          doc.password,
         doc.createdAt,
         doc.updatedAt,
-        doc.blocked
+        doc.blocked,
+        doc.major_role
       )
 
   }
@@ -109,7 +115,8 @@ async findAll(): Promise<SubAdminEntities[]> {
            doc.password,
         doc.createdAt,
         doc.updatedAt,
-        doc.blocked
+        doc.blocked,
+        doc.major_role
         )
   }
 }

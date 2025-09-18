@@ -48,24 +48,6 @@ export function AdminManagement() {
   const itemsPerPage = 5;
 
 
-  // const fetchAdmins = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const data = await GetSubAdmins();
-  //     const adminsWithStatus = data.map((admin: SubAdmin) => ({
-  //       ...admin,
-  //       status: admin.status || 'Active'
-  //     }));
-  //     setSubAdmins(adminsWithStatus);
-  //     setFilteredAdmins(adminsWithStatus);
-  //   } catch (error) {
-  //     console.error("Error fetching admins:", error);
-  //     showToast("Error fetching admins", "error");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
 
 
   const fetchAdmins = async () => {
@@ -184,7 +166,7 @@ const handleSubmit = async () => {
 
   const handleView = (admin: SubAdmin) => {
     console.log("Viewing admin details:", admin);
-    showToast("View functionality to be implemented", "info");
+    showToast("not complete", "info");
   };
 
  const handleEdit = (admin: SubAdmin) => {
@@ -513,7 +495,7 @@ const handleToggleBlock = async (admin: SubAdmin) => {
           )}
         </div>
 
-        {/* Pagination */}
+
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-2 mt-6">
             <button

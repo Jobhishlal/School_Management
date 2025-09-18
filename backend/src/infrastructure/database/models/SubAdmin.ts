@@ -1,6 +1,6 @@
 import mongoose ,{Schema,Document,Types} from "mongoose";
 
-import { AdminRole } from "../../../domain/entities/AdminRole";
+import { AdminRole } from "../../../domain/enums/AdminRole";
 
 
 export interface SubAdmin extends Document{
@@ -10,9 +10,10 @@ email:string;
 phone:string;
 password:string
 role:AdminRole;
-createdAt:Date;
+createdAt:Date; 
 updatedAt:Date;
 blocked:boolean,
+major_role:string
 
 }
 
@@ -24,7 +25,8 @@ const SubAdminSchema = new Schema<SubAdmin>(
         phone:{type:String,required:true},
         password:{type:String,required:true},
         role:{type:String,enum:Object.values(AdminRole),required:true},
-        blocked:{type:Boolean,default:false}
+        blocked:{type:Boolean,default:false},
+        major_role:{type:String,default:"sub_admin"}
     },
     {timestamps:true}
 )

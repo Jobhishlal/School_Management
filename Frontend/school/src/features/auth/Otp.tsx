@@ -55,11 +55,19 @@ export default function VerifyOtpPage() {
 
     try {
       setLoading(true);
-      const res = await VerifyOtp(otpToken, otp);
+    const res = await VerifyOtp(otpToken, otp);
+    localStorage.setItem("authToken", res.authToken);
+     localStorage.setItem("role", res.role);
 
-      localStorage.setItem("authToken", res.authToken);
+  // dispatch(setCredentials({ authToken: res.authToken, role: res.role }));
 
-      dispatch(setCredentials(res));
+    dispatch(
+        setCredentials({
+          accessToken: res.authToken,   
+          refreshToken: "",          
+          user: { role: res.role },     
+        })
+      );
       showToast("Login successful!", "success");
       navigate("/dashboard");
     } catch (err: any) {

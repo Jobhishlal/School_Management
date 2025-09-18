@@ -1,9 +1,9 @@
 import { CreateSubAdmin } from '../../../../applications/useCases/CreatetSubAdmin';
 import { Request, Response } from 'express';
-import { AdminRole } from '../../../../domain/entities/AdminRole';
+import { AdminRole } from '../../../../domain/enums/AdminRole';
 import { StatusCodes } from '../../../../shared/constants/statusCodes';
 import { ISubAdminCreate } from '../../interface/ISubAdminController';
-import logger from '../../../../infrastructure/utils/Logger';
+import logger from '../../../../shared/constants/Logger';
 import { UpdateDetails } from '../../../../applications/useCases/UpdateSubAdmin';
 import { SubAdminBlock } from '../../../../applications/useCases/SubAdminBlock';
 
@@ -12,7 +12,7 @@ export class SubAdminCreateController implements ISubAdminCreate {
 
   async createSubAdmin(req: Request, res: Response): Promise<void> {
     try {
-      const { name, email, phone, role ,blocked} = req.body;
+      const { name, email, phone, role ,blocked,major_role} = req.body;
       logger.info(JSON.stringify(req.body))
 
       if (!Object.values(AdminRole).includes(role)) {
@@ -27,7 +27,8 @@ export class SubAdminCreateController implements ISubAdminCreate {
         email,
         phone,
         role,
-        blocked
+        blocked,
+        major_role,
       });
 
       res.status(StatusCodes.OK).json({

@@ -1,5 +1,5 @@
-import { IAdminRepository } from "../repositories/AdminRepository";
-import { AdminResponseDTO } from "../../domain/dto/Admin";
+import { IAdminRepository } from "../../domain/repositories/AdminRepository";
+import { AdminResponseDTO } from "../dto/Admin";
 
 export class GetAdmin{
     constructor(private adminRepo : IAdminRepository){}

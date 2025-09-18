@@ -18,12 +18,22 @@ export default function MainAdminLogincheck() {
       const res = await MainAdminLogin(email, password);
 
       localStorage.setItem("otpToken", res.otpToken);
+      if (res.role) {
+     localStorage.setItem("role", res.role.toLowerCase()); 
+
+      }
 
       showToast("OTP sent to your email", "success");
 
       navigate("/verify-otp", { state: { otpToken: res.otpToken } });
     } catch (error: any) {
-      showToast(error.response?.data?.message || "Login failed", "error");
+      
+      console.log("Login error:", error);
+
+     const message =
+    error.response?.data?.message || error.message || "Login failed";
+
+  showToast(message, "error");
     } finally {
       setLoading(false);
     }
@@ -72,13 +82,13 @@ export default function MainAdminLogincheck() {
           </div>
         </div>
 
-        <button
-         
-          className="w-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-white font-semibold py-3 rounded-lg"
-        >
-          <FcGoogle className="mr-2 text-xl" />
-          Sign Up with Google
-        </button>
+     <button
+  type="button"
+  className="w-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-white font-semibold py-3 rounded-lg"
+>
+  <FcGoogle className="mr-2 text-xl" />
+  Sign Up with Google
+</button>
 
          
              <button

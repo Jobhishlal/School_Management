@@ -1,40 +1,40 @@
-import {IAdminRepository} from '../../applications/repositories/AdminRepository';
-import {Passwordservices} from '../../infrastructure/security/PasswordService';
-import {CreateAdminDTO,AdminResponseDTO} from '../../domain/dto/Admin';
-import {Admin} from '../../domain/entities/Admin';
+import { IAdminRepository } from '../../domain/repositories/AdminRepository';
+import { Passwordservices } from '../../infrastructure/security/PasswordService';
+import { CreateAdminDTO, AdminResponseDTO } from '../dto/Admin';
 import { AdminError } from '../../domain/enums/Adminsinguperror';
-import {verifiedOtptoken} from '../../infrastructure/security/otpJwtService'
+import { verifiedOtptoken } from '../../infrastructure/security/otpJwtService';
 
-export class SignupAdmin{
-    constructor(private adminRepo:IAdminRepository){}
-    async execute(data:CreateAdminDTO & {otp: string; otpToken: string }):Promise<AdminResponseDTO>{
+export class SignupAdmin {
+  constructor(private adminRepo: IAdminRepository) {}
 
-           const decoded = verifiedOtptoken(data.otpToken)
+  async execute(data: CreateAdminDTO & { otp: string; otpToken: string }): Promise<AdminResponseDTO> {
+    const decoded = verifiedOtptoken(data.otpToken);
 
-           if(!decoded || decoded.email!==data.email || decoded.otp!==data.otp ){
-             throw new Error(AdminError.Invalid_otp)
-           } 
+    if (!decoded || decoded.email !== data.email || decoded.otp !== data.otp) {
+      throw new Error(AdminError.Invalid_otp);
+    }
 
-        const exist= await this.adminRepo.findByEmail(data.email);
-        if(exist){
-            throw new Error(AdminError.Useralreadyexisted);
-        
-        }
-        const usernameexist = await this.adminRepo.findByUserName(data.username)
-        if(usernameexist){
-            throw new Error(AdminError.UniqueUser_id)
-        }
+    const exist = await this.adminRepo.findByEmail(data.email);
+    if (exist) throw new Error(AdminError.Useralreadyexisted);
 
-        const hashpassword = await Passwordservices.hashpassword(data.password)
-        const admin = new Admin(null,data.username,data.email,hashpassword)
-        const save = await this.adminRepo.create(admin)
-      
-        return {
-      id: save.id!,
-      username: save.username,
-      email: save.email,
+    const usernameExist = await this.adminRepo.findByUserName(data.username);
+    if (usernameExist) throw new Error(AdminError.UniqueUser_id);
+
+    const hashPassword = await Passwordservices.hashpassword(data.password);
+
+    
+    const adminToSave: AdminResponseDTO = {
+      id: "",
+      username: data.username,
+      email: data.email
     };
 
-    }
-   
+    const savedAdmin = await this.adminRepo.create(adminToSave);
+
+    return {
+      id: savedAdmin.id,
+      username: savedAdmin.username,
+      email: savedAdmin.email
+    };
+  }
 }

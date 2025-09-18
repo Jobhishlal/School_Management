@@ -1,4 +1,4 @@
-import {SubAdminEntities} from '../../domain/entities/SubAdmin'
+import {SubAdminEntities} from '../entities/SubAdmin'
 
 
 export interface SubAdminRepository{

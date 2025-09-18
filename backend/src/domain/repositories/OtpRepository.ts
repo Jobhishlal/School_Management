@@ -1,4 +1,4 @@
-import { Otp } from "../../domain/entities/Otp";
+import { Otp } from "../entities/Otp";
 
 export interface IOTPRepository{
     create(otp:Otp):Promise<Otp>;

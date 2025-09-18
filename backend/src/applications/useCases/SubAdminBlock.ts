@@ -1,5 +1,5 @@
 import { SubAdminEntities } from "../../domain/entities/SubAdmin";
-import { SubAdminRepository } from "../repositories/SubAdminCreate";
+import { SubAdminRepository } from "../../domain/repositories/SubAdminCreate";
 
 export class SubAdminBlock {
   constructor(private subadminRepo: SubAdminRepository) {}
