@@ -16,6 +16,7 @@ import { MongoTeacher } from "../../infrastructure/repositories/MongoTeacherRepo
 import { UpdateTeacher } from "../../applications/useCases/Teacher/UpdateTeachers";
 import { BlockTeacher } from "../../applications/useCases/Teacher/BlockTeacher";
 import logger from "../../shared/constants/Logger";
+import { upload } from "../../infrastructure/middleware/fileUploadService";
 
 const repo = new AdminRepository();
 const data = new MongoSubAdminRepo();
@@ -49,12 +50,12 @@ Adminrouter.post('/verify-otp',(req,res)=>adminController.verifyOtp(req,res))
 Adminrouter.post('/resend-otp',(req,res)=>adminController.resentOtp(req,res))
 
 Adminrouter.get('/admins',(req,res)=>subAdminController.getAllSubAdmins(req,res))
-Adminrouter.post('/admins',(req,res)=>subAdminController.createSubAdmin(req,res))
+Adminrouter.post('/adminscreate',(req,res)=>subAdminController.createSubAdmin(req,res))
 Adminrouter.put('/admins/:id', (req,res)=> subAdminController.updatesubAdmin(req,res))
 Adminrouter.put('/admins/:id/block',(req,res)=>subAdminController.subadminblock(req,res))
 Adminrouter.get('/teacher',(req,res)=>teachercreatecontroller.getAllTeacher(req,res))
-Adminrouter.post('/teacher',(req,res)=>teachercreatecontroller.createteacher(req,res))
-Adminrouter.put('/teacher/:id',(req,res)=>teachercreatecontroller.updateTeacher(req,res))
+Adminrouter.post('/teacher', upload.array("documents", 5),(req,res)=>teachercreatecontroller.createteacher(req,res))
+Adminrouter.put('/teacher/:id',upload.array("documents", 5),(req,res)=>teachercreatecontroller.updateTeacher(req,res))
 Adminrouter.put('/teacher/:id/block',(req,res)=>teachercreatecontroller.blockTeacher(req,res))
 
 

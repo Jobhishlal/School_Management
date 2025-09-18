@@ -3,6 +3,7 @@ import { genaratePassword } from "../../../shared/constants/utils/TempPassGenara
 import { Teeacher } from "../../../domain/entities/Teacher";
 import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";
 import { CreateTeacherDTO, TeacherResponseDTO } from '../../dto/TeacherDto';
+import {generateSubjectCode} from '../../../shared/constants/utils/SubejctCode'
 import bcrypt from "bcrypt";
 
 export class TeacherCreateUseCase {
@@ -22,6 +23,28 @@ export class TeacherCreateUseCase {
     const rawPassword = dto.Password?.trim() || genaratePassword();
     const hashed = await bcrypt.hash(rawPassword, 10);
 
+
+    let subjectsArray: { name: string; code?: string }[] = [];
+  if (dto.subjects) {
+    if (typeof dto.subjects === "string") {
+      try {
+        subjectsArray = JSON.parse(dto.subjects);
+        if (!Array.isArray(subjectsArray)) subjectsArray = [];
+      } catch (err) {
+        subjectsArray = [];
+      }
+    } else if (Array.isArray(dto.subjects)) {
+      subjectsArray = dto.subjects;
+    }
+  }
+
+  
+   const subjectsWithCodes = subjectsArray.map(sub => ({
+  name: sub.name,
+  code: sub.code || generateSubjectCode(sub.name),
+}));
+
+
     const teacher = new Teeacher(
       "",
       dto.name,
@@ -32,7 +55,14 @@ export class TeacherCreateUseCase {
       new Date(),
       new Date(),
       dto.blocked ?? false,
-      hashed
+      hashed,
+      (dto.documents ?? []).map(doc => ({
+    url: doc.url,
+    filename: doc.filename,
+    uploadedAt: doc.uploadedAt ?? new Date(), 
+  })),
+  subjectsWithCodes,
+  dto.department
     );
 
     const saved = await this.teacherRepo.create(teacher);
@@ -54,6 +84,10 @@ export class TeacherCreateUseCase {
       blocked: saved.blocked,
       createdAt: saved.createdAt,
       updatedAt: saved.updatedAt,
+     documents: saved.documents ?? [],
+      Subject:saved.subjects??[],
+      department:saved.department
+      
     };
   }
 
@@ -69,6 +103,10 @@ export class TeacherCreateUseCase {
       blocked: saved.blocked,
       createdAt: saved.createdAt,
       updatedAt: saved.updatedAt,
+      documents: saved.documents ?? [],
+      Subject:saved.subjects??[],
+      department:saved.department
+      
     }));
   }
 }

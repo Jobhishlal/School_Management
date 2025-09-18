@@ -7,7 +7,11 @@ export class UpdateTeacher{
         name:string,
         email:string,
         phone:string,
-        gender:string
+        gender:string,
+        subjects:[],
+        department: "LP" | "UP" | "HS"; 
+
+      
 
     }>):Promise<Teeacher>{
         if(update.email){

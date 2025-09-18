@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { SignupAdmin } from "../../services/authapi"; 
 import type { AdminDoc } from "../../types/Admin";
-import { MESSAGE } from "../../constants/signup";
+import { MESSAGE } from "../../constants/AuthErrorMessages";
 import { showToast } from "../../utils/toast";
 import { FcGoogle } from "react-icons/fc";
 import { setCredentials } from "../../store/slice/authslice";

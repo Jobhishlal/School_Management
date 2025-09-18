@@ -9,6 +9,10 @@ export class Teeacher {
     public createdAt: Date,
     public updatedAt: Date,
     public blocked: boolean,
-    public Password: string
+    public Password: string,
+    public documents?: { url: string; filename: string; uploadedAt: Date }[],
+    public subjects?:{name:string,code:string}[],
+    public department?: "LP" | "UP" | "HS"
+
   ) {}
 }

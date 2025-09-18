@@ -11,7 +11,10 @@ export class MongoTeacher implements ITeacherCreate{
             phone:teacher.phone,
             Password:teacher.Password,
             role:teacher.role,
-            gender:teacher.gender
+            gender:teacher.gender,
+            documents: teacher.documents ?? [],
+            subjects:teacher.subjects??[],
+            department:teacher.department
 
         })
 
@@ -25,7 +28,10 @@ export class MongoTeacher implements ITeacherCreate{
            teacher.createdAt, 
            teacher.updatedAt,  
            teacher.blocked,    
-           teacher.Password     
+           teacher.Password ,
+           teacher.documents,
+           teacher.subjects,
+           teacher.department
         )
     }
 
@@ -49,7 +55,11 @@ async findByEmail(email: string): Promise<Teeacher | null> {
     doc.createdAt,
     doc.updatedAt,
     doc.blocked,
-    doc.Password
+    doc.Password,
+    doc.documents,
+   doc.subjects,
+   doc.department,
+   
   );
 }
 
@@ -69,7 +79,12 @@ async findByEmail(email: string): Promise<Teeacher | null> {
             teacher.createdAt, 
             teacher.updatedAt,  
             teacher.blocked,    
-            teacher.Password
+            teacher.Password,
+            teacher.documents,
+            teacher.subjects,
+            teacher.department
+            
+            
         )
    }
 async finByAll(): Promise<Teeacher[]> {
@@ -86,7 +101,11 @@ async finByAll(): Promise<Teeacher[]> {
       teacher.createdAt,
       teacher.updatedAt,
       teacher.blocked,
-      teacher.Password
+      teacher.Password,
+      teacher.documents,
+      teacher.subjects,
+      teacher.department
+      
     );
   });
 }
@@ -104,7 +123,11 @@ async update(id: string, update: Partial<Teeacher>): Promise<Teeacher | null> {
       teacher.createdAt,
       teacher.updatedAt,
       teacher.blocked,
-      teacher.Password
+      teacher.Password,
+      teacher.documents,
+      teacher.subjects,
+      teacher.department
+     
     )
 }
 async findById(id: string): Promise<Teeacher | null> {
@@ -120,9 +143,63 @@ async findById(id: string): Promise<Teeacher | null> {
       teacher.createdAt,
       teacher.updatedAt,
       teacher.blocked,
-      teacher.Password
+      teacher.Password,
+      teacher.documents,
+      teacher.subjects,
+      teacher.department
     )
 }
+async addDocument(id: string, document: { url: string; filename: string; }): Promise<Teeacher | null> {
+    const updated =await TeacherModel.findByIdAndUpdate( id,
+    { $push: { documents: { ...document, uploadedAt: new Date() } } },
+    { new: true })
+    if(!updated)return null
+     return new Teeacher(
+    updated._id.toString(),
+    updated.name,
+    updated.email,
+    updated.phone,
+    updated.gender,
+    updated.role,
+    updated.createdAt,
+    updated.updatedAt,
+    updated.blocked,
+    updated.Password,
+    updated.documents,
+    updated.subjects,
+    updated.department
+  );
+}
+
+async addSubjects(
+  id: string,
+  subjects: { name: string; code: string }[]
+): Promise<Teeacher | null> {
+  const updated = await TeacherModel.findByIdAndUpdate(
+    id,
+    { $push: { subjects: { $each: subjects } } }, 
+    { new: true }
+  );
+
+  if (!updated) return null;
+
+  return new Teeacher(
+    updated._id.toString(),
+    updated.name,
+    updated.email,
+    updated.phone,
+    updated.gender,
+    updated.role,
+    updated.createdAt,
+    updated.updatedAt,
+    updated.blocked,
+    updated.Password,
+    updated.documents,
+    updated.subjects ,
+    updated.department
+  );
+}
+
 
    
 }

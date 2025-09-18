@@ -20,6 +20,8 @@ import {
 import { SubAdminCreate, GetSubAdmins,UpdateSubAdmin,SubAdminBlock } from "../../services/authapi";
 import { showToast } from "../../utils/toast";
 import { useTheme } from "../../components/layout/ThemeContext";
+import { AdminSchema } from "../../validations/AdminValidation";
+import { fa } from "zod/v4/locales";
 
 interface SubAdmin {
   id: string;
@@ -95,33 +97,33 @@ export function AdminManagement() {
     setCurrentPage(1);
   }, [searchTerm, subAdmins, filterRole, filterStatus]);
 
-  const validateForm = (): boolean => {
-    if (!name.trim()) {
-      showToast("Name is required", "warning");
-      return false;
-    }
-    if (!email.trim()) {
-      showToast("Email is required", "warning");
-      return false;
-    }
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      showToast("Please enter a valid email", "warning");
-      return false;
-    }
-    if (!phone.trim()) {
-      showToast("Phone number is required", "warning");
-      return false;
-    }
-    if (!/^\d{10}$/.test(phone)) {
-      showToast("Phone number must be 10 digits", "warning");
-      return false;
-    }
-    if (!role) {
-      showToast("Role is required", "warning");
-      return false;
-    }
-    return true;
-  };
+const validateForm = (): boolean => {
+ 
+  if (!name || !phone || !email || !role) {
+    showToast("All fields are required", "warning");
+    return false;
+  }
+
+
+  const result = AdminSchema.safeParse({
+    name,
+    email,
+    phone,
+    role,
+    blocked: false, 
+  });
+
+  if (!result.success) {
+    
+    const firstError = result.error.issues[0].message;
+    showToast(firstError, "warning");
+    return false;
+  }
+
+  return true;
+};
+
+
 
 const handleSubmit = async () => {
   if (!validateForm()) return;

@@ -7,44 +7,83 @@ import { UpdateTeacher } from "../../../../applications/useCases/Teacher/UpdateT
 import { BlockTeacher } from "../../../../applications/useCases/Teacher/BlockTeacher";
 
 
+
+
 export class TeacherCreateController implements ITeacherCreatecontroller{
     constructor(
         private createteacherUseCase:TeacherCreateUseCase,
         private updateTeacherUseCase:UpdateTeacher ,
         private blockTeacherUseCase:BlockTeacher){}
     
-    async createteacher(req: Request, res: Response): Promise<void> {
-        try {
-            const {name,email,phone,role,blocked,gender,Password}=req.body
-            logger.info(JSON.stringify(req.body))
-            const result = await this.createteacherUseCase.execute({
-                 name,
-                 email,
-                 phone,
-                 role,
-                blocked,
-                gender,
-                Password
-                });
+  async createteacher(req: Request, res: Response): Promise<void> {
+    try {
+      const {
+        name,
+        email,
+        phone,
+        role,
+        blocked,
+        gender,
+        Password,
+        department,
+      } = req.body;
 
-            res.status(StatusCodes.OK).json({
-                message:"successfully created admin password send to you email",
-                teachers:result
-            })
-        } catch (error:any) {
-            logger.info(error)
-             if (
-          error.message === "email already exised" ||
-          error.message === "enter valueable phone number"
-        ) {
-        res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
-       } else {
-        res
-         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-         .json({ message: error.message || "Internal Server Error" });
-        }
-        }
+    
+     let subjectsArray: { name: string; code: string }[] = [];
+if (req.body.subjects) {
+  if (typeof req.body.subjects === "string") {
+    try {
+      subjectsArray = JSON.parse(req.body.subjects);
+    } catch {
+      subjectsArray = [];
     }
+  } else if (Array.isArray(req.body.subjects)) {
+    subjectsArray = req.body.subjects;
+  }
+}
+
+    
+      const files = req.files as Express.Multer.File[]; 
+      const documents = (files ?? []).map((file) => ({
+        url: (file as any).path,
+        filename: file.originalname,
+        uploadedAt: new Date(),
+      }));
+
+    
+      const result = await this.createteacherUseCase.execute({
+        name,
+        email,
+        phone,
+        role,
+        blocked,
+        gender,
+        Password,
+        documents,
+        subjects: subjectsArray,
+        department,
+      });
+
+      res.status(StatusCodes.OK).json({
+        message: "Successfully created teacher. Password sent to email.",
+        teachers: result,
+      });
+    } catch (error: any) {
+      logger.info(error);
+
+      if (
+        error.message === "email already exists" ||
+        error.message === "enter valid phone number"
+      ) {
+        res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+      } else {
+        res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ message: error.message || "Internal Server Error" });
+      }
+    }
+  }
+
     async getAllTeacher(req: Request, res: Response): Promise<void> {
         try {
             const teacher = await this.createteacherUseCase.getall()
@@ -55,14 +94,44 @@ export class TeacherCreateController implements ITeacherCreatecontroller{
     }
     async updateTeacher(req: Request, res: Response): Promise<void> {
         try {
-            const {name,email,phone,gender}=req.body;
+            const {name,email,phone,gender,subjects,department}=req.body;
         const {id}=req.params;
-        const update = await this.updateTeacherUseCase.execute(
-            id,
-            {name,email,phone,gender}
-        )
 
-        res.status(StatusCodes.CREATED).json({message:"successfully updated Teachers",teachers:update})
+        let parsedsubject : {name:string;code:string}[]=[]
+        if(subjects){
+            if(typeof subjects==="string"){
+                try {
+                    parsedsubject=JSON.parse(subjects)
+                    if(!Array.isArray(parsedsubject))parsedsubject=[];
+                } catch (error) {
+                    parsedsubject=[];
+                }
+            }else if(Array.isArray(subjects)){
+                 parsedsubject=subjects
+            }
+        }
+
+           const files = req.files as Express.Multer.File[]; 
+            const documents = (files ?? []).map(file => ({
+            url: (file as any).path,
+           filename: file.originalname,
+           uploadedAt: new Date(),
+           }));
+
+            const updateData: any = { name, email, phone, gender, department };
+         if (parsedsubject.length > 0) updateData.subjects = parsedsubject;
+          if (documents.length > 0) updateData.documents = documents;
+
+         const updatedTeacher = await this.updateTeacherUseCase.execute(id, updateData);
+     
+          res.status(StatusCodes.OK).json({
+          message: "Successfully updated teacher",
+          teacher: updatedTeacher,
+         });  
+
+         
+
+
         } catch (error) {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:"Internal server error"})
         }
