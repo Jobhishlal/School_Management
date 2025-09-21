@@ -12,6 +12,7 @@ import Profile from "./pages/admin/profile";
 import { AdminManagement } from "./pages/admin/AdminManagement";
 import { ThemeProvider } from "./components/layout/ThemeContext"; 
 import { TeachersManagement } from "./pages/admin/TeacherManagement";
+import StudentManagement from "./pages/admin/StudentManagement";
 
 function ErrorFallback({ error }: { error: Error }) {
   return <div role="alert">Something went wrong: {error.message}</div>;
@@ -40,6 +41,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/admins" element={<AdminManagement />} />
           <Route path="/teachers" element={<TeachersManagement />} />
+            <Route path="/students" element={<StudentManagement />} />
         </Route>
       </Routes>
     </ErrorBoundary>

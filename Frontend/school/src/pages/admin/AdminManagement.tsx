@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  UserX
 
 } from "lucide-react";
 import { 
@@ -21,7 +22,9 @@ import { SubAdminCreate, GetSubAdmins,UpdateSubAdmin,SubAdminBlock } from "../..
 import { showToast } from "../../utils/toast";
 import { useTheme } from "../../components/layout/ThemeContext";
 import { AdminSchema } from "../../validations/AdminValidation";
-import { fa } from "zod/v4/locales";
+import { Pagination } from "../../components/common/Pagination";
+import { Modal } from "../../components/common/Modal";
+
 
 interface SubAdmin {
   id: string;
@@ -32,7 +35,7 @@ interface SubAdmin {
   blocked:boolean;
 }
 
-export function AdminManagement() {
+export function AdminManagement () {
   const { isDark } = useTheme();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -403,31 +406,47 @@ const handleToggleBlock = async (admin: SubAdmin) => {
                             </td>
 
                         <td className="px-6 py-4">
-                          <div className="flex items-center justify-center gap-1">
-                            <button
-                              onClick={() => handleView(admin)}
-                              className="p-2 rounded-lg hover:bg-blue-500/10 text-blue-500 transition-colors"
-                              title="View Details"
-                            >
-                              <Eye size={14} />
-                            </button>
-                            <button
-                              onClick={() => handleEdit(admin)}
-                              className="p-2 rounded-lg hover:bg-green-500/10 text-green-500 transition-colors"
-                              title="Edit"
-                            >
-                              <FaEdit size={14} />
-                            </button>
-                        <button
-                         onClick={() => handleToggleBlock(admin)}
-                         className="p-2 rounded-lg hover:bg-red-500/10 text-white-500 transition-colors"
-                         title={admin.blocked ? "Unblock" : "Block"}
-                         >
-                       <Ban size={14} />
-                         </button>
+  <div className="flex justify-center space-x-2">
+    {/* View */}
+    <button
+      onClick={() => handleView(admin)}
+      className={`p-2 rounded-full transition-colors ${
+        isDark
+          ? "hover:bg-gray-700 text-blue-400"
+          : "hover:bg-gray-100 text-blue-600"
+      }`}
+      title="View Details"
+    >
+      <Eye size={16} />
+    </button>
 
-                          </div>
-                        </td>
+
+    <button
+      onClick={() => handleEdit(admin)}
+      className={`p-2 rounded-full transition-colors ${
+        isDark
+          ? "hover:bg-gray-700 text-amber-400"
+          : "hover:bg-gray-100 text-amber-600"
+      }`}
+      title="Edit"
+    >
+      <Edit size={16} /> 
+     
+    </button>
+
+        <button
+      onClick={() => handleToggleBlock(admin)}
+      className={`p-2 rounded-full transition-colors ${
+        isDark ? "hover:bg-gray-700" : "hover:bg-gray-100"
+      } ${admin.blocked ? "text-green-500 hover:text-green-400" : "text-red-500 hover:text-red-600"}`}
+      title={admin.blocked ? "Unblock" : "Block"}
+        >
+          <UserX size={16} /> 
+      
+         </button>
+        </div>
+          </td>
+
                       </tr>
                     ))}
                   </tbody>
@@ -478,9 +497,11 @@ const handleToggleBlock = async (admin: SubAdmin) => {
                           onClick={() => handleToggleBlock(admin)}
                           className="p-2 rounded-lg hover:bg-red-500/10 text-red-500 transition-colors"
                         >
-                          <Ban size={14} />
+                          <UserX size={14} />
                         </button>
                       </div>
+
+     
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                       <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getRoleColor(admin.role)}`}>
@@ -499,33 +520,19 @@ const handleToggleBlock = async (admin: SubAdmin) => {
 
 
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 mt-6">
-            <button
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-            >
-              <ChevronLeft size={16} />
-              Prev
-            </button>
-            
-            <span className="text-sm px-3 py-2" style={{ color: textSecondary }}>
-              {currentPage}
-            </span>
-            
-            <button
-              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage === totalPages}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-            >
-              Next
-              <ChevronRight size={16} />
-            </button>
-          </div>
+          <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          
+          />
         )}
-
-        {/* Create Admin Modal */}
-        {showModal && (
+              <Modal
+                title={editingId ? "Edit Admin" : "Add New Admin"}
+                 isOpen={showModal}
+               onClose={handleCloseModal}
+              
+              >
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
             <div 
               className="w-full max-w-md rounded-lg shadow-xl border"
@@ -656,7 +663,7 @@ const handleToggleBlock = async (admin: SubAdmin) => {
               </div>
             </div>
           </div>
-        )}
+        </Modal>
       </div>
     </div>
   );

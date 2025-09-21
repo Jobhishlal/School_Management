@@ -1,8 +1,8 @@
-import { IAdminRepository } from "../../domain/repositories/AdminRepository";
-import { GenarateOtp } from '../../shared/constants/utils/Otpgenarator';
-import { SendEMail } from '../../infrastructure/providers/EmailService';
-import { genarateotptoken } from '../../infrastructure/security/otpJwtService';
-import { AdminError } from '../../domain/enums/Adminsinguperror';
+import { IAdminRepository } from '../../../domain/repositories/AdminRepository';
+import { GenarateOtp } from '../../../shared/constants/utils/Otpgenarator';
+import { SendEMail } from '../../../infrastructure/providers/EmailService';
+import { genarateotptoken } from '../../../infrastructure/security/otpJwtService';
+import { AdminError } from '../../../domain/enums/Adminsinguperror';
 
 export class GenarateOtpP {
   constructor(private adminRepo: IAdminRepository) {}

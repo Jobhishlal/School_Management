@@ -1,10 +1,12 @@
 
-import { AdminRole } from "../../domain/enums/AdminRole";
-import { SubAdminEntities } from "../../domain/entities/SubAdmin";
-import { SubAdminRepository } from "../../domain/repositories/SubAdminCreate";
+import { AdminRole } from "../../../domain/enums/AdminRole";
+import { SubAdminEntities } from "../../../domain/entities/SubAdmin";
+import { SubAdminRepository } from "../../../domain/repositories/SubAdminCreate";
+import { IUpdateadmin } from "../../../domain/UseCaseInterface/IAdminUpdate";
 
-export class UpdateDetails{
+export class UpdateDetails implements IUpdateadmin{
     constructor(private subadminrepo:SubAdminRepository){}
+    
     async execute(id:string,updates:Partial<{
         name:string;
         email:string;

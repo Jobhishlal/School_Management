@@ -6,6 +6,8 @@ import { GetAllteacher, CreateTeachers, UpdateTeacher, BlockTeacher } from "../.
 import { showToast } from "../../utils/toast";
 import { useTheme } from "../../components/layout/ThemeContext";
 import { teacherSchema } from "../../validations/TeacherValidation";
+import { Pagination } from "../../components/common/Pagination";
+import { Modal } from "../../components/common/Modal";
 
 interface Subject {
   name: string;
@@ -387,47 +389,26 @@ const validateForm = (): boolean => {
 
       
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 mt-4 sm:mt-6">
-            <button
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-              className={`px-3 py-1.5 rounded-lg font-medium text-sm transition-colors ${isDark ? "bg-slate-700 text-white hover:bg-slate-600" : "bg-gray-200 text-gray-700 hover:bg-gray-300"} disabled:opacity-50 disabled:cursor-not-allowed`}
-            >
-              Prev
-            </button>
-            <span className={`text-sm px-3 py-1.5 rounded-lg ${isDark ? "bg-slate-700 text-slate-300" : "bg-gray-200 text-gray-700"}`}>
-              {currentPage} of {totalPages}
-            </span>
-            <button
-              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage === totalPages}
-              className={`px-3 py-1.5 rounded-lg font-medium text-sm transition-colors ${isDark ? "bg-slate-700 text-white hover:bg-slate-600" : "bg-gray-200 text-gray-700 hover:bg-gray-300"} disabled:opacity-50 disabled:cursor-not-allowed`}
-            >
-              Next
-            </button>
-          </div>
+     
+
+          <Pagination
+           
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          
+          />
         )}
 
-        {/* Modal */}
-        {showModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div 
-              className={`w-full max-w-lg rounded-lg shadow-xl border max-h-[100vh] overflow-y-auto ${isDark ? "bg-slate-800 border-slate-600" : "bg-white border-gray-300"}`}
-            >
-              <div className="p-4 sm:p-6">
-                <div className="flex items-center justify-between mb-4 sm:mb-6">
-                  <h3 className="text-lg sm:text-xl font-bold">
-                    {editId ? "Edit Teacher" : "Add New Teacher"}
-                  </h3>
-                  <button 
-                    onClick={handleCloseModal} 
-                    className={`p-2 rounded-lg hover:bg-opacity-10 transition-colors ${isDark ? "text-slate-400 hover:bg-slate-600" : "text-gray-500 hover:bg-gray-200"}`}
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
+       
+      
 
-                <div className="space-y-4">
+        <Modal
+           isOpen={showModal}
+           onClose={handleCloseModal}
+           title={editId ? "Edit Teacher" : "Add New Teacher"}
+             >
+              <div className="space-y-4">
                  
                   <div>
                     <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-gray-700"}`}>
@@ -577,10 +558,8 @@ const validateForm = (): boolean => {
                     </button>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        )}
+</Modal>
+
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 
 import passport from "passport";
 import { Strategy as GoogleStrategy, Profile, VerifyCallback } from "passport-google-oauth20";
-import { AuthGoogle } from "../../applications/useCases/GoogleAuth";
+import { AuthGoogle } from "../../applications/useCases/Auth/GoogleAuth";
 
 const authUseCase = new AuthGoogle();
 

@@ -1,4 +1,4 @@
-import { ISuperAdminLogin } from "../../domain/repositories/ISuperAdminAuthService";
+import { ISuperAdminLogin } from "../../../domain/repositories/ISuperAdminAuthService";
 
 export class LoginSuperAdmin {
   constructor(private authService: ISuperAdminLogin) {}

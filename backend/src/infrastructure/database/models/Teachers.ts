@@ -5,7 +5,7 @@ export interface TeacherDocument {
   filename: string;
   uploadedAt: Date;
 }
-interface Subject {
+interface Subject { 
   name: string;
   code: string;
 }

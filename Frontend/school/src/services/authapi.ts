@@ -133,3 +133,89 @@ export const BlockTeacher = async(id:string,blocked:boolean)=>{
   const res = await api.put(API_ROUTES.ADMIN.BLOCK_TEACHER(id),{blocked})
   return res.data
 }
+
+
+
+
+export const CreateStudents = async (
+  fullName: string,
+  dateOfBirth: string,
+  gender: "Male" | "Female" | "Other",
+  studentId: string,
+  parentId: string,
+  addressId: string,
+  classId: string,
+  files: File[]
+) => {
+  const data = new FormData();
+  console.log("reacher",data)
+
+
+  data.append("fullName", fullName);
+  data.append("dateOfBirth", dateOfBirth);
+  data.append("gender", gender);
+  data.append("studentId", studentId);
+  data.append("parentId", parentId);
+  data.append("addressId", addressId);
+  data.append("classId", classId);
+
+
+  if (files && files.length > 0) {
+  files.forEach((file) => {
+    data.append("photos", file);
+  });
+}
+
+  const res = await api.post(API_ROUTES.STUDENT.CREATESTUDENT, data, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  return res.data;
+};
+
+export const GetAllParents = async()=>{
+  const res = await api.get(API_ROUTES.PARENTS.LIST_PARENTS)
+  return res.data
+}
+
+export const createParent = async (parentData: {
+  name: string;
+  contactNumber: string;
+  whatsappNumber: string;
+  email: string;
+  relationship?: "Son" | "Daughter";
+}) => {
+  const res = await api.post(API_ROUTES.PARENTS.CREATE_PARENTS, parentData);
+  return res.data;
+};
+
+
+export const GetAllClass = async()=>{
+  const res = await api.get(API_ROUTES.CLASS.LIST_CLASS)
+  return res.data
+}
+
+export const CreateClass = async (classData: {
+  className: string;
+  division: string;
+  rollNumber: string;
+  department: string;
+  subjects: string[]; 
+}) => {
+  const res = await api.post(API_ROUTES.CLASS.CREATE_CLASS, classData);
+  return res.data;
+};
+
+export const GetAllAddress=async()=>{
+  const res = await api.get(API_ROUTES.ADDRRESS.LIST_ADDRESS)
+  return res.data
+}
+export const CreateAddress = async (addressData: {
+  street: string;
+  city: string;
+  state: string;
+  pincode: string;
+}) => {
+  const res = await api.post(API_ROUTES.ADDRRESS.CREATE_ADDRESS, addressData);
+  return res.data;
+};

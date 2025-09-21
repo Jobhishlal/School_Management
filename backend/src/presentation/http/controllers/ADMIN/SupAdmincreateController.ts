@@ -1,11 +1,11 @@
-import { CreateSubAdmin } from '../../../../applications/useCases/CreatetSubAdmin';
+import { CreateSubAdmin } from '../../../../applications/useCases/admin/CreatetSubAdmin';
 import { Request, Response } from 'express';
 import { AdminRole } from '../../../../domain/enums/AdminRole';
 import { StatusCodes } from '../../../../shared/constants/statusCodes';
 import { ISubAdminCreate } from '../../interface/ISubAdminController';
 import logger from '../../../../shared/constants/Logger';
-import { UpdateDetails } from '../../../../applications/useCases/UpdateSubAdmin';
-import { SubAdminBlock } from '../../../../applications/useCases/SubAdminBlock';
+import { UpdateDetails } from '../../../../applications/useCases/admin/UpdateSubAdmin';
+import { SubAdminBlock } from '../../../../applications/useCases/admin/SubAdminBlock';
 
 export class SubAdminCreateController implements ISubAdminCreate {
   constructor(private createsubUseCase: CreateSubAdmin, private updatesubUseCase:UpdateDetails, private subadminblockUseCase:SubAdminBlock) {}

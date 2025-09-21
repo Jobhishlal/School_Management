@@ -16,4 +16,19 @@ export const API_ROUTES = {
     RESEND_OTP: "/superadmin/resend-otp",
     LOGIN: "/superadmin/login",
   },
+  STUDENT:{
+    CREATESTUDENT:"/admin/students"
+  },
+  PARENTS:{
+    LIST_PARENTS:"/admin/parents",
+    CREATE_PARENTS:"/admin/parents"
+  },
+  CLASS:{
+    LIST_CLASS:"/admin/class",
+    CREATE_CLASS:'/admin/class'
+  },
+  ADDRRESS:{
+    LIST_ADDRESS:"/admin/address",
+    CREATE_ADDRESS:"/admin/address"
+  }
 };

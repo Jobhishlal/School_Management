@@ -1,7 +1,7 @@
-import { SendEMail } from "../../infrastructure/providers/EmailService";
-import { genarateotptoken, verifiedOtptoken } from "../../infrastructure/security/otpJwtService";
-import { GenarateOtp } from "../../shared/constants/utils/Otpgenarator";
-import { AdminError } from "../../domain/enums/Adminsinguperror";
+import { SendEMail } from "../../../infrastructure/providers/EmailService";
+import { genarateotptoken, verifiedOtptoken } from "../../../infrastructure/security/otpJwtService";
+import { GenarateOtp } from "../../../shared/constants/utils/Otpgenarator";
+import { AdminError } from "../../../domain/enums/Adminsinguperror";
 
 export class ResendOtp {
   async execute(oldOtpToken: string) {

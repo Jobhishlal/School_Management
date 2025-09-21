@@ -1,9 +1,9 @@
 
 
-import { AdminDoc, AdminModel } from "../../infrastructure/database/models/AdminModel";
-import { generateTokens } from "../../infrastructure/security/jwt";
+import { AdminDoc, AdminModel } from "../../../infrastructure/database/models/AdminModel";
+import { generateTokens } from "../../../infrastructure/security/jwt";
 import { randomBytes } from "crypto";
-import { AdminError } from "../../domain/enums/Adminsinguperror";
+import { AdminError } from "../../../domain/enums/Adminsinguperror";
 
 export class AuthGoogle {
   async loginwithgoogle(profile: any) {

@@ -1,7 +1,8 @@
-import { SubAdminEntities } from "../../domain/entities/SubAdmin";
-import { SubAdminRepository } from "../../domain/repositories/SubAdminCreate";
+import { SubAdminEntities } from "../../../domain/entities/SubAdmin";
+import { SubAdminRepository } from "../../../domain/repositories/SubAdminCreate";
+import { IAdminBlock } from "../../../domain/UseCaseInterface/IBlockSubAdmin";
 
-export class SubAdminBlock {
+export class SubAdminBlock implements IAdminBlock{
   constructor(private subadminRepo: SubAdminRepository) {}
 
   async execute(id: string, blocked: boolean): Promise<SubAdminEntities> {

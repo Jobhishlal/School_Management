@@ -1,11 +1,12 @@
-import { SubAdminEntities } from "../../domain/entities/SubAdmin";
-import { AdminRole } from "../../domain/enums/AdminRole";
-import { SubAdminRepository } from "../../domain/repositories/SubAdminCreate";
-import { genaratePassword } from "../../shared/constants/utils/TempPassGenarator";
-import { SendEMail } from "../../infrastructure/providers/EmailService";
+import { SubAdminEntities } from "../../../domain/entities/SubAdmin";
+import { AdminRole } from "../../../domain/enums/AdminRole";
+import { SubAdminRepository } from "../../../domain/repositories/SubAdminCreate";
+import { genaratePassword } from "../../../shared/constants/utils/TempPassGenarator";
+import { SendEMail } from "../../../infrastructure/providers/EmailService";
+import { ICreateAdmin } from "../../../domain/UseCaseInterface/ICreateSubAdmin";
 import bcrypt from "bcrypt";
 
-export class CreateSubAdmin {
+export class CreateSubAdmin implements ICreateAdmin{
   constructor(private subAdminRepo: SubAdminRepository) {}
 
   async execute(input: {
