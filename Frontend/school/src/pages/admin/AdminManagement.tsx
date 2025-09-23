@@ -1,22 +1,7 @@
 
 import { useState, useEffect } from "react";
-import { 
- 
-  Edit, 
-  Eye, 
-  Ban, 
-  Plus,
-  ChevronLeft,
-  ChevronRight,
-  X,
-  UserX
-
-} from "lucide-react";
-import { 
-  FaSearch, 
-  FaEdit, 
-  
-} from "react-icons/fa";
+import { Eye, Edit, UserX , Plus} from "lucide-react";
+import {  FaSearch, } from "react-icons/fa";
 
 import { SubAdminCreate, GetSubAdmins,UpdateSubAdmin,SubAdminBlock } from "../../services/authapi";
 import { showToast } from "../../utils/toast";
@@ -24,7 +9,8 @@ import { useTheme } from "../../components/layout/ThemeContext";
 import { AdminSchema } from "../../validations/AdminValidation";
 import { Pagination } from "../../components/common/Pagination";
 import { Modal } from "../../components/common/Modal";
-
+import { AdminForm } from "../../components/Form/AdminManagement/AdminForm";
+import { Table } from "../../components/Table/Table";
 
 interface SubAdmin {
   id: string;
@@ -241,6 +227,28 @@ const handleToggleBlock = async (admin: SubAdmin) => {
   const textSecondary = isDark ? '#94a3b8' : '#64748b';
   const borderColor = isDark ? '#374151' : '#e2e8f0';
 
+
+    const adminColumns: Column<SubAdmin>[] = [
+    { label: "Name", render: (admin, index) => (
+        <div className="flex items-center gap-3">
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-white text-sm bg-gradient-to-r ${
+            index % 4 === 0 ? "from-blue-500 to-purple-500" :
+            index % 4 === 1 ? "from-green-500 to-teal-500" :
+            index % 4 === 2 ? "from-orange-500 to-red-500" :
+            "from-pink-500 to-rose-500"
+          }`}>{admin.name.charAt(0).toUpperCase()}</div>
+          <div>
+            <div className="font-medium text-sm">{admin.name}</div>
+            <div className="text-xs">{admin.phone}</div>
+          </div>
+        </div>
+      )
+    },
+    { label: "Email", key: "email" },
+    { label: "Position", key: "role", render: admin => <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getRoleColor(admin.role)}`}>{admin.role.replace(/_/g, " ")}</span> },
+    { label: "Status", key: "status", render: admin => <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getStatusColor(admin.status)}`}>{admin.status}</span> },
+  ];
+
   return (
     
   <div 
@@ -344,113 +352,19 @@ const handleToggleBlock = async (admin: SubAdmin) => {
             <>
             
               <div className="hidden lg:block overflow-x-auto">
-                <table className="w-full">
-                  <thead style={{ borderBottomColor: borderColor }} className="border-b">
-                    <tr>
-                      <th className="px-6 py-4 text-left font-semibold text-sm" style={{ color: textSecondary }}>
-                        Name
-                      </th>
-                      <th className="px-6 py-4 text-left font-semibold text-sm" style={{ color: textSecondary }}>
-                        Email
-                      </th>
-                      <th className="px-6 py-4 text-left font-semibold text-sm" style={{ color: textSecondary }}>
-                        Position
-                      </th>
-                      <th className="px-6 py-4 text-left font-semibold text-sm" style={{ color: textSecondary }}>
-                        Status
-                      </th>
-                      <th className="px-6 py-4 text-center font-semibold text-sm" style={{ color: textSecondary }}>
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentAdmins.map((admin, index) => (
-                      <tr 
-                        key={admin._id} 
-                        className="border-b last:border-b-0 hover:opacity-80 transition-opacity"
-                        style={{ borderBottomColor: borderColor }}
-                      >
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-white text-sm bg-gradient-to-r ${
-                              index % 4 === 0 ? 'from-blue-500 to-purple-500' :
-                              index % 4 === 1 ? 'from-green-500 to-teal-500' :
-                              index % 4 === 2 ? 'from-orange-500 to-red-500' :
-                              'from-pink-500 to-rose-500'
-                            }`}>
-                              {admin.name.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                              <div className="font-medium text-sm">{admin.name}</div>
-                              <div className="text-xs" style={{ color: textSecondary }}>
-                                {admin.phone}
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm">{admin.email}</div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getRoleColor(admin.role)}`}>
-                            {admin.role.replace(/_/g, ' ')}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                     <span
-                   className={`px-2 py-1 rounded-md text-xs font-medium border ${getStatusColor(admin.status)}`}
-                      >
-                          {admin.status}
-                          </span>
-                            </td>
-
-                        <td className="px-6 py-4">
-  <div className="flex justify-center space-x-2">
-    {/* View */}
-    <button
-      onClick={() => handleView(admin)}
-      className={`p-2 rounded-full transition-colors ${
-        isDark
-          ? "hover:bg-gray-700 text-blue-400"
-          : "hover:bg-gray-100 text-blue-600"
-      }`}
-      title="View Details"
-    >
-      <Eye size={16} />
-    </button>
-
-
-    <button
-      onClick={() => handleEdit(admin)}
-      className={`p-2 rounded-full transition-colors ${
-        isDark
-          ? "hover:bg-gray-700 text-amber-400"
-          : "hover:bg-gray-100 text-amber-600"
-      }`}
-      title="Edit"
-    >
-      <Edit size={16} /> 
-     
-    </button>
-
-        <button
-      onClick={() => handleToggleBlock(admin)}
-      className={`p-2 rounded-full transition-colors ${
-        isDark ? "hover:bg-gray-700" : "hover:bg-gray-100"
-      } ${admin.blocked ? "text-green-500 hover:text-green-400" : "text-red-500 hover:text-red-600"}`}
-      title={admin.blocked ? "Unblock" : "Block"}
-        >
-          <UserX size={16} /> 
-      
-         </button>
-        </div>
-          </td>
-
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+               <Table
+            columns={adminColumns}
+            data={currentAdmins}
+            actions={(admin) => (
+              <div className="flex justify-center gap-2">
+                <button onClick={() => handleView(admin)}><Eye size={16} /></button>
+                <button onClick={() => handleEdit(admin)}><Edit size={16} /></button>
+                <button onClick={() => handleToggleBlock(admin)}><UserX size={16} /></button>
+              </div>
+            )}
+            isDark={isDark}
+            loading={loading}
+          />
               </div>
 
               <div className="lg:hidden space-y-4 p-4">
@@ -527,143 +441,28 @@ const handleToggleBlock = async (admin: SubAdmin) => {
           
           />
         )}
-              <Modal
-                title={editingId ? "Edit Admin" : "Add New Admin"}
-                 isOpen={showModal}
-               onClose={handleCloseModal}
-              
-              >
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div 
-              className="w-full max-w-md rounded-lg shadow-xl border"
-              style={{ backgroundColor: bgCard, borderColor: borderColor }}
-            >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-               <h3 className="text-xl font-bold">
-                {editingId ? "Edit Admin" : "Add New Admin"}
-              </h3>
+              <Modal 
+               title={editingId ? "Edit Admin" : "Add New Admin"}
+               isOpen={showModal}
+               onClose={handleCloseModal}>
 
-                  <button
-                    onClick={handleCloseModal}
-                    className="p-2 rounded-lg hover:bg-gray-500/10 transition-colors"
-                    style={{ color: textSecondary }}
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: textSecondary }}>
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      value={name}
-                      placeholder="Enter full name"
-                      onChange={(e) => setName(e.target.value)}
-                      className="w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      style={{ 
-                        backgroundColor: bgInput, 
-                        borderColor: borderColor,
-                        color: textPrimary 
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: textSecondary }}>
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      value={email}
-                      placeholder="Enter email address"
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      style={{ 
-                        backgroundColor: bgInput, 
-                        borderColor: borderColor,
-                        color: textPrimary 
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: textSecondary }}>
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      value={phone}
-                      placeholder="Enter 10-digit phone number"
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      style={{ 
-                        backgroundColor: bgInput, 
-                        borderColor: borderColor,
-                        color: textPrimary 
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: textSecondary }}>
-                      Role
-                    </label>
-                    <select
-                      value={role}
-                      onChange={(e) => setRole(e.target.value)}
-                      className="w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      style={{ 
-                        backgroundColor: bgInput, 
-                        borderColor: borderColor,
-                        color: textPrimary 
-                      }}
-                    >
-                      <option value="Finance">Finance</option>
-                      <option value="Communication">Communication</option>
-                      <option value="School_Management">School Management</option>
-                      <option value="Student_Management">Student Management</option>
-                      <option value="Parents_Management">Parents Management</option>
-                    </select>
-                  </div>
-
-                  <div className="flex justify-end gap-3 pt-6">
-                    <button
-                      onClick={handleCloseModal}
-                      disabled={loading}
-                      className="px-4 py-2.5 rounded-lg font-medium border transition-colors"
-                      style={{ 
-                        backgroundColor: 'transparent', 
-                        borderColor: borderColor,
-                        color: textSecondary 
-                      }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleSubmit}
-                      disabled={loading}
-                      className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium flex items-center gap-2 transition-colors"
-                    >
-                     {loading ? (
-                        <>
-                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    {editingId ? "Updating..." : "Creating..."}
-                   </>
-                 ) : (
-                 editingId ? "Update Admin" : "Create Admin"
-                 )}
-
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Modal>
+                <AdminForm
+                 name={name}
+                 setName={setName}
+                 email={email}
+                 setEmail={setEmail}
+                 phone={phone}
+               setPhone={setPhone}
+                role={role}
+                setRole={setRole}
+               onSubmit={handleSubmit}
+               loading={loading}
+                isDark={isDark}
+               onCancel={handleCloseModal}
+                 editing={!!editingId}
+                 />
+          
+              </Modal>
       </div>
     </div>
   );

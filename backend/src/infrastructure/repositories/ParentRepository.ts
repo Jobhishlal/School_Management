@@ -44,4 +44,50 @@ export class ParentMongoRepository implements IParentRepository {
             saved.relationship
         );
     }
+    async getById(id: string): Promise<ParentEntity | null> {
+  const parent = await ParentModel.findById(id).lean<ParentInterface | null>();
+  if (!parent) return null;
+
+  return new ParentEntity(
+    (parent._id as mongoose.Types.ObjectId).toString(),
+    parent.name,
+    parent.contactNumber,
+    parent.whatsappNumber,
+    parent.email || "",
+    parent.relationship
+  );
+}
+  async findByEmail(email: string): Promise<ParentEntity | null> {
+  if (!email || email.trim() === "") return null;
+
+  const parent = await ParentModel.findOne({
+    email: { $regex: `^${email.trim()}$`, $options: "i" } 
+  }).lean<ParentInterface | null>();
+
+  if (!parent) return null;
+
+  return new ParentEntity(
+    (parent._id as mongoose.Types.ObjectId).toString(),
+    parent.name,
+    parent.contactNumber,
+    parent.whatsappNumber,
+    parent.email || "",
+    parent.relationship
+  );
+}
+
+
+    async findByContactNumber(contactNumber: string): Promise<ParentEntity | null> {
+        const parent = await ParentModel.findOne({ whatsappNumber: contactNumber }).lean<ParentInterface | null>();
+        if (!parent) return null;
+        return new ParentEntity(
+            (parent._id as mongoose.Types.ObjectId).toString(),
+            parent.name,
+            parent.contactNumber,
+            parent.whatsappNumber,
+            parent.email || "",
+            parent.relationship
+        );
+    }
+
 }

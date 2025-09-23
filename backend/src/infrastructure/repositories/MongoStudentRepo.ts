@@ -1,33 +1,10 @@
 import { StudentModel, StudentInterface } from "../database/models/StudentModel";
 import { Students } from "../../domain/entities/Students";
-import { StudentDetails } from "../../domain/repositories/IStudnetRepository";
+import { StudentDetails } from "../../domain/repositories/Admin/IStudnetRepository";
 import mongoose from "mongoose";
 
 
-interface ParentInterface {
-  id: string;
-  name: string;
-  contactNumber: string;
-  email?: string;
-  relationship: "Son" | "Daughter";
-}
 
-interface AddressInterface {
-  id: string;
-  street: string;
-  city: string;
-  state: string;
-  pincode: string;
-}
-
-interface ClassInterface {
-  id: string;
-  className: string;
-  division: string;
-  department: "LP" | "UP" | "HS";
-  rollNumber: string;
-  subjects: string[];
-}
 
 export class MongoStudentRepo implements StudentDetails {
 
@@ -48,6 +25,7 @@ async create(student: Students): Promise<Students> {
     parent: this.toObjectId(student.parentId),  
     address: this.toObjectId(student.addressId),
     classId: this.toObjectId(student.classId),
+    Password: student.Password
   });
 
   const saved = await newStudent.save();
@@ -69,6 +47,15 @@ async create(student: Students): Promise<Students> {
     return student ? this.mapToDomainPopulated(student) : null;
   }
 
+   async getAllStudents(): Promise<Students[]> {
+    const student = await StudentModel.find()    
+   .populate("parent").
+    populate("address").
+    populate("classId")
+
+    return student.map(student=>this.mapToDomainPopulated(student))
+}
+
 private mapToDomainPopulated(student: StudentInterface & { parent: any; address: any; classId: any; }): Students {
   return new Students(
     student._id.toString(),
@@ -84,8 +71,13 @@ private mapToDomainPopulated(student: StudentInterface & { parent: any; address:
       filename: p.filename,
       uploadedAt: p.uploadedAt
     })),
-    student.Password
+    student.Password,
+     student.parent,     
+    student.classId  
   );
+
 }
+
+
 
 }

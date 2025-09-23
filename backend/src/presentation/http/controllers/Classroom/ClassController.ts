@@ -31,11 +31,10 @@ export class ClassManagementController {
         message: "Class created successfully",
         class: created,
       });
-    } catch (error: any) {
-      console.error(" Error creating class:", error);
+    }   catch (err: any) {
+      console.error(err.message);
       res.status(StatusCodes.BAD_REQUEST).json({
-        message: "Failed to create class",
-        error: error.message,
+        message: err.message || "Failed to create parent"
       });
     }
   }

@@ -1,29 +1,5 @@
 import api from "./api";
 import { API_ROUTES } from "../constants/routes/Route";
-import type { AdminDoc, AdminResponseDTO } from '../types/Admin';
-import type {VerifyOtpResponse,ResendOtpResponse} from '../types/Role'
-
-
-export const SignupAdmin = async (data: AdminDoc): Promise<AdminResponseDTO> => {
-  const res = await api.post(API_ROUTES.ADMIN.SIGNUP, data);
-  return res.data;
-};
-export const VerifyOtp = async (otpToken: string, otp: string): Promise<VerifyOtpResponse> => {
-  const res = await api.post<VerifyOtpResponse>(API_ROUTES.SUPERADMIN.VERIFY_OTP, { otpToken, otp });
-  return res.data;
-};
-
-export const ResendOtp = async (oldOtpToken: string): Promise<ResendOtpResponse> => {
-  const res = await api.post<ResendOtpResponse>(API_ROUTES.SUPERADMIN.RESEND_OTP, { oldOtpToken });
-  return res.data;
-};
-
-
-export const MainAdminLogin = async (email: string, password: string) => {
-  const res = await api.post(API_ROUTES.SUPERADMIN.LOGIN, { email, password });
-  return res.data;
-};
-
 
 
 export const GetSubAdmins = async () => {
@@ -136,41 +112,36 @@ export const BlockTeacher = async(id:string,blocked:boolean)=>{
 
 
 
-
 export const CreateStudents = async (
   fullName: string,
   dateOfBirth: string,
   gender: "Male" | "Female" | "Other",
-  studentId: string,
   parentId: string,
   addressId: string,
   classId: string,
   files: File[]
 ) => {
   const data = new FormData();
-  console.log("reacher",data)
-
 
   data.append("fullName", fullName);
   data.append("dateOfBirth", dateOfBirth);
   data.append("gender", gender);
-  data.append("studentId", studentId);
   data.append("parentId", parentId);
   data.append("addressId", addressId);
   data.append("classId", classId);
 
-
   if (files && files.length > 0) {
-  files.forEach((file) => {
-    data.append("photos", file);
-  });
-}
+    files.forEach((file) => {
+      data.append("photos", file);
+    });
+  }
 
   const res = await api.post(API_ROUTES.STUDENT.CREATESTUDENT, data, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 
-  return res.data;
+
+  return res.data; 
 };
 
 export const GetAllParents = async()=>{
@@ -198,9 +169,8 @@ export const GetAllClass = async()=>{
 export const CreateClass = async (classData: {
   className: string;
   division: string;
-  rollNumber: string;
-  department: string;
-  subjects: string[]; 
+
+
 }) => {
   const res = await api.post(API_ROUTES.CLASS.CREATE_CLASS, classData);
   return res.data;
@@ -219,3 +189,9 @@ export const CreateAddress = async (addressData: {
   const res = await api.post(API_ROUTES.ADDRRESS.CREATE_ADDRESS, addressData);
   return res.data;
 };
+
+
+export const GetAllStudents = async()=>{
+  const res = await api.get(API_ROUTES.STUDENT.GETSTUDNET)
+  return res.data
+}

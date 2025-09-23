@@ -38,10 +38,13 @@ export class ParentManagementCOntroller{
   }
 });
 
-        }catch(err:any){
-           console.error(err.message)
-           res.status(StatusCodes.BAD_REQUEST).json({message:"Its show an error",err:err.message})
-        }
+        }catch (err: any) {
+  console.error(err.message);
+  res.status(StatusCodes.BAD_REQUEST).json({
+    message: err.message || "Failed to create parent"
+  });
+}
+
     }
     async getAll(req:Request,res:Response):Promise<void>{
         try {

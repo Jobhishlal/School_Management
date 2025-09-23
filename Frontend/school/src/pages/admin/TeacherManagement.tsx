@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, X, Eye, Edit, UserX, Menu } from "lucide-react";
+import { Plus, X, Eye, Edit, UserX } from "lucide-react";
 import { FaSearch } from "react-icons/fa";
 
 import { GetAllteacher, CreateTeachers, UpdateTeacher, BlockTeacher } from "../../services/authapi";
@@ -8,6 +8,7 @@ import { useTheme } from "../../components/layout/ThemeContext";
 import { teacherSchema } from "../../validations/TeacherValidation";
 import { Pagination } from "../../components/common/Pagination";
 import { Modal } from "../../components/common/Modal";
+import { Table } from "../../components/Table/Table";
 
 interface Subject {
   name: string;
@@ -44,6 +45,7 @@ export function TeachersManagement() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [newSubjectName, setNewSubjectName] = useState("");
   const [isMobile, setIsMobile] = useState(false);
+
 
   const itemsPerPage = 5;
 
@@ -221,6 +223,30 @@ const validateForm = (): boolean => {
       console.error(error);
     }
   };
+  const teacherColumns: Column<Teacher>[] = [
+  { label: "Name", key: "name" },
+  { label: "Email", key: "email" },
+  { label: "Phone", key: "phone" },
+  { label: "Department", key: "department" },
+  {
+    label: "Subjects",
+    render: (t) => (
+      <div className="flex flex-wrap gap-1 max-w-[150px]">
+        {t.subjects.map((s, i) => (
+          <span key={i} className="px-2 py-1 rounded-full bg-orange-500 text-white text-xs">{s.name}</span>
+        ))}
+      </div>
+    ),
+  },
+  {
+    label: "Status",
+    render: (t) => (
+      <span className={`px-2 py-1 rounded-full text-xs font-medium ${t.blocked ? "bg-red-500 text-red-50" : "bg-green-500 text-green-50"}`}>
+        {t.blocked ? "Blocked" : "Active"}
+      </span>
+    ),
+  },
+];
 
   const totalPages = Math.ceil(filteredTeachers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -241,7 +267,7 @@ const validateForm = (): boolean => {
       
       <div className="grid grid-cols-2 gap-3 mb-3">
         <div>
-          <p className={`text-xs font-medium ${isDark ? "text-slate-400" : "text-gray-500"}`}>Phone</p>
+          <p className={`text-xs font-medium ${isDark ? "text-slate-400" : "text-gray-500"}`}>Phone </p>
           <p className="text-sm font-medium">{teacher.phone}</p>
         </div>
         <div>
@@ -321,60 +347,18 @@ const validateForm = (): boolean => {
             <>
               {/* Desktop Table View */}
               <div className="hidden md:block overflow-x-auto">
-                <table className="w-full">
-                  <thead className={`${isDark ? "bg-slate-800" : "bg-gray-50"}`}>
-                    <tr className={`border-b ${isDark ? "border-slate-700" : "border-gray-200"}`}>
-                      <th className="px-4 py-3 text-left font-semibold text-sm">Name</th>
-                      <th className="px-4 py-3 text-left font-semibold text-sm">Email</th>
-                      <th className="px-4 py-3 text-left font-semibold text-sm">Phone</th>
-                      <th className="px-4 py-3 text-left font-semibold text-sm">Department</th>
-                      <th className="px-4 py-3 text-left font-semibold text-sm">Subjects</th>
-                      <th className="px-4 py-3 text-left font-semibold text-sm">Status</th>
-                      <th className="px-4 py-3 text-center font-semibold text-sm">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentTeachers.map((t) => (
-                      <tr key={t.id} className={`border-b last:border-b-0 hover:bg-opacity-50 ${isDark ? "border-slate-700 hover:bg-slate-700" : "border-gray-200 hover:bg-gray-50"}`}>
-                        <td className="px-4 py-3 font-medium text-sm">{t.name}</td>
-                        <td className="px-4 py-3 text-sm max-w-[200px] truncate">{t.email}</td>
-                        <td className="px-4 py-3">
-                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-500 text-blue-50">{t.phone}</span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-500 text-yellow-50">{t.department}</span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex flex-wrap gap-1 max-w-[150px]">
-                            {t.subjects.map((sub, index) => (
-                              <span key={index} className="px-2 py-1 rounded-full bg-orange-500 text-white text-xs">
-                                {sub.name}
-                              </span>
-                            ))}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${t.blocked ? "bg-red-500 text-red-50" : "bg-green-500 text-green-50"}`}>
-                            {t.blocked ? "Blocked" : "Active"}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          <div className="flex items-center justify-center space-x-2">
-                            <button className={`p-2 rounded-full transition-colors ${isDark ? "hover:bg-gray-700 text-blue-400" : "hover:bg-gray-100 text-blue-600"}`} title="View Details">
-                              <Eye size={16} />
-                            </button>
-                            <button onClick={() => handleEdit(t)} className={`p-2 rounded-full transition-colors ${isDark ? "hover:bg-gray-700 text-amber-400" : "hover:bg-gray-100 text-amber-600"}`} title="Edit">
-                              <Edit size={16} />
-                            </button>
-                            <button onClick={() => handleBlock(t)} className={`p-2 rounded-full transition-colors ${isDark ? "hover:bg-gray-700" : "hover:bg-gray-100"} ${t.blocked ? "text-green-500" : "text-red-500"}`} title={t.blocked ? "Unblock" : "Block"}>
-                              <UserX size={16} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+               <Table
+                  columns={teacherColumns}
+                  data={currentTeachers}
+                    actions={(t) => (
+             <div className="flex justify-center gap-2">
+              <button><Eye size={16} /></button>
+                 <button onClick={() => handleEdit(t)}><Edit size={16} /></button>
+               <button onClick={() => handleBlock(t)}><UserX size={16} /></button>
+           </div>
+            )}
+           isDark={isDark}
+              />
               </div>
 
               {/* Mobile Card View */}

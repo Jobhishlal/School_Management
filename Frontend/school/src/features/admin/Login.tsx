@@ -1,9 +1,9 @@
-import { MainAdminLogin } from "../../services/authapi"; 
+import { MainAdminLogin } from "../../services/Auth/Auth"; 
 import { useState } from "react";
 import { showToast } from "../../utils/toast";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
-
+import { AxiosError } from "axios";
 export default function MainAdminLogincheck() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -26,15 +26,11 @@ export default function MainAdminLogincheck() {
       showToast("OTP sent to your email", "success");
 
       navigate("/verify-otp", { state: { otpToken: res.otpToken } });
-    } catch (error: any) {
-      
-      console.log("Login error:", error);
-
-     const message =
-    error.response?.data?.message || error.message || "Login failed";
-
-  showToast(message, "error");
-    } finally {
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ message: string }>;
+       const message = err.response?.data?.message || err.message || "Login failed";
+      showToast(message, "error");
+}finally {
       setLoading(false);
     }
   }

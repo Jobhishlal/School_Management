@@ -6,8 +6,8 @@ const MainAdmin = Router();
 
 const authService = new UnifiedAdminAuthService();
 const controller = new AdminLoginController(authService);
-
-MainAdmin.post("/login", (req, res) => {controller.login(req, res)});
+//(req, res) => {controller.login(req, res)}
+MainAdmin.post("/login", controller.login.bind(controller));
 MainAdmin.post("/verify-otp", (req, res) => controller.verifyOtp(req, res));
 MainAdmin.post("/resend-otp", (req, res) => controller.resendOtp(req, res));
 

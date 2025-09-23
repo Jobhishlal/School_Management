@@ -4,7 +4,7 @@ export interface ClassAttrs {
   className: string;
   division: string;
   rollNumber: string;
-  department: "LP" | "UP" | "HS";
+  department?: "LP" | "UP" | "HS";
   subjects?: string;
 }
 
@@ -14,8 +14,8 @@ const ClassSchema = new Schema<ClassInterface>(
   {
     className: { type: String, required: true },
     division: { type: String, required: true },
-    rollNumber: { type: String, required: true },
-    department: { type: String, required: true, enum: ["LP", "UP", "HS"] },
+    rollNumber: { type: String, required: false },
+    department: { type: String,  },
     subjects: { type: [String], default: [] }, 
   },
   { timestamps: true }

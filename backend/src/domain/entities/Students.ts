@@ -1,3 +1,5 @@
+
+
 export class Students {
   constructor(
     public id: string,
@@ -9,6 +11,8 @@ export class Students {
     public addressId: string, 
     public classId: string,    
     public photos: { url: string; filename: string; uploadedAt: Date }[] = [],
-    public Password:string
+    public Password:string,
+    public parent?: { name: string; contactNumber: string; email?: string; relationship?: string }, 
+    public classDetails?: { className: string; division: string; department: string; rollNumber: string } 
   ) {}
 }

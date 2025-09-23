@@ -6,7 +6,7 @@ import { CreateTeacherDTO, TeacherResponseDTO } from '../../dto/TeacherDto';
 import {generateSubjectCode} from '../../../shared/constants/utils/SubejctCode'
 import bcrypt from "bcrypt";
 
-export class TeacherCreateUseCase {
+export class TeacherCreateUseCase implements TeacherCreateUseCase {
   constructor(private teacherRepo: ITeacherCreate) {}
 
   async execute(dto: CreateTeacherDTO): Promise<TeacherResponseDTO> {

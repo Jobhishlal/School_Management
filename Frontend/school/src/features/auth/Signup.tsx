@@ -4,13 +4,14 @@
 
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { SignupAdmin } from "../../services/authapi"; 
+import { SignupAdmin } from "../../services/Auth/Auth"; 
 import type { AdminDoc } from "../../types/Admin";
 import { MESSAGE } from "../../constants/AuthErrorMessages";
 import { showToast } from "../../utils/toast";
 import { FcGoogle } from "react-icons/fc";
 import { setCredentials } from "../../store/slice/authslice";
 import { useNavigate } from "react-router-dom";
+import  { AxiosError } from "axios";
 
 export default function SignupAdminPage() {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ export default function SignupAdminPage() {
     confirmPassword: "",
   });
 
-  const [error, setError] = useState<string>("");
+
   const dispatch = useDispatch();
 
   // ----------------- Signup Step -----------------
@@ -55,15 +56,16 @@ export default function SignupAdminPage() {
       const res = await SignupAdmin(form);
       navigate("/verify-otp", { state: { otpToken: res.otpToken } }); 
       showToast("OTP sent to your email!", "success");
-    } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(err.response.data.message);
-        showToast(err.response.data.message, "error");
-      } else {
-        setError("Signup failed");
-        showToast("Signup failed", "error");
-      }
     }
+catch (err: unknown) {
+  const error = err as AxiosError<{ message: string }>;
+
+  if (error.response?.data?.message) {
+    showToast(error.response.data.message, "error");
+  } else {
+    showToast("Signup failed", "error");
+  }
+}
   }
 
   // ----------------- Google Signup -----------------

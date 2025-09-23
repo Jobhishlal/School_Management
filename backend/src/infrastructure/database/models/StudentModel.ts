@@ -35,7 +35,7 @@ const StudentSchema = new Schema<StudentInterface>(
     parent: { type: Schema.Types.ObjectId, ref: "Parents", required: true },
     address: { type: Schema.Types.ObjectId, ref: "Addresses", required: true },
     classId: { type: Schema.Types.ObjectId, ref: "Classes", required: true },
-    Password:{type:String,unique:true}
+    Password:{type:String,required:true}
   },
   { timestamps: true }
 );

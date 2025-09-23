@@ -35,6 +35,7 @@ import { ClassManagementController } from "../http/controllers/Classroom/ClassCo
 import { MongoClassRepository } from "../../infrastructure/repositories/MongoClassRepo";
 import { CreateClassUseCase } from "../../applications/useCases/Classdata/CreateClass";
 import { GetAllClass } from "../../applications/useCases/Classdata/GeallClass";
+import { StudentList } from "../../applications/useCases/Students/GetAllStudents";
 
 
 const repo = new AdminRepository();
@@ -57,14 +58,15 @@ const adminController = new AdminController(  signupUseCase,  getAdminUseCase,  
 const createTeacherUseCase = new TeacherCreateUseCase(value);
 const updateTeacherUseCase = new UpdateTeacher(value)
 const blockTeacherUseCase = new BlockTeacher(value)
-
+const parentrepo = new ParentMongoRepository()
 const teachercreatecontroller = new TeacherCreateController(createTeacherUseCase,updateTeacherUseCase,blockTeacherUseCase)
 const studentrepo = new MongoStudentRepo()
-const createstudentUseCase = new StudentAddUseCase(studentrepo)
+const createstudentUseCase = new StudentAddUseCase(studentrepo,parentrepo)
+const getliststundetUseCase = new StudentList(studentrepo)
 
-const studentcreatecontroller = new StudentCreateController(studentrepo,createstudentUseCase)
+const studentcreatecontroller = new StudentCreateController(studentrepo,createstudentUseCase,getliststundetUseCase)
 
-const parentrepo = new ParentMongoRepository()
+
 const createparentrepo = new ParentAddUseCase(parentrepo)
 const getallparentrepo = new ParentgetAll(parentrepo)
 
@@ -108,8 +110,9 @@ Adminrouter.post("/address",(req,res)=>AddressController.create(req,res))
 Adminrouter.get("/class",(req,res)=>ClassController.getAll(req,res))
 Adminrouter.post("/class",(req,res)=>ClassController.create(req,res))
 
+Adminrouter.get('/studnets',(req,res)=>studentcreatecontroller.getAllStudents(req,res))
+Adminrouter.post("/students",studentUpload.array("photos", 5),(req,res)=>studentcreatecontroller.create(req,res))
 
-Adminrouter.post("/students",studentUpload.array("photos", 5),(req,res)=>{console.log("check is data will not "),studentcreatecontroller.create(req,res)})
 
 
 

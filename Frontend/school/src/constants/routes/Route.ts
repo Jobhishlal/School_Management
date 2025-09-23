@@ -17,7 +17,8 @@ export const API_ROUTES = {
     LOGIN: "/superadmin/login",
   },
   STUDENT:{
-    CREATESTUDENT:"/admin/students"
+    CREATESTUDENT:"/admin/students",
+    GETSTUDNET:'/admin/studnets'
   },
   PARENTS:{
     LIST_PARENTS:"/admin/parents",
