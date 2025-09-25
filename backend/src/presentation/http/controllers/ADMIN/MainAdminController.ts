@@ -10,56 +10,66 @@ export class AdminLoginController {
   constructor(private authService: UnifiedAdminAuthService) {}
 
   
-  async login(req: Request, res: Response): Promise<void> {
-    try {
-      const { email, password } = req.body;
-      logger.info(JSON.stringify(req.body))
-      const result = await this.authService.login(email, password);
-      logger.info(JSON.stringify(result))
+ async login(req: Request, res: Response): Promise<void> {
+  try {
+    const { email, password, studentId } = req.body;
+    logger.info(JSON.stringify(req.body));
 
-      res.status(StatusCodes.OK).json({
-        type: result.role,
-        message: OtpError.OTP_SENT,
-        otpToken: result.otpToken,
+    const result = await this.authService.login(email, password, studentId);
+    logger.info(JSON.stringify(result));
+
+   
+     if ("otpToken" in result) {
+       res.status(StatusCodes.OK).json({
+        role: result.role,       
+          message: OtpError.OTP_SENT,
+          otpToken: result.otpToken,
+          });
+         return;
+         }
+  
+        if ("authToken" in result) {
+         res.status(StatusCodes.OK).json({
+          role: result.role,       
+          message: "Login successful",
+          authToken: result.authToken,
+        });
+       return;
+       }
+  } catch (error: any) {
+    logger.info(error.message);
+
+    if (error.message === "Invalid Teacher Credentials") {
+      res.status(StatusCodes.UNAUTHORIZED).json({ message: "Invalid email or password" });
+      return;
+    }
+
+    if (error.message === "teacher blocked") {
+      res.status(StatusCodes.FORBIDDEN).json({
+        message: "Teacher is blocked, please contact your admin",
       });
-    } catch (error: any) {
-      logger.info(error.message)
-      if (error.message === "Invalid Teacher Credentials") {
-      res
-      .status(StatusCodes.UNAUTHORIZED)
-      .json({ message: "Invalid email or password" });
-      return
-    }  
+      return;
+    }
 
-     if (error.message === "teacher blocked") {
-    res.status(StatusCodes.FORBIDDEN)
-       .json({ message: "Teacher is blocked, please contact your admin" });
-    return;
-  }
+    if (error.message === "subadmin blocked") {
+      res.status(StatusCodes.FORBIDDEN).json({
+        message: "Sub Admin is blocked, please contact school management",
+      });
+      return;
+    }
 
-  if (error.message === "subadmin blocked") {
-    res.status(StatusCodes.FORBIDDEN)
-       .json({ message: "Sub Admin is blocked, please contact school management" });
-    return;
-  }
-
-      if (error.message === "UserDoesNotExist") {
-        console.log(error.message)
-       res
-      .status(StatusCodes.NOT_FOUND)
-      .json({ message: "User does not exist" });
-      return
-     }
-    console.log(error)
-       res
-    .status(StatusCodes.NOT_FOUND)
-    .json({ message: AdminError.UserDoesNotExist });
-    return
+    if (error.message === "UserDoesNotExist") {
+      res.status(StatusCodes.NOT_FOUND).json({ message: "User does not exist" });
+      return;
+    }
 
     
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      message: AdminError.UserDoesNotExist,
+    });
+  }
 }
-    }
-  
+
 
   
   async verifyOtp(req: Request, res: Response): Promise<void> {

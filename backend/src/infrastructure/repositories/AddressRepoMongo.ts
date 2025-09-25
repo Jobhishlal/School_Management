@@ -3,6 +3,7 @@ import { AddressEntity } from "../../domain/entities/Address";
 import { AddressInterface, AddressModel } from "../database/models/AddressModel";
 import mongoose from "mongoose";
 
+
 export class AddressMongoRepository implements IAddrressRepository {
   
   async create(address: AddressEntity): Promise<AddressEntity> {
@@ -42,4 +43,26 @@ export class AddressMongoRepository implements IAddrressRepository {
         )
     );
   }
+ async update( id: string, update: Partial<AddressEntity>): Promise<AddressEntity | null> {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new Error(`Invalid address id: ${id}`);
+  }
+
+  const updatedAddress = await AddressModel.findByIdAndUpdate(
+    id,
+    { $set: update },  
+    { new: true }     
+  );
+
+  if (!updatedAddress) return null;
+
+  return new AddressEntity(
+    updatedAddress.id.toString(),
+    updatedAddress.street,
+    updatedAddress.city,
+    updatedAddress.state,
+    updatedAddress.pincode
+  );
+}
+
 }

@@ -10,6 +10,7 @@ import { OtpError } from "../../domain/enums/OtpErrorMessage";
 import { AdminError } from "../../domain/enums/Adminsinguperror";
 import { MongoTeacher } from "../repositories/MongoTeacherRepo";
 import logger from "../../shared/constants/Logger";
+import { MongoStudentRepo } from "../repositories/MongoStudentRepo";
 
 const MAIN_ADMIN_EMAIL = process.env.MAIN_ADMIN_EMAIL!;
 const MAIN_ADMIN_PASS = process.env.MAIN_ADMIN_PASSWORD_HASH!;
@@ -18,11 +19,34 @@ const JWT_SECRET = process.env.JWT_SECRET || "super-secret";
 export class UnifiedAdminAuthService implements IUnifiedAuthService {
   private subadminRepo = new AdminSubAdminCompaign();
   private teacherRepo =new MongoTeacher()
+  private studentRepo = new MongoStudentRepo()
 
 
-async login( email: string, password: string): Promise<{ otpToken: string; role: "super_admin" | "sub_admin" | "Teacher" }> {
-  if (email === MAIN_ADMIN_EMAIL) {
+async login( email: string, password: string,studentId?:string):  Promise<
+  | { otpToken: string; role: "super_admin" | "sub_admin" | "Teacher" }
+  | { authToken: string; role: "Students" }
+>  {
+
+      if (studentId) {
+    const student = await this.studentRepo.findStudentid(studentId);
+    if (!student) throw new Error(AdminError.UserDoesNotExist);
+
+    const passwordValid = await bcrypt.compare(password!, student.Password);
+    if (!passwordValid) throw new Error(AdminError.UserDoesNotExist);
+    if (student.blocked) throw new Error("Student is blocked");
+
+    const role: "Students" = "Students";
+    const authToken = jwt.sign(
+      { studentId: student.studentId, role, id: student.id },
+      JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    return { authToken, role };
+  }
+    if (email && email.trim() === MAIN_ADMIN_EMAIL) {
     const isMatch = await bcrypt.compare(password, MAIN_ADMIN_PASS);
+
     if (!isMatch) throw new Error(AdminError.UserDoesNotExist);
 
     const otp = GenarateOtp(6);
@@ -83,10 +107,15 @@ if (teacher && teacher.role === "Teacher") {
 
     return { otpToken, role: "sub_admin" };
   }
+
   
+
 
 logger.info("Reached end of login: throwing UserDoesNotExist");
 throw new Error(AdminError.UserDoesNotExist);
+
+  
+
 
 }
 

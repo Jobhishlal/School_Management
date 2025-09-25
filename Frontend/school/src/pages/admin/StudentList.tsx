@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 
-import { Plus,  Eye, Edit, UserX,ChevronDown } from "lucide-react";
+import { Plus,  Eye, Edit, UserX } from "lucide-react";
 import { FaSearch } from "react-icons/fa";
 import { showToast } from "../../utils/toast";
 import { GetAllStudents } from "../../services/authapi";
@@ -9,24 +9,53 @@ import { Pagination } from "../../components/common/Pagination";
 import { Modal } from "../../components/common/Modal";
 import {AddStudentForm} from '../../pages/admin/StudentManagement'
 import { Table } from "../../components/Table/Table";
+import { blockStudent,CreateStudents } from "../../services/authapi"; 
 
-interface Student {
+
+export interface Student {
   _id: string;
   fullName: string;
+  dateOfBirth: Date;
+  gender: "Male" | "Female" | "Other";
   studentId: string;
   classDetails: {
+    _id:string;
     className: string;
     section: string;
+     division?: "A" | "B" | "C" | "D"; 
+    
   };
   guardian: {
     name: string;
     phone: string;
+    id?: string;
+    email:string;
+      relationship: "Son" | "Daughter";
+     
+      
+  
+  };
+  parent?: {
+    _id?: string;
+      email: string;
+     relationship: "Son" | "Daughter";
+     name:string;
+     phone:string;
+     whatsappNumber:string;
+  };
+  address?: {
+    _id?: string;
+    street?: string;
+    city?: string;
+    state?: string;
+    pincode?: string;
   };
   status: string;
-  photos: {
-    url: string;
-  }[];
+  photos: { url: string }[];
+  blocked: boolean;
 }
+
+
 
 
 export function StudentList() {
@@ -38,6 +67,11 @@ export function StudentList() {
   const [showModal, setShowModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [filterClass, setFilterClass] = useState("");
+   const [filterDivision, setFilterDivision] = useState("");
+   const [filterStatus, setFilterStatus] = useState("");
+   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
+
   const itemsPerPage = 10;
   const [newStudent, setNewStudent] = useState({
     fullName: "",
@@ -54,22 +88,43 @@ export function StudentList() {
     setLoading(true);
     try {
       const data = await GetAllStudents();
-      console.log(data)
+      
       const formattedData = data.map((student: any) => ({
-        _id: student._id,
-        fullName: student.fullName,
-        studentId: student.studentId || "N/A",
-      classDetails: {
-  className: student.classDetails?.className || "N/A",
-  division: student.classDetails?.division || "N/A",
-},
-  guardian: {                 
-    name: student.parent?.name || "N/A",
-    phone: student.parent?.contactNumber || "N/A",
+  _id: student._id || student.id,
+  fullName: student.fullName,
+  studentId: student.studentId || "N/A",
+  classDetails: {
+     _id: student.classDetails?._id || "",  
+    className: student.classDetails?.className || "N/A",
+    division: student.classDetails?.division || "N/A",
   },
-        status: student.status || "Active",
-        photos: student.photos || [],
-      }));
+  guardian: {                 
+    name: student.parent?.name || "N/A",         
+    phone: student.parent?.whatsappNumber || "N/A" 
+  },
+parent: student.parent
+  ? {
+      _id: student.parent._id,
+      name: student.parent.name,
+      whatsappNumber: student.parent.whatsappNumber || "",
+      email: student.parent.email || "",
+      relationship: student.parent.relationship || "Son",
+    }
+  : null,
+
+  address: {
+    street: student.address?.street || "",
+    city: student.address?.city || "",
+    state: student.address?.state || "",
+    pincode: student.address?.pincode || "",
+    _id: student.address?._id || "",
+  },
+  status: student.blocked ? "Blocked" : "Active",
+  photos: student.photos || [],
+  blocked: student.blocked ?? false
+}));
+
+
       setStudents(formattedData);
       setFilteredStudents(formattedData);
     } catch (err) {
@@ -95,32 +150,43 @@ export function StudentList() {
     setCurrentPage(1);
   }, [searchTerm, students]);
 
-  const handleCloseModal = () => {
-    setNewStudent({
-      fullName: "",
-      studentId: "",
-      class: "",
-      section: "",
-      guardianName: "",
-      guardianPhone: "",
-      status: "Active",
-      profilePic: null,
-    });
-    setShowModal(false);
-  };
+const handleCloseModal = () => {
+  setNewStudent({
+    fullName: "",
+    studentId: "",
+    class: "",
+    section: "",
+    guardianName: "",
+    guardianPhone: "",
+    status: "Active",
+    profilePic: null,
+  });
+  setShowModal(false);
+  setEditingStudent(null); 
+};
 
+  
+
+const classOptions = Array.from(new Set(students.map(s => s.classDetails.className)));
+const divisionOptions = Array.from(new Set(students.map(s => s.classDetails.section)));
+
+
+
+
+   
   const handleAddStudent = async () => {
     setLoading(true);
     try {
       const { fullName, studentId, class: className, section, guardianName, guardianPhone, status, profilePic } = newStudent;
       
-      await CreateStudent({
+      await CreateStudents({
         fullName,
         studentId,
         classDetails: { className, section },
         guardian: { name: guardianName, phone: guardianPhone },
         status,
         profilePic,
+    
       });
       showToast("Student added successfully", "success");
       handleCloseModal();
@@ -136,7 +202,30 @@ export function StudentList() {
   const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentStudents = filteredStudents.slice(startIndex, startIndex + itemsPerPage);
-const studentColumns: Column<Student>[] = [
+  
+  useEffect(() => {
+  const filtered = students.filter(student => {
+    const matchesSearch =
+      student.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.studentId.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesClass = filterClass ? student.classDetails.className === filterClass : true;
+    const matchesDivision = filterDivision ? student.classDetails.division === filterDivision : true;
+    const matchesStatus =
+      filterStatus === "Active" ? !student.blocked :
+      filterStatus === "Blocked" ? student.blocked :
+      true;
+
+    return matchesSearch && matchesClass && matchesDivision && matchesStatus;
+  });
+
+  setFilteredStudents(filtered);
+  setCurrentPage(1);
+}, [students, searchTerm, filterClass, filterDivision, filterStatus]);
+
+
+
+  const studentColumns: Column<Student>[] = [
   {
     label: "Profile Pic",
     render: (s) => (
@@ -157,29 +246,24 @@ const studentColumns: Column<Student>[] = [
     label: "Class & Section",
     render: (s) => `${s.classDetails?.className || "N/A"} - ${s.classDetails?.division || "N/A"}`,
   },
-{
-  label: "Guardian Name",
-  render: (s) => s.guardian?.name || "N/A"
-},
-{
-  label: "Phone",
-  render: (s) => s.guardian?.phone || "N/A"
-}
-
-,
+  { label: "Guardian Name", render: (s) => s.guardian?.name || "N/A" },
+  { label: "Phone", render: (s) => s.guardian?.phone || "N/A" },
   {
     label: "Status",
     render: (s) => (
       <span
         className={`px-2 py-1 rounded-full text-xs font-medium ${
-          s.status === "Active" ? "bg-green-500 text-green-50" : "bg-red-500 text-red-50"
+          s.blocked
+            ? "bg-red-500 text-red-50"
+            : "bg-green-500 text-green-50"
         }`}
       >
-        {s.status}
+        {s.blocked ? "Blocked" : "Active"}
       </span>
     ),
   },
 ];
+
 
 
 
@@ -206,7 +290,7 @@ const studentColumns: Column<Student>[] = [
         </span>
       </div>
 
-      {/* <div className="grid grid-cols-2 gap-3 mb-3">
+      <div className="grid grid-cols-2 gap-3 mb-3">
         <div>
           <p className={`text-xs font-medium ${isDark ? "text-slate-400" : "text-gray-500"}`}>Class</p>
           <p className="text-sm font-medium">{student.classDetails.className} - {student.classDetails.section}</p>
@@ -219,7 +303,7 @@ const studentColumns: Column<Student>[] = [
           <p className={`text-xs font-medium ${isDark ? "text-slate-400" : "text-gray-500"}`}>Phone</p>
           <p className="text-sm font-medium">{student.guardian.phone}</p>
         </div>
-      </div> */}
+      </div>
       <div className="flex justify-end space-x-2 pt-2 border-t border-opacity-20">
         <button className={`p-2 rounded-full transition-colors ${isDark ? "hover:bg-gray-700 text-blue-400" : "hover:bg-gray-100 text-blue-600"}`} title="View Details">
           <Eye size={16} />
@@ -230,6 +314,36 @@ const studentColumns: Column<Student>[] = [
 
   if (loading) return <div className="p-8 text-center text-slate-400">Loading Students...</div>;
   if (error) return <div className="p-8 text-center text-red-500">{error}</div>;
+
+
+
+const handleToggleBlock = async (student: Student) => {
+  try {
+    const newStatus = !student.blocked;
+    await blockStudent(student._id, newStatus); 
+    console.log(blockStudent(student._id,newStatus))
+    showToast(`Student ${newStatus ? "Blocked" : "UnBlocked"} Successfully`, "success");
+
+   
+    setStudents(prev =>
+      prev.map(s => (s._id === student._id ? { ...s, blocked: newStatus } : s))
+    );
+  } catch (error: any) {
+    const msg = error.response?.data?.message || error.message || "Failed to block/unblock";
+    showToast(msg, "error");
+  }
+};
+
+const handleBlock = (student: Student) => handleToggleBlock(student);
+const handleView = (student: Student) => {
+  console.log("Viewing student:", student);
+};
+const handleEdit = (student: Student) => {
+  setEditingStudent(student);
+  setShowModal(true);
+};
+
+
 
   return (
     <div className={`min-h-screen p-2 sm:p-4 md:p-6 lg:p-8 ${isDark ? "bg-[#121A21] text-slate-100" : "bg-slate-50 text-slate-900"}`}>
@@ -257,34 +371,42 @@ const studentColumns: Column<Student>[] = [
             </button>
           </div>
           
-          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-            <div className={`relative ${isDark ? "text-slate-400" : "text-gray-500"}`}>
-              <select className={`w-full py-2 pl-3 pr-8 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${isDark ? "bg-slate-700 border-slate-600 text-slate-100" : "bg-white border-gray-300 text-gray-800"}`}>
-                <option>Class</option>
-                <option>Grade 5</option>
-                <option>Grade 6</option>
-                <option>Grade 7</option>
-              </select>
-              <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
-            <div className={`relative ${isDark ? "text-slate-400" : "text-gray-500"}`}>
-              <select className={`w-full py-2 pl-3 pr-8 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${isDark ? "bg-slate-700 border-slate-600 text-slate-100" : "bg-white border-gray-300 text-gray-800"}`}>
-                <option>Section</option>
-                <option>A</option>
-                <option>B</option>
-                <option>C</option>
-              </select>
-              <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
-            <div className={`relative ${isDark ? "text-slate-400" : "text-gray-500"}`}>
-              <select className={`w-full py-2 pl-3 pr-8 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${isDark ? "bg-slate-700 border-slate-600 text-slate-100" : "bg-white border-gray-300 text-gray-800"}`}>
-                <option>Status</option>
-                <option>Active</option>
-                <option>Blocked</option>
-              </select>
-              <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
-          </div>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+          <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          className={`border rounded px-2 py-1 ${
+         isDark ? "bg-slate-700 text-white" : "bg-white text-gray-800"
+         }`}
+         >
+    <option value="">All Classes</option>
+    {classOptions.map(c => <option key={c} value={c}>{c}</option>)}
+  </select>
+
+  <select
+    value={filterDivision}
+    onChange={(e) => setFilterDivision(e.target.value)}
+   className={`border rounded px-2 py-1 ${
+         isDark ? "bg-slate-700 text-white" : "bg-white text-gray-800"
+         }`}
+  >
+    <option value="">All Divisions</option>
+    {divisionOptions.map(d => <option key={d} value={d}>{d}</option>)}
+  </select>
+
+  <select
+    value={filterStatus}
+    onChange={(e) => setFilterStatus(e.target.value)}
+    className={`border rounded px-2 py-1 ${
+         isDark ? "bg-slate-700 text-white" : "bg-white text-gray-800"
+         }`}
+  >
+    <option value="">All Status</option>
+    <option value="Active">Active</option>
+    <option value="Blocked">Blocked</option>
+  </select>
+</div>
+
         </div>
 
        
@@ -330,14 +452,24 @@ const studentColumns: Column<Student>[] = [
           />
         )}
       </div>
+<Modal
+  isOpen={showModal}
+  onClose={handleCloseModal}
+  title={editingStudent ? "Edit Student" : "Add New Student"}
+>
+  <AddStudentForm 
+    student={editingStudent || undefined}   
+    onSuccess={() => {
+      fetchStudents();
+      setEditingStudent(null); 
+    }}
+    onClose={() => {
+      handleCloseModal();
+      setEditingStudent(null); 
+    }}
+  />
+</Modal>
 
-      <Modal
-        isOpen={showModal}
-        onClose={handleCloseModal}
-        title="Add New Student"
-      >
-       <AddStudentForm/>
-      </Modal>
     </div>
   );
 }

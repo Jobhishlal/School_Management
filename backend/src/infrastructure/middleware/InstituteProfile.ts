@@ -1,14 +1,15 @@
+
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "../config/cloudinary";
 import multer from "multer";
 
-const studentStorage = new CloudinaryStorage({
+const InstituteStorage = new CloudinaryStorage({
   cloudinary,
   params: (req, file) => ({
-    folder: "student_photos", 
+    folder: "institute_logo", 
     resource_type: "auto",
     public_id: `${Date.now()}-${file.originalname}`,
   }),
 });
 
-export const studentUpload = multer({ storage: studentStorage });
+export const instituteUpload = multer({ storage: InstituteStorage });

@@ -34,7 +34,16 @@ export const StudentInfo: React.FC<StudentInfoProps & { isDark: boolean }> = ({
       <h3 className={`font-semibold text-lg ${isDark ? "text-white" : "text-gray-800"}`}>Student Info</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <TextInput label="Full Name" value={fullName} onChange={setFullName} isDark={isDark} />
-        <TextInput label="Date of Birth" type="date" value={dateOfBirth} onChange={setDateOfBirth} isDark={isDark} />
+        <TextInput
+        label="Date of Birth"
+        type="date"
+       value={dateOfBirth}
+       onChange={setDateOfBirth}   
+       isDark={isDark}
+       />
+
+
+
         <SelectInput<"Male" | "Female" | "Other">
           label="Gender"
           value={gender}

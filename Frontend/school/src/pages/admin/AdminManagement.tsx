@@ -112,6 +112,8 @@ const validateForm = (): boolean => {
   return true;
 };
 
+const superadmin = localStorage.getItem("role")
+
 
 
 const handleSubmit = async () => {
@@ -320,14 +322,17 @@ const handleToggleBlock = async (admin: SubAdmin) => {
             </select>
           </div>
 
-       
-          <button
+       { superadmin==="super_admin" && (
+        <button
             onClick={() => setShowModal(true)}
             className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm whitespace-nowrap"
           >
             <Plus size={16} />
             Add New Staff
           </button>
+       )
+       }
+          
         </div>
 
   
@@ -358,8 +363,16 @@ const handleToggleBlock = async (admin: SubAdmin) => {
             actions={(admin) => (
               <div className="flex justify-center gap-2">
                 <button onClick={() => handleView(admin)}><Eye size={16} /></button>
-                <button onClick={() => handleEdit(admin)}><Edit size={16} /></button>
-                <button onClick={() => handleToggleBlock(admin)}><UserX size={16} /></button>
+                {superadmin==="super_admin"&&(
+                  <button onClick={() => handleEdit(admin)}><Edit size={16} /></button>
+                )}
+               
+                 {
+                  superadmin==="super_admin"&&(
+                     <button onClick={() => handleToggleBlock(admin)}><UserX size={16} /></button>
+                  )
+                }
+               
               </div>
             )}
             isDark={isDark}

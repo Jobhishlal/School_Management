@@ -39,4 +39,28 @@ export class MongoClassRepository implements IClassRepository {
       )
     );
   }
+async updateClass(id: string, update: Partial<Class>): Promise<Class | null> {
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new Error(`Invalid Class ID: ${id}`);
+  }
+
+
+  const updatedClass = await ClassModel.findByIdAndUpdate(
+    id,
+    { $set: update },  
+    { new: true }       
+  );
+
+  if (!updatedClass) return null;
+
+  return new Class(
+    updatedClass.id.toString(),
+    updatedClass.className,
+    updatedClass.division,
+    updatedClass.rollNumber,
+    updatedClass.department,
+    updatedClass.subjects
+  );
+}
 }

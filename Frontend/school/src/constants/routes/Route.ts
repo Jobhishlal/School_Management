@@ -18,18 +18,29 @@ export const API_ROUTES = {
   },
   STUDENT:{
     CREATESTUDENT:"/admin/students",
-    GETSTUDNET:'/admin/studnets'
+    GETSTUDNET:'/admin/studnets',
+    STUDENTBLOCK:(id:string)=>`/admin/students/${id}/block`,
+    UPDATE_STUDENT:(id:string)=>`/admin/students/${id}`
+    
+
   },
   PARENTS:{
     LIST_PARENTS:"/admin/parents",
-    CREATE_PARENTS:"/admin/parents"
+    CREATE_PARENTS:"/admin/parents",
+    UPDATE_PARENTS:(id:string)=>`/admin/parents/${id}`
   },
   CLASS:{
     LIST_CLASS:"/admin/class",
-    CREATE_CLASS:'/admin/class'
+    CREATE_CLASS:'/admin/class',
+    UPDATE_CLASS:(id:string)=>`/admin/class/${id}`
   },
   ADDRRESS:{
     LIST_ADDRESS:"/admin/address",
-    CREATE_ADDRESS:"/admin/address"
+    CREATE_ADDRESS:"/admin/address",
+    UPDATE_ADDRESS:(id:string)=>`/admin/address/${id}`
+  },
+  INSTITUTE:{
+    CREATEINSTITUTE:"/admin/instituteprofile",
   }
+
 };

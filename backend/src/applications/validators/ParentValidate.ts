@@ -32,3 +32,32 @@ export function ParentValidate(parent:ParentEntity){
 
   return true;
 }
+
+
+export function validateParentUpdate(update: Partial<ParentEntity>) {
+  if (update.name !== undefined) {
+    const nameRegex = /^[A-Za-z\s]+$/;
+    if (!nameRegex.test(update.name)) {
+      throw new Error(ParentValidationErrors.INVALID_NAME);
+    }
+    if (update.name.length < 2 || update.name.length > 50) {
+      throw new Error(ParentValidationErrors.NAME_LENGTH);
+    }
+  }
+
+  if (update.whatsappNumber !== undefined) {
+    const phoneRegex = /^\+?\d{10}$/;
+    if (!phoneRegex.test(update.whatsappNumber)) {
+      throw new Error(ParentValidationErrors.INVALID_CONTACT);
+    }
+  }
+
+  if (update.email !== undefined) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(update.email)) {
+      throw new Error(ParentValidationErrors.INVALID_EMAIL);
+    }
+  }
+
+  return true;
+}

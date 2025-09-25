@@ -64,7 +64,7 @@ export default function SchoolNavbar({ children }: Props) {
         { icon: MessageCircle, text: "Communication", path: "/communication" },
         { icon: FileText, text: "Leave Request", path: "/leave-request" },
         { icon: Calendar, text: "Time Table", path: "/timetable" },
-        { icon: Settings, text: "Settings", path: "/settings" },
+        { icon: Settings, text: "Settings", path: "/instituteprofile" },
       ],
     },
   ];

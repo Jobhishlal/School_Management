@@ -70,7 +70,22 @@ export default function VerifyOtpPage() {
         })
       );
       showToast("Login successful!", "success");
-      navigate("/dashboard");
+      
+      switch(res.role){
+        case "super_admin":
+          navigate("/dashboard")
+          break;
+
+          case "sub_admin":
+            navigate("/dashboard")
+            break;
+
+            case "Teacher":
+              navigate("/teacher/dashboard")
+              break;
+              default:
+                navigate("/")
+      }
     } catch (err) {
   if (axios.isAxiosError(err)) {
     

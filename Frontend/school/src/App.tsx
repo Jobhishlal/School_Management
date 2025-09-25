@@ -13,6 +13,8 @@ import { AdminManagement } from "./pages/admin/AdminManagement";
 import { ThemeProvider } from "./components/layout/ThemeContext"; 
 import { TeachersManagement } from "./pages/admin/TeacherManagement";
 import { StudentList } from "./pages/admin/StudentList";
+import {CreateInstitutePage} from './pages/admin/InstituteProfile'
+import { InstituteProfile } from "./components/Form/InstituteProfile/InstituteProfiletInfo";
 
 
 function ErrorFallback({ error }: { error: Error }) {
@@ -42,7 +44,8 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/admins" element={<AdminManagement />} />
           <Route path="/teachers" element={<TeachersManagement />} />
-            <Route path="/students" element={<StudentList />} />
+           <Route path="/students" element={<StudentList />} />
+          <Route path="/instituteprofile" element={<CreateInstitutePage />} />
         </Route>
       </Routes>
     </ErrorBoundary>

@@ -12,11 +12,14 @@ export interface StudentInterface extends Document {
   dateOfBirth: Date;
   gender: "Male" | "Female" | "Other";
   photos: Photo[];
+  
   studentId: string;
   parent: Types.ObjectId;
   address: Types.ObjectId;
   classId: Types.ObjectId;
-  Password:string
+  Password:string;
+  blocked:boolean;
+  role:string
 }
 
 const PhotoSchema = new Schema<Photo>({
@@ -35,7 +38,9 @@ const StudentSchema = new Schema<StudentInterface>(
     parent: { type: Schema.Types.ObjectId, ref: "Parents", required: true },
     address: { type: Schema.Types.ObjectId, ref: "Addresses", required: true },
     classId: { type: Schema.Types.ObjectId, ref: "Classes", required: true },
-    Password:{type:String,required:true}
+    Password:{type:String,required:true},
+    blocked:{type:Boolean,default:false,required:true},
+    role:{type:String,default:"student"}
   },
   { timestamps: true }
 );

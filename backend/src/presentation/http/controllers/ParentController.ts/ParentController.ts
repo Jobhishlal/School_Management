@@ -4,12 +4,14 @@ import { ParentAddUseCase } from "../../../../applications/useCases/Parent/Paren
 import { Request,Response } from "express";
 import { ParentEntity } from "../../../../domain/entities/Parents";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
+import { Iupdatparentusecase } from "../../../../domain/UseCaseInterface/IParentUseCase";
 
 
 export class ParentManagementCOntroller{
     constructor(
         private readonly ParentAddController:ParentAddUseCase,
-        private readonly getAllParents:ParentgetAll
+        private readonly getAllParents:ParentgetAll,
+        private readonly updateParents:Iupdatparentusecase
 
     ){}
     async create(req:Request,res:Response):Promise<void>{
@@ -54,6 +56,34 @@ export class ParentManagementCOntroller{
             res.status(StatusCodes.BAD_REQUEST).json({message:"Its failed to fetch backend",error})
         }
     }
+ 
+async updateparents(req: Request, res: Response): Promise<void> {
+    try {
+        const { id } = req.params;
+        const update = req.body;
+        
+        const updateparent = await this.updateParents.execute(id, update);
+        
+        if (!updateparent) {
+            res.status(StatusCodes.NOT_FOUND).json({ message: "Parents Not Found" });
+            return;
+        }
+    
+        
+        res.status(StatusCodes.OK).json({ message: "Parent Update Successfully", parent: updateparent });
+        } catch (error: any) {
+        console.error("Error updating parent:", error.message);
 
+        const isValidationError = error.message.includes("valid") || error.message.includes("required");
+
+        const statusCode = isValidationError ? 
+            StatusCodes.BAD_REQUEST : 
+            StatusCodes.INTERNAL_SERVER_ERROR;
+
+        res.status(statusCode).json({
+            message: error.message || "Failed to update parent",
+        });
+    }
+}
 }
 
