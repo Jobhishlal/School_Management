@@ -1,64 +1,94 @@
+
 import { Request, Response } from "express";
-import { LoginSuperAdmin } from "../../../../applications/useCases/LoginSuperAdmin";
+import { UnifiedAdminAuthService } from "../../../../infrastructure/providers/SuperAdminAuthService";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
-import { ISuperAdminLogin } from "../../../../domain/Interface/ISuperAdminAuthService";
-import { ResendOtp } from "../../../../applications/useCases/ResenOtp";
-import {OtpError} from '../../../../domain/enums/OtpErrorMessage'
+import { OtpError } from "../../../../domain/enums/OtpErrorMessage";
+import logger from "../../../../shared/constants/Logger";
+import { AdminError } from "../../../../domain/enums/Adminsinguperror";
 
+export class AdminLoginController {
+  constructor(private authService: UnifiedAdminAuthService) {}
 
-export class SuperAdminController {
-  constructor(
-    private loginUseCase: LoginSuperAdmin,
-    private authService: ISuperAdminLogin,
-    private resendotpUseCase:ResendOtp,
-  ) {}
-
-
+  
   async login(req: Request, res: Response): Promise<void> {
     try {
       const { email, password } = req.body;
-      const otpToken = await this.loginUseCase.execute(email, password);
+      logger.info(JSON.stringify(req.body))
+      const result = await this.authService.login(email, password);
+      logger.info(JSON.stringify(result))
 
       res.status(StatusCodes.OK).json({
+        type: result.role,
         message: OtpError.OTP_SENT,
-        otpToken,
+        otpToken: result.otpToken,
       });
     } catch (error: any) {
-     
-      res.status(StatusCodes.UNAUTHORIZED).json({ message: OtpError.INVALID_OTP});
-    }
+      logger.info(error.message)
+      if (error.message === "Invalid Teacher Credentials") {
+      res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ message: "Invalid email or password" });
+      return
+    }  
+
+     if (error.message === "teacher blocked") {
+    res.status(StatusCodes.FORBIDDEN)
+       .json({ message: "Teacher is blocked, please contact your admin" });
+    return;
   }
 
+  if (error.message === "subadmin blocked") {
+    res.status(StatusCodes.FORBIDDEN)
+       .json({ message: "Sub Admin is blocked, please contact school management" });
+    return;
+  }
 
+      if (error.message === "UserDoesNotExist") {
+        console.log(error.message)
+       res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ message: "User does not exist" });
+      return
+     }
+    console.log(error)
+       res
+    .status(StatusCodes.NOT_FOUND)
+    .json({ message: AdminError.UserDoesNotExist });
+    return
+
+    
+}
+    }
+  
+
+  
   async verifyOtp(req: Request, res: Response): Promise<void> {
     try {
       const { otpToken, otp } = req.body;
-      const finalJwt = await this.authService.verifyOtp(otpToken, otp);
+      const { authToken, role } = await this.authService.verifyOtp(otpToken, otp);
 
       res.status(StatusCodes.OK).json({
         message: OtpError.SUCCESS,
-        token: finalJwt,
+        authToken,
+        role,
       });
     } catch (error: any) {
-      console.error("OTP error:", error.message);
-      res.status(StatusCodes.BAD_REQUEST).json({ message:OtpError.INVALID_OTP});
+      res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
     }
   }
 
 
-async resendOtp(req: Request, res: Response): Promise<void> {
-  try {
-    const { oldOtpToken } = req.body;
-    const { otpToken } = await this.resendotpUseCase.execute(oldOtpToken); 
+  async resendOtp(req: Request, res: Response): Promise<void> {
+    try {
+      const { oldOtpToken } = req.body;
+      const { otpToken } = await this.authService.resendOtp(oldOtpToken);
 
-    res.status(StatusCodes.OK).json({
-      message: OtpError.RESEND_OTP,
-      otpToken, 
-    });
-  } catch (error: any) {
-    console.error("Resend OTP error:", error.message);
-    res.status(StatusCodes.BAD_REQUEST).json({ message: OtpError.OTP_ERROR});
+      res.status(StatusCodes.OK).json({
+        message: OtpError.RESEND_OTP,
+        otpToken,
+      });
+    } catch (error: any) {
+      res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+    }
   }
-}
-
 }

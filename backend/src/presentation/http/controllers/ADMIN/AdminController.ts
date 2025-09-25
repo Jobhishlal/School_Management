@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { IAdminController } from "../../interface/IAdminController";
-import { SignupAdmin } from "../../../../applications/useCases/SignupAdmin";
-import { GetAdmin } from "../../../../applications/useCases/GetAdmin";
+import { SignupAdmin } from "../../../../applications/useCases/Auth/SignupAdmin";
+import { GetAdmin } from "../../../../applications/useCases/admin/GetAdmin";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { AdminError } from "../../../../domain/enums/Adminsinguperror";
-import { GenarateOtpP } from "../../../../applications/useCases/GenarateOpt";
+import { GenarateOtpP } from "../../../../applications/useCases/Auth/GenarateOpt";
 import {verifiedOtptoken} from '../../../../infrastructure/security/otpJwtService'
-import { ResendOtp } from "../../../../applications/useCases/ResenOtp";
+import { ResendOtp } from "../../../../applications/useCases/Auth/ResenOtp";
 
 export class AdminController implements IAdminController {
   constructor(

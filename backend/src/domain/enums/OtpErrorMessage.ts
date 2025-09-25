@@ -4,6 +4,5 @@ export enum OtpError{
      INVALID_OTP="Invalid OTP" ,
      RESEND_OTP= "NEW OTP SENT",
      OTP_ERROR="Invalid or expired OTP" 
-     
 
 }

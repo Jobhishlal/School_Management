@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from "dotenv";
 dotenv.config();
-import { connectDB } from "./infrastructure/database/mongo";
+import { connectDB } from "./infrastructure/config/mongo";
 import adminRoutes from "./presentation/express/AdminRoutes";
 import AuthRouter from './presentation/express/AuthRoutes';
 import passport from "./infrastructure/security/googleStrategy";

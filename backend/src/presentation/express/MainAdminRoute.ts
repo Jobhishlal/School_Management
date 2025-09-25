@@ -1,20 +1,14 @@
 import { Router } from "express";
-import { LoginSuperAdmin } from "../../applications/useCases/LoginSuperAdmin";
-import {SuperAdminAuthService} from '../../infrastructure/providers/SuperAdminAuthService';
-import {SuperAdminController} from '../http/controllers/ADMIN/MainAdminController'
-import { ResendOtp } from "../../applications/useCases/ResenOtp";
+import { UnifiedAdminAuthService } from "../../infrastructure/providers/SuperAdminAuthService";
+import { AdminLoginController } from "../../presentation/http/controllers/ADMIN/MainAdminController"; 
+
 const MainAdmin = Router();
 
+const authService = new UnifiedAdminAuthService();
+const controller = new AdminLoginController(authService);
+//(req, res) => {controller.login(req, res)}
+MainAdmin.post("/login", controller.login.bind(controller));
+MainAdmin.post("/verify-otp", (req, res) => controller.verifyOtp(req, res));
+MainAdmin.post("/resend-otp", (req, res) => controller.resendOtp(req, res));
 
-
-const authService = new SuperAdminAuthService();
-const loginUseCase = new LoginSuperAdmin(authService);
-const resendOtpUseCase= new ResendOtp()
-const constroller = new SuperAdminController(loginUseCase,authService,resendOtpUseCase);
-
-MainAdmin.post('/login',(req,res)=>  constroller.login(req,res))
-MainAdmin.post('/verify-otp',(req,res)=> constroller.verifyOtp(req,res))
-MainAdmin.post('/resend-otp',(req,res)=>constroller.resendOtp(req,res))
-
-
-export default MainAdmin
+export default MainAdmin;

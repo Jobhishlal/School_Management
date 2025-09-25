@@ -1,36 +1,27 @@
 
 import { useState, useEffect } from "react";
-import { 
- 
-  Edit, 
-  Eye, 
-  Ban, 
-  Plus,
-  ChevronLeft,
-  ChevronRight,
-  X,
+import { Eye, Edit, UserX , Plus} from "lucide-react";
+import {  FaSearch, } from "react-icons/fa";
 
-} from "lucide-react";
-import { 
-  FaSearch, 
-  FaEdit, 
-  
-} from "react-icons/fa";
-
-import { SubAdminCreate, GetSubAdmins } from "../../services/authapi";
+import { SubAdminCreate, GetSubAdmins,UpdateSubAdmin,SubAdminBlock } from "../../services/authapi";
 import { showToast } from "../../utils/toast";
 import { useTheme } from "../../components/layout/ThemeContext";
+import { AdminSchema } from "../../validations/AdminValidation";
+import { Pagination } from "../../components/common/Pagination";
+import { Modal } from "../../components/common/Modal";
+import { AdminForm } from "../../components/Form/AdminManagement/AdminForm";
+import { Table } from "../../components/Table/Table";
 
 interface SubAdmin {
-  _id: string;
+  id: string;
   name: string;
   email: string;
   phone: string;
   role: string;
-  status?: string;
+  blocked:boolean;
 }
 
-export function AdminManagement() {
+export function AdminManagement () {
   const { isDark } = useTheme();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -44,26 +35,36 @@ export function AdminManagement() {
   const [currentPage, setCurrentPage] = useState(1);
   const [filterRole, setFilterRole] = useState("All");
   const [filterStatus, setFilterStatus] = useState("All");
+  const [editingId, setEditingId] = useState<string | null>(null);
   const itemsPerPage = 5;
 
 
+
+
   const fetchAdmins = async () => {
-    setLoading(true);
-    try {
-      const data = await GetSubAdmins();
-      const adminsWithStatus = data.map((admin: SubAdmin) => ({
-        ...admin,
-        status: admin.status || 'Active'
-      }));
-      setSubAdmins(adminsWithStatus);
-      setFilteredAdmins(adminsWithStatus);
-    } catch (error) {
-      console.error("Error fetching admins:", error);
-      showToast("Error fetching admins", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    const data = await GetSubAdmins();
+
+    const adminsWithStatus = data.map((admin: any) => ({
+      id: admin.id || admin._id,
+      name: admin.name,
+      email: admin.email,
+      phone: admin.phone,
+      role: admin.role,
+      blocked: admin.blocked,       
+      status: admin.blocked ? "Blocked" : "Active",  
+    }));
+
+    setSubAdmins(adminsWithStatus);
+    setFilteredAdmins(adminsWithStatus);
+  } catch (error) {
+    console.error("Error fetching admins:", error);
+    showToast("Error fetching admins", "error");
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchAdmins();
@@ -85,74 +86,107 @@ export function AdminManagement() {
     setCurrentPage(1);
   }, [searchTerm, subAdmins, filterRole, filterStatus]);
 
-  const validateForm = (): boolean => {
-    if (!name.trim()) {
-      showToast("Name is required", "warning");
-      return false;
-    }
-    if (!email.trim()) {
-      showToast("Email is required", "warning");
-      return false;
-    }
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      showToast("Please enter a valid email", "warning");
-      return false;
-    }
-    if (!phone.trim()) {
-      showToast("Phone number is required", "warning");
-      return false;
-    }
-    if (!/^\d{10}$/.test(phone)) {
-      showToast("Phone number must be 10 digits", "warning");
-      return false;
-    }
-    if (!role) {
-      showToast("Role is required", "warning");
-      return false;
-    }
-    return true;
-  };
-
+const validateForm = (): boolean => {
  
-  const handleSubmit = async () => {
-    if (!validateForm()) return;
+  if (!name || !phone || !email || !role) {
+    showToast("All fields are required", "warning");
+    return false;
+  }
 
-    setLoading(true);
-    try {
+
+  const result = AdminSchema.safeParse({
+    name,
+    email,
+    phone,
+    role,
+    blocked: false, 
+  });
+
+  if (!result.success) {
+    
+    const firstError = result.error.issues[0].message;
+    showToast(firstError, "warning");
+    return false;
+  }
+
+  return true;
+};
+
+
+
+const handleSubmit = async () => {
+  if (!validateForm()) return;
+
+  setLoading(true);
+  try {
+    if (editingId) {
+     
+      await UpdateSubAdmin(editingId, {
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        role,
+      });
+      showToast("Admin updated successfully", "success");
+    } else {
+    
       await SubAdminCreate(name, email, phone, role);
       showToast("Admin created successfully", "success");
-      
-    
-      setName("");
-      setEmail("");
-      setPhone("");
-      setRole("Finance");
-      setShowModal(false);
-    
-      await fetchAdmins();
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Error creating admin";
-      showToast(errorMessage, "error");
-    } finally {
-      setLoading(false);
     }
-  };
+
+    setEditingId(null);  
+    setName("");
+    setEmail("");
+    setPhone("");
+    setRole("Finance");
+    setShowModal(false);
+
+    await fetchAdmins();
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.message || error.message || "Error saving admin";
+    showToast(errorMessage, "error");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
 
   const handleView = (admin: SubAdmin) => {
     console.log("Viewing admin details:", admin);
-    showToast("View functionality to be implemented", "info");
+    showToast("not complete", "info");
   };
 
-  const handleEdit = (admin: SubAdmin) => {
-    console.log("Editing admin:", admin);
-    showToast("Edit functionality to be implemented", "info");
-  };
+ const handleEdit = (admin: SubAdmin) => {
+  setEditingId(admin.id)
+ 
+  setName(admin.name)
+  setEmail(admin.email)
+  setPhone(admin.phone)
+  setRole(admin.role)
+  setShowModal(true)
+};
 
-  const handleToggleBlock = (admin: SubAdmin) => {
-    const action = admin.status === 'Blocked' ? 'unblock' : 'block';
-    console.log(`${action} admin:`, admin);
-    showToast(`${action} functionality to be implemented`, "info");
-  };
+const handleToggleBlock = async (admin: SubAdmin) => {
+  try {
+    const newStatus = !admin.blocked;
+    await SubAdminBlock(admin.id, newStatus);
+
+    showToast(
+      `Admin ${newStatus ? "blocked" : "unblocked"} successfully`,
+      "success"
+    );
+
+    await fetchAdmins();
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.message || error.message || "Error updating block status";
+    showToast(errorMessage, "error");
+  }
+};
 
   const handleCloseModal = () => {
     setName("");
@@ -192,6 +226,28 @@ export function AdminManagement() {
   const textPrimary = isDark ? '#f8fafc' : '#1e293b';
   const textSecondary = isDark ? '#94a3b8' : '#64748b';
   const borderColor = isDark ? '#374151' : '#e2e8f0';
+
+
+    const adminColumns: Column<SubAdmin>[] = [
+    { label: "Name", render: (admin, index) => (
+        <div className="flex items-center gap-3">
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-white text-sm bg-gradient-to-r ${
+            index % 4 === 0 ? "from-blue-500 to-purple-500" :
+            index % 4 === 1 ? "from-green-500 to-teal-500" :
+            index % 4 === 2 ? "from-orange-500 to-red-500" :
+            "from-pink-500 to-rose-500"
+          }`}>{admin.name.charAt(0).toUpperCase()}</div>
+          <div>
+            <div className="font-medium text-sm">{admin.name}</div>
+            <div className="text-xs">{admin.phone}</div>
+          </div>
+        </div>
+      )
+    },
+    { label: "Email", key: "email" },
+    { label: "Position", key: "role", render: admin => <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getRoleColor(admin.role)}`}>{admin.role.replace(/_/g, " ")}</span> },
+    { label: "Status", key: "status", render: admin => <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getStatusColor(admin.status)}`}>{admin.status}</span> },
+  ];
 
   return (
     
@@ -296,93 +352,19 @@ export function AdminManagement() {
             <>
             
               <div className="hidden lg:block overflow-x-auto">
-                <table className="w-full">
-                  <thead style={{ borderBottomColor: borderColor }} className="border-b">
-                    <tr>
-                      <th className="px-6 py-4 text-left font-semibold text-sm" style={{ color: textSecondary }}>
-                        Name
-                      </th>
-                      <th className="px-6 py-4 text-left font-semibold text-sm" style={{ color: textSecondary }}>
-                        Email
-                      </th>
-                      <th className="px-6 py-4 text-left font-semibold text-sm" style={{ color: textSecondary }}>
-                        Position
-                      </th>
-                      <th className="px-6 py-4 text-left font-semibold text-sm" style={{ color: textSecondary }}>
-                        Status
-                      </th>
-                      <th className="px-6 py-4 text-center font-semibold text-sm" style={{ color: textSecondary }}>
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentAdmins.map((admin, index) => (
-                      <tr 
-                        key={admin._id} 
-                        className="border-b last:border-b-0 hover:opacity-80 transition-opacity"
-                        style={{ borderBottomColor: borderColor }}
-                      >
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-white text-sm bg-gradient-to-r ${
-                              index % 4 === 0 ? 'from-blue-500 to-purple-500' :
-                              index % 4 === 1 ? 'from-green-500 to-teal-500' :
-                              index % 4 === 2 ? 'from-orange-500 to-red-500' :
-                              'from-pink-500 to-rose-500'
-                            }`}>
-                              {admin.name.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                              <div className="font-medium text-sm">{admin.name}</div>
-                              <div className="text-xs" style={{ color: textSecondary }}>
-                                {admin.phone}
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm">{admin.email}</div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getRoleColor(admin.role)}`}>
-                            {admin.role.replace(/_/g, ' ')}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getStatusColor(admin.status || 'Active')}`}>
-                            {admin.status || 'Active'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center justify-center gap-1">
-                            <button
-                              onClick={() => handleView(admin)}
-                              className="p-2 rounded-lg hover:bg-blue-500/10 text-blue-500 transition-colors"
-                              title="View Details"
-                            >
-                              <Eye size={14} />
-                            </button>
-                            <button
-                              onClick={() => handleEdit(admin)}
-                              className="p-2 rounded-lg hover:bg-green-500/10 text-green-500 transition-colors"
-                              title="Edit"
-                            >
-                              <FaEdit size={14} />
-                            </button>
-                            <button
-                              onClick={() => handleToggleBlock(admin)}
-                              className="p-2 rounded-lg hover:bg-red-500/10 text-red-500 transition-colors"
-                              title={admin.status === 'Blocked' ? 'Unblock' : 'Block'}
-                            >
-                              <Ban size={14} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+               <Table
+            columns={adminColumns}
+            data={currentAdmins}
+            actions={(admin) => (
+              <div className="flex justify-center gap-2">
+                <button onClick={() => handleView(admin)}><Eye size={16} /></button>
+                <button onClick={() => handleEdit(admin)}><Edit size={16} /></button>
+                <button onClick={() => handleToggleBlock(admin)}><UserX size={16} /></button>
+              </div>
+            )}
+            isDark={isDark}
+            loading={loading}
+          />
               </div>
 
               <div className="lg:hidden space-y-4 p-4">
@@ -429,9 +411,11 @@ export function AdminManagement() {
                           onClick={() => handleToggleBlock(admin)}
                           className="p-2 rounded-lg hover:bg-red-500/10 text-red-500 transition-colors"
                         >
-                          <Ban size={14} />
+                          <UserX size={14} />
                         </button>
                       </div>
+
+     
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                       <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getRoleColor(admin.role)}`}>
@@ -448,162 +432,37 @@ export function AdminManagement() {
           )}
         </div>
 
-        {/* Pagination */}
+
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 mt-6">
-            <button
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-            >
-              <ChevronLeft size={16} />
-              Prev
-            </button>
-            
-            <span className="text-sm px-3 py-2" style={{ color: textSecondary }}>
-              {currentPage}
-            </span>
-            
-            <button
-              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage === totalPages}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-            >
-              Next
-              <ChevronRight size={16} />
-            </button>
-          </div>
+          <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          
+          />
         )}
+              <Modal 
+               title={editingId ? "Edit Admin" : "Add New Admin"}
+               isOpen={showModal}
+               onClose={handleCloseModal}>
 
-        {/* Create Admin Modal */}
-        {showModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div 
-              className="w-full max-w-md rounded-lg shadow-xl border"
-              style={{ backgroundColor: bgCard, borderColor: borderColor }}
-            >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold">Add New Admin</h3>
-                  <button
-                    onClick={handleCloseModal}
-                    className="p-2 rounded-lg hover:bg-gray-500/10 transition-colors"
-                    style={{ color: textSecondary }}
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: textSecondary }}>
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      value={name}
-                      placeholder="Enter full name"
-                      onChange={(e) => setName(e.target.value)}
-                      className="w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      style={{ 
-                        backgroundColor: bgInput, 
-                        borderColor: borderColor,
-                        color: textPrimary 
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: textSecondary }}>
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      value={email}
-                      placeholder="Enter email address"
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      style={{ 
-                        backgroundColor: bgInput, 
-                        borderColor: borderColor,
-                        color: textPrimary 
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: textSecondary }}>
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      value={phone}
-                      placeholder="Enter 10-digit phone number"
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      style={{ 
-                        backgroundColor: bgInput, 
-                        borderColor: borderColor,
-                        color: textPrimary 
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: textSecondary }}>
-                      Role
-                    </label>
-                    <select
-                      value={role}
-                      onChange={(e) => setRole(e.target.value)}
-                      className="w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      style={{ 
-                        backgroundColor: bgInput, 
-                        borderColor: borderColor,
-                        color: textPrimary 
-                      }}
-                    >
-                      <option value="Finance">Finance</option>
-                      <option value="Communication">Communication</option>
-                      <option value="School_Management">School Management</option>
-                      <option value="Student_Management">Student Management</option>
-                      <option value="Parents_Management">Parents Management</option>
-                    </select>
-                  </div>
-
-                  <div className="flex justify-end gap-3 pt-6">
-                    <button
-                      onClick={handleCloseModal}
-                      disabled={loading}
-                      className="px-4 py-2.5 rounded-lg font-medium border transition-colors"
-                      style={{ 
-                        backgroundColor: 'transparent', 
-                        borderColor: borderColor,
-                        color: textSecondary 
-                      }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleSubmit}
-                      disabled={loading}
-                      className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium flex items-center gap-2 transition-colors"
-                    >
-                      {loading ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          Creating...
-                        </>
-                      ) : (
-                        'Create Admin'
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+                <AdminForm
+                 name={name}
+                 setName={setName}
+                 email={email}
+                 setEmail={setEmail}
+                 phone={phone}
+               setPhone={setPhone}
+                role={role}
+                setRole={setRole}
+               onSubmit={handleSubmit}
+               loading={loading}
+                isDark={isDark}
+               onCancel={handleCloseModal}
+                 editing={!!editingId}
+                 />
+          
+              </Modal>
       </div>
     </div>
   );

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { VerifyOtp, ResendOtp } from "../../services/authapi";
+import { VerifyOtp, ResendOtp } from "../../services/Auth/Auth";
 import { setCredentials } from "../../store/slice/authslice";
 import { showToast } from "../../utils/toast";
+import axios, { AxiosError } from "axios";
 
 export default function VerifyOtpPage() {
   const location = useLocation();
@@ -55,21 +56,32 @@ export default function VerifyOtpPage() {
 
     try {
       setLoading(true);
-      const res = await VerifyOtp(otpToken, otp);
+    const res = await VerifyOtp(otpToken, otp);
+    localStorage.setItem("authToken", res.authToken);
+     localStorage.setItem("role", res.role);
 
-      localStorage.setItem("authToken", res.authToken);
+ 
 
-      dispatch(setCredentials(res));
+    dispatch(
+        setCredentials({
+          accessToken: res.authToken,   
+          refreshToken: "",          
+          user: { role: res.role },     
+        })
+      );
       showToast("Login successful!", "success");
       navigate("/dashboard");
-    } catch (err: any) {
-      if (err.response?.data?.message) {
-        showToast(err.response.data.message, "error");
-      } else {
-        
-        showToast("Invalid OTP", "error");
-      }
-    } finally {
+    } catch (err) {
+  if (axios.isAxiosError(err)) {
+    
+    const serverError = err as AxiosError<{ message: string }>;
+    const errorMessage = serverError.response?.data?.message || "Invalid OTP";
+    showToast(errorMessage, "error");
+  } else {
+    // Non-Axios error (fallback)
+    showToast("Unexpected error occurred", "error");
+  }
+} finally {
       setLoading(false);
     }
   }
@@ -99,9 +111,15 @@ export default function VerifyOtpPage() {
 
       setTimeleft(120);
       showToast("New OTP sent to your email!", "success");
-    } catch (err: any) {
-      showToast("Failed to resend OTP", "error");
-    } finally {
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        const serverError = err as AxiosError<{ message: string }>;
+         const errorMessage = serverError.response?.data?.message || "Failed to resend OTP";
+         showToast(errorMessage, "error");
+      } else {
+    showToast("Failed to resend OTP", "error");
+  }
+} finally {
       setLoading(false);
     }
   }

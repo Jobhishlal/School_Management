@@ -1,9 +1,9 @@
-import { MainAdminLogin } from "../../services/authapi"; 
+import { MainAdminLogin } from "../../services/Auth/Auth"; 
 import { useState } from "react";
 import { showToast } from "../../utils/toast";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
-
+import { AxiosError } from "axios";
 export default function MainAdminLogincheck() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -18,13 +18,19 @@ export default function MainAdminLogincheck() {
       const res = await MainAdminLogin(email, password);
 
       localStorage.setItem("otpToken", res.otpToken);
+      if (res.role) {
+     localStorage.setItem("role", res.role.toLowerCase()); 
+
+      }
 
       showToast("OTP sent to your email", "success");
 
       navigate("/verify-otp", { state: { otpToken: res.otpToken } });
-    } catch (error: any) {
-      showToast(error.response?.data?.message || "Login failed", "error");
-    } finally {
+    } catch (error: unknown) {
+      const err = error as AxiosError<{ message: string }>;
+       const message = err.response?.data?.message || err.message || "Login failed";
+      showToast(message, "error");
+}finally {
       setLoading(false);
     }
   }
@@ -72,13 +78,13 @@ export default function MainAdminLogincheck() {
           </div>
         </div>
 
-        <button
-         
-          className="w-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-white font-semibold py-3 rounded-lg"
-        >
-          <FcGoogle className="mr-2 text-xl" />
-          Sign Up with Google
-        </button>
+     <button
+  type="button"
+  className="w-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-white font-semibold py-3 rounded-lg"
+>
+  <FcGoogle className="mr-2 text-xl" />
+  Sign Up with Google
+</button>
 
          
              <button
