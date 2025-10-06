@@ -18,7 +18,10 @@ export class AdminSubAdminCompaign implements ISubadminLogin {
       admin.createdAt,
       admin.updatedAt,
       admin.blocked,
-      admin.major_role
+      admin.major_role,
+      admin.dateOfBirth,
+      admin.gender,
+      admin.documents
     );
   }
 
@@ -40,7 +43,10 @@ export class AdminSubAdminCompaign implements ISubadminLogin {
       admin.createdAt,
       admin.updatedAt,
       admin.blocked,
-      admin.major_role
+      admin.major_role,
+      admin.dateOfBirth,
+      admin.gender,
+      admin.documents
     );
   }
 }

@@ -8,5 +8,6 @@ export interface SubAdminRepository{
     findByPhone(phone: string): Promise<SubAdminEntities | null>;
     update(id:string,updates:Partial<SubAdminEntities>):Promise<SubAdminEntities  | null >;
     findById(id:string):Promise<SubAdminEntities | null >;
+     updatePassword(id: string, hashedPassword: string): Promise<SubAdminEntities | null>;
 
 }

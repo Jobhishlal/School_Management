@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { CreateStudents, createParent, CreateClass, CreateAddress, UpdateStudent, UpdateParents, UpdateAddress, UpdateClass } from "../../services/authapi";
+import {
+  CreateStudents,
+  createParent,
+  CreateClass,
+  CreateAddress,
+  UpdateStudent,
+  UpdateParents,
+  UpdateAddress,
+  UpdateClass
+} from "../../services/authapi";
 import { showToast } from "../../utils/toast";
 import { useTheme } from "../../components/layout/ThemeContext";
-
 import { AxiosError } from "axios";
 import { FormLayout } from "../../components/Form/FormLayout";
-
 import { ParentInfo } from "../../components/Form/Parents/ParentInfoProps ";
 import { AddressInfo } from "../../components/Form/Address/AddressInfoProps ";
 import { ClassInfo } from "../../components/Form/ClassControll/Classcheck";
@@ -22,7 +29,6 @@ export function AddStudentForm({ onSuccess, onClose, student }: AddStudentFormPr
   const { isDark } = useTheme();
   const [loading, setLoading] = useState(false);
 
-
   const [fullName, setFullName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [gender, setGender] = useState<"Male" | "Female" | "Other">("Male");
@@ -36,7 +42,6 @@ export function AddStudentForm({ onSuccess, onClose, student }: AddStudentFormPr
   const [parentEmail, setParentEmail] = useState("");
   const [parentRelationship, setParentRelationship] = useState<"Son" | "Daughter">("Son");
 
-
   const [addressId, setAddressId] = useState("");
   const [street, setStreet] = useState("");
   const [city, setCity] = useState("");
@@ -44,107 +49,98 @@ export function AddStudentForm({ onSuccess, onClose, student }: AddStudentFormPr
   const [pincode, setPincode] = useState("");
 
   const [classId, setClassId] = useState("");
-const [className, setClassName] = useState<string>("1");
-
+  const [className, setClassName] = useState<string>("1");
   const [division, setDivision] = useState<"A" | "B" | "C" | "D">("A");
 
-useEffect(() => {
-  console.log(student?.classDetails)
-  if (!student) return;
 
- 
-  setFullName(student.fullName || "");
-   setFullName(student.fullName || "");
+  useEffect(() => {
+    if (!student) return;
 
-   if (student?.dateOfBirth) {
-        const dob = new Date(student.dateOfBirth); 
+    setFullName(student.fullName || "");
 
-       
-        const yyyy = dob.getFullYear();
-        const mm = String(dob.getMonth() + 1).padStart(2, "0");
-        const dd = String(dob.getDate()).padStart(2, "0");
-
-        setDateOfBirth(`${yyyy}-${mm}-${dd}`); 
+    if (student?.dateOfBirth) {
+      const dob = new Date(student.dateOfBirth);
+      const yyyy = dob.getFullYear();
+      const mm = String(dob.getMonth() + 1).padStart(2, "0");
+      const dd = String(dob.getDate()).padStart(2, "0");
+      setDateOfBirth(`${yyyy}-${mm}-${dd}`);
     } else {
-        setDateOfBirth("");
+      setDateOfBirth("");
     }
 
-  setGender(student.gender || "Male");
+    setGender(student.gender || "Male");
 
-  
-if (student.parent?._id) {
-  setParentId(student.parent._id);
-  setParentName(student.parent.name || "");
-  setWhatsappNumber(student.parent.whatsappNumber || ""); 
-  setParentEmail(student.parent.email || "");          
-  setParentRelationship(student.parent.relationship || "Son");
-} else if (student.guardian?.id) {
-  setParentId(student.guardian.id);
-  setParentName(student.guardian.name || "");
-  setWhatsappNumber(student.guardian.phone || "");
-  setParentEmail("")
-  setParentRelationship("Son"); 
-} else {
-  setParentId(""); 
-  setParentName("");
-  setWhatsappNumber("");
-  setParentEmail("");
-  setParentRelationship("Son");
-}
+    // Parent
+    if (student.parent?._id) {
+      setParentId(student.parent._id);
+      setParentName(student.parent.name || "");
+      setWhatsappNumber(student.parent.whatsappNumber || "");
+      setParentEmail(student.parent.email || "");
+      setParentRelationship(student.parent.relationship || "Son");
+    } else if (student.guardian?.id) {
+      setParentId(student.guardian.id);
+      setParentName(student.guardian.name || "");
+      setWhatsappNumber(student.guardian.phone || "");
+      setParentEmail("");
+      setParentRelationship("Son");
+    } else {
+      setParentId("");
+      setParentName("");
+      setWhatsappNumber("");
+      setParentEmail("");
+      setParentRelationship("Son");
+    }
 
+    // Address
+    setAddressId(student.address?._id || "");
+    setStreet(student.address?.street || "");
+    setCity(student.address?.city || "");
+    setState(student.address?.state || "");
+    setPincode(student.address?.pincode || "");
 
+    // Class
+    setClassId(student.classDetails?._id || "");
+    setClassName(student.classDetails?.className || "1");
 
-  // Address info
-  setAddressId(student.address?._id || "");
-  setStreet(student.address?.street || "");
-  setCity(student.address?.city || "");
-  setState(student.address?.state || "");
-  setPincode(student.address?.pincode || "");
+    // Photos
+    setPhotoPreviews(student.photos?.map((p) => p.url) || []);
+    setPhotos([]);
+  }, [student]);
 
-  // Class info
-  setClassId(student.classDetails?._id || "");
-  setClassName(student.classDetails?.className || "1");
-  setDivision(student.classDetails?.division || "A");
- 
-
-  // Photos
-  setPhotoPreviews(student.photos?.map(p => p.url) || []);
-  setPhotos([]); // keep empty to allow new uploads
-}, [student]);
-
-
+  // Photo management
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
-      setPhotos(prev => [...prev, ...filesArray]);
+      setPhotos((prev) => [...prev, ...filesArray]);
 
-      const previewUrls = filesArray.map(file => URL.createObjectURL(file));
-      setPhotoPreviews(prev => [...prev, ...previewUrls]);
+      const previewUrls = filesArray.map((file) => URL.createObjectURL(file));
+      setPhotoPreviews((prev) => [...prev, ...previewUrls]);
     }
   };
 
   const handleRemovePhoto = (index: number) => {
-    setPhotoPreviews(prev => prev.filter((_, i) => i !== index));
-    setPhotos(prev => prev.filter((_, i) => i !== index));
+    setPhotoPreviews((prev) => prev.filter((_, i) => i !== index));
+    setPhotos((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // Submit handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Parent
       if (student) {
-
+        // Update existing student
         await UpdateParents(parentId, parentName, whatsappNumber, parentEmail, parentRelationship);
-      
         await UpdateAddress(addressId, street, city, state, pincode);
-       await UpdateClass(student?.classDetails?._id || classId, className, division);
+        await UpdateClass(student?.classDetails?._id || classId, className);
 
-        console.log("updateclass",UpdateClass)
         await UpdateStudent(student._id, fullName, dateOfBirth, gender, parentId, addressId, classId, photos);
         showToast("Student updated successfully", "success");
       } else {
+        // Create new student
+
+        // Parent
         const parentResponse = await createParent({
           name: parentName,
           contactNumber: whatsappNumber,
@@ -155,14 +151,17 @@ if (student.parent?._id) {
         if (!parentResponse?.parent?._id) throw new Error("Failed to create parent.");
         const parentIdNew = parentResponse.parent._id;
 
+        // Address
         const addressResponse = await CreateAddress({ street, city, state, pincode });
         if (!addressResponse?.address?._id) throw new Error("Failed to create address.");
         const addressIdNew = addressResponse.address._id;
 
-        const classResponse = await CreateClass({ className, division });
+        // Class (division auto-assigned by backend)
+        const classResponse = await CreateClass({ className });
         if (!classResponse?.class?._id) throw new Error("Failed to create class.");
         const classIdNew = classResponse.class._id;
 
+        // Student
         const { student: newStudent, tempPassword } = await CreateStudents(
           fullName,
           dateOfBirth,
@@ -173,7 +172,10 @@ if (student.parent?._id) {
           photos
         );
 
-        showToast(`Student created! ID: ${newStudent.studentId} Temp Password: ${tempPassword}`, "success");
+        showToast(
+          `Student created in ${classResponse.class.className}${classResponse.class.division}. Temp Password: ${tempPassword}`,
+          "success"
+        );
       }
 
       // Clear form
@@ -189,7 +191,6 @@ if (student.parent?._id) {
       setState("");
       setPincode("");
       setClassName("1");
-      setDivision("A");
       setPhotos([]);
       setPhotoPreviews([]);
 
@@ -197,7 +198,8 @@ if (student.parent?._id) {
       onClose?.();
     } catch (error: unknown) {
       const err = error as AxiosError<{ message: string }>;
-      const message = err.response?.data?.message || (error as Error).message || "Error Creating/Updating Student";
+      const message =
+        err.response?.data?.message || (error as Error).message || "Error Creating/Updating Student";
       showToast(message, "error");
     } finally {
       setLoading(false);
@@ -243,13 +245,15 @@ if (student.parent?._id) {
         setPincode={setPincode}
         isDark={isDark}
       />
-      <ClassInfo
-        className={className}
-        setClassName={setClassName}
-        division={division}
-        setDivision={setDivision}
-        isDark={isDark}
-      />
+   <ClassInfo
+         className={className as "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10"}
+       setClassName={setClassName as React.Dispatch<React.SetStateAction<"1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10">>}
+         division={division}
+       setDivision={setDivision}
+     isDark={isDark}
+   />
+
+ 
     </FormLayout>
   );
 }

@@ -5,8 +5,8 @@ export interface ParentInterface extends Document {
   relationship?: "Son" | "Daughter";
   contactNumber: string;
   whatsappNumber: string;
-  email?: string;
-  password?: string;
+  email: string;
+  password: string;
 }
 
 const ParentSchema = new Schema<ParentInterface>(

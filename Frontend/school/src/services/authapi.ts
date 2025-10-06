@@ -4,6 +4,7 @@ import { API_ROUTES } from "../constants/routes/Route";
 
 
 
+
 export const GetSubAdmins = async () => {
   const res = await api.get(API_ROUTES.ADMIN.GET_SUBADMINS);
   return res.data;
@@ -289,7 +290,6 @@ export const CreateInstituteProfile = async (
   logo: File[]
 ) => {
   const formData = new FormData();
-
   formData.append("instituteName", instituteName);
   formData.append("contactInformation", contactInformation);
   formData.append("email", email);
@@ -297,8 +297,7 @@ export const CreateInstituteProfile = async (
   formData.append("addressId", addressId);
   formData.append("principalName", principalName);
 
-  // Append multiple logos
-  logo.forEach(file => formData.append("logo", file)); // must match backend
+  logo.forEach(file => formData.append("logo", file));
 
   const res = await api.post(API_ROUTES.INSTITUTE.CREATEINSTITUTE, formData, {
     headers: { "Content-Type": "multipart/form-data" },
@@ -306,3 +305,102 @@ export const CreateInstituteProfile = async (
 
   return res.data;
 };
+
+
+
+export const getInstituteProfile = async () => {
+  const res = await api.get(API_ROUTES.INSTITUTE.GETINSTITUTE);
+  return res.data; 
+};
+
+export const UpdateInstituteProfile = async (
+  id: string,
+  instituteName: string,
+  contactInformation: string,
+  email: string,
+  phone: string,
+  addressId: string,
+  principalName: string,
+  logo: File[]
+) => {
+  const formData = new FormData();
+  formData.append("instituteName", instituteName);
+  formData.append("contactInformation", contactInformation);
+  formData.append("email", email);
+  formData.append("phone", phone);
+  formData.append("addressId", addressId);
+  formData.append("principalName", principalName);
+
+  if (logo && logo.length > 0) {
+    logo.forEach(file => formData.append("logo", file));
+  }
+
+  const res = await api.put(API_ROUTES.INSTITUTE.UPDATE_INSTITUTE_PROFILE(id), formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  return res.data;
+};
+
+
+export const Getadminprofilemanagement = async()=>{
+  const res = await api.get(API_ROUTES.ADMIN.ADMIN_PROFILE)
+  return res.data
+}
+
+export const UpdateAdminProfile = async (
+  id: string,
+  name: string,
+  email: string,
+  phone: string,
+  gender: string,
+  dateOfBirth: string,
+  addressId?: string,
+  documents?: File[],
+  photo?: File[],
+  password?: string
+) => {
+  const formData = new FormData();
+
+  formData.append("name", name);
+  formData.append("email", email);
+  formData.append("phone", phone);
+  formData.append("gender", gender);
+  formData.append("dateOfBirth", dateOfBirth);
+
+  if (addressId) formData.append("addressId", addressId);
+  if (password) formData.append("password", password); // only append if exists
+
+  documents?.forEach(file => formData.append("documents", file));
+  photo?.forEach(file => formData.append("photo", file));
+
+  const response = await api.put(`/admin/adminprofile/${id}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  return response.data;
+};
+
+
+
+export const RequestpasswordOtp = async (email:string)=>{
+const res = await api.post(API_ROUTES.ADMIN.ADMIN_PASSWORD_REQUEST,{email})
+return res.data
+}
+
+export const verifyPasswordOtp = async (otpToken: string, otp: string) => {
+ 
+  const res = await api.post(API_ROUTES.ADMIN.ADMIN_VERIFED_PASSWORD,{otpToken,otp})
+  return res.data; 
+};
+
+
+export const updatePassword = async (id: string, newPassword: string) => {
+  const res = await api.put(`/admin/adminprofile/${id}/update-password`, { newPassword });
+  return res.data;
+};
+
+export const getclassDivision = async(className:string)=>{
+  const res = await api.get(`/admin/class/next-division/${className}`)
+  return res
+}

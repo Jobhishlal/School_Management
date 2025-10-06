@@ -17,6 +17,7 @@ export class ParentMongoRepository implements IParentRepository {
                     p.contactNumber,
                     p.whatsappNumber,
                     p.email || "",
+                    p.password,
                     p.relationship
                 )
         );
@@ -41,6 +42,7 @@ export class ParentMongoRepository implements IParentRepository {
             saved.contactNumber,
             saved.whatsappNumber,
             saved.email || "",
+            saved.password,
             saved.relationship
         );
     }
@@ -54,6 +56,7 @@ export class ParentMongoRepository implements IParentRepository {
     parent.contactNumber,
     parent.whatsappNumber,
     parent.email || "",
+    parent.password,
     parent.relationship
   );
 }
@@ -72,6 +75,7 @@ export class ParentMongoRepository implements IParentRepository {
     parent.contactNumber,
     parent.whatsappNumber,
     parent.email || "",
+    parent.password,
     parent.relationship
   );
 }
@@ -86,6 +90,7 @@ export class ParentMongoRepository implements IParentRepository {
             parent.contactNumber,
             parent.whatsappNumber,
             parent.email || "",
+            parent.password,
             parent.relationship
         );
     }
@@ -109,6 +114,7 @@ export class ParentMongoRepository implements IParentRepository {
     updatedParent.contactNumber,
     updatedParent.whatsappNumber,
     updatedParent.email || "",
+    updatedParent.password,
     updatedParent.relationship
   );
 }

@@ -1,10 +1,10 @@
 import bcrypt from "bcrypt";
 
 (async () => {
-  const plain = "p4mzVaae";
-  const hash = await bcrypt.compare(plain, "$2b$10$qppHeKBVfVuM7j7giN6yr.Lrxm112yyBh2eqIm6YEKFudeUaJ6N2y");
+  const plain = "123456";
+  const hash = await bcrypt.compare(plain, "$2b$10$O0EbPE9CrjF7HlxoLgm6aOosewL1o/nBfrnlNiVa2C9gVn6XULI1y");
   console.log(hash);
-})();
+})();                                         
 
 
 // interface ParentInterface {

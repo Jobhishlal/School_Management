@@ -11,11 +11,11 @@ export class ParentAddUseCase implements ParentUseCase {
 
     ParentValidate(parent)
 
-      const email = await this.parentRepo.findByEmail(parent.email)
+      const email = await this.parentRepo.findByEmail(parent.email || "");
     if(email){
        throw new Error("already existed Email")
     }
-    const phone = await this.parentRepo.findByContactNumber(parent.contactNumber)
+    const phone = await this.parentRepo.findByContactNumber(parent.contactNumber||"")
     if(phone){
       throw new Error("already existed Phone Number")
     }

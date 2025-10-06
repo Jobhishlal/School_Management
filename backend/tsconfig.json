@@ -9,6 +9,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src", "HashPass.js"],
+  "include": ["src", 
+  "/infrastructure/types"
+
+],
   "exclude": ["node_modules"]
 }
