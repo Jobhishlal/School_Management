@@ -36,8 +36,15 @@ import { MongoClassRepository } from "../../infrastructure/repositories/MongoCla
 import { CreateClassUseCase } from "../../applications/useCases/Classdata/CreateClass";
 import { GetAllClass } from "../../applications/useCases/Classdata/GeallClass";
 import { StudentList } from "../../applications/useCases/Students/GetAllStudents";
-
-
+import { StudentBlock } from "../../applications/useCases/Students/StudentBlock";
+import { UpdateStudentUseCase } from "../../applications/useCases/Students/UpdateStudents";
+import { UpdateClassUseCase } from "../../applications/useCases/Classdata/ClassUpdate";
+import { UpdateParentUseCase } from "../../applications/useCases/Parent/UpdateParents";
+import { AddresUpdateUseCase } from "../../applications/useCases/Address/AddressUpdate";
+import { InstituteProfileController } from "../http/controllers/ADMIN/IPRofileController";
+import { instituteUpload } from "../../infrastructure/middleware/InstituteProfile";
+import { CreateInstitute } from "../../applications/useCases/InstituteProfileManagement/CreateInsti";
+import { MongoInstituteProfileManage } from "../../infrastructure/repositories/IMongoInstituteManage";
 const repo = new AdminRepository();
 const data = new MongoSubAdminRepo();
 const value = new MongoTeacher();
@@ -63,27 +70,33 @@ const teachercreatecontroller = new TeacherCreateController(createTeacherUseCase
 const studentrepo = new MongoStudentRepo()
 const createstudentUseCase = new StudentAddUseCase(studentrepo,parentrepo)
 const getliststundetUseCase = new StudentList(studentrepo)
-
-const studentcreatecontroller = new StudentCreateController(studentrepo,createstudentUseCase,getliststundetUseCase)
+const studentblockuseCase = new StudentBlock(studentrepo)
+const updatestudentuseCase = new UpdateStudentUseCase(studentrepo)
+const studentcreatecontroller = new StudentCreateController(studentrepo,createstudentUseCase,getliststundetUseCase,studentblockuseCase,updatestudentuseCase)
 
 
 const createparentrepo = new ParentAddUseCase(parentrepo)
 const getallparentrepo = new ParentgetAll(parentrepo)
+const updateParentrepo = new UpdateParentUseCase(parentrepo)
 
-const ParentControllerroute = new ParentManagementCOntroller(createparentrepo,getallparentrepo)
+const ParentControllerroute = new ParentManagementCOntroller(createparentrepo,getallparentrepo,updateParentrepo)
 
 const addressrepo = new AddressMongoRepository()
 const createaddressusecase = new CreatAddressUseCase(addressrepo)
 const getalladdressusecase = new AddressGetAll(addressrepo)
-const AddressController = new AddressManagementController(getalladdressusecase,createaddressusecase)
+const updateaddrressusecase = new AddresUpdateUseCase(addressrepo)
+const AddressController = new AddressManagementController(getalladdressusecase,createaddressusecase,updateaddrressusecase)
 
 
 const classReop = new MongoClassRepository()
 const createClass = new CreateClassUseCase(classReop)
 const getlistclass = new GetAllClass(classReop)
-const ClassController = new ClassManagementController(createClass,getlistclass)
+const classupdateusecase = new UpdateClassUseCase(classReop)
+const ClassController = new ClassManagementController(createClass,getlistclass,classupdateusecase)
 
-
+const instituterepo=new MongoInstituteProfileManage()
+const createinstitute = new CreateInstitute(instituterepo)
+const institutecontroller = new InstituteProfileController(createinstitute)
 
 
 
@@ -113,11 +126,18 @@ Adminrouter.post("/class",(req,res)=>ClassController.create(req,res))
 Adminrouter.get('/studnets',(req,res)=>studentcreatecontroller.getAllStudents(req,res))
 Adminrouter.post("/students",studentUpload.array("photos", 5),(req,res)=>studentcreatecontroller.create(req,res))
 
+Adminrouter.put("/students/:id/block", studentcreatecontroller.blockStudent.bind(studentcreatecontroller));
+Adminrouter.put("/students/:id",studentUpload.array("photos", 5),(req, res) => studentcreatecontroller.updateStudent(req, res));
+Adminrouter.put('/class/:id',(req,res)=>ClassController.updateclass(req,res))
+Adminrouter.put('/parents/:id',(req,res)=>ParentControllerroute.updateparents(req,res))
+Adminrouter.put('/address/:id',(req,res)=>AddressController.update(req,res))
 
 
-
-
-
+Adminrouter.post(
+  '/instituteprofile',
+  instituteUpload.array("logo", 5),
+  (req, res) => institutecontroller.createInstitute(req, res)
+);
 
 
 export default Adminrouter;

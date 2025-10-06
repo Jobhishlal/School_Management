@@ -5,13 +5,17 @@ import { Students } from "../../../../domain/entities/Students";
 
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { IGetStudentSInterface } from "../../../../domain/UseCaseInterface/IStudentGetUseCase";
+import { IStudentBlock } from "../../../../domain/UseCaseInterface/IStudentBlock";
 import logger from "../../../../shared/constants/Logger";
+import { IStudentUpdateUseCase } from "../../../../domain/UseCaseInterface/IStudentupdate";
 
 export class StudentCreateController {
   constructor(
     private studentRepo: MongoStudentRepo,
     private addStudent: StudentAddUseCase,
-    private getStudent:IGetStudentSInterface
+    private getStudent:IGetStudentSInterface,
+    private studentblock:IStudentBlock,
+    private studentupdate:IStudentUpdateUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<void> {
@@ -19,7 +23,7 @@ export class StudentCreateController {
     console.log("req.body:", req.body);
     console.log("req.files:", req.files);
 
-    const { fullName, dateOfBirth, gender, parentId, addressId, classId } = req.body;
+    const { fullName, dateOfBirth, gender, parentId, addressId, classId ,blocked} = req.body;
 
     const photos =
       (req.files as Express.Multer.File[])?.map(file => ({
@@ -28,18 +32,23 @@ export class StudentCreateController {
         uploadedAt: new Date(),
       })) || [];
 
-    const student = new Students(
-      "",
-      fullName,
-      new Date(dateOfBirth),
-      gender,
-      "",         
-      parentId,
-      addressId,
-      classId,
-      photos,
-      ""  ,        
-    );
+ const student = new Students(
+  "",                
+  fullName,
+  new Date(dateOfBirth),
+  gender,
+  "",               
+  parentId,
+  addressId,
+  classId,
+  photos,
+  "",               
+  undefined,         
+  undefined,      
+  blocked,       
+  undefined,        
+  "student"       
+);
 
    
     const { student: created, tempPassword } = await this.addStudent.execute(student);
@@ -75,4 +84,72 @@ export class StudentCreateController {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:"Its Server Error"})
     } 
   }
+async blockStudent(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { blocked } = req.body;
+
+      if (!id) {
+        res.status(StatusCodes.BAD_REQUEST).json({ message: "Student id is required" });
+        return;
+      }
+
+      const updatedStudent = await this.studentblock.execute(id, blocked);
+
+      res.status(StatusCodes.OK).json({
+        message: blocked ? "Student blocked successfully" : "Student unblocked successfully",
+        data: updatedStudent
+      });
+    } catch (error: any) {
+      console.error("Error in blockStudent:", error);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message || "Server Error" });
+    }
+  }
+ async updateStudent(req: Request, res: Response): Promise<void> {
+        try {
+            const { id } = req.params;
+            const updates = { ...req.body }; 
+
+           
+            if (req.files && Array.isArray(req.files) && req.files.length > 0) {
+                
+                const newPhotos = req.files.map((file: any) => ({
+                    url: file.path, 
+                    filename: file.filename,
+                    uploadedAt: new Date(),
+                }));
+                
+           
+                updates.photos = newPhotos;
+            }
+
+        
+            if (updates.dateOfBirth && typeof updates.dateOfBirth === 'string') {
+                updates.dateOfBirth = new Date(updates.dateOfBirth);
+            }
+
+            const updatedStudent = await this.studentupdate.execute(id, updates);
+
+            if (!updatedStudent) {
+                res.status(StatusCodes.NOT_FOUND).json({ message: "Student Not Found" });
+                return;
+            }
+            
+            res.status(StatusCodes.OK).json({ 
+                message: "Student updated successfully", 
+                data: updatedStudent 
+            });
+
+        } catch (error: any) {
+            logger.info(error);
+            const statusCode = error.message?.includes("required") || 
+                             error.message?.includes("Invalid") ? 
+                             StatusCodes.BAD_REQUEST : StatusCodes.INTERNAL_SERVER_ERROR;
+
+            res.status(statusCode).json({
+                message: error.message || "Failed to update student",
+            });
+        }
+    }
+
 }

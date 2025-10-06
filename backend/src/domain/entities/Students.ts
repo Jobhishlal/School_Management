@@ -13,6 +13,10 @@ export class Students {
     public photos: { url: string; filename: string; uploadedAt: Date }[] = [],
     public Password:string,
     public parent?: { name: string; contactNumber: string; email?: string; relationship?: string }, 
-    public classDetails?: { className: string; division: string; department: string; rollNumber: string } 
+    public classDetails?: { className: string; division: string; department: string; rollNumber: string } ,
+    public blocked: boolean = false,
+    public address?: { street?: string; city?: string; state?: string; pincode?: string } ,
+    public role?:string
+    
   ) {}
 }

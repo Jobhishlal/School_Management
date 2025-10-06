@@ -2,6 +2,7 @@ import api from "./../api";
 import { API_ROUTES } from "../../constants/routes/Route";
 import type { AdminDoc, AdminResponseDTO } from '../../types/Admin';
 import type {VerifyOtpResponse,ResendOtpResponse} from '../../types/Role'
+import type{ LoginResponse } from "../../types/AuthRolecheck";
 
 
 export const SignupAdmin = async (data: AdminDoc): Promise<AdminResponseDTO> => {
@@ -19,7 +20,7 @@ export const ResendOtp = async (oldOtpToken: string): Promise<ResendOtpResponse>
 };
 
 
-export const MainAdminLogin = async (email: string, password: string) => {
-  const res = await api.post(API_ROUTES.SUPERADMIN.LOGIN, { email, password });
+export const MainAdminLogin = async (email?: string, password?: string, studentId?: string) => {
+  const res = await api.post(API_ROUTES.SUPERADMIN.LOGIN, { email, password, studentId });
   return res.data;
 };

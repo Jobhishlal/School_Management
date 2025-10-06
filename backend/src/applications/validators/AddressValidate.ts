@@ -35,3 +35,39 @@ export function validateAddress(address: AddressEntity) {
 
   return true;
 }
+
+
+export function validateAddressUpdate(update: Partial<AddressEntity>) {
+  if (update.street !== undefined) {
+    if (!update.street.trim()) throw new Error(AddressErrors.REQUIRED);
+    if (update.street.length < 3 || update.street.length > 100) {
+      throw new Error(AddressErrors.STREET_LENGTH);
+    }
+  }
+
+  if (update.city !== undefined) {
+    if (!/^[A-Za-z\s]+$/.test(update.city)) {
+      throw new Error(AddressErrors.CITY_INVALID);
+    }
+    if (update.city.length < 2 || update.city.length > 50) {
+      throw new Error(AddressErrors.CITY_LENGTH);
+    }
+  }
+
+  if (update.state !== undefined) {
+    if (!/^[A-Za-z\s]+$/.test(update.state)) {
+      throw new Error(AddressErrors.STATE_INVALID);
+    }
+    if (update.state.length < 2 || update.state.length > 50) {
+      throw new Error(AddressErrors.STATE_LENGTH);
+    }
+  }
+
+  if (update.pincode !== undefined) {
+    if (!/^[0-9]{6}$/.test(update.pincode)) {
+      throw new Error(AddressErrors.PINCODE_INVALID);
+    }
+  }
+
+  return true;
+}

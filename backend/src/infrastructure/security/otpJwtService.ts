@@ -6,7 +6,7 @@ const OTP_SECRET = process.env.JWT_OTP_SECRET || "super-secret-otp";
 export interface OtpPayload {
   email: string;
   otp: string;
-  role?: "super" | "sub" | "teacher"; 
+  role?: "super" | "sub" | "teacher" |"students"; 
   id?: string;            
   username?: string;
   password?: string;

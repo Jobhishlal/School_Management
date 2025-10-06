@@ -19,3 +19,20 @@ export function ClassValidate(classData: Class) {
 
   return true;
 }
+
+
+export function validateClassUpdate(update: Partial<Class>) {
+  if (update.className !== undefined) {
+    if (!allowedClasses.includes(update.className)) {
+      throw new Error(ClassErrors.INVALID_SELECTION);
+    }
+  }
+
+  if (update.division !== undefined) {
+    if (!allowedDivisions.includes(update.division)) {
+      throw new Error(ClassErrors.INVALID_SELECTION);
+    }
+  }
+
+  return true;
+}

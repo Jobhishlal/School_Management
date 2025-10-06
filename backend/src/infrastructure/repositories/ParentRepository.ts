@@ -90,4 +90,28 @@ export class ParentMongoRepository implements IParentRepository {
         );
     }
 
+    async update( id: string, update: Partial<ParentEntity>): Promise<ParentEntity | null> {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new Error(`Invalid Parent Id: ${id}`);
+  }
+
+  const updatedParent = await ParentModel.findByIdAndUpdate(
+    id,
+    { $set: update }, 
+    { new: true }    
+  );
+
+  if (!updatedParent) return null;
+
+  return new ParentEntity(
+    updatedParent.id.toString(),
+    updatedParent.name,
+    updatedParent.contactNumber,
+    updatedParent.whatsappNumber,
+    updatedParent.email || "",
+    updatedParent.relationship
+  );
+}
+
+
 }

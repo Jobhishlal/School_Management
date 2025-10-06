@@ -11,4 +11,4 @@ MainAdmin.post("/login", controller.login.bind(controller));
 MainAdmin.post("/verify-otp", (req, res) => controller.verifyOtp(req, res));
 MainAdmin.post("/resend-otp", (req, res) => controller.resendOtp(req, res));
 
-export default MainAdmin;
+export default MainAdmin; 

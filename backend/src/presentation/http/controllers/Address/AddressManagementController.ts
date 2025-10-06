@@ -3,11 +3,13 @@ import { AddressGetAll } from "../../../../applications/useCases/Address/GetAllA
 import { AddressEntity } from "../../../../domain/entities/Address";
 import { CreatAddressUseCase } from "../../../../applications/useCases/Address/CreateAddress";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
+import { IAddressUpdateUseCase } from "../../../../domain/UseCaseInterface/IAddressUpdateUseCase";
 
 export class AddressManagementController  {
     constructor(
         private readonly addressgetall: AddressGetAll,
-        private readonly createaddress: CreatAddressUseCase
+        private readonly createaddress: CreatAddressUseCase,
+        private readonly addressupdate:IAddressUpdateUseCase
     ) {}
 
     async create(req: Request, res: Response): Promise<void> {
@@ -22,10 +24,10 @@ export class AddressManagementController  {
                 pincode
             );
 
-            console.log("req.body:", req.body);
+            
 
             const addressCreated = await this.createaddress.execute(newAddress);
-
+             console.log("created",addressCreated) 
             res.status(StatusCodes.OK).json({
                 message: "Successfully created address",
                 address: {
@@ -37,10 +39,10 @@ export class AddressManagementController  {
                 }
             });
         }   catch (err: any) {
-  console.error(err.message);
-  res.status(StatusCodes.BAD_REQUEST).json({
-    message: err.message || "Failed to create parent"
-  });
+        console.error(err.message);
+         res.status(StatusCodes.BAD_REQUEST).json({
+        message: err.message || "Failed to create parent"
+        });
 }
     }
 
@@ -54,5 +56,25 @@ export class AddressManagementController  {
                 error: error.message || error
             });
         }
+    }
+    async update(req:Request,res:Response):Promise<void>{
+
+    try {
+        const {id}=req.params;
+        const update = req.body;
+        const updateaddress = await this.addressupdate.execute(id,update)
+        console.log(updateaddress)
+        if(!updateaddress){
+            res.status(StatusCodes.UNAUTHORIZED).json({message:"Does not existed"})
+        }
+        res.status(StatusCodes.CREATED).json({message:"Address update succesfuly",address:updateaddress})
+
+    } catch (error:any) {
+           console.error("Error updating class:", error);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: error.message || "Failed to update class"
+      });
+    }
+
     }
 }
