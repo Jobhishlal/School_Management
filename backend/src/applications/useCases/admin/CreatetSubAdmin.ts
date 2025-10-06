@@ -1,67 +1,78 @@
 import { SubAdminEntities } from "../../../domain/entities/SubAdmin";
 import { AdminRole } from "../../../domain/enums/AdminRole";
 import { SubAdminRepository } from "../../../domain/repositories/SubAdminCreate";
-import { genaratePassword } from "../../../shared/constants/utils/TempPassGenarator";
-import { SendEMail } from "../../../infrastructure/providers/EmailService";
 import { ICreateAdmin } from "../../../domain/UseCaseInterface/ICreateSubAdmin";
-import bcrypt from "bcrypt";
-
-export class CreateSubAdmin implements ICreateAdmin{
-  constructor(private subAdminRepo: SubAdminRepository) {}
-
-  async execute(input: {
-    name: string;
-    email: string;
-    phone: string;
-    role: AdminRole;
-    blocked:boolean;
-    major_role:string;
-  }): Promise<SubAdminEntities> { 
-
-      const existemail = await this.subAdminRepo.findByEmail(input.email);
-       if (existemail) {
-       throw new Error("This email already exists");
-       }
-
-      const exist = await this.subAdminRepo.findByPhone(input.phone);
-      if (exist) {
-      throw new Error("This phone number already exists");
-      }
-
-   
-    const tempPassword = genaratePassword();
+import { ICheckSubAdminDuplicate } from "../../../domain/UseCaseInterface/SubAdmin/ICheckSubAdminDuplicate";
+import { IPasswordsubadmin } from "../../../domain/UseCaseInterface/SubAdmin/IPasswordHash";
+import { ISendEmailService } from "../../../domain/UseCaseInterface/SubAdmin/ISendEmailService";
 
 
-    const hashed = await bcrypt.hash(tempPassword, 10);
+export class CreateSubAdmin implements ICreateAdmin {
+  constructor(
+    private readonly mongorepo:SubAdminRepository,
+    private readonly subadminduplicate:ICheckSubAdminDuplicate,
+    private readonly passwordcheck:IPasswordsubadmin,
+    private readonly emailservice:ISendEmailService
 
-    const subAdmin = new SubAdminEntities(
-      "",
-      input.name,
-      input.email,
-      input.phone,
-      input.role,
-      hashed,
-      new Date(),
-      new Date(),
-      input.blocked,
-      input.major_role
-    
-    );
+  ){}
+
+ 
+  async execute(input: { 
+  name: string; 
+  email: string; 
+  phone: string; 
+  role: AdminRole; 
+  blocked: boolean; 
+  major_role: string; 
+  dateOfBirth: Date; 
+  gender: "Male" | "Female" | "Other"; 
+  documents?: { url: string; filename: string; uploadedAt: Date }[];
+  photo?: { url: string; filename: string; uploadedAt: Date }[];
+  addressId: string;
+}): Promise<SubAdminEntities> {
 
 
-    const saved = await this.subAdminRepo.create(subAdmin);
+  await this.subadminduplicate.execute(input.email, input.phone);
+
+ 
+  const { plain: tempPassword, hashed } = await this.passwordcheck.execute();
 
 
-    await SendEMail(
-      input.email,
-      "Your SubAdmin Account Credentials",
-     `Hello ${input.name},\n\nYour temporary password is: ${tempPassword}\n\nPlease login and change it immediately.`
-     );
-   
+  const subAdmin = new SubAdminEntities(
+    "",
+    input.name,
+    input.email,
+    input.phone,
+    input.role,
+    hashed,
+    new Date(),
+    new Date(),
+    input.blocked,
+    input.major_role,
+    input.dateOfBirth,
+    input.gender,
+    input.documents || [],
+    input.addressId,
+    input.photo || []
+  );
 
-    return saved;
-  }
-   async getAll(): Promise<SubAdminEntities[]> {
-    return await this.subAdminRepo.findAll();
-  }
+  const savedSubAdmin = await this.mongorepo.create(subAdmin);
+
+
+  await this.emailservice.execute(
+    input.email,
+    "Your SubAdmin Account Credentials",
+    `Hello ${input.name},\n\nYour temporary password is: ${tempPassword}\n\nPlease login and change it immediately.`
+  );
+
+
+  return savedSubAdmin;
+}
+
+async getAll(): Promise<SubAdminEntities[]> { 
+  
+  return await this.mongorepo.findAll();
+ }
+
+
 }

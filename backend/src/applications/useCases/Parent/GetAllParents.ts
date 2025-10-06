@@ -1,12 +1,22 @@
-import { ParentEntity } from "../../../domain/entities/Parents";
 
 import { IParentRepository } from "../../../domain/repositories/IParentsRepository";
+import { IGetAllParentsUseCase } from "../../../domain/UseCaseInterface/ParentuseCase/IparentGetUseCase";
+import { ParentResponseDTO } from "../../dto/ParentResponse";
 
+export class GetAllParentsUseCase implements IGetAllParentsUseCase {
+  constructor(private readonly parentRepo: IParentRepository) {}
 
-export class ParentgetAll {
-    constructor(private readonly getall:IParentRepository){}
-   async execute():Promise<ParentEntity[]>{
-    const parents  = this.getall.getAll()
-     return parents
-   }
+  async execute(): Promise<ParentResponseDTO[]> {
+    const parents = await this.parentRepo.getAll();
+
+    
+    return parents.map((parent) => ({
+      id: parent.id,
+      name: parent.name ?? "",
+      contactNumber: parent.contactNumber,
+      whatsappNumber: parent.whatsappNumber,
+      email: parent.email,
+      relationship: parent.relationship,
+    }));
+  }
 }

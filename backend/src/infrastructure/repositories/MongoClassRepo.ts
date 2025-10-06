@@ -63,4 +63,41 @@ async updateClass(id: string, update: Partial<Class>): Promise<Class | null> {
     updatedClass.subjects
   );
 }
+async assignClassWithDivision(className: string): Promise<Class | null> {
+  const maxStudents = 20;
+  const divisions = ["A", "B", "C", "D"];
+
+  for (const division of divisions) {
+   
+    const count = await ClassModel.countDocuments({ className, division });
+
+    if (count < maxStudents) {
+     
+      let existing = await ClassModel.findOne({ className, division });
+
+      if (!existing) {
+        existing = await ClassModel.create({
+          className,
+          division,
+          rollNumber: "",
+          department: undefined,
+          subjects: []
+        });
+      }
+
+      
+      return new Class(
+        (existing._id as mongoose.Types.ObjectId).toString(),
+        existing.className,
+        existing.division,
+        existing.rollNumber,
+        existing.department,
+        existing.subjects
+      );
+    }
+  }
+
+
+  return null;
+}
 }

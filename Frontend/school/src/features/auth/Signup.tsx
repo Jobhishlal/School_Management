@@ -1,35 +1,31 @@
-
-
-
-
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { SignupAdmin } from "../../services/Auth/Auth"; 
-import type { AdminDoc } from "../../types/Admin";
+import { ParentSignup } from "../../services/Auth/Auth"; 
 import { MESSAGE } from "../../constants/AuthErrorMessages";
 import { showToast } from "../../utils/toast";
-import { FcGoogle } from "react-icons/fc";
 import { setCredentials } from "../../store/slice/authslice";
 import { useNavigate } from "react-router-dom";
-import  { AxiosError } from "axios";
+import { AxiosError } from "axios";
+import { FcGoogle } from "react-icons/fc";
 
-export default function SignupAdminPage() {
+export default function ParentSignupPage() {
   const navigate = useNavigate();
-  const [form, setForm] = useState<AdminDoc>({
-    username: "",
+  const dispatch = useDispatch();
+
+  const [form, setForm] = useState({
+    studentId: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
 
+  const [loading, setLoading] = useState(false);
 
-  const dispatch = useDispatch();
-
-  // ----------------- Signup Step -----------------
+  // ----------------- Form Submit -----------------
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!form.username || !form.email || !form.password || !form.confirmPassword) {
+    if (!form.studentId || !form.email || !form.password || !form.confirmPassword) {
       showToast(MESSAGE.ERROR.FIELDS_REQUIRED, "error");
       return;
     }
@@ -39,33 +35,32 @@ export default function SignupAdminPage() {
       return;
     }
 
-    if (!/^[a-zA-Z0-9_]{3,20}$/.test(form.username)) {
-      showToast(MESSAGE.ERROR.USERVALID, "error");
-      return;
-    }
     if (!/^\S+@\S+\.\S+$/.test(form.email)) {
       showToast(MESSAGE.ERROR.INVALID_EMAIL, "error");
       return;
     }
+
     if (form.password.length < 8) {
       showToast(MESSAGE.ERROR.WEAK_PASSWORD, "error");
       return;
     }
 
     try {
-      const res = await SignupAdmin(form);
-      navigate("/verify-otp", { state: { otpToken: res.otpToken } }); 
-      showToast("OTP sent to your email!", "success");
-    }
-catch (err: unknown) {
-  const error = err as AxiosError<{ message: string }>;
+      setLoading(true);
+      const res = await ParentSignup({
+        studentId: form.studentId,
+        email: form.email,
+        password: form.password,
+      });
 
-  if (error.response?.data?.message) {
-    showToast(error.response.data.message, "error");
-  } else {
-    showToast("Signup failed", "error");
-  }
-}
+      showToast("Parent signed up successfully", "success");
+      navigate("/parent/dashboard");
+    } catch (err: unknown) {
+      const error = err as AxiosError<{ message: string }>;
+      showToast(error.response?.data?.message || "Signup failed", "error");
+    } finally {
+      setLoading(false);
+    }
   }
 
   // ----------------- Google Signup -----------------
@@ -89,16 +84,14 @@ catch (err: unknown) {
           return;
         }
 
-        if (!accessToken || !refreshToken || !user) {
-          console.error("Tokens not received");
-          return;
-        }
+        if (!accessToken || !refreshToken || !user) return;
 
         dispatch(setCredentials({ accessToken, refreshToken, user }));
-
         window.removeEventListener("message", listener);
         popup?.close();
         showToast("Google login successful", "success");
+
+        navigate("/parent/dashboard");
       };
 
       window.addEventListener("message", listener);
@@ -109,9 +102,9 @@ catch (err: unknown) {
     }
   }
 
-  // ----------------- UI -----------------
   return (
     <div className="relative min-h-screen flex items-center justify-center px-4 font-inter">
+ 
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: "url('/SuperadminLogin.jpg')" }}
@@ -120,57 +113,56 @@ catch (err: unknown) {
       </div>
 
       <div className="relative z-10 w-full max-w-md bg-[#1E1E1E]/95 p-8 rounded-2xl shadow-2xl border border-white/20">
-        <h2 className="text-4xl font-extrabold text-white mb-2 tracking-tight">
-          Sign Up
+        <h2 className="text-3xl font-bold text-white mb-4 text-center">
+          Parent Signup
         </h2>
-        <p className="text-gray-300 mb-6 text-lg">
-          Embark on your educational journey
+        <p className="text-gray-300 mb-6 text-center">
+          Enter details to create your parent account
         </p>
 
-        {/* Signup Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input
-            name="username"
-            value={form.username}
-            onChange={(e) => setForm({ ...form, username: e.target.value })}
-            className="w-full px-4 py-3 rounded-lg bg-gray-800/80 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500"
-            placeholder="User Name"
+            type="text"
+            placeholder="Student ID"
+            value={form.studentId}
+            onChange={(e) => setForm({ ...form, studentId: e.target.value })}
+            className="w-full px-4 py-3 rounded-lg bg-gray-800/80 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500"
           />
+
           <input
-            name="email"
             type="email"
+            placeholder="Email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="w-full px-4 py-3 rounded-lg bg-gray-800/80 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500"
-            placeholder="Email"
+            className="w-full px-4 py-3 rounded-lg bg-gray-800/80 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500"
           />
+
           <input
-            name="password"
             type="password"
+            placeholder="Password"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
-            className="w-full px-4 py-3 rounded-lg bg-gray-800/80 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500"
-            placeholder="Password"
+            className="w-full px-4 py-3 rounded-lg bg-gray-800/80 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500"
           />
+
           <input
-            name="confirmPassword"
             type="password"
-            value={form.confirmPassword}
-            onChange={(e) =>
-              setForm({ ...form, confirmPassword: e.target.value })
-            }
-            className="w-full px-4 py-3 rounded-lg bg-gray-800/80 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500"
             placeholder="Confirm Password"
+            value={form.confirmPassword}
+            onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+            className="w-full px-4 py-3 rounded-lg bg-gray-800/80 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500"
           />
 
           <button
             type="submit"
+            disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all"
           >
-            Send OTP
+            {loading ? "Processing..." : "SIGN UP"}
           </button>
         </form>
 
+       
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-600"></div>
@@ -180,6 +172,7 @@ catch (err: unknown) {
           </div>
         </div>
 
+        
         <button
           onClick={handleGoogleLogin}
           className="w-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-white font-semibold py-3 rounded-lg"
@@ -188,7 +181,8 @@ catch (err: unknown) {
           Sign Up with Google
         </button>
 
-        <p className="text-gray-300 mt-6 text-sm text-center">
+        
+        <p className="text-gray-300 mt-4 text-center text-sm">
           Already have an account?{" "}
           <a href="/login" className="text-blue-400 hover:underline font-medium">
             Login
@@ -198,4 +192,3 @@ catch (err: unknown) {
     </div>
   );
 }
-

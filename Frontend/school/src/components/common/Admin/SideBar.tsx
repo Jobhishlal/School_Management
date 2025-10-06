@@ -1,6 +1,5 @@
 
 
-
 import React, { useState } from "react";
 import {
   Sun,
@@ -21,13 +20,10 @@ import {
   Menu,
   X,
   Bell,
-  Search,
   ChevronDown,
   User,
-  ListPlus,
-  Layers,
 } from "lucide-react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../layout/ThemeContext";
 
 type Props = {
@@ -42,16 +38,25 @@ export default function SchoolNavbar({ children }: Props) {
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const userRole = localStorage.getItem("role");
 
   const menuItems = [
     {
       label: "SCHOOL MANAGEMENT",
       links: [
         { icon: LayoutDashboard, text: "Dashboard", path: "/dashboard" },
-    
         { icon: Users, text: "Admins Management", path: "/admins" },
         { icon: GraduationCap, text: "Student Management", path: "/students" },
-        { icon: UserCheck, text: "Parents Management", path: "/parents" },
+
+        ...(userRole === "sub_admin"
+          ? [{ icon: UserCheck, text: "Admin Profile", path: "/adminprofile" }]
+          : []),
+        ...(userRole === "super_admin"
+          ? [{ icon: Settings, text: "Institute Profile", path: "/instituteprofile" }]
+          : []),
+
         { icon: Megaphone, text: "Teacher Management", path: "/teachers" },
         { icon: AlertCircle, text: "Raise & View Complaints", path: "/complaints" },
         { icon: DollarSign, text: "Finance", path: "/finance" },
@@ -64,7 +69,6 @@ export default function SchoolNavbar({ children }: Props) {
         { icon: MessageCircle, text: "Communication", path: "/communication" },
         { icon: FileText, text: "Leave Request", path: "/leave-request" },
         { icon: Calendar, text: "Time Table", path: "/timetable" },
-        { icon: Settings, text: "Settings", path: "/instituteprofile" },
       ],
     },
   ];
@@ -79,7 +83,23 @@ export default function SchoolNavbar({ children }: Props) {
   const textSecondary = isDark ? "text-slate-400" : "text-slate-600";
   const activeBg = isDark ? "bg-blue-600/20" : "bg-blue-50";
   const activeText = isDark ? "text-blue-400" : "text-blue-600";
-  const activeBorder = isDark ? "border-blue-400/50" : "border-blue-500/50";
+
+  // ------------------ LOGOUT FUNCTION ------------------
+  const handleLogout = () => {
+    // Clear tokens
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("role");
+    localStorage.removeItem("otpToken");
+
+    // Navigate to login
+    navigate("/login", { replace: true });
+
+    // Prevent back navigation
+    window.history.pushState(null, "", "/login");
+    window.onpopstate = () => {
+      window.history.go(1);
+    };
+  };
 
   return (
     <div
@@ -112,11 +132,7 @@ export default function SchoolNavbar({ children }: Props) {
             onClick={toggleTheme}
             className={`p-2.5 rounded-xl ${hoverBg} transition-all duration-300 hover:scale-105 hover:rotate-12`}
           >
-            {isDark ? (
-              <Sun className="text-amber-400" size={20} />
-            ) : (
-              <Moon className="text-slate-600" size={20} />
-            )}
+            {isDark ? <Sun className="text-amber-400" size={20} /> : <Moon className="text-slate-600" size={20} />}
           </button>
         </div>
       </div>
@@ -139,9 +155,7 @@ export default function SchoolNavbar({ children }: Props) {
                 </div>
               </div>
               <div className="flex flex-col">
-                <span className={`font-bold text-lg tracking-tight ${textPrimary}`}>
-                  SCHOOL MANAGEMENT
-                </span>
+                <span className={`font-bold text-lg tracking-tight ${textPrimary}`}>SCHOOL MANAGEMENT</span>
               </div>
             </div>
           </div>
@@ -149,9 +163,7 @@ export default function SchoolNavbar({ children }: Props) {
           <div className="flex-1 px-4 space-y-4">
             {menuItems.map((section, sectionIndex) => (
               <div key={sectionIndex}>
-                <h3 className="uppercase text-slate-500 text-xs font-semibold py-2">
-                  {section.label}
-                </h3>
+                <h3 className="uppercase text-slate-500 text-xs font-semibold py-2">{section.label}</h3>
                 <div className="space-y-1">
                   {section.links.map((item, index) => {
                     const Icon = item.icon;
@@ -179,9 +191,10 @@ export default function SchoolNavbar({ children }: Props) {
             ))}
           </div>
 
+          {/* Sidebar Logout */}
           <div className="p-4">
             <button
-              onClick={() => {}}
+              onClick={handleLogout}
               className="w-full flex items-center justify-center space-x-3 px-4 py-3 rounded-xl bg-gray-700/50 hover:bg-gray-700 text-white transition-colors duration-200"
             >
               <LogOut size={18} />
@@ -191,11 +204,13 @@ export default function SchoolNavbar({ children }: Props) {
         </div>
 
         <div className={`flex-1 flex flex-col h-full ${isDark ? "bg-[#121A21]" : "bg-slate-50"}`}>
+          {/* Header */}
           <div className={`hidden lg:flex items-center justify-between px-8 py-4 ${headerBg} ${headerBorder} border-b backdrop-blur-xl shadow-sm`}>
             <div className="flex items-center space-x-6">
               <div className={`px-6 py-3 rounded-2xl ${cardBg} backdrop-blur-xl border ${headerBorder} shadow-sm`}>
                 <span className={`text-xl font-bold ${textPrimary} tracking-tight`}>
-                  {menuItems.find(section => section.links.find(link => link.path === location.pathname))?.links.find(link => link.path === location.pathname)?.text || "Dashboard"}
+                  {menuItems.find(section => section.links.find(link => link.path === location.pathname))
+                    ?.links.find(link => link.path === location.pathname)?.text || "Dashboard"}
                 </span>
               </div>
             </div>
@@ -234,16 +249,23 @@ export default function SchoolNavbar({ children }: Props) {
                     <User size={16} className="text-white" />
                   </div>
                   <span className={`text-sm font-medium ${textPrimary}`}>Admin</span>
-                  <ChevronDown size={16} className={`${textSecondary} transition-transform duration-200 ${showProfileDropdown ? 'rotate-180' : ''}`} />
+                  <ChevronDown
+                    size={16}
+                    className={`${textSecondary} transition-transform duration-200 ${showProfileDropdown ? "rotate-180" : ""}`}
+                  />
                 </button>
 
+                {/* Profile Dropdown Logout */}
                 {showProfileDropdown && (
                   <div className={`absolute right-0 top-full mt-2 w-48 ${cardBg} backdrop-blur-xl border ${headerBorder} rounded-xl shadow-xl z-50 py-2`}>
                     <Link to="/profile" className={`flex items-center space-x-3 px-4 py-3 ${hoverBg} transition-colors duration-200`}>
                       <Settings size={16} className={textSecondary} />
                       <span className={`text-sm ${textPrimary}`}>Settings</span>
                     </Link>
-                    <button className={`w-full flex items-center space-x-3 px-4 py-3 ${hoverBg} transition-colors duration-200 text-red-500 hover:text-red-600`}>
+                    <button
+                      onClick={handleLogout}
+                      className={`w-full flex items-center space-x-3 px-4 py-3 ${hoverBg} transition-colors duration-200 text-red-500 hover:text-red-600`}
+                    >
                       <LogOut size={16} />
                       <span className="text-sm">Logout</span>
                     </button>
@@ -267,12 +289,9 @@ export default function SchoolNavbar({ children }: Props) {
           onClick={toggleMobileMenu}
         />
       )}
-      
+
       {showProfileDropdown && (
-        <div
-          className="fixed inset-0 z-30"
-          onClick={() => setShowProfileDropdown(false)}
-        />
+        <div className="fixed inset-0 z-30" onClick={() => setShowProfileDropdown(false)} />
       )}
     </div>
   );

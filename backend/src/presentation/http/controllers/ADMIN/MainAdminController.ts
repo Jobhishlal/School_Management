@@ -12,7 +12,9 @@ export class AdminLoginController {
   
  async login(req: Request, res: Response): Promise<void> {
   try {
+    console.log("reached only controller")
     const { email, password, studentId } = req.body;
+
     logger.info(JSON.stringify(req.body));
 
     const result = await this.authService.login(email, password, studentId);
@@ -59,6 +61,8 @@ export class AdminLoginController {
     }
 
     if (error.message === "UserDoesNotExist") {
+      console.log("user doesnot exist",)
+      
       res.status(StatusCodes.NOT_FOUND).json({ message: "User does not exist" });
       return;
     }
@@ -72,20 +76,26 @@ export class AdminLoginController {
 
 
   
-  async verifyOtp(req: Request, res: Response): Promise<void> {
-    try {
-      const { otpToken, otp } = req.body;
-      const { authToken, role } = await this.authService.verifyOtp(otpToken, otp);
+async verifyOtp(req: Request, res: Response): Promise<void> {
+  try {
+    const { otpToken, otp } = req.body;
+    console.log("token", req.body);
 
-      res.status(StatusCodes.OK).json({
-        message: OtpError.SUCCESS,
-        authToken,
-        role,
-      });
-    } catch (error: any) {
-      res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
-    }
+    
+    const { authToken, role, id, email } = await this.authService.verifyOtp(otpToken, otp);
+
+    res.status(StatusCodes.OK).json({
+      message: OtpError.SUCCESS,
+      authToken,
+      role,
+      id,     
+      email,  
+    });
+  } catch (error: any) {
+    res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
   }
+}
+
 
 
   async resendOtp(req: Request, res: Response): Promise<void> {

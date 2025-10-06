@@ -1,5 +1,5 @@
 
-import { ParentgetAll } from "../../../../applications/useCases/Parent/GetAllParents";
+import { GetAllParentsUseCase } from "../../../../applications/useCases/Parent/GetAllParents";
 import { ParentAddUseCase } from "../../../../applications/useCases/Parent/ParentUseCase";
 import { Request,Response } from "express";
 import { ParentEntity } from "../../../../domain/entities/Parents";
@@ -10,7 +10,7 @@ import { Iupdatparentusecase } from "../../../../domain/UseCaseInterface/IParent
 export class ParentManagementCOntroller{
     constructor(
         private readonly ParentAddController:ParentAddUseCase,
-        private readonly getAllParents:ParentgetAll,
+        private readonly getAllParents:GetAllParentsUseCase,
         private readonly updateParents:Iupdatparentusecase
 
     ){}
