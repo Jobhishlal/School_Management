@@ -14,7 +14,6 @@ import { FormLayout } from "../../components/Form/FormLayout";
 import { SelectInput } from "../../components/Form/SelectInput";
 import { useTheme } from "../../components/layout/ThemeContext";
 
-// --- Custom Component: ProfileSection ---
 const ProfileSection = ({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) => (
   <div className={`space-y-4 p-4 rounded-lg ${className}`}>
     <h3 className="text-xl font-semibold border-b pb-2">{title}</h3>

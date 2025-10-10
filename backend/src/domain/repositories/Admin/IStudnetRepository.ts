@@ -7,4 +7,5 @@ export interface StudentDetails {
   updateBlockStatus(id: string, blocked: boolean): Promise<Students>;
   updateAll(id:string,update:Partial<Students>):Promise<Students|null>
   findStudentid(studentId:string):Promise<Students | null>
+  findStudentById(id:string):Promise<Students | null> 
 }

@@ -1,80 +1,54 @@
-
-
 import React, { useState } from "react";
 import {
   Sun,
   Moon,
-  School,
   LayoutDashboard,
+  User,
+  Calendar,
+  FileText,
+  MessageCircle,
   Users,
   GraduationCap,
-  UserCheck,
-  Megaphone,
-  AlertCircle,
-  DollarSign,
-  MessageCircle,
-  FileText,
-  Calendar,
-  Settings,
-  LogOut,
-  Menu,
-  X,
+  BookOpen,
+  CreditCard,
   Bell,
   ChevronDown,
-  User,
+  X,
+  Menu,
+  LogOut, 
+  School, 
 } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../layout/ThemeContext";
 
-type Props = {
-  children?: React.ReactNode;
-};
+type Props = { children?: React.ReactNode };
 
-export default function SchoolNavbar({ children }: Props) {
+export default function StudentSidebar({ children }: Props) {
   const { isDark, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-
-  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+  const studentId = localStorage.getItem("studentId");
 
   const location = useLocation();
   const navigate = useNavigate();
 
-  const userRole = localStorage.getItem("role");
+  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
   const menuItems = [
-    {
-      label: "SCHOOL MANAGEMENT",
-      links: [
-        { icon: LayoutDashboard, text: "Dashboard", path: "/dashboard" },
-        { icon: Users, text: "Admins Management", path: "/admins" },
-        { icon: GraduationCap, text: "Student Management", path: "/students" },
-
-        ...(userRole === "sub_admin"
-          ? [{ icon: UserCheck, text: "Admin Profile", path: "/adminprofile" }]
-          : []),
-        ...(userRole === "super_admin"
-          ? [{ icon: Settings, text: "Institute Profile", path: "/instituteprofile" }]
-          : []),
-
-        { icon: Megaphone, text: "Teacher Management", path: "/teachers" },
-        { icon: AlertCircle, text: "Class Base Access", path: "/classbaseview" },
-        { icon: DollarSign, text: "Finance", path: "/finance" },
-        { icon: GraduationCap, text: "Student Management", path: "/student-management" },
-      ],
-    },
-    {
-      label: "COMMUNICATION",
-      links: [
-        { icon: MessageCircle, text: "Communication", path: "/communication" },
-        { icon: FileText, text: "Leave Request", path: "/leave-request" },
-        { icon: Calendar, text: "Time Table", path: "/timetable" },
-      ],
-    },
+    { icon: LayoutDashboard, text: "Dashboard", path: "/student-dashboard" },
+    { icon: User, text: "Profile", path: "/student/profile" },
+    { icon: Calendar, text: "Attendance", path: "/student/attendance" },
+    { icon: FileText, text: "Assignments", path: "/student/assignments" },
+    { icon: Calendar, text: "Time Table", path: "/student/timetable" },
+    { icon: BookOpen, text: "Exams & Results", path: "/student/exams" },
+    { icon: CreditCard, text: "Fees", path: "/student/fees" },
+    { icon: MessageCircle, text: "Notices / Messages", path: "/student/notices" },
+    { icon: Users, text: "Meet", path: "/student/meet" },
+    { icon: GraduationCap, text: "AI Study Helper", path: "/student/ai-helper" },
   ];
 
+
   const sidebarBg = isDark ? "bg-[#121A21]" : "bg-[#fafbfc]";
-  const sidebarBorder = isDark ? "border-slate-700/50" : "border-slate-200/60";
   const headerBg = isDark ? "bg-[#121A21]" : "bg-white";
   const headerBorder = isDark ? "border-slate-700/30" : "border-slate-200/50";
   const cardBg = isDark ? "bg-slate-800/50" : "bg-white";
@@ -84,21 +58,9 @@ export default function SchoolNavbar({ children }: Props) {
   const activeBg = isDark ? "bg-blue-600/20" : "bg-blue-50";
   const activeText = isDark ? "text-blue-400" : "text-blue-600";
 
-  // ------------------ LOGOUT FUNCTION ------------------
   const handleLogout = () => {
-    // Clear tokens
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("role");
-    localStorage.removeItem("otpToken");
-
-    // Navigate to login
+    localStorage.clear();
     navigate("/login", { replace: true });
-
-    // Prevent back navigation
-    window.history.pushState(null, "", "/login");
-    window.onpopstate = () => {
-      window.history.go(1);
-    };
   };
 
   return (
@@ -107,6 +69,7 @@ export default function SchoolNavbar({ children }: Props) {
         isDark ? "bg-[#121A21]" : "bg-slate-50"
       }`}
     >
+    
       <div
         className={`lg:hidden flex items-center justify-between px-4 py-3 ${headerBg} ${headerBorder} border-b backdrop-blur-xl`}
       >
@@ -117,27 +80,19 @@ export default function SchoolNavbar({ children }: Props) {
           >
             {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
-          <div className="flex items-center space-x-2">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
-              <School className="text-white" size={24} />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-lg font-bold tracking-tight">BRAINNIX</span>
-              <span className={`text-xs ${textSecondary} font-medium`}>School Management</span>
-            </div>
-          </div>
+        
+          <h1 className={`text-lg font-bold ${textPrimary}`}>Student Portal</h1>
         </div>
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={toggleTheme}
-            className={`p-2.5 rounded-xl ${hoverBg} transition-all duration-300 hover:scale-105 hover:rotate-12`}
-          >
-            {isDark ? <Sun className="text-amber-400" size={20} /> : <Moon className="text-slate-600" size={20} />}
-          </button>
-        </div>
+        <button
+          onClick={toggleTheme}
+          className={`p-2.5 rounded-xl ${hoverBg} transition-all duration-300 hover:scale-105 hover:rotate-12`}
+        >
+          {isDark ? <Sun className="text-amber-400" size={20} /> : <Moon className="text-slate-600" size={20} />}
+        </button>
       </div>
 
       <div className="flex h-full">
+
         <div
           className={`
             fixed lg:relative top-0 left-0 z-50 h-full w-72
@@ -147,52 +102,51 @@ export default function SchoolNavbar({ children }: Props) {
             overflow-y-auto no-scrollbar
           `}
         >
+     
           <div className="p-6">
             <div className={`flex items-center space-x-3 p-4 rounded-2xl`}>
-              <div className="relative">
-                <div className="p-3">
-                  <School className="text-white" size={24} />
-                </div>
+              <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
+                <School className="text-white" size={24} />
               </div>
               <div className="flex flex-col">
-                <span className={`font-bold text-lg tracking-tight ${textPrimary}`}>SCHOOL MANAGEMENT</span>
+                <span className={`font-bold text-lg tracking-tight ${textPrimary}`}>
+                  Student Portal
+                </span>
+                <span className={`text-xs ${textSecondary} font-medium`}>
+                  School Management
+                </span>
               </div>
             </div>
           </div>
 
-          <div className="flex-1 px-4 space-y-4">
-            {menuItems.map((section, sectionIndex) => (
-              <div key={sectionIndex}>
-                <h3 className="uppercase text-slate-500 text-xs font-semibold py-2">{section.label}</h3>
-                <div className="space-y-1">
-                  {section.links.map((item, index) => {
-                    const Icon = item.icon;
-                    const isActive = location.pathname === item.path;
-                    return (
-                      <Link
-                        key={index}
-                        to={item.path}
-                        className={`
-                          relative group flex items-center space-x-3 px-4 py-3 rounded-xl text-left
-                          transition-all duration-300
-                          ${isActive ? `${activeBg} ${activeText} font-semibold` : `${hoverBg} ${textSecondary} hover:text-white`}
-                        `}
-                      >
-                        {isActive && (
-                          <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-6 bg-blue-500 rounded-r-full"></div>
-                        )}
-                        <Icon size={18} />
-                        <span className="text-sm font-medium">{item.text}</span>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
+
+          <div className="px-4 space-y-1">
+            {menuItems.map((item, index) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path;
+              return (
+                <Link
+                  key={index}
+                  to={item.path}
+                  className={`
+                    relative group flex items-center space-x-3 px-4 py-3 rounded-xl text-left
+                    transition-all duration-300
+                    ${isActive ? `${activeBg} ${activeText} font-semibold` : `${hoverBg} ${textSecondary} hover:text-white`}
+                  `}
+                >
+        
+                  {isActive && (
+                    <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-6 bg-blue-500 rounded-r-full"></div>
+                  )}
+                  <Icon size={18} />
+                  <span className="text-sm font-medium">{item.text}</span>
+                </Link>
+              );
+            })}
           </div>
 
-          {/* Sidebar Logout */}
-          <div className="p-4">
+   
+          <div className="p-4 mt-auto">
             <button
               onClick={handleLogout}
               className="w-full flex items-center justify-center space-x-3 px-4 py-3 rounded-xl bg-gray-700/50 hover:bg-gray-700 text-white transition-colors duration-200"
@@ -203,19 +157,22 @@ export default function SchoolNavbar({ children }: Props) {
           </div>
         </div>
 
+     
         <div className={`flex-1 flex flex-col h-full ${isDark ? "bg-[#121A21]" : "bg-slate-50"}`}>
-          {/* Header */}
-          <div className={`hidden lg:flex items-center justify-between px-8 py-4 ${headerBg} ${headerBorder} border-b backdrop-blur-xl shadow-sm`}>
-            <div className="flex items-center space-x-6">
-              <div className={`px-6 py-3 rounded-2xl ${cardBg} backdrop-blur-xl border ${headerBorder} shadow-sm`}>
-                <span className={`text-xl font-bold ${textPrimary} tracking-tight`}>
-                  {menuItems.find(section => section.links.find(link => link.path === location.pathname))
-                    ?.links.find(link => link.path === location.pathname)?.text || "Dashboard"}
-                </span>
-              </div>
+          
+     
+          <div
+            className={`hidden lg:flex items-center justify-between px-8 py-4 ${headerBg} ${headerBorder} border-b backdrop-blur-xl shadow-sm`}
+          >
+
+            <div className={`px-6 py-3 rounded-2xl ${cardBg} backdrop-blur-xl border ${headerBorder} shadow-sm`}>
+              <span className={`text-xl font-bold ${textPrimary} tracking-tight`}>
+                {menuItems.find((m) => m.path === location.pathname)?.text || "Dashboard"}
+              </span>
             </div>
 
             <div className="flex items-center space-x-4">
+           
               <button className={`relative p-3 rounded-xl ${hoverBg} transition-all duration-300 hover:scale-105`}>
                 <Bell className={textSecondary} size={20} />
                 <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
@@ -223,6 +180,7 @@ export default function SchoolNavbar({ children }: Props) {
                 </div>
               </button>
 
+          
               <button
                 onClick={toggleTheme}
                 className={`flex items-center space-x-3 px-4 py-3 rounded-xl ${hoverBg} transition-all duration-300 hover:scale-105`}
@@ -240,6 +198,7 @@ export default function SchoolNavbar({ children }: Props) {
                 )}
               </button>
 
+           
               <div className="relative">
                 <button
                   onClick={() => setShowProfileDropdown(!showProfileDropdown)}
@@ -248,20 +207,27 @@ export default function SchoolNavbar({ children }: Props) {
                   <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                     <User size={16} className="text-white" />
                   </div>
-                  <span className={`text-sm font-medium ${textPrimary}`}>Admin</span>
+                  <span className={`text-sm font-medium ${textPrimary}`}>Student</span>
                   <ChevronDown
                     size={16}
                     className={`${textSecondary} transition-transform duration-200 ${showProfileDropdown ? "rotate-180" : ""}`}
                   />
                 </button>
 
-                {/* Profile Dropdown Logout */}
+            
                 {showProfileDropdown && (
-                  <div className={`absolute right-0 top-full mt-2 w-48 ${cardBg} backdrop-blur-xl border ${headerBorder} rounded-xl shadow-xl z-50 py-2`}>
-                    <Link to="/profile" className={`flex items-center space-x-3 px-4 py-3 ${hoverBg} transition-colors duration-200`}>
-                      <Settings size={16} className={textSecondary} />
-                      <span className={`text-sm ${textPrimary}`}>Settings</span>
-                    </Link>
+                  <div
+                    className={`absolute right-0 top-full mt-2 w-48 ${cardBg} backdrop-blur-xl border ${headerBorder} rounded-xl shadow-xl z-50 py-2`}
+                  >
+                       <Link to="/student/profile">
+  <User size={16} className={textSecondary} />
+  <span className={`text-sm ${textPrimary}`}>Profile</span>
+</Link>
+
+
+
+
+
                     <button
                       onClick={handleLogout}
                       className={`w-full flex items-center space-x-3 px-4 py-3 ${hoverBg} transition-colors duration-200 text-red-500 hover:text-red-600`}
@@ -275,6 +241,7 @@ export default function SchoolNavbar({ children }: Props) {
             </div>
           </div>
 
+
           <main className="flex-1 p-6 lg:p-8 overflow-y-auto no-scrollbar">
             <div className="max-w-full mx-auto">
               <Outlet />
@@ -283,13 +250,15 @@ export default function SchoolNavbar({ children }: Props) {
         </div>
       </div>
 
+      
       {isMobileMenuOpen && (
         <div
           className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300"
           onClick={toggleMobileMenu}
         />
       )}
-
+      
+     
       {showProfileDropdown && (
         <div className="fixed inset-0 z-30" onClick={() => setShowProfileDropdown(false)} />
       )}

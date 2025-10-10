@@ -1,6 +1,8 @@
 import { Class } from "../../domain/entities/Class";
 import { IClassRepository } from "../../domain/repositories/Classrepo/IClassRepository";
+
 import { ClassModel } from "../database/models/ClassModel";
+
 import mongoose from "mongoose";
 
 export class MongoClassRepository implements IClassRepository {
@@ -10,7 +12,8 @@ export class MongoClassRepository implements IClassRepository {
       division: data.division,
       department: data.department,
       rollNumber: data.rollNumber,
-      subjects: data.subjects 
+        subjects: data.subjects || [],
+      classTeacher: data.classTeacher || null, 
     });
 
     const saved = await newClass.save();
@@ -21,7 +24,9 @@ export class MongoClassRepository implements IClassRepository {
       saved.division,
       saved.rollNumber,
       saved.department,
-      saved.subjects
+      saved.subjects,
+      saved.classTeacher?.toString() ,
+
     );
   }
 
@@ -100,4 +105,9 @@ async assignClassWithDivision(className: string): Promise<Class | null> {
 
   return null;
 }
+
+
 }
+
+
+

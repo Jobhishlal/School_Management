@@ -14,7 +14,11 @@ export const API_ROUTES = {
     ADMIN_PROFILE_OWN_UPDATE: (id: string) => `/admin/adminprofile/${id}`,
     ADMIN_PASSWORD_REQUEST:`/admin/adminprofile/request-password-otp`,
     ADMIN_VERIFED_PASSWORD:'/admin/adminprofile/verify-password-otp',
-    ADMIN_UPDATE_PASSWORD:'/admin/adminprofile/update-password'
+    ADMIN_UPDATE_PASSWORD:'/admin/adminprofile/update-password',
+    Admin_Class_Division_Manage:'/admin/class-division-list',
+    ASSIGN_TEACHER_CLASSES:'/admin/class-assign-teacher',
+    GETALLTEACHERS_ASSIGN_CLASS:'/admin/class-teacher',
+    CLASS_BASE_TEACHER_LIST:'/admin/teacher-list'
 
   },
   SUPERADMIN: {
@@ -26,7 +30,8 @@ export const API_ROUTES = {
     CREATESTUDENT:"/admin/students",
     GETSTUDNET:'/admin/studnets',
     STUDENTBLOCK:(id:string)=>`/admin/students/${id}/block`,
-    UPDATE_STUDENT:(id:string)=>`/admin/students/${id}`
+    UPDATE_STUDENT:(id:string)=>`/admin/students/${id}`,
+    STUDENTPROFILEMANAGEMENT:(id:string)=>`/student/profile/${id}`
     
 
   },

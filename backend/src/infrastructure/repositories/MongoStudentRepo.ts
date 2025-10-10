@@ -45,9 +45,34 @@ async findById(id: string): Promise<Students | null> {
   if (!student) return null;
   return this.mapToDomainPopulated(student);
 }
+ async findStudentById(id: string): Promise<Students | null> {
+    let studentdoc: StudentInterface | null = null;
+
+    if (mongoose.Types.ObjectId.isValid(id)) {
+     
+      studentdoc = await StudentModel.findById(id)
+        .populate("parent")
+        .populate("address")
+        .populate("classId");
+    }
+
+    if (!studentdoc) {
+      
+      studentdoc = await StudentModel.findOne({ studentId: id })
+        .populate("parent")
+        .populate("address")
+        .populate("classId");
+    }
+
+    if (!studentdoc) return null;
+
+    return this.mapToDomainPopulated(studentdoc as any);
+  }
 
    async getAllStudents(): Promise<Students[]> {
+    console.log("all students",(await StudentModel.find()).length)
     const students = await StudentModel.find()
+ 
     .populate("parent")
     .populate("address")
     .populate("classId");

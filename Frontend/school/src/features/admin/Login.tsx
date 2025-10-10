@@ -17,9 +17,9 @@ export default function MainAdminLogincheck() {
   const [loading, setLoading] = useState(false);
   const [loginType, setLoginType] = useState<LoginType>("staff");
 
-  // --- Redirect only if accessToken exists ---
+
   useEffect(() => {
-    const token = localStorage.getItem("accessToken"); // accessToken only
+    const token = localStorage.getItem("accessToken"); 
     const role = localStorage.getItem("role");
     if (token && role) {
       switch (role) {
@@ -71,7 +71,6 @@ export default function MainAdminLogincheck() {
         return;
       }
 
-      // --- Direct accessToken login (if no OTP required) ---
       if ("authToken" in res && res.authToken) {
         const role = res.role.toLowerCase();
         localStorage.setItem("accessToken", res.authToken);

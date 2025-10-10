@@ -404,3 +404,40 @@ export const getclassDivision = async(className:string)=>{
   const res = await api.get(`/admin/class/next-division/${className}`)
   return res
 }
+
+
+
+export const classdivisonaccess = async()=>{
+  console.log("Get this page")
+  const res = await api.get(API_ROUTES.ADMIN.Admin_Class_Division_Manage)
+  return res
+}
+interface AssignClassTeacher{
+  classId:string;
+  teacherId:string;
+}
+export const AssignClassTeacherOnClass = async (payload: AssignClassTeacher) => {
+console.log("here reached")
+  const res = await api.post("/admin/class-assign-teacher", payload);
+
+
+  return res.data;
+};
+
+
+export const GetAllTeachersClassassign = async (classId: string) => {
+console.log("reached")
+  const res = await api.get(`/admin/class-teacher/${classId}`);
+
+  return res.data;
+};
+
+
+export const getTeachersList = async () => {
+  const res = await api.get("/admin/teacher-list");
+  if(res.data.success) {
+    return res.data.data; 
+  }
+  return [];
+};
+

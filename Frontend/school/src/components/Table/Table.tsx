@@ -14,6 +14,7 @@ interface TableProps<T> {
   isDark?: boolean;
 }
 
+
 export const Table = <T extends { id?: string | number; _id?: string | number }>({
   columns,
   data,

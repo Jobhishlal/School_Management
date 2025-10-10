@@ -309,6 +309,7 @@ if (email && studentId) {
         if (!isPasswordValid) throw new Error("Invalid Credentials");
 
         const otp = GenarateOtp(6);
+        console.log(otp)
         await SendEMail(email, "Sub Admin OTP", `Your OTP is: ${otp}`);
 
         const otpToken = genarateotptoken(email, otp, { role: "sub_admin", id: subadmin._id });

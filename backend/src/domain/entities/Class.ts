@@ -6,6 +6,7 @@ export class Class {
     public division: string,
     public rollNumber: string,
     public department?: "LP" | "UP" | "HS",
-    public subjects?: string
+    public subjects?: string[],
+    public classTeacher?: string
   ) {}
 }
