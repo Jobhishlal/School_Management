@@ -71,6 +71,26 @@ export class MongoTimeTableCreate implements ITimeTableRepository{
         )
     }
 
+    async findById(id: string): Promise<TimetableEntity | null> {
+        const doc = await TimetableModel.findById(id).populate("days.periods.teacherId", "name")
+        if(!doc)return null
+        return new TimetableEntity(
+            doc.id.toString(),
+            doc.classId.toString(),
+            doc.division,
+           doc.days.map(
+           (d) =>
+             new DayScheduleEntity(
+              d.day,
+              d.periods.map(
+              (p) => new PeriodEntity(p.startTime, p.endTime, p.subject, p.teacherId.toString())
+           )
+          )
+          )
+        )
+
+    }
+
 
     async delete(classId: string, division: string): Promise<void> {
          await TimetableModel.findByIdAndDelete({classId,division})
