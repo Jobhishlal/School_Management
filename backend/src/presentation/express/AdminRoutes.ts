@@ -65,6 +65,12 @@ import { ClassDivisionRepository } from "../../infrastructure/repositories/Mongo
 import { TeacherAssignClassUseCase } from "../../applications/useCases/Classdata/AssignTeacherClassUseCase";
 import { GetAssignClassTeacher } from "../../applications/useCases/Classdata/GetAllTeacherClassAssign";
 import { GetAllTeachersInClass } from "../../applications/useCases/Classdata/GetAllTeachersinClasses";
+import { CreateTimeTable } from "../../applications/useCases/admin/TimeTable/CreateTimeTableUseCase";
+import { GetClassbaseTimeTable } from "../../applications/useCases/admin/TimeTable/getClassBaseTimeTable";
+import { UpdateTimeTableUseCase } from "../../applications/useCases/admin/TimeTable/UpdateTimeTableUseCase";
+import { DeleteTimeTableUseCase } from "../../applications/useCases/admin/TimeTable/DeleteTimeTableUseCase";
+import { MongoTimeTableCreate } from "../../infrastructure/repositories/MongoTimeTableCreation";
+import { TimeTableManageController } from "../http/controllers/ADMIN/TimeTableMaanageController/TimeTableController";
 
 const repo = new AdminRepository();
 const data = new MongoSubAdminRepo();
@@ -196,6 +202,18 @@ const classstudnetmanagecontroller = new AdminClassController(
   getAllTeachers
 );
 
+const timetabledata = new MongoTimeTableCreate()
+const createtimetable = new CreateTimeTable(timetabledata)
+const gettimetabledata = new GetClassbaseTimeTable(timetabledata)
+const updatetimetable = new UpdateTimeTableUseCase(timetabledata)
+const deletetimetable = new DeleteTimeTableUseCase(timetabledata)
+const timetablemanagecontroller = new TimeTableManageController(
+  createtimetable,
+  gettimetabledata,
+  updatetimetable,
+  deletetimetable
+)
+
 // Adminrouter.get("/signup", (req, res) => adminController.getAll(req, res));
 // Adminrouter.post("/signuppost", (req, res) => adminController.signupRequest(req, res));
 // Adminrouter.post('/verify-otp',(req,res)=>adminController.verifyOtp(req,res))
@@ -319,7 +337,7 @@ Adminrouter.put(
 );
 
 Adminrouter.get("/class-division-list", (req, res) => {
-  console.log("working this process")
+ 
   classstudnetmanagecontroller.getClassBasestudent(req, res);
 });
 Adminrouter.post("/class-assign-teacher", (req, res) =>
@@ -333,5 +351,13 @@ Adminrouter.get("/teacher-list", (req, res) => {
  
   classstudnetmanagecontroller.GetAllTeachers(req, res);
 });
+
+
+Adminrouter.post('/create-timetable',(req,res)=>timetablemanagecontroller.createTimetable(req,res))
+Adminrouter.get('/timetable-view/:classId/:division', (req, res) => timetablemanagecontroller.GetByClass(req, res))
+
+Adminrouter.put('/timetable-update/:id',(req,res)=>timetablemanagecontroller.UpdateTimeTable(req,res))
+Adminrouter.delete('/delete-time-table/:id',(req,res)=>timetablemanagecontroller.DeleteTimeTable(req,res))
+
 
 export default Adminrouter;

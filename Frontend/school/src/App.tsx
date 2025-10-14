@@ -138,7 +138,8 @@ import { StudentProfilePage } from "./pages/Student/StudentProfile";
 import TeacherLayout from "./components/layout/TeacherLayout";
 import TeacherDashboard from "./pages/Teacher/TeacherDashboard";
 import AdminClassDivisionView from "./pages/admin/ClassBaseStudentList";
-
+import TimeTableManagement from "./pages/admin/TimeTableManagement";
+import StudentTimeTableView from "./pages/Student/StudentTimeTableView";
 
 function ErrorFallback({ error }: { error: Error }) {
   return <div role="alert">Something went wrong: {error.message}</div>;
@@ -169,12 +170,15 @@ function App() {
           <Route path="/instituteprofile" element={<PrivateRoute><InstituteManagementPage /></PrivateRoute>} />
           <Route path="/adminprofile" element={<PrivateRoute><AdminProfileManagement /></PrivateRoute>} />
           <Route path="/classbaseview" element={<PrivateRoute><AdminClassDivisionView /></PrivateRoute>} />
+          <Route path='/timetable-management' element={<PrivateRoute><TimeTableManagement/></PrivateRoute>}/>
+
         </Route>
 
         {/* ---------------- STUDENT ROUTES ---------------- */}
         <Route element={<ThemeProvider><StudentLayout /></ThemeProvider>}>
           <Route path="/student-dashboard" element={<StudentDashboard />} />
          <Route path="/student/profile" element={<StudentProfilePage />} />
+         <Route path='/student/timetable-view' element={<StudentTimeTableView/>}/>
 
 
 

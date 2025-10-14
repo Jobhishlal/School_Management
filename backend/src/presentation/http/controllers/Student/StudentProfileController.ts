@@ -10,7 +10,7 @@ export class StudentProfileController {
 
   async GetProfile(req: AuthRequest, res: Response): Promise<void> {
     try {
-        console.log("i am reached here")
+     
       const studentId = req.params.studentId || req.user?.id;
       console.log("student",studentId)
 

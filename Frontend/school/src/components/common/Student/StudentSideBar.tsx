@@ -39,7 +39,7 @@ export default function StudentSidebar({ children }: Props) {
     { icon: User, text: "Profile", path: "/student/profile" },
     { icon: Calendar, text: "Attendance", path: "/student/attendance" },
     { icon: FileText, text: "Assignments", path: "/student/assignments" },
-    { icon: Calendar, text: "Time Table", path: "/student/timetable" },
+    { icon: Calendar, text: "Time Table", path: "/student/timetable-view" },
     { icon: BookOpen, text: "Exams & Results", path: "/student/exams" },
     { icon: CreditCard, text: "Fees", path: "/student/fees" },
     { icon: MessageCircle, text: "Notices / Messages", path: "/student/notices" },

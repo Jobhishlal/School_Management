@@ -18,6 +18,7 @@ export class TimetableEntity {
   constructor(
     public id: string,
     public classId: string,
+    public className:string,
     public division: string,
     public days: DayScheduleEntity[]
   ) {}

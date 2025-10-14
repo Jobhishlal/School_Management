@@ -6,18 +6,23 @@ import { CreateTimetableDTO } from "../../../dto/CreateTImeTableDTO";
 
 export class UpdateTimeTableUseCase implements IUPDATETIMETABLE{
     constructor(private readonly timetableRepo:ITimeTableRepository){}
-    async execute(dto: CreateTimetableDTO): Promise<TimetableEntity> {
-    const existing = await this.timetableRepo.findById(dto.id);
-    if (!existing) throw new Error("Timetable not found");
+   async execute(dto: CreateTimetableDTO): Promise<TimetableEntity> {
 
-    const updated = new TimetableEntity(
-      dto.id,
-      dto.classId,
-      dto.division,
-      dto.days
+    const existed = await this.timetableRepo.getByClass(dto.classId, dto.division);
+    if (!existed) {
+        throw new Error("Timetable does not exist");
+    }
+
+    const updatedEntity = new TimetableEntity(
+        existed.id,       
+        dto.classId,
+        dto.className,
+        dto.division,
+        dto.days           
     );
 
-    const result = await this.timetableRepo.update(updated);
-    return result;
-  }
+   
+    return this.timetableRepo.update(updatedEntity);
+}
+
 }

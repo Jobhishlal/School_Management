@@ -8,3 +8,11 @@ export const StudentProfile = async () => {
     });
     return res;
 };
+
+
+export const TimeTableview = async (studentId: string) => {
+  const res = await api.get("/student/timetable-view", {
+    params: { studentId },
+  });
+  return res.data;
+};

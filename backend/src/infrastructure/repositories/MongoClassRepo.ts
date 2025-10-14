@@ -6,29 +6,40 @@ import { ClassModel } from "../database/models/ClassModel";
 import mongoose from "mongoose";
 
 export class MongoClassRepository implements IClassRepository {
-  async create(data: Class): Promise<Class> {
-    const newClass = new ClassModel({
-      className: data.className,
-      division: data.division,
-      department: data.department,
-      rollNumber: data.rollNumber,
-        subjects: data.subjects || [],
-      classTeacher: data.classTeacher || null, 
-    });
 
-    const saved = await newClass.save();
+ async create(data: Class): Promise<Class> {
+ 
+  const existing = await ClassModel.findOne({
+    className: data.className,
+    division: data.division,
+  });
 
-    return new Class(
-      (saved._id as mongoose.Types.ObjectId).toString(),
-      saved.className,
-      saved.division,
-      saved.rollNumber,
-      saved.department,
-      saved.subjects,
-      saved.classTeacher?.toString() ,
-
-    );
+  if (existing)  {
+     throw new Error(`Class ${data.className}${data.division} already exists`);
   }
+
+
+  const newClass = new ClassModel({
+    className: data.className,
+    division: data.division,
+    department: data.department,
+    rollNumber: data.rollNumber,
+    subjects: data.subjects || [],
+    classTeacher: data.classTeacher || null,
+  });
+
+  const saved = await newClass.save();
+
+  return new Class(
+    (saved._id as mongoose.Types.ObjectId).toString(),
+    saved.className,
+    saved.division,
+    saved.rollNumber,
+    saved.department,
+    saved.subjects,
+    saved.classTeacher?.toString(),
+  );
+}
 
   async getAll(): Promise<Class[]> {
     const classes = await ClassModel.find();

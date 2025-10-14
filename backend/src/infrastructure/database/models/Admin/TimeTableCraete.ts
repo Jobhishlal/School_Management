@@ -14,6 +14,7 @@ interface DaySchedule {
 
 export interface TimetableDocument extends Document {
   classId: Types.ObjectId;
+  className:string;
   division: string;
   days: DaySchedule[];
   createdAt: Date;
@@ -40,7 +41,8 @@ const DayScheduleSchema = new Schema<DaySchedule>(
 
 const TimetableSchema = new Schema<TimetableDocument>(
   {
-    classId: { type: Schema.Types.ObjectId, ref: "Class", required: true },
+   classId: { type: Schema.Types.ObjectId, ref: "Classes", required: true },
+    className:{type:String,required:true},
     division: { type: String, required: true },
     days: { type: [DayScheduleSchema], default: [] },
   },

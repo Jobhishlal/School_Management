@@ -44,7 +44,7 @@ interface User {
   id?: string;
   name?: string;
   email?: string;
-  role?: string; // made optional for flexibility
+  role?: string;
 }
 
 interface AuthState {

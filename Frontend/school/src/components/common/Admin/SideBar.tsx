@@ -68,7 +68,7 @@ export default function SchoolNavbar({ children }: Props) {
       links: [
         { icon: MessageCircle, text: "Communication", path: "/communication" },
         { icon: FileText, text: "Leave Request", path: "/leave-request" },
-        { icon: Calendar, text: "Time Table", path: "/timetable" },
+        { icon: Calendar, text: "Time Table", path: "/timetable-management" },
       ],
     },
   ];

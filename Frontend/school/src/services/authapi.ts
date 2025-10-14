@@ -1,6 +1,6 @@
 import api from "./api";
 import { API_ROUTES } from "../constants/routes/Route";
-
+import { type CreateTimeTableDTO } from "../types/ITimetable";
 
 
 
@@ -441,3 +441,27 @@ export const getTeachersList = async () => {
   return [];
 };
 
+
+export const CreateTimeTable = async(dto:CreateTimeTableDTO)=>{
+  const res = await api.post(API_ROUTES.ADMIN.CREATE_TIMETABLE,dto)
+  return res.data
+}
+
+
+export const GetTimeTable = async(classId:string,division:string)=>{
+ const res = await api.get(`/admin/timetable-view/${classId}/${division}`);
+  return res.data
+}
+
+export const updateTimeTable = async (dto: CreateTimeTableDTO) => {
+  console.log("i am reached")
+  const res = await api.put(`/admin/timetable-update/${dto.id}`, dto);
+  console.log(res)
+  return res.data;
+};
+
+
+export const deletetimetable=async(classId:string,division:string)=>{
+  const res = await api.delete( `/admin/delete-time-table/${classId}/${division}`)
+  return res.data
+}

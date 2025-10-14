@@ -5,7 +5,7 @@ import { Class } from "../../../../domain/entities/Class";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { IClassUpdateUseCase } from "../../../../domain/UseCaseInterface/IClassUpdateUseCase";
 import {IAssignClassUseCase} from '../../../../domain/UseCaseInterface/AssignClassUseCase'
-import { STATUS_CODES } from "http";
+
 
 export class ClassManagementController {
   constructor(
@@ -19,7 +19,7 @@ async create(req: Request, res: Response): Promise<void> {
   try {
     const { className, department, rollNumber, subjects } = req.body;
 
-    console.log(" req.body in class create:", req.body);
+    console.log("req.body in class create:", req.body);
 
     const assignedClass = await this.iassignclass.execute(className);
 
@@ -35,17 +35,28 @@ async create(req: Request, res: Response): Promise<void> {
     const created = await this.classAddUseCase.execute(newClass);
 
     res.status(StatusCodes.OK).json({
+      success: true,
       message: `Class ${created.className}${created.division} created successfully`,
       class: created,
     });
+
   } catch (err: any) {
     console.error(err.message);
-    res.status(StatusCodes.BAD_REQUEST).json({
-      message: err.message || "Failed to create class"
-    });
+
+   
+    if (err.message.includes("already exists")) {
+      res.status(StatusCodes.BAD_REQUEST).json({
+        success: false,
+        message: err.message,
+      });
+    } else {
+      res.status(StatusCodes.BAD_REQUEST).json({
+        success: false,
+        message: err.message || "Failed to create class",
+      });
+    }
   }
 }
-
 
   async getAll(req: Request, res: Response): Promise<void> {
     try {

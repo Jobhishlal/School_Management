@@ -18,20 +18,26 @@ export const API_ROUTES = {
     Admin_Class_Division_Manage:'/admin/class-division-list',
     ASSIGN_TEACHER_CLASSES:'/admin/class-assign-teacher',
     GETALLTEACHERS_ASSIGN_CLASS:'/admin/class-teacher',
-    CLASS_BASE_TEACHER_LIST:'/admin/teacher-list'
+    CLASS_BASE_TEACHER_LIST:'/admin/teacher-list',
+    CREATE_TIMETABLE:'/admin/create-timetable',
+    GET_TIME_TABLE_LIST:'/admin/timetable-view',
+   UPDATE_TIME_TABLE:(id:string)=>`/admin/timetable-update/${id}`,
+    DELETE_TIME_TABLE:(id:string)=>`/admin/delete-time-table/${id}`
+
 
   },
   SUPERADMIN: {
     VERIFY_OTP: "/superadmin/verify-otp",
     RESEND_OTP: "/superadmin/resend-otp",
     LOGIN: "/superadmin/login",
+
   },
   STUDENT:{
     CREATESTUDENT:"/admin/students",
     GETSTUDNET:'/admin/studnets',
     STUDENTBLOCK:(id:string)=>`/admin/students/${id}/block`,
     UPDATE_STUDENT:(id:string)=>`/admin/students/${id}`,
-    STUDENTPROFILEMANAGEMENT:(id:string)=>`/student/profile/${id}`
+    STUDENTPROFILEMANAGEMENT:(id:string)=>`/student/profile/${id}`,
     
 
   },

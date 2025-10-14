@@ -22,7 +22,6 @@ export class AdminClassController {
       
       const data = await this.classUseCase.execute();
 
-      console.log("data",data)
       
       res.status(StatusCodes.OK).json({ success: true, data });
     } catch (err) {
@@ -39,10 +38,10 @@ async AssignTeacherOnClass(req: Request, res: Response) {
         .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, message: "ClassId and TeacherId required" });
     }
-    console.log("classId",classId,teacherId)
+   
 
     const success = await this.assignTeacherUseCase.execute(classId, teacherId);
-    console.log("success",success)
+ 
 
     if (success)
       res.json({ success: true, message: "Teacher assigned successfully" });
