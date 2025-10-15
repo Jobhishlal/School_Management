@@ -6,7 +6,7 @@ interface Period {
   startTime: string;
   endTime: string;
   subject: string;
-  teacherId?: { name: string };
+  teacherId?: string;
 }
 
 interface DaySchedule {
@@ -24,7 +24,7 @@ interface TimeTable {
 }
 
 interface Student {
-  _id: string; // mapped from backend id
+  _id: string;
   fullName: string;
   classId: string;
   classDetails?: {
@@ -35,14 +35,14 @@ interface Student {
 
 const StudentTimeTableView: React.FC = () => {
   const [student, setStudent] = useState<Student | null>(null);
-  const [timetable, setTimetable] = useState<TimeTable | null>(null);
+  const [todaySchedule, setTodaySchedule] = useState<DaySchedule | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProfileAndTimetable = async () => {
       try {
-        // Fetch student profile
+       
         const profileRes = await StudentProfile();
         const studentApiData = profileRes?.data?.data;
 
@@ -51,25 +51,30 @@ const StudentTimeTableView: React.FC = () => {
           return;
         }
 
-        // Map backend 'id' to frontend '_id'
         const studentData: Student = {
           ...studentApiData,
           _id: studentApiData.id,
         };
 
-        console.log("studentData", studentData);
         setStudent(studentData);
 
-        // Fetch timetable using the mapped _id
+   
         const timetableRes = await TimeTableview(studentData._id);
-        console.log("timetable", timetableRes);
+        const timetableData: TimeTable = timetableRes?.data;
 
-        if (!timetableRes?.success || !timetableRes?.data) {
+        if (!timetableRes?.success || !timetableData) {
           setError("Timetable not found for this student");
           return;
         }
 
-        setTimetable(timetableRes.data);
+        
+        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const todayIndex = new Date().getDay();
+        const today = days[todayIndex];
+
+        const todaySchedule = timetableData.days.find(d => d.day === today) || null;
+        setTodaySchedule(todaySchedule);
+
       } catch (err: any) {
         console.error("Error fetching timetable:", err);
         setError(err?.message || "Failed to fetch timetable");
@@ -83,26 +88,25 @@ const StudentTimeTableView: React.FC = () => {
 
   if (loading) return <p>Loading timetable...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
-  if (!timetable) return <p>No timetable available.</p>;
+  if (!student) return <p>No student profile found.</p>;
+  if (!todaySchedule) return <p>No timetable available for today.</p>;
 
   return (
     <div className="p-6">
       <h2 className="text-xl font-bold mb-4">
-        Timetable for Class {timetable.classId.className} ({timetable.classId.division})
+        Timetable for Class {student.classDetails?.className} ({student.classDetails?.division}) - Today
       </h2>
 
-      {timetable.days.map((day) => (
-        <div key={day.day} className="mb-4 p-3 border rounded">
-          <h3 className="font-semibold mb-2">{day.day}</h3>
-          {day.periods.map((p, i) => (
-            <div key={i} className="flex justify-between text-sm border-b py-1">
-              <span>{p.startTime} - {p.endTime}</span>
-              <span>{p.subject}</span>
-              <span className="text-gray-600">{p.teacherId?.name || "No teacher assigned"}</span>
-            </div>
-          ))}
-        </div>
-      ))}
+      <div className="mb-4 p-3 border rounded">
+        <h3 className="font-semibold mb-2">{todaySchedule.day}</h3>
+        {todaySchedule.periods.map((p, i) => (
+          <div key={i} className="flex justify-between text-sm border-b py-1">
+            <span>{p.startTime} - {p.endTime}</span>
+            <span>{p.subject}</span>
+            <span className="text-gray-600">{p.teacherId || "No teacher assigned"}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

@@ -224,24 +224,25 @@ async create(timetable: TimetableEntity): Promise<TimetableEntity> {
     if (!doc) return null;
 
     return new TimetableEntity(
-      doc._id.toString(),
-      (doc.classId as any)._id.toString(),
-      (doc.classId as any).className,
-      (doc.classId as any).division,
-      doc.days.map(d =>
-        new DayScheduleEntity(
-          d.day,
-          d.periods.map(p =>
-            new PeriodEntity(
-              p.startTime,
-              p.endTime,
-              p.subject,
-              (p.teacherId as any)?.name || ""
-            )
-          )
+  doc._id.toString(),
+  (doc.classId as any)._id.toString(),
+  (doc.classId as any).className,
+  (doc.classId as any).division,
+  doc.days.map(d =>
+    new DayScheduleEntity(
+      d.day,
+      d.periods.map(p =>
+        new PeriodEntity(
+          p.startTime,
+          p.endTime,
+          p.subject,
+          p.teacherId ? (p.teacherId as any)?.name || "" : "" 
         )
       )
-    );
+    )
+  )
+);
+
   }
 
 async getStudentTimeTable(studentId: string): Promise<TimetableEntity | null> {
