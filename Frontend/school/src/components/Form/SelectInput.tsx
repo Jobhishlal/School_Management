@@ -90,7 +90,7 @@ export const SelectInput = <T extends OptionType>({
       <option value="">Select...</option>
 
       {options.map((opt, i) => {
-        console.log(opt,"opt",i,"i")
+       
         const val = typeof opt === "string" ? opt : opt.value;
         const label = typeof opt === "string" ? opt : opt.label;
         return (

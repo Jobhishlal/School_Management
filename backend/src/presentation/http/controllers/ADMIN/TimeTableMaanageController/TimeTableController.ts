@@ -66,11 +66,10 @@ async GetByClass(req: Request, res: Response): Promise<void> {
 
 async UpdateTimeTable(req: Request, res: Response): Promise<void> {
     try {
+      console.log("reached update")
         const dto: CreateTimetableDTO = req.body;
-
-     
+        console.log("i am reached here",dto)
         const updated = await this.updatetimetable.execute(dto);
-
         res.status(200).json({
             success: true,
             message: "Timetable updated successfully",
@@ -86,14 +85,19 @@ async UpdateTimeTable(req: Request, res: Response): Promise<void> {
 }
 
 
+
 async DeleteTimeTable(req: Request, res: Response): Promise<void> {
   try {
-    const { classId, division } = req.body;
-    await this.deletetimetable.execute(classId, division);
+    const { id } = req.params;
+    if (!id)  res.status(400).json({ message: "Timetable ID is required" });
+
+    await this.deletetimetable.execute(id);
     res.status(StatusCodes.OK).json({ message: "Timetable deleted successfully" });
   } catch (error) {
+    console.log("error", error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
   }
 }
+
 
 }

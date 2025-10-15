@@ -454,14 +454,13 @@ export const GetTimeTable = async(classId:string,division:string)=>{
 }
 
 export const updateTimeTable = async (dto: CreateTimeTableDTO) => {
-  console.log("i am reached")
   const res = await api.put(`/admin/timetable-update/${dto.id}`, dto);
-  console.log(res)
   return res.data;
 };
 
 
-export const deletetimetable=async(classId:string,division:string)=>{
-  const res = await api.delete( `/admin/delete-time-table/${classId}/${division}`)
+
+export const deletetimetable=async(id?:string)=>{
+  const res = await api.delete( `/admin/delete-time-table/${id}`)
   return res.data
 }

@@ -15,18 +15,19 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
     const cls = await ClassModel.findById(dto.classId);
     if (!cls) throw new Error("Class not found");
 
-    for (const day of dto.days) {
+  for (const day of dto.days) {
       for (const period of day.periods) {
-        const teacher = await TeacherModel.findById(period.teacherId);
-        if (!teacher) throw new Error(`Teacher not found: ${period.teacherId}`);
+          if (!period.teacherId || period.teacherId === "") continue;
 
-       
+           const teacher = await TeacherModel.findById(period.teacherId);
+           if (!teacher) throw new Error(`Teacher not found: ${period.teacherId}`);
 
-        if (!teacher.subjects.some(s => s.name === period.subject)) {
+           if (!teacher.subjects.some(s => s.name === period.subject)) {
           throw new Error(`${teacher.name} does not teach ${period.subject}`);
-        }
-      }
-    }
+         }
+     }
+   }
+
   }
 
   
@@ -175,8 +176,8 @@ async create(timetable: TimetableEntity): Promise<TimetableEntity> {
   }
 
  
-  async delete(classId: string, division: string): Promise<void> {
-    await TimetableModel.deleteOne({ classId, division });
+  async delete(id: string): Promise<void> {
+    await TimetableModel.deleteOne({ _id: id });
   }
 
 

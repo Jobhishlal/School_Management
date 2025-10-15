@@ -1,9 +1,22 @@
+
+
+
+
 import React, { useEffect, useState } from "react";
-import { TextInput } from "../../components/Form/TextInput";
 import { SelectInput } from "../../components/Form/SelectInput";
+import { TextInput } from "../../components/Form/TextInput";
 import { Table } from "../../components/Table/Table";
+import {
+  CreateTimeTable,
+  GetTimeTable,
+  updateTimeTable,
+  deletetimetable,
+  classdivisonaccess,
+  getTeachersList
+} from "../../services/authapi";
 import type { CreateTimeTableDTO, DaySchedule, PeriodTime } from "../../types/ITimetable";
-import { CreateTimeTable, GetTimeTable, updateTimeTable, deletetimetable, getTeachersList, classdivisonaccess } from "../../services/authapi";
+import { showToast } from "../../utils/toast";
+import { da } from "zod/v4/locales";
 
 interface Teacher {
   teacherId: string;
@@ -21,81 +34,73 @@ interface ClassOption {
 
 const weekDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-const TimeTableManagement: React.FC = () => {
-  const [timetableId, setTimetableId] = useState<string>("");
-  const [days, setDays] = useState<DaySchedule[]>([]);
+const AdminTimeTablePage: React.FC = () => {
   const [classes, setClasses] = useState<ClassOption[]>([]);
-  const [classId, setClassId] = useState<string>("");
-  const [className,setClassName]=useState<string>("")
-  const [division, setDivision] = useState<string>("");
-  const [department, setDepartment] = useState<"LP" | "UP" | "HS" | "">("");
   const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [selectedClassId, setSelectedClassId] = useState<string>("");
+  const [selectedClass, setSelectedClass] = useState<ClassOption | null>(null);
+  const [days, setDays] = useState<DaySchedule[]>([]);
+  const [timetableId, setTimetableId] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
-  // Fetch classes and teachers on mount
+  
   useEffect(() => {
-    const fetchTeachers = async () => {
+    const fetchData = async () => {
       try {
-        const teachersData: Teacher[] = await getTeachersList();
-        setTeachers(teachersData);
-      } catch (err) {
-        console.error("Failed to fetch teachers", err);
-      }
-    };
-
-    const fetchClasses = async () => {
-      try {
-        const res = await classdivisonaccess();
-        const data = res.data?.data;
-        if (!data || typeof data !== "object") return;
-
-        const formattedClasses: ClassOption[] = Object.values(data).map((cls: any) => ({
+        const resClasses = await classdivisonaccess();
+        const classData: ClassOption[] = Object.values(resClasses.data.data).map((cls: any) => ({
           _id: cls.classId,
           className: cls.className,
           division: cls.division,
           department: cls.department
         }));
-        setClasses(formattedClasses);
+        setClasses(classData);
+
+        const resTeachers = await getTeachersList();
+        setTeachers(resTeachers);
       } catch (err) {
-        console.error("Failed to fetch classes", err);
+        console.error(err);
+        alert("Failed to fetch classes or teachers");
       }
     };
-
-    fetchTeachers();
-    fetchClasses();
+    fetchData();
   }, []);
 
-  // Fetch existing timetable for selected class
+
+  useEffect(() => {
+  if (!selectedClassId || !selectedClass) return;
+
   const fetchTimeTable = async () => {
-    if (!classId || !division) return;
     setLoading(true);
     try {
-      const res = await GetTimeTable(classId, division);
-      setDays(res?.days || []);
-      setTimetableId(res?._id || "");
+      const res = await GetTimeTable(selectedClassId, selectedClass.division);
+      console.log("get timetable here ",res)
+      if (res?.data) {
+        setDays(res.data.days || []);
+        setTimetableId(res.data._id || res.data.id); 
+      } else {
+        setDays([]);
+        setTimetableId(""); 
+      }
     } catch (err) {
       console.error(err);
-      alert("Failed to fetch timetable");
+      setDays([]);
+      setTimetableId("");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleClassChange = (selectedId: string) => {
-    setClassId(selectedId);
-    const selectedClass = classes.find(c => c._id === selectedId);
-    if (selectedClass) {
-      setClassName(selectedClass.className)
-      setDivision(selectedClass.division);
-      setDepartment(selectedClass.department);
-    } else {
-      setClassName("")
-      setDivision("");
-      setDepartment("");
-    }
+  fetchTimeTable();
+}, [selectedClassId, selectedClass]);
+
+
+  const handleClassSelect = (id: string) => {
+    setSelectedClassId(id);
+    const cls = classes.find(c => c._id === id) || null;
+    setSelectedClass(cls);
   };
 
-  // Add a period to a day
   const addPeriod = (day: string) => {
     setDays(prev => {
       const updated = [...prev];
@@ -109,154 +114,153 @@ const TimeTableManagement: React.FC = () => {
     });
   };
 
-  // Update a period field
-  const updatePeriod = (day: string, periodIndex: number, key: keyof PeriodTime, value: string) => {
+  const updatePeriod = (day: string, idx: number, key: keyof PeriodTime, value: string) => {
     setDays(prev =>
       prev.map(d => {
-        if (d.day === day) d.periods[periodIndex][key] = value;
+        if (d.day === day) d.periods[idx][key] = value;
         return d;
       })
     );
   };
 
-  // Create timetable
-  const handleCreate = async () => {
-    if (!classId || !className || !division) return alert("Select Class & Division");
+ const handleCreateOrUpdate = async () => {
+  if (!selectedClass) return alert("Select a class");
 
-    // Ensure at least empty days exist
-    const daysToSend = days.length > 0 ? days : weekDays.map(day => ({ day, periods: [] }));
+  const dto: CreateTimeTableDTO = {
+    id: timetableId || undefined,
+    classId: selectedClassId,
+    className: selectedClass.className,
+    division: selectedClass.division,
+    days
+  };
 
-    const dto: CreateTimeTableDTO = { classId, className, division, days: daysToSend };
-    try {
+  try {
+    if (timetableId) {
+      console.log("Updating existing timetable", dto);
+      await updateTimeTable(dto); 
+    } else {
+      console.log("Creating new timetable", dto);
       await CreateTimeTable(dto);
-      alert("Timetable created successfully!");
-      fetchTimeTable(); // refresh after create
-    } catch (err) {
-      console.error(err);
-      alert("Failed to create timetable");
     }
-  };
 
-  // Update timetable
-  const handleUpdate = async () => {
-    if (!timetableId) return alert("No timetable selected!");
-    const dto: CreateTimeTableDTO = { id: timetableId, classId, className, division, days };
-    try {
-      await updateTimeTable(dto);
-      alert("Timetable updated successfully!");
-      fetchTimeTable();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to update timetable");
-    }
-  };
+    showToast(`Timetable ${timetableId ? "updated" : "created"} successfully!`);
+  } catch (err) {
+    console.error(err);
+    showToast("Failed to create/update timetable");
+  }
+};
 
-  // Delete timetable
-  const handleDelete = async () => {
-    try {
-      await deletetimetable(classId, division);
+
+  const handleEditTimetable = async (classId: string) => {
+  const cls = classes.find(c => c._id === classId) || null;
+  setSelectedClass(cls);
+  setSelectedClassId(classId);
+ 
+  console.log("classId",cls)
+  if (!cls) return;
+
+  try {
+    setLoading(true);
+    const res = await GetTimeTable(classId, cls.division);
+
+    if (res?.data) {
+      setDays(res.data.days || []);
+      setTimetableId(res.data._id || ""); 
+    } else {
       setDays([]);
-      alert("Timetable deleted successfully!");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to delete timetable");
+      setTimetableId("");
     }
-  };
+  } catch (err) {
+    console.error(err);
+    setDays([]);
+    setTimetableId("");
+  } finally {
+    setLoading(false);
+  }
+};
 
-  // Filter teachers by subject & department
-  const getAvailableTeachers = (subject: string) => {
-    if (!department) return [];
-    return teachers.filter(
-      t => t.department === department && t.subjects?.some(s => s.name === subject)
-    );
-  };
+
+const handleDelete = async () => {
+  if (!timetableId) {
+    showToast("Please select a timetable to delete", "info");
+    return;
+  }
+
+  try {
+    await deletetimetable(timetableId);
+    setDays([]);
+    setTimetableId("");
+    showToast("Timetable deleted successfully!");
+  } catch (err) {
+    console.error(err);
+    showToast("Failed to delete timetable");
+  }
+};
+
 
   return (
     <div className="p-6">
-      <h2 className="text-xl font-bold mb-4">TimeTable Management</h2>
+      <h2 className="text-xl font-bold mb-4">Admin Class Timetable</h2>
 
       <div className="flex gap-4 mb-4">
         <SelectInput
-          label="Class"
-          value={classId}
-          onChange={handleClassChange}
+          label="Select Class"
+          value={selectedClassId}
+          onChange={handleClassSelect}
           options={classes.map(c => ({ value: c._id, label: `${c.className} - ${c.division}` }))}
         />
-        <TextInput label="Class Name" value={className} readOnly />
-        <TextInput label="Division" value={division} readOnly />
-        <button onClick={fetchTimeTable} className="px-4 py-2 bg-blue-600 text-white rounded">
-          Fetch
-        </button>
       </div>
 
+      {loading ? <p>Loading timetable...</p> : null}
+
       {weekDays.map(day => (
-        <div key={day} className="mb-4 p-2 border rounded">
+        <div key={day} className="mb-4 border p-2 rounded">
           <h3 className="font-semibold">{day}</h3>
-          {days.find(d => d.day === day)?.periods.map((p, idx) => {
-            const availableTeachers = getAvailableTeachers(p.subject);
-            return (
-              <div key={idx} className="flex gap-2 my-1">
-                <TextInput
-                  label="Start Time"
-                  value={p.startTime}
-                  onChange={val => updatePeriod(day, idx, "startTime", val)}
-                />
-                <TextInput
-                  label="End Time"
-                  value={p.endTime}
-                  onChange={val => updatePeriod(day, idx, "endTime", val)}
-                />
-                <TextInput
-                  label="Subject"
-                  value={p.subject}
-                  onChange={val => updatePeriod(day, idx, "subject", val)}
-                />
-                <SelectInput
-                  label="Teacher"
-                  value={p.teacherId}
-                  onChange={val => updatePeriod(day, idx, "teacherId", val)}
-                  options={teachers.map(t => ({ value: t.teacherId, label: t.name }))}
-                />
-              </div>
-            );
-          })}
-          <button
-            onClick={() => addPeriod(day)}
-            className="mt-2 px-2 py-1 text-sm bg-green-500 text-white rounded"
-          >
-            Add Period
-          </button>
+          {days.find(d => d.day === day)?.periods.map((p, idx) => (
+            <div key={idx} className="flex gap-2 mb-2">
+              <TextInput label="Start" value={p.startTime} onChange={v => updatePeriod(day, idx, "startTime", v)} />
+              <TextInput label="End" value={p.endTime} onChange={v => updatePeriod(day, idx, "endTime", v)} />
+              <TextInput label="Subject" value={p.subject} onChange={v => updatePeriod(day, idx, "subject", v)} />
+              <SelectInput
+                label="Teacher"
+                value={p.teacherId}
+                onChange={v => updatePeriod(day, idx, "teacherId", v)}
+                options={teachers.map(t => ({ value: t.teacherId, label: t.name }))}
+              />
+            </div>
+          ))}
+          <button onClick={() => addPeriod(day)} className="px-2 py-1 bg-green-500 text-white rounded">Add Period</button>
         </div>
       ))}
 
-      <div className="flex gap-4 mt-4">
-        <button onClick={handleCreate} className="px-4 py-2 bg-blue-600 text-white rounded">
-          Create
+      <div className="flex gap-2 mt-4">
+        <button onClick={handleCreateOrUpdate} className="px-4 py-2 bg-blue-600 text-white rounded">
+          {timetableId ? "Update Timetable" : "Create Timetable"}
         </button>
-        <button onClick={handleUpdate} className="px-4 py-2 bg-yellow-600 text-white rounded">
-          Update
-        </button>
-        <button onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white rounded">
-          Delete
-        </button>
+        <button onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white rounded">Delete Timetable</button>
       </div>
 
       <div className="mt-6">
+        <h3 className="font-semibold mb-2">Existing Class Timetables</h3>
         <Table
           columns={[
-            { label: "Day", key: "day" },
+            { label: "Class", key: "className" },
+            { label: "Division", key: "division" },
             {
-              label: "Periods",
-              key: "periods",
-              render: (row: DaySchedule) =>
-                row.periods.map(p => `${p.startTime}-${p.endTime} ${p.subject}`).join(", ")
+              label: "Action",
+              key: "action",
+              render: (row: ClassOption) => (
+                <button onClick={() => handleEditTimetable(row._id)} className="px-2 py-1 bg-blue-500 text-white rounded">
+                  Edit/Update
+                </button>
+              )
             }
           ]}
-          data={days}
+          data={classes}
         />
       </div>
     </div>
   );
 };
 
-export default TimeTableManagement;
+export default AdminTimeTablePage;

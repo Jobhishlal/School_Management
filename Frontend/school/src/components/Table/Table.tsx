@@ -76,7 +76,7 @@ import React from "react";
 
 export interface Column<T> {
   label: string;
-  key?: keyof T | string; // ✅ Allow any field name
+  key?: keyof T | string; 
   render?: (row: T, index: number) => React.ReactNode;
   className?: string;
 }
