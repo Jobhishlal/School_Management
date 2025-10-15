@@ -5,10 +5,11 @@ export class DeleteTimeTableUseCase implements IDeleteTimeTable {
   constructor(private readonly timetablerepo: ITimeTableRepository) {}
 
   async execute(id: string): Promise<void> {
-    const existingTimetable = await this.timetablerepo.getById(id);
-    if (!existingTimetable) {
-      throw new Error("Timetable not found");
-    }
+    if (!id) throw new Error("Timetable ID is required");
+
+    const existingTimetable = await this.timetablerepo.findById(id);
+    if (!existingTimetable) throw new Error("Timetable not found");
+
     await this.timetablerepo.delete(id);
   }
 }

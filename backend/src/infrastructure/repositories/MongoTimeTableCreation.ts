@@ -5,6 +5,7 @@ import { TeacherModel } from "../database/models/Teachers";
 import { ClassModel } from "../database/models/ClassModel";
 import { CreateTimetableDTO } from "../../applications/dto/CreateTImeTableDTO";
 import { StudentModel } from "../database/models/StudentModel";
+import { validateTimetable } from "../../applications/validators/Timetable/TimetableValidator";
 
 import mongoose from "mongoose";
 
@@ -15,16 +16,14 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
     const cls = await ClassModel.findById(dto.classId);
     if (!cls) throw new Error("Class not found");
 
-  for (const day of dto.days) {
-      for (const period of day.periods) {
+      for (const day of dto.days) {
+         for (const period of day.periods) {
           if (!period.teacherId || period.teacherId === "") continue;
 
            const teacher = await TeacherModel.findById(period.teacherId);
            if (!teacher) throw new Error(`Teacher not found: ${period.teacherId}`);
 
-           if (!teacher.subjects.some(s => s.name === period.subject)) {
-          throw new Error(`${teacher.name} does not teach ${period.subject}`);
-         }
+        
      }
    }
 
@@ -33,6 +32,10 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
   
 
 async create(timetable: TimetableEntity): Promise<TimetableEntity> {
+
+
+  await validateTimetable(timetable)
+  
   const classObjectId = new mongoose.Types.ObjectId(timetable.classId);
 
 
@@ -85,32 +88,63 @@ async create(timetable: TimetableEntity): Promise<TimetableEntity> {
 
 
 
+  // async getByClass(classId: string, division: string): Promise<TimetableEntity | null> {
+  //   const doc = await TimetableModel.findOne({ classId, division })
+  //     .populate("classId", "className division")
+  //     .populate("days.periods.teacherId", "name");
+
+  //   if (!doc) return null;
+
+  //   return new TimetableEntity(
+  //     doc.id.toString(),
+  //     (doc.classId as any)._id.toString(),
+  //     (doc.classId as any).division,
+  //      (doc.className as any).className,
+  //     doc.days.map(d => new DayScheduleEntity(
+  //       d.day,
+  //       d.periods.map(p => new PeriodEntity(
+  //         p.startTime,
+  //         p.endTime,
+  //         p.subject,
+  //         (p.teacherId as any)._id?.toString() || p.teacherId.toString()
+  //       ))
+  //     ))
+  //   );
+  // }
+
+
   async getByClass(classId: string, division: string): Promise<TimetableEntity | null> {
-    const doc = await TimetableModel.findOne({ classId, division })
-      .populate("classId", "className division")
-      .populate("days.periods.teacherId", "name");
+  if (!classId) return null; 
 
-    if (!doc) return null;
+  const doc = await TimetableModel.findOne({ 
+      classId: new mongoose.Types.ObjectId(classId),
+      division
+    })
+    .populate("classId", "className division")
+    .populate("days.periods.teacherId", "name");
 
-    return new TimetableEntity(
-      doc.id.toString(),
-      (doc.classId as any)._id.toString(),
-      (doc.classId as any).division,
-       (doc.className as any).className,
-      doc.days.map(d => new DayScheduleEntity(
-        d.day,
-        d.periods.map(p => new PeriodEntity(
-          p.startTime,
-          p.endTime,
-          p.subject,
-          (p.teacherId as any)._id?.toString() || p.teacherId.toString()
-        ))
+  if (!doc) return null;
+
+  return new TimetableEntity(
+    doc.id.toString(),
+    (doc.classId as any)._id.toString(),
+    (doc.classId as any).className,
+    (doc.classId as any).division,
+    doc.days.map(d => new DayScheduleEntity(
+      d.day,
+      d.periods.map(p => new PeriodEntity(
+        p.startTime,
+        p.endTime,
+        p.subject,
+        (p.teacherId as any)?._id?.toString() || p.teacherId.toString()
       ))
-    );
-  }
+    ))
+  );
+}
 
  
   async update(timetable: TimetableEntity): Promise<TimetableEntity> {
+    await validateTimetable(timetable)
     const doc = await TimetableModel.findByIdAndUpdate(
       timetable.id,
       {

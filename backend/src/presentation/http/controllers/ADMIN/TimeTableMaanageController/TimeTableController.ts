@@ -49,17 +49,17 @@ async GetByClass(req: Request, res: Response): Promise<void> {
     const timetable = await this.gettimetable.execute(classId, division);
 
     if (!timetable) {
-      res.status(404).json({ success: false, message: "Timetable not found" });
+      res.status(StatusCodes.NOT_FOUND).json({ success: false, message: "Timetable not found" });
       return;
     }
 
-    res.status(200).json({
+    res.status(StatusCodes.CREATED).json({
       success: true,
       message: "Timetable fetched successfully",
       data: timetable,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Something went wrong", error });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Something went wrong", error });
   }
 }
 
@@ -70,18 +70,16 @@ async UpdateTimeTable(req: Request, res: Response): Promise<void> {
         const dto: CreateTimetableDTO = req.body;
         console.log("i am reached here",dto)
         const updated = await this.updatetimetable.execute(dto);
-        res.status(200).json({
+        res.status(StatusCodes.CREATED).json({
             success: true,
             message: "Timetable updated successfully",
             data: updated
         });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error instanceof Error ? error.message : error
-        });
-    }
+    } catch (error:any) {
+       console.error("Error updating timetable:", error.message);
+      res.status(400).json({ message: error.message || "Failed to update timetable" });
+  }
+    
 }
 
 
@@ -89,15 +87,16 @@ async UpdateTimeTable(req: Request, res: Response): Promise<void> {
 async DeleteTimeTable(req: Request, res: Response): Promise<void> {
   try {
     const { id } = req.params;
-    if (!id)  res.status(400).json({ message: "Timetable ID is required" });
+    if (!id)  res.status(StatusCodes.BAD_REQUEST).json({ message: "Timetable ID is required" });
 
     await this.deletetimetable.execute(id);
-    res.status(StatusCodes.OK).json({ message: "Timetable deleted successfully" });
-  } catch (error) {
+    res.status(StatusCodes.CREATED).json({ message: "Timetable deleted successfully" });
+  } catch (error: any) {
     console.log("error", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message || "Internal Server Error" });
   }
 }
+
 
 
 }

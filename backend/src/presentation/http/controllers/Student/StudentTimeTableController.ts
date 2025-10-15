@@ -23,7 +23,7 @@ export class StudentTimetableController {
       }
 
       const timetable = await this.timetablerepo.execute(studentId);
-      console.log("timetable",timetable)
+      console.log("timetable view student",timetable)
 
       if (!timetable) {
         res.status(StatusCodes.NOT_FOUND).json({

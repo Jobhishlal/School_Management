@@ -16,7 +16,7 @@ import {
 } from "../../services/authapi";
 import type { CreateTimeTableDTO, DaySchedule, PeriodTime } from "../../types/ITimetable";
 import { showToast } from "../../utils/toast";
-import { da } from "zod/v4/locales";
+
 
 interface Teacher {
   teacherId: string;
@@ -60,7 +60,7 @@ const AdminTimeTablePage: React.FC = () => {
         setTeachers(resTeachers);
       } catch (err) {
         console.error(err);
-        alert("Failed to fetch classes or teachers");
+        showToast("Failed to fetch classes or teachers");
       }
     };
     fetchData();
@@ -102,17 +102,24 @@ const AdminTimeTablePage: React.FC = () => {
   };
 
   const addPeriod = (day: string) => {
-    setDays(prev => {
-      const updated = [...prev];
-      const dayIndex = updated.findIndex(d => d.day === day);
-      if (dayIndex >= 0) {
+  setDays(prev => {
+    const updated = [...prev];
+    const dayIndex = updated.findIndex(d => d.day === day);
+
+    if (dayIndex >= 0) {
+    
+      const hasEmpty = updated[dayIndex].periods.some(p => !p.startTime && !p.endTime && !p.subject && !p.teacherId);
+      if (!hasEmpty) {
         updated[dayIndex].periods.push({ startTime: "", endTime: "", subject: "", teacherId: "" });
-      } else {
-        updated.push({ day, periods: [{ startTime: "", endTime: "", subject: "", teacherId: "" }] });
       }
-      return updated;
-    });
-  };
+    } else {
+      updated.push({ day, periods: [{ startTime: "", endTime: "", subject: "", teacherId: "" }] });
+    }
+
+    return updated;
+  });
+};
+
 
   const updatePeriod = (day: string, idx: number, key: keyof PeriodTime, value: string) => {
     setDays(prev =>
@@ -123,7 +130,7 @@ const AdminTimeTablePage: React.FC = () => {
     );
   };
 
- const handleCreateOrUpdate = async () => {
+          const handleCreateOrUpdate = async () => {
   if (!selectedClass) return alert("Select a class");
 
   const dto: CreateTimeTableDTO = {
@@ -144,11 +151,18 @@ const AdminTimeTablePage: React.FC = () => {
     }
 
     showToast(`Timetable ${timetableId ? "updated" : "created"} successfully!`);
-  } catch (err) {
-    console.error(err);
-    showToast("Failed to create/update timetable");
+  } catch (err: any) {
+    console.error("Timetable creation/update error:", err);
+
+    const backendMessage =
+      err?.response?.data?.message ||
+      err?.message ||
+      "Failed to create/update timetable";
+
+    showToast(backendMessage);
   }
 };
+
 
 
   const handleEditTimetable = async (classId: string) => {
