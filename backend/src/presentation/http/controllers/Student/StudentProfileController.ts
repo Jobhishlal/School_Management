@@ -15,22 +15,22 @@ export class StudentProfileController {
       console.log("student",studentId)
 
       if (!studentId) {
-         res.status(400).json({ message: "Student ID missing" });
+         res.status(StatusCodes.BAD_REQUEST).json({ message: "Student ID missing" });
          return
       }
 
       const student = await this.studentprofile.execute(studentId);
       if (!student) {
         console.log("not get ",student)
-         res.status(404).json({ message: "Student not found" });
+         res.status(StatusCodes.NOT_FOUND).json({ message: "Student not found" });
          return
       }
 
-       res.status(200).json({ success: true, data: student });
+       res.status(StatusCodes.OK).json({ success: true, data: student });
        return
     } catch (error) {
       console.error(error);
-       res.status(500).json({ message: "Internal server error" });
+       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
        return
     }
   }

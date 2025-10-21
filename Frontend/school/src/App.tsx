@@ -140,6 +140,8 @@ import TeacherDashboard from "./pages/Teacher/TeacherDashboard";
 import AdminClassDivisionView from "./pages/admin/ClassBaseStudentList";
 import TimeTableManagement from "./pages/admin/TimeTableManagement";
 import StudentTimeTableView from "./pages/Student/StudentTimeTableView";
+import AssignmentManage from "./pages/Teacher/AssignMentManage";
+import { StudentAssignmentList } from "./pages/Student/StudentAssignmentView";
 
 function ErrorFallback({ error }: { error: Error }) {
   return <div role="alert">Something went wrong: {error.message}</div>;
@@ -179,6 +181,8 @@ function App() {
           <Route path="/student-dashboard" element={<StudentDashboard />} />
          <Route path="/student/profile" element={<StudentProfilePage />} />
          <Route path='/student/timetable-view' element={<StudentTimeTableView/>}/>
+         <Route path='/student/assignment' element={<StudentAssignmentList/>}/>
+
 
 
 
@@ -188,6 +192,7 @@ function App() {
          {/* ---------------- TEACHER ROUTES ---------------- */}
           <Route element={<ThemeProvider><TeacherLayout/></ThemeProvider>}>
           <Route path="/teacher/dashboard" element={<TeacherDashboard/>}/>
+          <Route path="/teacher/assignments" element={<AssignmentManage/>}/>
 
           </Route>
 

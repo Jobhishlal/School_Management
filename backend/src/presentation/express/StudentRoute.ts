@@ -7,6 +7,9 @@ import { AuthRequest } from "../../infrastructure/types/AuthRequest";
 import { StudentTimeTableViewUseCase } from "../../applications/useCases/admin/TimeTable/StudentTimetableview";
 import { MongoTimeTableCreate } from "../../infrastructure/repositories/MongoTimeTableCreation";
 import { StudentTimetableController } from "../http/controllers/Student/StudentTimeTableController";
+import { AssignmentMongo } from "../../infrastructure/repositories/Assiggment/MongoAssignment";
+import { StudentGetAssignment } from "../../applications/useCases/Students/AssignmentView";
+import { AssignmentViewStudentsController } from "../http/controllers/Student/StudentAssignment";
 
 const Studentrouter = Router();
 
@@ -18,6 +21,11 @@ const timetablemongo = new MongoTimeTableCreate()
 const studentusecase = new StudentTimeTableViewUseCase(timetablemongo)
 const studenttimetablecontroller = new StudentTimetableController(studentusecase)
 
+
+const assignmentrepo = new AssignmentMongo()
+const assignmentget = new StudentGetAssignment(assignmentrepo)
+const assignmentcontroller = new AssignmentViewStudentsController(assignmentget)
+
 Studentrouter.get("/profile", authMiddleware, async (req, res) => {
   const authReq = req as AuthRequest;
   return StudentController.GetProfile(authReq, res);
@@ -25,5 +33,11 @@ Studentrouter.get("/profile", authMiddleware, async (req, res) => {
 
 
 Studentrouter.get('/timetable-view',(req,res)=>studenttimetablecontroller.TimeTableView(req,res))
+
+Studentrouter.get('/assignment-view',
+  authMiddleware,(req,res)=>{
+  const authReq = req as AuthRequest;
+  return assignmentcontroller.AssignmentStudentview(authReq,res)
+})
 
 export default Studentrouter;

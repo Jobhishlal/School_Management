@@ -88,31 +88,6 @@ async create(timetable: TimetableEntity): Promise<TimetableEntity> {
 
 
 
-  // async getByClass(classId: string, division: string): Promise<TimetableEntity | null> {
-  //   const doc = await TimetableModel.findOne({ classId, division })
-  //     .populate("classId", "className division")
-  //     .populate("days.periods.teacherId", "name");
-
-  //   if (!doc) return null;
-
-  //   return new TimetableEntity(
-  //     doc.id.toString(),
-  //     (doc.classId as any)._id.toString(),
-  //     (doc.classId as any).division,
-  //      (doc.className as any).className,
-  //     doc.days.map(d => new DayScheduleEntity(
-  //       d.day,
-  //       d.periods.map(p => new PeriodEntity(
-  //         p.startTime,
-  //         p.endTime,
-  //         p.subject,
-  //         (p.teacherId as any)._id?.toString() || p.teacherId.toString()
-  //       ))
-  //     ))
-  //   );
-  // }
-
-
   async getByClass(classId: string, division: string): Promise<TimetableEntity | null> {
   if (!classId) return null; 
 

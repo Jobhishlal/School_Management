@@ -75,26 +75,25 @@ export const StudentProfilePage: React.FC = () => {
       }`}
     >
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
+       
         <h2 className="text-3xl font-bold mb-1">Profile Management</h2>
         <p className="text-slate-400 mb-6">
           View detailed information about the student
         </p>
 
-        {/* Tab */}
         <div className="flex border-b border-slate-700 mb-6">
           <div className="px-4 py-2 font-medium border-b-2 border-blue-500 text-blue-500">
             Student Profile
           </div>
         </div>
 
-        {/* Profile Card */}
+       
         <div
           className={`rounded-lg p-6 shadow-xl relative ${
             isDark ? "bg-slate-800/50" : "bg-white"
           }`}
         >
-          {/* Student Photo */}
+         
           <div className="flex flex-col items-center text-center mb-8">
             {student.photos?.length > 0 ? (
               <img
@@ -117,9 +116,9 @@ export const StudentProfilePage: React.FC = () => {
             <p className="text-slate-400">{student.role?.toUpperCase()}</p>
           </div>
 
-          {/* Info Sections */}
+         
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Basic Info */}
+        
             <div>
               <h3 className="text-lg font-semibold border-b border-slate-700 pb-2 mb-3 flex items-center gap-2">
                 <User size={18} /> Basic Information

@@ -12,32 +12,7 @@ export class MongoStudentRepo implements StudentDetails {
       return new mongoose.Types.ObjectId(id);
     }
 
-  // async create(student: Students): Promise<Students> {
-  //   const newStudent = new StudentModel({
-  //     fullName: student.fullName,
-  //     dateOfBirth: student.dateOfBirth,
-  //     gender: student.gender,
-  //     photos: student.photos,
-  //     studentId: student.studentId,
-  //     parent: this.toObjectId(student.parentId),
-  //     address: this.toObjectId(student.addressId),
-  //     classId: this.toObjectId(student.classId),
-  //     Password: student.Password,
-  //     role:student.role
-  //   });
 
-  //   const saved = await newStudent.save();
-
-  //   await saved.populate([
-  //     { path: "parent" },
-  //     { path: "address" },
-  //     { path: "classId" }
-  //   ]);
-
-  //   return this.mapToDomainPopulated(saved);
-  // }
- 
-     // src/infrastructure/repositories/MongoStudentRepo.ts
 async create(student: Students): Promise<Students> {
   if (!student.classId && (!student.classDetails?.className || !student.classDetails.className)) {
     throw new Error("Student must have a classId or className+division");
@@ -207,29 +182,7 @@ async findById(id: string): Promise<Students | null> {
     }
 
 
-// private mapToDomainPopulated(student: StudentInterface & { parent: any; address: any; classId: any }): Students {
-//   return new Students(
-//     student._id.toString(),
-//     student.fullName,
-//     student.dateOfBirth,
-//     student.gender,
-//     student.studentId,
-//     student.parent?._id.toString(),   
-//     student.address?._id.toString(),   
-//     student.classId?._id.toString(),   
-//     student.photos.map(p => ({
-//       url: p.url,
-//       filename: p.filename,
-//       uploadedAt: p.uploadedAt
-//     })),
-//     student.Password,
-//     student.parent,       
-//     student.classId,      
-//     student.blocked ?? false,
-//     student.address   ,
-//     student.role
-//   );
-// }
+
 
 private mapToDomainPopulated(student: StudentInterface & { parent: any; address: any; classId: any }): Students {
   return new Students(

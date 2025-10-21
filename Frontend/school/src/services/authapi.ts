@@ -1,6 +1,7 @@
 import api from "./api";
 import { API_ROUTES } from "../constants/routes/Route";
 import { type CreateTimeTableDTO } from "../types/ITimetable";
+import { type CreateAssignmentDTO } from "../types/AssignmentCreate";
 
 
 
@@ -464,3 +465,62 @@ export const deletetimetable=async(id?:string)=>{
   const res = await api.delete( `/admin/delete-time-table/${id}`)
   return res.data
 }
+
+export const createAssignment = async (data: CreateAssignmentDTO, files: File[]) => {
+  const formData = new FormData();
+
+
+  formData.append("Assignment_Title", data.Assignment_Title);
+  formData.append("description", data.description);
+  formData.append("subject", data.subject);
+  formData.append("classId", data.classId);
+  formData.append("division", data.division);
+  formData.append("Assignment_date", data.Assignment_date.toISOString());
+  formData.append("Assignment_Due_Date", data.Assignment_Due_Date.toISOString());
+  formData.append("maxMarks", data.maxMarks.toString());
+
+  files.forEach(file => {
+    formData.append("documents", file);
+  });
+
+  const token = localStorage.getItem("token");
+  const res = await api.post("/teacher/assignment", formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data"
+    }
+  });
+
+  return res.data;
+};
+
+
+
+export const GetTeachertimetableList = async()=>{
+  const token = localStorage.getItem("token");
+  const res = await api.get("/teacher/teacher-info", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data.data; 
+}
+
+
+export const UpdateExistedAssignment = async (id: string, formData: FormData) => {
+
+  const res = await api.put(`/teacher/assignment/${id}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return res.data;
+};
+
+
+export const ListoutExistedAssignment=async()=>{
+    
+  const res = await api.get(`/teacher/TeachAssignmentList`)
+
+  return res.data
+
+
+}
+
+

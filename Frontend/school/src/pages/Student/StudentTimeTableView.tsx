@@ -1,18 +1,11 @@
 
 
-
-
-
-
-
-
-
 import React, { useEffect, useState } from "react";
 import { StudentProfile, TimeTableview } from "../../services/Student/StudentApi";
 import { useTheme } from "../../components/layout/ThemeContext";
 import { Clock, BookOpen, User, Calendar, Sun, Moon } from "lucide-react";
 
-// Interfaces
+
 interface Period {
   startTime: string;
   endTime: string;
@@ -157,7 +150,7 @@ const StudentTimeTableView: React.FC = () => {
 
   if (!student || !todaySchedule) {
     return (
-      <div className={`min-h-screen flex items-center justify-center p-4 ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}>
+      <div className={`min-h-screen flex items-center justify-center p-4 ${isDark ? 'bg-[#121A21]' : 'bg-slate-50'}`}>
         <div className={`max-w-md w-full p-8 rounded-3xl text-center ${isDark ? 'bg-slate-800 border border-slate-700' : 'bg-white shadow-2xl'}`}>
           <Calendar className={`w-20 h-20 mx-auto mb-4 ${isDark ? 'text-slate-600' : 'text-slate-300'}`} />
           <h3 className={`text-xl font-bold mb-2 ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>No Classes Today</h3>
@@ -167,8 +160,9 @@ const StudentTimeTableView: React.FC = () => {
     );
   }
 
- const bgColor = isDark ? 'bg-[#121A21]' : 'bg-slate-50';
-const cardBg = isDark ? 'bg-slate-800/50' : 'bg-white';
+    const bgColor = isDark ? 'bg-[#121A21]' : 'bg-slate-50';
+    console.log("bgColor",bgColor)
+     const cardBg = isDark ? 'bg-slate-800/50' : 'bg-white';
 
   const timeOfDay = currentTime.getHours() < 12 ? 'Morning' : currentTime.getHours() < 17 ? 'Afternoon' : 'Evening';
 
@@ -176,7 +170,7 @@ const cardBg = isDark ? 'bg-slate-800/50' : 'bg-white';
     <div className={`min-h-screen ${bgColor} p-4 md:p-8 transition-colors duration-300`}>
       <div className="max-w-5xl mx-auto">
         
-        {/* Compact Header */}
+  
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -199,8 +193,7 @@ const cardBg = isDark ? 'bg-slate-800/50' : 'bg-white';
               </div>
             </div>
           </div>
-          
-          {/* Current Time Badge */}
+    
           <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${isDark ? 'bg-slate-800 border border-slate-700' : 'bg-white shadow-md'}`}>
             <Clock className={`w-4 h-4 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
             <span className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
@@ -209,7 +202,6 @@ const cardBg = isDark ? 'bg-slate-800/50' : 'bg-white';
           </div>
         </div>
 
-        {/* Timeline Layout */}
         <div className="space-y-4">
           {todaySchedule.periods.map((period, index) => {
             const isCurrent = isCurrentPeriod(period.startTime, period.endTime);
@@ -218,7 +210,7 @@ const cardBg = isDark ? 'bg-slate-800/50' : 'bg-white';
 
             return (
               <div key={index} className="flex gap-4 group">
-                {/* Timeline Dot & Line */}
+              
                 <div className="flex flex-col items-center">
                   <div className={`w-4 h-4 rounded-full ${isCurrent ? colors.dot + ' ring-4 ring-offset-2 ' + (isDark ? 'ring-slate-900 ring-offset-slate-900' : 'ring-slate-50 ring-offset-slate-50') : isPast ? isDark ? 'bg-slate-700' : 'bg-slate-300' : colors.dot} transition-all duration-300 ${isCurrent ? 'scale-125' : ''}`}></div>
                   {index < todaySchedule.periods.length - 1 && (
@@ -226,7 +218,7 @@ const cardBg = isDark ? 'bg-slate-800/50' : 'bg-white';
                   )}
                 </div>
 
-                {/* Period Card */}
+           
                 <div className={`flex-1 mb-6 ${cardBg} rounded-2xl p-5 shadow-lg border transition-all duration-300 ${
                   isCurrent 
                     ? isDark ? 'border-blue-500 shadow-blue-500/20 shadow-xl' : 'border-blue-400 shadow-blue-400/30 shadow-xl'
@@ -284,7 +276,7 @@ const cardBg = isDark ? 'bg-slate-800/50' : 'bg-white';
           })}
         </div>
 
-        {/* Footer Stats */}
+        
         <div className={`mt-8 p-6 ${cardBg} rounded-2xl shadow-lg border ${isDark ? 'border-slate-700' : 'border-slate-200'}`}>
           <div className="flex items-center justify-between">
             <div>
