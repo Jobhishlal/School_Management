@@ -1,13 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { StudentGetAssignment, StudentProfile } from "../../services/Student/StudentApi";
+import { StudentGetAssignment, StudentProfile, StudentSubmitAssignment } from "../../services/Student/StudentApi";
 import { useTheme } from "../../components/layout/ThemeContext";
 import { BookOpen, Calendar, Award, Users, FileText, Download, Clock, AlertCircle } from "lucide-react";
+import { showToast } from "../../utils/toast";
 
 interface Attachment {
   _id: string;
   url: string;
   fileName: string;
   uploadedAt: string;
+}
+
+interface SubmittedFile {
+  _id: string;
+  url: string;
+  fileName: string;
+  uploadedAt: string;
+  studentDescription?: string;
 }
 
 interface Assignment {
@@ -21,6 +30,7 @@ interface Assignment {
   className: string;
   division: string;
   attachments: Attachment[];
+  submittedFiles?: SubmittedFile[];
 }
 
 export const StudentAssignmentList: React.FC = () => {
@@ -29,6 +39,9 @@ export const StudentAssignmentList: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'upcoming' | 'overdue'>('all');
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [studentDescription, setStudentDescription] = useState<string>("");
+  const [submittingId, setSubmittingId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProfileAndAssignments = async () => {
@@ -90,7 +103,6 @@ export const StudentAssignmentList: React.FC = () => {
   const pageBg = isDark ? "bg-[#121A21]" : "bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50";
   const cardBg = isDark ? "bg-gray-800" : "bg-white";
 
-
   if (loading) {
     return (
       <div className={`min-h-screen ${pageBg} p-6 flex items-center justify-center`}>
@@ -115,6 +127,37 @@ export const StudentAssignmentList: React.FC = () => {
       </div>
     );
   }
+
+  const handleSubmitAssignment = async (assignmentId: string) => {
+    try {
+      const profileRes = await StudentProfile();
+      const studentId = profileRes?.data?.data?.id || profileRes?.data?.data?._id;
+      if (!studentId) return alert("Student profile not found");
+
+      setSubmittingId(assignmentId);
+
+      const formData = new FormData();
+      selectedFiles.forEach((file) => formData.append("documents", file));
+      formData.append("studentDescription", studentDescription);
+
+     const res =  await StudentSubmitAssignment(studentId, assignmentId, formData);
+     console.log("result",res)
+
+    showToast("Assignment submitted successfully!");
+      setSelectedFiles([]);
+      setStudentDescription("");
+      setSubmittingId(null);
+
+ 
+      const assignmentsRes = await StudentGetAssignment(studentId);
+      const assignmentsArray = Array.isArray(assignmentsRes) ? assignmentsRes : assignmentsRes?.data || [];
+      setAssignments(assignmentsArray);
+    } catch (err) {
+      console.error(err);
+      alert("Submission failed!");
+      setSubmittingId(null);
+    }
+  };
 
   return (
     <div className={`min-h-screen ${pageBg} p-6 transition-colors duration-300`}>
@@ -172,7 +215,7 @@ export const StudentAssignmentList: React.FC = () => {
                   key={assignment.id}
                   className={`${cardBg} group rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border ${isDark ? "border-gray-700 hover:border-blue-600" : "border-gray-100 hover:border-blue-300"}`}
                 >
-                  {/* Card Header */}
+                 
                   <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-4">
                     <div className="flex justify-between items-start">
                       <h3 className="text-xl font-bold text-white pr-4 leading-tight">{assignment.title}</h3>
@@ -184,22 +227,18 @@ export const StudentAssignmentList: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Card Body */}
+                
                   <div className="p-6 space-y-4">
                     <p className={`leading-relaxed ${isDark ? "text-gray-300" : "text-gray-700"}`}>{assignment.description}</p>
 
-                    {/* Info Grid */}
+                    
                     <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                       <div className="flex items-center gap-2">
                         <Calendar className="w-5 h-5 text-blue-500" />
                         <div>
                           <p className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>Due Date</p>
                           <p className={`font-semibold text-sm ${isDark ? "text-white" : "text-gray-800"}`}>
-                            {new Date(assignment.Assignment_Due_Date).toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            })}
+                            {new Date(assignment.Assignment_Due_Date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                           </p>
                         </div>
                       </div>
@@ -233,12 +272,12 @@ export const StudentAssignmentList: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Attachments */}
+                   
                     {assignment.attachments?.length > 0 && (
                       <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                         <p className={`text-sm font-semibold mb-3 flex items-center gap-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
                           <FileText className="w-4 h-4" />
-                          Assignment Details({assignment.attachments.length})
+                          Assignment Details ({assignment.attachments.length})
                         </p>
                         <div className="space-y-2">
                           {assignment.attachments.map((att) => (
@@ -255,19 +294,10 @@ export const StudentAssignmentList: React.FC = () => {
                                 </span>
                               </div>
                               <div className="flex gap-2">
-                                <a
-                                  href={att.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${isDark ? "text-blue-400 hover:bg-blue-900/20" : "text-blue-600 hover:bg-blue-50"}`}
-                                >
+                                <a href={att.url} target="_blank" rel="noopener noreferrer" className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${isDark ? "text-blue-400 hover:bg-blue-900/20" : "text-blue-600 hover:bg-blue-50"}`}>
                                   View
                                 </a>
-                                <a
-                                  href={att.url}
-                                  download={att.fileName}
-                                  className={`px-3 py-1.5 text-xs font-medium rounded-lg flex items-center gap-1 transition-colors ${isDark ? "text-green-400 hover:bg-green-900/20" : "text-green-600 hover:bg-green-50"}`}
-                                >
+                                <a href={att.url} download={att.fileName} className={`px-3 py-1.5 text-xs font-medium rounded-lg flex items-center gap-1 transition-colors ${isDark ? "text-green-400 hover:bg-green-900/20" : "text-green-600 hover:bg-green-50"}`}>
                                   <Download className="w-3 h-3" />
                                   Download
                                 </a>
@@ -277,6 +307,49 @@ export const StudentAssignmentList: React.FC = () => {
                         </div>
                       </div>
                     )}
+
+                   
+                    <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <p className={`text-sm font-semibold mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>Submit Your Work</p>
+                      <textarea
+                        className={`w-full p-2 rounded-md border ${isDark ? "bg-gray-800 border-gray-600 text-white" : "bg-white border-gray-300"} mb-2`}
+                        placeholder="Add a description (optional)"
+                        value={studentDescription}
+                        onChange={(e) => setStudentDescription(e.target.value)}
+                      />
+
+                      <input
+                        type="file"
+                        multiple
+                        onChange={(e) => {
+                          if (e.target.files) setSelectedFiles(Array.from(e.target.files));
+                        }}
+                        className="mb-2"
+                      />
+
+                      <button
+                        disabled={submittingId === assignment.id || selectedFiles.length === 0}
+                        onClick={() => handleSubmitAssignment(assignment.id)}
+                        className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600"
+                      >
+                        {submittingId === assignment.id ? "Submitting..." : "Submit Assignment"}
+                      </button>
+
+                     
+                      {assignment.submittedFiles?.length||0 > 0 && (
+                        <div className="mt-4">
+                          <p className="font-medium mb-1">Your Submissions:</p>
+                          {assignment.submittedFiles.map((file) => (
+                            <div key={file._id} className="flex justify-between items-center mb-1">
+                              <span className="truncate">{file.fileName}</span>
+                              <a href={file.url} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+                                View
+                              </a>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               );

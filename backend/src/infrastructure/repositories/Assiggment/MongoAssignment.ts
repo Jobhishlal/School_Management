@@ -7,6 +7,7 @@ import { TeacherModel } from "../../database/models/Teachers";
 import { TimetableModel } from "../../database/models/Admin/TimeTableCraete";
 import { AssignmentDTO } from "../../../applications/dto/AssignmentDTO ";
 import { StudentModel } from "../../database/models/StudentModel";
+import { SubmitDTO } from "../../../applications/dto/AssignmentDTO ";
 
 
 
@@ -253,6 +254,58 @@ async getAssignmentsByTeacher(teacherId: string): Promise<AssignmentEntity[]> {
     );
   });
 }
+    
+async assignmentsubmit(
+  assignmentId: string,
+  studentId: string,
+  fileUrl: string,
+  fileName: string,
+  studentDescription?: string
+): Promise<SubmitDTO[]> {
+  const assignment = await AssignmentModel.findById(assignmentId);
+  if (!assignment) {
+    throw new Error("Assignment Id does not exist");
+  }
+
+  if (!studentId) {
+    throw new Error("Student Id is required");
+  }
+
+  // Find existing submission
+  const existingSubmission = assignment.assignmentSubmitFile.find(sub => 
+    sub.studentId?.toString() === studentId
+  );
+
+  if (existingSubmission) {
+    // Update existing submission
+    existingSubmission.url = fileUrl;
+    existingSubmission.fileName = fileName;
+    existingSubmission.uploadedAt = new Date();
+    existingSubmission.studentDescription = studentDescription || "";
+  } else {
+    // Push new submission
+    assignment.assignmentSubmitFile.push({
+      studentId: new mongoose.Types.ObjectId(studentId),
+      url: fileUrl,
+      fileName,
+      uploadedAt: new Date(),
+      studentDescription: studentDescription || "",
+    });
+  }
+
+  await assignment.save();
+
+  
+  return assignment.assignmentSubmitFile.map(sub => ({
+    assignmentId: assignment.id,
+    studentId: sub.studentId ? sub.studentId.toString() : "unknown",
+    fileUrl: sub.url,
+    fileName: sub.fileName,
+    uploadedAt: sub.uploadedAt,
+    studentDescription: sub.studentDescription,
+  }));
+}
+
 
     }
 

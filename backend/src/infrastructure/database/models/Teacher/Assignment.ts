@@ -1,9 +1,18 @@
+
 import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface Attachment {
   url: string;
   fileName: string;
   uploadedAt: Date;
+}
+
+export interface AssignmentSubmitFile{ 
+  studentId: Types.ObjectId;
+  url:string;
+  fileName:string;
+  uploadedAt:Date;
+  studentDescription:string;
 }
 
 export interface AssignmentDocument extends Document {
@@ -16,6 +25,8 @@ export interface AssignmentDocument extends Document {
   attachments: Attachment[];
   maxMarks: number;
   teacherId: Types.ObjectId; 
+  assignmentSubmitFile:AssignmentSubmitFile[];
+ 
 }
 
 const AssignmentSchema = new Schema<AssignmentDocument>(
@@ -28,6 +39,7 @@ const AssignmentSchema = new Schema<AssignmentDocument>(
     Assignment_Due_Date: { type: Date, required: true },
     attachments: [
       {
+        studentId: { type: Schema.Types.ObjectId, ref: "Student" },
         url: { type: String },
         fileName: { type: String },
         uploadedAt: { type: Date, default: Date.now },
@@ -35,6 +47,15 @@ const AssignmentSchema = new Schema<AssignmentDocument>(
     ],
     maxMarks: { type: Number, required: true },
     teacherId: { type: Schema.Types.ObjectId, ref: "Teacher", required: true },
+    assignmentSubmitFile:[
+      {
+        url:{type:String},
+        fileName:{type:String},
+        uploadedAt:{type:Date,default:Date.now},
+        studentDescription:{type:String}
+      }
+    ],
+
   },
   { timestamps: true }
 );

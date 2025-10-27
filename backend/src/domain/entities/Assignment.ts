@@ -1,5 +1,14 @@
 import { AttachmentDTO } from "../../applications/dto/AssignmentDTO ";
 
+
+export interface AssignmentSubmitDTO {
+  studentId: string;
+  url: string;
+  fileName: string;
+  uploadedAt: Date;
+   studentDescription?: string;
+}
+
 export class AssignmentEntity {
   constructor(
     public readonly id: string,
@@ -13,6 +22,7 @@ export class AssignmentEntity {
     public maxMarks: number,
     public teacherId: string,
     public className?: string,
-    public division?:string
+    public division?:string,
+    public assignmentSubmitFile?: AssignmentSubmitDTO[]
   ) {}
 }

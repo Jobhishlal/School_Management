@@ -1,8 +1,8 @@
 import { IAssignmentupdate } from "../../../domain/UseCaseInterface/Assignment/IUpdateUseCase";
-import { AssignmentEntity } from "../../../domain/entities/Assignment";
 import { IAssignmentRepository } from "../../../domain/repositories/Assignment/IAssignmentRepository ";
-import { AssignmentDTO } from "../../dto/AssignmentDTO ";
 import { ValidateAssignmentUpdate } from "../../validators/Assignment/AssignmentUpdateValidation";
+import { AssignmentDTO } from "../../dto/AssignmentDTO ";
+import { AssignmentEntity } from "../../../domain/entities/Assignment";
 
 
 export class UpdateAssignment implements IAssignmentupdate{

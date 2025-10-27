@@ -220,6 +220,7 @@ async create(timetable: TimetableEntity): Promise<TimetableEntity> {
 
   }
 
+  
 async getStudentTimeTable(studentId: string): Promise<TimetableEntity | null> {
   const student = await StudentModel.findById(studentId)
     .populate("classId", "className division")

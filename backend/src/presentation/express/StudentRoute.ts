@@ -10,6 +10,8 @@ import { StudentTimetableController } from "../http/controllers/Student/StudentT
 import { AssignmentMongo } from "../../infrastructure/repositories/Assiggment/MongoAssignment";
 import { StudentGetAssignment } from "../../applications/useCases/Students/AssignmentView";
 import { AssignmentViewStudentsController } from "../http/controllers/Student/StudentAssignment";
+import { AssignmentSubmit } from "../../applications/useCases/Assignment/StudentAssignmentSubmit";
+import { assignmentUpload } from "../../infrastructure/middleware/AssignmentSubmit";
 
 const Studentrouter = Router();
 
@@ -24,7 +26,8 @@ const studenttimetablecontroller = new StudentTimetableController(studentusecase
 
 const assignmentrepo = new AssignmentMongo()
 const assignmentget = new StudentGetAssignment(assignmentrepo)
-const assignmentcontroller = new AssignmentViewStudentsController(assignmentget)
+const assignmentsubmit = new AssignmentSubmit(assignmentrepo)
+const assignmentcontroller = new AssignmentViewStudentsController(assignmentget,assignmentsubmit)
 
 Studentrouter.get("/profile", authMiddleware, async (req, res) => {
   const authReq = req as AuthRequest;
@@ -38,6 +41,18 @@ Studentrouter.get('/assignment-view',
   authMiddleware,(req,res)=>{
   const authReq = req as AuthRequest;
   return assignmentcontroller.AssignmentStudentview(authReq,res)
-})
 
+})
+Studentrouter.post(
+  "/assignment-submit",
+  authMiddleware,
+  assignmentUpload.array("documents", 5), 
+  async (req, res) => {
+    try {
+      await assignmentcontroller.SubmitData(req, res);
+    } catch (err: any) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  }
+);
 export default Studentrouter;

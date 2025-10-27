@@ -49,3 +49,14 @@ export interface AssignmentDTO {
   maxMarks: number;
   teacherId: string;
 }
+
+
+
+
+export interface SubmitDTO{
+  assignmentId: string;
+  studentId: string;
+  fileUrl: string;
+  fileName: string;
+  studentDescription?: string;
+}

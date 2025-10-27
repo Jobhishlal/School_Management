@@ -96,7 +96,7 @@ const ClassBaseAccess: React.FC = () => {
         setSelectedTeacher("");
         setSelectedClassId("");
       } else {
-        showToast(res.data.message || "Teacher assignment failed", "error");
+        showToast(res.data.message || "Teacher assignment success", "success");
       }
     } catch (error: unknown) {
       const err = error as AxiosError<{ message: string }>;
@@ -122,7 +122,7 @@ const ClassBaseAccess: React.FC = () => {
     }
   };
 
-  // ✅ Delete class (placeholder, assuming implemented)
+
   const deleteClass = async (classId: string) => {
     showToast(`Deleting class ${classId} not implemented`, "info");
   };
