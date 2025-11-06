@@ -59,7 +59,7 @@ export default function SchoolNavbar({ children }: Props) {
 
         { icon: Megaphone, text: "Teacher Management", path: "/teachers" },
         { icon: AlertCircle, text: "Class Base Access", path: "/classbaseview" },
-        { icon: DollarSign, text: "Finance", path: "/finance" },
+        { icon: DollarSign, text: "Finance", path: "/finance-management" },
         { icon: GraduationCap, text: "Student Management", path: "/student-management" },
       ],
     },

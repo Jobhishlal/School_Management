@@ -71,6 +71,14 @@ import { UpdateTimeTableUseCase } from "../../applications/useCases/admin/TimeTa
 import { DeleteTimeTableUseCase } from "../../applications/useCases/admin/TimeTable/DeleteTimeTableUseCase";
 import { MongoTimeTableCreate } from "../../infrastructure/repositories/MongoTimeTableCreation";
 import { TimeTableManageController } from "../http/controllers/ADMIN/TimeTableMaanageController/TimeTableController";
+import { FeeStructureRepository } from "../../infrastructure/repositories/FeeManagement/MongoFeeManagement";
+import { CreateFeeStructureUseCase } from "../../applications/useCases/FeeStructure/FeeStructureCreate";
+import { FeeTypeManagemnt } from "../../infrastructure/repositories/FeeManagement/MongoFeeTypeManagement";
+import { FeeStructureManageController } from "../http/controllers/ADMIN/FeeManagement/FeeManagement";
+import { CreateFeeTypeUseCase } from "../../applications/useCases/FeeStructure/FeeTypeCreate";
+import { GetFeeTypeAll } from "../../applications/useCases/FeeStructure/FeeTypeGetAll";
+import { FeeTypeCreateController } from "../http/controllers/ADMIN/FeeManagement/FeeTypeCreateController";
+
 
 const repo = new AdminRepository();
 const data = new MongoSubAdminRepo();
@@ -214,6 +222,24 @@ const timetablemanagecontroller = new TimeTableManageController(
   deletetimetable
 )
 
+const finance = new FeeStructureRepository()
+const financetype = new FeeTypeManagemnt()
+
+const createfinance =  new CreateFeeStructureUseCase(finance,financetype)
+const createtypeusecase = new CreateFeeTypeUseCase(financetype)
+const getallfeetype = new GetFeeTypeAll(financetype)
+const financemanagementcontroll = new FeeStructureManageController(
+  createfinance
+)
+
+const financetypecontroller = new FeeTypeCreateController(
+  createtypeusecase,
+  getallfeetype
+)
+
+
+
+
 // Adminrouter.get("/signup", (req, res) => adminController.getAll(req, res));
 // Adminrouter.post("/signuppost", (req, res) => adminController.signupRequest(req, res));
 // Adminrouter.post('/verify-otp',(req,res)=>adminController.verifyOtp(req,res))
@@ -353,11 +379,33 @@ Adminrouter.get("/teacher-list", (req, res) => {
 });
 
 
-Adminrouter.post('/create-timetable',(req,res)=>timetablemanagecontroller.createTimetable(req,res))
-Adminrouter.get('/timetable-view/:classId/:division', (req, res) => timetablemanagecontroller.GetByClass(req, res))
+Adminrouter.post('/create-timetable',(req,res)=>
+  timetablemanagecontroller.createTimetable(req,res)
+)
 
-Adminrouter.put('/timetable-update/:id',(req,res)=>timetablemanagecontroller.UpdateTimeTable(req,res))
-Adminrouter.delete('/delete-time-table/:id',(req,res)=>timetablemanagecontroller.DeleteTimeTable(req,res))
 
+Adminrouter.get('/timetable-view/:classId/:division', (req, res) =>
+   timetablemanagecontroller.GetByClass(req, res)
+)
+
+Adminrouter.put('/timetable-update/:id',(req,res)=>
+  timetablemanagecontroller.UpdateTimeTable(req,res)
+)
+Adminrouter.delete('/delete-time-table/:id',(req,res)=>
+  timetablemanagecontroller.DeleteTimeTable(req,res)
+)
+
+
+Adminrouter.post('/create-finance',(req,res)=>
+  financemanagementcontroll.create(req,res)
+)
+
+Adminrouter.post('/create-finance-type',(req,res)=>
+  financetypecontroller.create(req,res)
+)
+
+Adminrouter.get("/get-allfee-type", (req, res) =>
+  financetypecontroller.getAllFeeTypes(req, res)
+);
 
 export default Adminrouter;

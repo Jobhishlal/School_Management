@@ -142,6 +142,7 @@ import TimeTableManagement from "./pages/admin/TimeTableManagement";
 import StudentTimeTableView from "./pages/Student/StudentTimeTableView";
 import AssignmentManage from "./pages/Teacher/AssignMentManage";
 import { StudentAssignmentList } from "./pages/Student/StudentAssignmentView";
+import CreateFeeStructureForm from "./pages/admin/FeeStructureManagement";
 
 function ErrorFallback({ error }: { error: Error }) {
   return <div role="alert">Something went wrong: {error.message}</div>;
@@ -173,6 +174,7 @@ function App() {
           <Route path="/adminprofile" element={<PrivateRoute><AdminProfileManagement /></PrivateRoute>} />
           <Route path="/classbaseview" element={<PrivateRoute><AdminClassDivisionView /></PrivateRoute>} />
           <Route path='/timetable-management' element={<PrivateRoute><TimeTableManagement/></PrivateRoute>}/>
+          <Route path='/finance-management' element={<PrivateRoute><CreateFeeStructureForm/></PrivateRoute>}/>
 
         </Route>
 

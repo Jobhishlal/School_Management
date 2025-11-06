@@ -2,7 +2,8 @@ import api from "./api";
 import { API_ROUTES } from "../constants/routes/Route";
 import { type CreateTimeTableDTO } from "../types/ITimetable";
 import { type CreateAssignmentDTO } from "../types/AssignmentCreate";
-
+import type { CreateFeeStructureDTO } from "../types/CreateFeeStructureDTO ";
+import type { CreateFeeTypePayload } from "../types/CreateFeeTypePayload";
 
 
 
@@ -524,3 +525,19 @@ export const ListoutExistedAssignment=async()=>{
 }
 
 
+export const createFinanceStructure = async (payload:CreateFeeStructureDTO) => {
+  const res = await api.post("/admin/create-finance", payload);
+  return res.data;
+};
+
+
+export const createfinancetype = async(paylaod:CreateFeeTypePayload)=>{
+  const res = await api.post('/admin/create-finance-type',paylaod)
+  return res.data
+}
+
+
+export const GetAllFeeType = async()=>{
+  const res = await api.get('/admin/get-allfee-type')
+  return res.data
+}
