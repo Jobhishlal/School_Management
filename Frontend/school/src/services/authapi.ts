@@ -546,3 +546,9 @@ export const ListParentfinance = async (studentId: string, email: string) => {
   const res = await api.post(`/parents/parent-finance-list`, { studentId, email });
   return res;
 };
+
+
+export const CreatePayment = async (data: { amount: number }) => {
+  const res = await api.post("/parents/create-payment", data);
+  return res;
+};
