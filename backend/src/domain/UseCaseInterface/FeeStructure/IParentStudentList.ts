@@ -1,7 +1,7 @@
 
 import { ParentEntity } from "../../entities/Parents";
-import { ParentLoginDTO } from "../../../applications/dto/ParentLoginDTO";
+import { ParentStudentFetchDTO } from "../../../applications/dto/FeeDTO/ParentStudentFinanceDTO";
 
 export interface IParentStudentList {
-  execute(request: ParentLoginDTO): Promise<ParentEntity | null>;
+  execute(request: ParentStudentFetchDTO): Promise<ParentEntity | null>;
 }

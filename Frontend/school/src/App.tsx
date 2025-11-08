@@ -144,6 +144,14 @@ import AssignmentManage from "./pages/Teacher/AssignMentManage";
 import { StudentAssignmentList } from "./pages/Student/StudentAssignmentView";
 import CreateFeeStructureForm from "./pages/admin/FeeStructureManagement";
 
+
+
+
+
+import ParentLayout from "./components/layout/ParentLayout";
+import ParentDashboard from "./pages/Parents/ParentDashboard";
+import FinanceParentList from "./pages/Parents/ParentFinancePage";
+
 function ErrorFallback({ error }: { error: Error }) {
   return <div role="alert">Something went wrong: {error.message}</div>;
 }
@@ -193,10 +201,20 @@ function App() {
 
          {/* ---------------- TEACHER ROUTES ---------------- */}
           <Route element={<ThemeProvider><TeacherLayout/></ThemeProvider>}>
+
           <Route path="/teacher/dashboard" element={<TeacherDashboard/>}/>
           <Route path="/teacher/assignments" element={<AssignmentManage/>}/>
 
           </Route>
+
+          {/* --------------------PARENT ROUTES ------------------- */}
+
+          <Route element={<ThemeProvider><ParentLayout/></ThemeProvider>}>
+          <Route path="/parent/dashboard" element={<ParentDashboard/>}/>
+          <Route path="/parent/financelist" element={<FinanceParentList/>}/>
+          
+          </Route>
+          
 
       </Routes>
     </ErrorBoundary>

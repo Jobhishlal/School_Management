@@ -541,3 +541,8 @@ export const GetAllFeeType = async()=>{
   const res = await api.get('/admin/get-allfee-type')
   return res.data
 }
+
+export const ListParentfinance = async (studentId: string, email: string) => {
+  const res = await api.post(`/parents/parent-finance-list`, { studentId, email });
+  return res;
+};
