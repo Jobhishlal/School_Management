@@ -3,6 +3,12 @@ import { PeymentTransactrion } from "../../entities/FeeType/PaymentTransaction";
 export interface IPaymentTransactionRepository {
   create(txn: PeymentTransactrion): Promise<PeymentTransactrion>;
   findByOrderId(orderId: string): Promise<PeymentTransactrion | null>;
-  findById(id: string): Promise<PeymentTransactrion | null>;
-  update(id: string, update: Partial<PeymentTransactrion>): Promise<PeymentTransactrion | null>;
+  updateByOrderId(id: string, update: Partial<PeymentTransactrion>): Promise<PeymentTransactrion | null>;
+    updatePaymentStatus( id: string, update: Partial<PeymentTransactrion> ): Promise<PeymentTransactrion | null>;
+  updatePaymentStatusByFeeId(id: string,update: Partial<PeymentTransactrion>): Promise<PeymentTransactrion | null>;
+  updateinvoiceurl(paymentId:string,invoiceUrl:string):Promise<void>;
+    findById(paymentId:string):Promise<any>;
+    getInstitute():Promise<any>
+    
+   
 }

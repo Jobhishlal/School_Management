@@ -548,7 +548,37 @@ export const ListParentfinance = async (studentId: string, email: string) => {
 };
 
 
-export const CreatePayment = async (data: { amount: number }) => {
+export const CreatePayment = async (data: {
+  amount: number;
+  studentId: string;
+  feeRecordId: string;
+  method?: string;
+}) => {
   const res = await api.post("/parents/create-payment", data);
   return res;
 };
+
+
+export const VerifyPeymentStatus = async (id:string,status:string)=>{
+   const res = await api.put(`/parents/update-status/${id}`,{status})
+   return res
+}
+
+export const ChangepeymentstatususingfeeId = async (feeId: string, paymentData: {
+  paymentId: string;
+  razorpaySignature: string;
+  status: string;
+  method: string;
+}) => {
+  const res = await api.post(`/parents/update-status-feeId/${feeId}`, paymentData);
+  return res.data;
+};
+
+
+
+export const InvoiceDownload = async (paymentId: string) => {
+  const res = await api.get(`/parents/invoice/${paymentId}`, {
+    responseType: "blob"  
+  });
+  return res;
+}

@@ -13,7 +13,7 @@ export interface OfferInterface {
 export interface CreateFeeTypePayload {
   name: string;
   description?: string;
-  defaultAmount: number;
+  defaultAmount: number | ""; 
   frequency: "ONCE" | "MONTHLY" | "YEARLY";
   isOptional?: boolean;
   isActive?: boolean;

@@ -3,6 +3,7 @@ import { ParentEntity } from "../../../domain/entities/Parents";
 import { IParentFeeInterface } from "../../../domain/repositories/IParentFeeList";
 import { FeeStructureModel } from "../../database/models/FeeManagement/FeeStructure";
 import { StudentModel } from "../../database/models/StudentModel";
+import { PaymentModel } from "../../database/models/FeeManagement/Payment";
 
 
 export class ParentRepository implements IParentFeeInterface {
@@ -20,6 +21,7 @@ export class ParentRepository implements IParentFeeInterface {
   }
 
   async findByEmailAndStudentId(email: string, studentId: string): Promise<any> {
+
     const parentDoc = await ParentSignupModel.findOne({ email })
       .populate("student", "studentId fullName classId")
       .exec();
@@ -36,6 +38,25 @@ export class ParentRepository implements IParentFeeInterface {
       classId: student.classId._id,
     }).lean();
 
+    const payments = await PaymentModel.find({
+      studentId: student._id,
+    }).lean();
+
+    const financeWithStatus = feeStructures.map((fee) => {
+      const payment = payments.find(
+        (p) => p.studentFeeId?.toString() === fee._id.toString()
+      );
+
+      return {
+        ...fee,
+        status: payment ? payment.status : "PENDING",
+        paymentId: payment?._id || null,
+        paymentDate: payment?.createdAt || null,
+        transactionId: payment?.razorpayPaymentId || null,
+      };
+    });
+
+
     return {
       parentId: parentDoc._id,
       email: parentDoc.email,
@@ -44,7 +65,7 @@ export class ParentRepository implements IParentFeeInterface {
         fullName: student.fullName,
         studentId: student.studentId,
         class: student.classId,
-        finance: feeStructures,
+        finance: financeWithStatus,
       },
     };
   }

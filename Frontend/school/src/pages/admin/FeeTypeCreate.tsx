@@ -6,7 +6,7 @@ const CreateFeeTypeForm: React.FC = () => {
   const [formData, setFormData] = useState<CreateFeeTypePayload>({
     name: "",
     description: "",
-    defaultAmount: 0,
+    defaultAmount: "", 
     frequency: "ONCE",
     isOptional: false,
     isActive: true,
@@ -30,7 +30,7 @@ const CreateFeeTypeForm: React.FC = () => {
     e.preventDefault();
     try {
       const response = await createfinancetype(formData);
-      console.log("✅ Created:", response.data);
+      console.log("Created:", response.data);
       alert("FeeType Created!");
     } catch (err: any) {
       console.error(err);

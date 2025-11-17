@@ -10,6 +10,8 @@ import Studentrouter from './presentation/express/StudentRoute';
 import Teacherrouter from './presentation/express/TeacherRoutes';
 import ParentRouter from './presentation/express/ParentRooute';
 import cors from 'cors'
+import "./infrastructure/cron/monthlyFeeCron";
+
 
 
 const app = express();

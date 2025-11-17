@@ -1,16 +1,45 @@
 import { ICreateRazorpayOrder } from "../../../domain/UseCaseInterface/Payment/RazorpayUseCase";
-import { RazorpayServices } from "../../../infrastructure/providers/RazorpayService";
-
+import { RazorpayServices } from "../../../infrastructure/providers/RazorpayService"; 
+import { IPaymentTransactionRepository } from "../../../domain/repositories/FeeDetails/IPaymentTransactionRepository";
+import { PeymentTransactrion } from "../../../domain/entities/FeeType/PaymentTransaction";
 
 export class CreateRazorpayOrder implements ICreateRazorpayOrder {
-  constructor(private razorpayService: RazorpayServices) {}
+  constructor(
+    private readonly razorpayService: RazorpayServices,
+    private readonly paymentRepo: IPaymentTransactionRepository
+  ) {}
 
-  async execute({ amount, currency = "INR" }: { amount: number; currency?: string }) {
-    if (!amount || amount <= 0) {
-      throw new Error("Invalid amount");
-    }
+  async execute(data: {
+    amount: number;
+    currency: string;
+    studentId: string;
+    feeRecordId: string;
+    method: string;
+  }): Promise<{ id: string; amount: number; currency: string }> {
+    
+   
+    const order = await this.razorpayService.CreateOrder(data.amount, data.currency);
 
-    const order = await this.razorpayService.CreateOrder(amount, currency);
-    return order;
+    
+    const paymentEntity = new PeymentTransactrion(
+      "",               
+      data.studentId,  
+      data.feeRecordId, 
+      order.id,          
+      null,             
+      data.amount,
+      "PENDING",
+      new Date(),       
+      undefined,         
+      data.method
+    );
+
+    await this.paymentRepo.create(paymentEntity);
+
+    return {
+      id: order.id,
+      amount: order.amount,
+      currency: order.currency,
+    };
   }
 }

@@ -17,6 +17,7 @@ export interface IStudentFee extends Document {
   classId: Schema.Types.ObjectId;
   academicYear: string;
   feeStructureId: Schema.Types.ObjectId;
+  month:string;
   items: IStudentFeeItem[];
   totalAmount: number;
   paidAmount: number;
@@ -43,14 +44,19 @@ const StudentFeeSchema = new Schema<IStudentFee>({
   classId: { type: Schema.Types.ObjectId, ref: "Classes", required: true },
   academicYear: { type: String, required: true },
   feeStructureId: { type: Schema.Types.ObjectId, ref: "FeeStructure", required: true },
+
+  month: { type: String, required: true }, 
+
   items: { type: [StudentFeeItemSchema], required: true },
   totalAmount: { type: Number, required: true },
   paidAmount: { type: Number, default: 0 },
   pendingAmount: { type: Number, required: true },
   status: { type: String, enum: ["PENDING", "PARTIALLY_PAID", "PAID"], default: "PENDING" },
+
   dueDate: { type: Date },
   generatedAt: { type: Date, default: Date.now },
   notes: { type: String }
 }, { timestamps: true });
+
 
 export const StudentFeeModel = mongoose.model<IStudentFee>("StudentFee", StudentFeeSchema);

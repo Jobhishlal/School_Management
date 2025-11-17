@@ -34,6 +34,7 @@ const OfferSchema = new Schema<OfferInterface>({
   discountAmount: { type: Number },
   finalAmount:{type:Number},
   validUntil: { type: Date },
+  
 });
 
 
