@@ -1,0 +1,42 @@
+import { FeeStructureError } from "../../../domain/enums/FeeStructure/FeeStructure";
+import { CreateFeeStructureDTO } from "../../dto/FeeDTO/CreateFeeStructureDTO ";
+import { Types } from "mongoose";
+
+export function CreateValidationFeeStructure(data:CreateFeeStructureDTO){
+    if(data.name || data.name.trim()==''){
+        throw new Error(FeeStructureError.EMPTY_NAME)
+    }
+     if (!Types.ObjectId.isValid(data.classId)) {
+    throw new Error(FeeStructureError.INVALID_CLASS_ID);
+  }
+  if (!/^\d{4}-\d{4}$/.test(data.academicYear)) {
+    throw new Error(FeeStructureError.INVALID_ACADEMIC_YEAR);
+  }
+
+
+   if (!data.feeItems || data.feeItems.length === 0) {
+    throw new Error(FeeStructureError.EMPTY_FEE_ITEMS);
+   }
+
+   const seenFeeTypes = new Set<String>()
+    data.feeItems.forEach((item, index) => {
+
+    if (!Types.ObjectId.isValid(item.feeTypeId)) {
+      throw new Error(`${FeeStructureError.INVALID_FEE_TYPE_ID} at index ${index}`);
+    }
+
+    if (seenFeeTypes.has(item.feeTypeId)) {
+      throw new Error(FeeStructureError.DUPLICATE_FEE_TYPE);
+    }
+    seenFeeTypes.add(item.feeTypeId);
+
+    if (Number(item.amount) <= 0) {
+      throw new Error(FeeStructureError.INVALID_AMOUNT);
+    }
+
+    if (item.isOptional === undefined) {
+      throw new Error("isOptional is required");
+    }
+  });
+  return true
+}

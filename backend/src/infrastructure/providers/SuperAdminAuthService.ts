@@ -67,9 +67,9 @@ if (email && studentId) {
       if (!student) throw new Error(AdminError.UserDoesNotExist);
 
       const passwordValid = await bcrypt.compare(password!, student.Password);
-      if (!passwordValid) throw new Error(AdminError.UserDoesNotExist);
+      if (!passwordValid) throw new Error(AdminError.UserDoesNotExist);
       if (student.blocked) throw new Error("Student is blocked");
-
+ 
       const role: "Students" = "Students";
       const authToken = jwt.sign({ studentId: student.studentId, role, id: student.id }, JWT_SECRET, { expiresIn: "1d" });
 
@@ -97,6 +97,7 @@ if (email && studentId) {
         if (teacher.blocked) throw new Error("Teacher is blocked");
 
         const otp = GenarateOtp(6);
+        console.log('otp',otp)
         await SendEMail(email, "Teacher OTP", `Your OTP is: ${otp}`);
 
         const otpToken = genarateotptoken(email, otp, { role: "Teacher", id: teacher.id });

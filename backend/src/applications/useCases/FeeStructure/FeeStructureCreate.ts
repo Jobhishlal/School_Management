@@ -4,6 +4,8 @@ import { FeeStructure } from "../../../domain/entities/FeeType/FeeStructure";
 import { FeeStructureItem } from "../../../domain/entities/FeeType/FeeStructure";
 import { CreateFeeStructureDTO } from "../../dto/FeeDTO/CreateFeeStructureDTO ";
 import { ICreateFeeStructureUseCase } from "../../../domain/UseCaseInterface/FeeStructure/IFeeCreateInterFace";
+import { CreateValidationFeeStructure } from "../../validators/FeeStructureValidation/FeeStructurevalidation";
+
 
 
 export class CreateFeeStructureUseCase implements ICreateFeeStructureUseCase {
@@ -14,6 +16,8 @@ export class CreateFeeStructureUseCase implements ICreateFeeStructureUseCase {
 
   async execute(request: CreateFeeStructureDTO): Promise<FeeStructure> {
 
+     
+     CreateValidationFeeStructure(request)
     const feeItems: FeeStructureItem[] = [];
 
     for (const item of request.feeItems) {

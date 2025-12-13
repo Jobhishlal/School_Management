@@ -27,9 +27,8 @@ export class FeeTypeCreateController {
     } catch (error: any) {
       console.error("Error creating FeeType:", error);
       res.status(StatusCodes.BAD_REQUEST).json({
-        success: false,
-        message: "Failed to create Fee Type",
-        error: error.message,
+       success: false,
+      message: error.message, 
       });
     }
   }

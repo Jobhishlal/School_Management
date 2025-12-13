@@ -20,17 +20,17 @@ export interface IFeeStructure extends Document {
 }
 
 const FeeStructureItemSchema = new Schema<IFeeStructureItem>({
-  feeTypeId: { type: Schema.Types.ObjectId, ref: "FeeType", required: true },
+  feeTypeId: { type: Schema.Types.ObjectId, ref: "FeeType" },
   name: { type: String }, 
-  amount: { type: Number, required: true },
-  frequency: { type: String, enum: ["ONCE", "MONTHLY", "YEARLY"], required: true },
+  amount: { type: Number },
+  frequency: { type: String, enum: ["ONCE", "MONTHLY", "YEARLY"] },
   isOptional: { type: Boolean, default: false }
 }, { _id: false });
 
 const FeeStructureSchema = new Schema<IFeeStructure>({
-  name: { type: String, required: true },
-  classId: { type: Schema.Types.ObjectId, ref: "Classes", required: true },
-  academicYear: { type: String, required: true },
+  name: { type: String },
+  classId: { type: Schema.Types.ObjectId, ref: "Classes"},
+  academicYear: { type: String},
   feeItems: { type: [FeeStructureItemSchema], default: [] },
   notes: { type: String }
 }, { timestamps: true });

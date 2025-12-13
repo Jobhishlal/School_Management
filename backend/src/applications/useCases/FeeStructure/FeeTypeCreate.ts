@@ -3,6 +3,8 @@ import { IFeeTypeRepository } from "../../../domain/repositories/FeeDetails/IFee
 import { CreateFeeTypeDTO } from "../../dto/FeeDTO/CreateFeeTypeDTO";
 import { ITypeCreateUseCase } from "../../../domain/UseCaseInterface/FeeStructure/IFeeTypeCreate";
 import { CalculateAmount } from "../../../shared/constants/utils/FeeCalculate";
+import { FeeTypeValidationfunction } from "../../validators/FeeStructureValidation/CreateValidationFeeStructure";
+
 
 export class CreateFeeTypeUseCase implements ITypeCreateUseCase {
   constructor(private repo: IFeeTypeRepository) {}
@@ -10,9 +12,7 @@ export class CreateFeeTypeUseCase implements ITypeCreateUseCase {
   async execute(request: CreateFeeTypeDTO): Promise<FeeType> {
     const { name, description, defaultAmount, frequency, isOptional, isActive, offers } = request;
 
-    if (!name || !defaultAmount || !frequency) {
-      throw new Error("Missing required fields");
-    }
+    FeeTypeValidationfunction(request)
 
     const feeType = new FeeType(
       "",
