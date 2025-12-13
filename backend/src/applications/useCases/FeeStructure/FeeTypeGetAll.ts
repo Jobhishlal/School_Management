@@ -1,0 +1,12 @@
+import { IGetAllFeeType } from "../../../domain/UseCaseInterface/FeeStructure/IGetAllFeeType";
+import { FeeType } from "../../../domain/entities/FeeType/FeeType";
+import { IFeeTypeRepository } from "../../../domain/repositories/FeeDetails/IFeeTypeRepository";
+
+export class GetFeeTypeAll implements IGetAllFeeType {
+  constructor(private repo: IFeeTypeRepository) {}
+
+  async execute(): Promise<FeeType[]> {
+    const data = await this.repo.findAll();
+    return data;
+  }
+}

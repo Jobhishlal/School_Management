@@ -1,9 +1,11 @@
+
+
 import React from "react";
 
 export interface Column<T> {
   label: string;
-  key?: keyof T; 
-  render?: (row: T, index: number) => React.ReactNode; 
+  key?: keyof T | string; 
+  render?: (row: T, index: number) => React.ReactNode;
   className?: string;
 }
 
@@ -14,7 +16,8 @@ interface TableProps<T> {
   isDark?: boolean;
 }
 
-export const Table = <T extends { id?: string | number; _id?: string | number }>({
+
+export const Table = <T extends Record<string, any>>({
   columns,
   data,
   actions,
@@ -50,12 +53,16 @@ export const Table = <T extends { id?: string | number; _id?: string | number }>
           {data.map((item, index) => (
             <tr
               key={item._id || item.id || index}
-              className={`border-b last:border-b-0 hover:opacity-80 transition-opacity`}
+              className="border-b last:border-b-0 hover:opacity-80 transition-opacity"
               style={{ borderBottomColor: borderColor }}
             >
               {columns.map((col) => (
                 <td key={col.label} className={`px-4 py-3 ${col.className || ""}`}>
-                  {col.render ? col.render(item, index) : (col.key ? (item[col.key] as React.ReactNode) : null)}
+                  {col.render
+                    ? col.render(item, index)
+                    : col.key
+                    ? (item[col.key as keyof T] as React.ReactNode)
+                    : null}
                 </td>
               ))}
 
@@ -69,3 +76,4 @@ export const Table = <T extends { id?: string | number; _id?: string | number }>
 };
 
 export { Column };
+

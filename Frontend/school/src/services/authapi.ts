@@ -1,7 +1,9 @@
 import api from "./api";
 import { API_ROUTES } from "../constants/routes/Route";
-
-
+import { type CreateTimeTableDTO } from "../types/ITimetable";
+import { type CreateAssignmentDTO } from "../types/AssignmentCreate";
+import type { CreateFeeStructureDTO } from "../types/CreateFeeStructureDTO ";
+import type { CreateFeeTypePayload } from "../types/CreateFeeTypePayload";
 
 
 
@@ -403,4 +405,180 @@ export const updatePassword = async (id: string, newPassword: string) => {
 export const getclassDivision = async(className:string)=>{
   const res = await api.get(`/admin/class/next-division/${className}`)
   return res
+}
+
+
+
+export const classdivisonaccess = async()=>{
+  console.log("Get this page")
+  const res = await api.get(API_ROUTES.ADMIN.Admin_Class_Division_Manage)
+  return res
+}
+interface AssignClassTeacher{
+  classId:string;
+  teacherId:string;
+}
+export const AssignClassTeacherOnClass = async (payload: AssignClassTeacher) => {
+console.log("here reached")
+  const res = await api.post("/admin/class-assign-teacher", payload);
+
+
+  return res.data;
+};
+
+
+export const GetAllTeachersClassassign = async (classId: string) => {
+console.log("reached")
+  const res = await api.get(`/admin/class-teacher/${classId}`);
+
+  return res.data;
+};
+
+
+export const getTeachersList = async () => {
+  const res = await api.get("/admin/teacher-list");
+  if(res.data.success) {
+    return res.data.data; 
+  }
+  return [];
+};
+
+
+export const CreateTimeTable = async(dto:CreateTimeTableDTO)=>{
+  const res = await api.post(API_ROUTES.ADMIN.CREATE_TIMETABLE,dto)
+  return res.data
+}
+
+
+export const GetTimeTable = async(classId:string,division:string)=>{
+ const res = await api.get(`/admin/timetable-view/${classId}/${division}`);
+  return res.data
+}
+
+export const updateTimeTable = async (dto: CreateTimeTableDTO) => {
+  const res = await api.put(`/admin/timetable-update/${dto.id}`, dto);
+  return res.data;
+};
+
+
+
+export const deletetimetable=async(id?:string)=>{
+  const res = await api.delete( `/admin/delete-time-table/${id}`)
+  return res.data
+}
+
+export const createAssignment = async (data: CreateAssignmentDTO, files: File[]) => {
+  const formData = new FormData();
+
+
+  formData.append("Assignment_Title", data.Assignment_Title);
+  formData.append("description", data.description);
+  formData.append("subject", data.subject);
+  formData.append("classId", data.classId);
+  formData.append("division", data.division);
+  formData.append("Assignment_date", data.Assignment_date.toISOString());
+  formData.append("Assignment_Due_Date", data.Assignment_Due_Date.toISOString());
+  formData.append("maxMarks", data.maxMarks.toString());
+
+  files.forEach(file => {
+    formData.append("documents", file);
+  });
+
+  const token = localStorage.getItem("token");
+  const res = await api.post("/teacher/assignment", formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data"
+    }
+  });
+
+  return res.data;
+};
+
+
+
+export const GetTeachertimetableList = async()=>{
+  const token = localStorage.getItem("token");
+  const res = await api.get("/teacher/teacher-info", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data.data; 
+}
+
+
+export const UpdateExistedAssignment = async (id: string, formData: FormData) => {
+
+  const res = await api.put(`/teacher/assignment/${id}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return res.data;
+};
+
+
+export const ListoutExistedAssignment=async()=>{
+    
+  const res = await api.get(`/teacher/TeachAssignmentList`)
+
+  return res.data
+
+
+}
+
+
+export const createFinanceStructure = async (payload:CreateFeeStructureDTO) => {
+  const res = await api.post("/admin/create-finance", payload);
+  return res.data;
+};
+
+
+export const createfinancetype = async(paylaod:CreateFeeTypePayload)=>{
+  const res = await api.post('/admin/create-finance-type',paylaod)
+  return res.data
+}
+
+
+export const GetAllFeeType = async()=>{
+  const res = await api.get('/admin/get-allfee-type')
+  return res.data
+}
+
+export const ListParentfinance = async (studentId: string, email: string) => {
+  const res = await api.post(`/parents/parent-finance-list`, { studentId, email });
+  return res;
+};
+
+
+export const CreatePayment = async (data: {
+  amount: number;
+  studentId: string;
+  feeRecordId: string;
+  method?: string;
+}) => {
+  const res = await api.post("/parents/create-payment", data);
+  return res;
+};
+
+
+export const VerifyPeymentStatus = async (id:string,status:string)=>{
+   const res = await api.put(`/parents/update-status/${id}`,{status})
+   return res
+}
+
+export const ChangepeymentstatususingfeeId = async (feeId: string, paymentData: {
+  paymentId: string;
+  razorpaySignature: string;
+  status: string;
+  method: string;
+}) => {
+  const res = await api.post(`/parents/update-status-feeId/${feeId}`, paymentData);
+  return res.data;
+};
+
+
+
+export const InvoiceDownload = async (paymentId: string) => {
+  const res = await api.get(`/parents/invoice/${paymentId}`, {
+    responseType: "blob"  
+  });
+  return res;
 }

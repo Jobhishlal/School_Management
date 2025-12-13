@@ -58,8 +58,8 @@ export default function SchoolNavbar({ children }: Props) {
           : []),
 
         { icon: Megaphone, text: "Teacher Management", path: "/teachers" },
-        { icon: AlertCircle, text: "Raise & View Complaints", path: "/complaints" },
-        { icon: DollarSign, text: "Finance", path: "/finance" },
+        { icon: AlertCircle, text: "Class Base Access", path: "/classbaseview" },
+        { icon: DollarSign, text: "Finance", path: "/finance-management" },
         { icon: GraduationCap, text: "Student Management", path: "/student-management" },
       ],
     },
@@ -68,7 +68,7 @@ export default function SchoolNavbar({ children }: Props) {
       links: [
         { icon: MessageCircle, text: "Communication", path: "/communication" },
         { icon: FileText, text: "Leave Request", path: "/leave-request" },
-        { icon: Calendar, text: "Time Table", path: "/timetable" },
+        { icon: Calendar, text: "Time Table", path: "/timetable-management" },
       ],
     },
   ];
