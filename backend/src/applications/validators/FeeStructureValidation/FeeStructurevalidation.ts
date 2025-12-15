@@ -3,9 +3,11 @@ import { CreateFeeStructureDTO } from "../../dto/FeeDTO/CreateFeeStructureDTO ";
 import { Types } from "mongoose";
 
 export function CreateValidationFeeStructure(data:CreateFeeStructureDTO){
-    if(data.name || data.name.trim()==''){
-        throw new Error(FeeStructureError.EMPTY_NAME)
-    }
+    
+    if (!data.name || data.name.trim() === "") {
+  throw new Error(FeeStructureError.EMPTY_NAME);
+}
+
      if (!Types.ObjectId.isValid(data.classId)) {
     throw new Error(FeeStructureError.INVALID_CLASS_ID);
   }

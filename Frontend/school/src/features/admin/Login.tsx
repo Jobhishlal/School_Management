@@ -36,72 +36,7 @@ export default function MainAdminLogincheck() {
   }, []);
 
 
-  //// current working code not remove this 
-
-  // async function handleLogin(e: React.FormEvent) {
-  //   e.preventDefault();
-
-  //   // --- Validation ---
-  //   if (loginType === "parent" && (!email || !studentId || !password)) {
-  //     showToast("Please enter Email, Student ID, and Password", "error");
-  //     return;
-  //   }
-  //   if (loginType === "student" && (!studentId || !password)) {
-  //     showToast("Please enter Student ID and Password", "error");
-  //     return;
-  //   }
-  //   if (loginType === "staff" && (!email || !password)) {
-  //     showToast("Please enter Email and Password", "error");
-  //     return;
-  //   }
-
-  //   try {
-  //     setLoading(true);
-
-  //     // --- Call API ---
-  //     const res = await MainAdminLogin(
-  //       loginType === "parent" || loginType === "staff" ? email : undefined,
-  //       password,
-  //       loginType === "parent" || loginType === "student" ? studentId : undefined
-  //     );
-
-  //     // --- OTP Required ---
-  //     if ("otpToken" in res && res.otpToken) {
-  //       localStorage.setItem("otpToken", res.otpToken); // temporary token
-  //       localStorage.setItem("role", res.role.toLowerCase());
-  //       showToast("OTP sent to your email", "success");
-  //       navigate("/verify-otp", { state: { otpToken: res.otpToken } });
-  //       return;
-  //     }
-
-  //     if ("authToken" in res && res.authToken) {
-  //       const role = res.role.toLowerCase();
-  //       localStorage.setItem("accessToken", res.authToken);
-  //       localStorage.setItem("role", role);
-  //       showToast("Login successful", "success");
-
-  //       switch (role) {
-  //         case "students":
-  //           navigate("/student-dashboard", { replace: true });
-  //           break;
-  //         case "parent":
-  //           navigate("/parent/dashboard", { replace: true });
-  //           break;
-  //         default:
-  //           navigate("/dashboard", { replace: true });
-  //       }
-  //       return;
-  //     }
-
-  //     showToast("Unexpected server response", "error");
-  //   } catch (error: unknown) {
-  //     const err = error as AxiosError<{ message: string }>;
-  //     const message = err.response?.data?.message || err.message || "Login failed";
-  //     showToast(message, "error");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }
+ 
 
   async function handleLogin(e: React.FormEvent) {
   e.preventDefault();
@@ -118,10 +53,12 @@ export default function MainAdminLogincheck() {
       password,
       loginType === "parent" || loginType === "student" ? studentId : undefined
     );
+    
 
     if ("otpToken" in res && res.otpToken) {
       localStorage.setItem("otpToken", res.otpToken);
       localStorage.setItem("role", res.role.toLowerCase());
+      
       showToast("OTP sent to your email", "success");
       navigate("/verify-otp", { state: { otpToken: res.otpToken } });
       return;
@@ -130,9 +67,10 @@ export default function MainAdminLogincheck() {
   
     if ("authToken" in res && res.authToken) {
       const role = res.role.toLowerCase();
+    
       localStorage.setItem("accessToken", res.authToken);
       localStorage.setItem("role", role);
-
+        
       if (role === "parent") {
         localStorage.setItem("email", email);
         localStorage.setItem("studentId", studentId);

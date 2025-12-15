@@ -78,8 +78,15 @@ import { FeeStructureManageController } from "../http/controllers/ADMIN/FeeManag
 import { CreateFeeTypeUseCase } from "../../applications/useCases/FeeStructure/FeeTypeCreate";
 import { GetFeeTypeAll } from "../../applications/useCases/FeeStructure/FeeTypeGetAll";
 import { FeeTypeCreateController } from "../http/controllers/ADMIN/FeeManagement/FeeTypeCreateController";
+import { ExpenseManagementController } from "../http/controllers/ADMIN/FeeManagement/ExpanseManagementController";
+import { ExpenseCreate } from "../../applications/useCases/FeeStructure/ExpenseCreate";
+import { MongoExpenseManagement } from "../../infrastructure/repositories/FeeManagement/MongoExpenseManagement";
+import { SuperadminApprovalController } from "../http/controllers/ADMIN/FeeManagement/SuperadminApproveController";
+import { ExpenseApproveUseCase } from "../../applications/useCases/FeeStructure/ExpenseApprovalUseCase";
+import { PendingStatusFindUsecase } from "../../applications/useCases/FeeStructure/PendingExpenseList";
+import { ListOutFullExpense } from "../../applications/useCases/FeeStructure/ListOutFullExpense";
 
-
+import { PendingStatusUpdateUseCase } from "../../applications/useCases/FeeStructure/PendingstatusUpdateUseCase";
 const repo = new AdminRepository();
 const data = new MongoSubAdminRepo();
 const value = new MongoTeacher();
@@ -237,8 +244,31 @@ const financetypecontroller = new FeeTypeCreateController(
   getallfeetype
 )
 
+const createexpense = new MongoExpenseManagement()
+const expenserepo = new ExpenseCreate(createexpense)
+const expensefulllist = new ListOutFullExpense(createexpense)
+const pendingstatusupdate = new PendingStatusUpdateUseCase(createexpense)
 
 
+const expensemanagecontroller = new ExpenseManagementController(
+  expenserepo,
+  expensefulllist,
+  pendingstatusupdate
+ 
+
+
+)
+
+
+const expenseapprove = new ExpenseApproveUseCase(createexpense)
+const pendingexpense = new PendingStatusFindUsecase(createexpense)
+
+const expanceapprovalcontroller = new SuperadminApprovalController(
+  expenseapprove,
+  pendingexpense,
+   
+
+)
 
 // Adminrouter.get("/signup", (req, res) => adminController.getAll(req, res));
 // Adminrouter.post("/signuppost", (req, res) => adminController.signupRequest(req, res));
@@ -407,5 +437,43 @@ Adminrouter.post('/create-finance-type',(req,res)=>
 Adminrouter.get("/get-allfee-type", (req, res) =>
   financetypecontroller.getAllFeeTypes(req, res)
 );
+
+Adminrouter.post('/crete-expense',(req,res)=>{
+  expensemanagecontroller.create(req,res)
+})
+
+
+Adminrouter.patch(
+  "/expense/approve",
+  authMiddleware, 
+  (req,res)=>{
+      expanceapprovalcontroller.approved(req as AuthRequest,res)
+  }
+);
+
+
+
+
+  
+Adminrouter.get('/expense/pending',
+  authMiddleware,
+  (req ,res)=>{
+   expanceapprovalcontroller.getPendingExpenses(req as AuthRequest,res)
+})
+
+Adminrouter.get('/expense/fulllist',
+  authMiddleware,
+  (req,res)=>{
+    expensemanagecontroller.listAll(req as AuthRequest,res)
+  }
+)
+Adminrouter.put('/expense/updateexpense/:id',
+
+   authMiddleware,
+   (req,res)=>{
+    expensemanagecontroller.Pendingexpenseupdate(req as AuthRequest,res)
+   }
+)
+
 
 export default Adminrouter;

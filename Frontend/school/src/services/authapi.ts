@@ -4,6 +4,7 @@ import { type CreateTimeTableDTO } from "../types/ITimetable";
 import { type CreateAssignmentDTO } from "../types/AssignmentCreate";
 import type { CreateFeeStructureDTO } from "../types/CreateFeeStructureDTO ";
 import type { CreateFeeTypePayload } from "../types/CreateFeeTypePayload";
+import type{ ExpenseFormDTO } from "../types/ExpenseCreatedto";
 
 
 
@@ -582,3 +583,47 @@ export const InvoiceDownload = async (paymentId: string) => {
   });
   return res;
 }
+
+
+export const ExpenseCreate = async(data:ExpenseFormDTO)=>{
+  const res = await api.post('/admin/crete-expense',data)
+  return res
+}
+
+
+export const ExpanceApproval = async (expenseId: string, action: "APPROVED" | "REJECTED") => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) throw new Error("Not authorized");
+
+  const res = await api.patch(
+    "/admin/expense/approve",
+    { expenseId, action },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return res.data;
+};
+
+
+export const Pendingstatuslist=async()=>{
+  const res = await api.get('/admin/expense/pending')
+  return res.data
+}
+
+
+export const ListOutFullExpense = async()=>{
+  const res = await api.get('/admin/expense/fulllist')
+  return res.data
+}
+
+export const PendingExpenseUpdate = async (
+  id: string,
+  data: Partial<ExpenseFormDTO>
+) => {
+  const res = await api.put(`/admin/expense/updateexpense/${id}`, data);
+  return res.data;
+};

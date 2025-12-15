@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { ICreateFeeStructureUseCase } from "../../../../../domain/UseCaseInterface/FeeStructure/IFeeCreateInterFace";
-
+import { StatusCodes } from "../../../../../shared/constants/statusCodes";
 export class FeeStructureManageController {
   constructor(private createFeeUseCase: ICreateFeeStructureUseCase) {}
 
@@ -9,7 +9,7 @@ export class FeeStructureManageController {
       const { name, classId, academicYear, feeItems, notes } = req.body;
 
       if (!name || !classId || !academicYear || !feeItems) {
-        res.status(400).json({ message: "Missing required fields" });
+        res.status(StatusCodes.BAD_REQUEST).json({ message: "Missing required fields" });
         return;
       }
 
@@ -23,14 +23,14 @@ export class FeeStructureManageController {
       });
 
    
-      res.status(201).json({
+      res.status(StatusCodes.CREATED).json({
         message: "Fee Structure created successfully",
         data: result,
       });
 
     } catch (error: any) {
-      console.log("error",error)
-      res.status(500).json({
+      console.log("error happend",error)
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: "Failed to create fee structure",
         error: error.message,
       });

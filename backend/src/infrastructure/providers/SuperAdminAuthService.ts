@@ -82,6 +82,7 @@ if (email && studentId) {
       if (!isMatch) throw new Error(AdminError.UserDoesNotExist);
 
       const otp = GenarateOtp(6);
+      console.log("otp",otp)
       await SendEMail(email, "Super Admin OTP", `Your OTP is: ${otp}`);
 
       const otpToken = genarateotptoken(email, otp, { role: "super_admin", id: "main_admin" });
@@ -140,7 +141,7 @@ if (email && studentId) {
 
 
 
-  async resendOtp(oldOtpToken: string): Promise<{ otpToken: string }> {
+   async resendOtp(oldOtpToken: string): Promise<{ otpToken: string }> {
     const decoded = decodedOtptoken(oldOtpToken);
     if (!decoded || !decoded.email) throw new Error(OtpError.INVALID_OTP);
 

@@ -2,6 +2,7 @@
 import { ListParentfinance, CreatePayment ,VerifyPeymentStatus,ChangepeymentstatususingfeeId,InvoiceDownload} from "../../services/authapi";
 import { useEffect, useState } from "react";
 import { loadRazorpayScript } from "../../utils/Razorpay";
+import { showToast } from "../../utils/toast";
 
 
 export default function FinanceParentList() {
@@ -39,13 +40,13 @@ export default function FinanceParentList() {
   try {
     const isLoaded = await loadRazorpayScript();
     if (!isLoaded) {
-      alert("Razorpay SDK failed to load.");
+      showToast("Razorpay SDK failed to load.");
       return;
     }
 
     const amount = item?.feeItems?.[0]?.amount;
     if (!amount) {
-      alert("Invalid amount for this payment");
+      showToast("Invalid amount for this payment");
       return;
     }
 
@@ -72,7 +73,7 @@ export default function FinanceParentList() {
 
       handler: async function (response: any) {
         try {
-          alert("✅ Payment successful!");
+          showToast("✅ Payment successful!");
           console.log("Payment success:", response);
 
           const { razorpay_payment_id, razorpay_signature } = response;
@@ -82,7 +83,7 @@ export default function FinanceParentList() {
           console.log("verifyRes", verifyRes);
 
           if (verifyRes.data.success && verifyRes.data.data.status === "PAID") {
-            alert("🎉 Payment verified successfully!");
+            showToast("🎉 Payment verified successfully!");
 
             const updateFeeRecordId = verifyRes.data.data.feeRecordId;
             console.log("updateFeeRecordId:", updateFeeRecordId);
@@ -96,7 +97,7 @@ export default function FinanceParentList() {
             });
               console.log("paid status check",Piadstatuscheck)
 
-            alert("💾 Payment status saved permanently!");
+            
 
         
             const storedStudentId = localStorage.getItem("studentId");
