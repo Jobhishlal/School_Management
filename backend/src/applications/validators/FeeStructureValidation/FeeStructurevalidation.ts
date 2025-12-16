@@ -3,6 +3,9 @@ import { CreateFeeStructureDTO } from "../../dto/FeeDTO/CreateFeeStructureDTO ";
 import { Types } from "mongoose";
 
 export function CreateValidationFeeStructure(data:CreateFeeStructureDTO){
+  if(!data.name||!data.academicYear||!data.classId||!data.notes){
+    throw new Error(FeeStructureError.REQUIRED_FIELDS)
+  }
     
     if (!data.name || data.name.trim() === "") {
   throw new Error(FeeStructureError.EMPTY_NAME);
@@ -39,6 +42,28 @@ export function CreateValidationFeeStructure(data:CreateFeeStructureDTO){
     if (item.isOptional === undefined) {
       throw new Error("isOptional is required");
     }
+     if (!data.startDate) {
+    throw new Error(FeeStructureError.START_DATE_REQUIRED);
+  }
+
+  if (!data.expiryDate) {
+    throw new Error(FeeStructureError.EXPIRY_DATE_REQUIRED);
+  }
+
+  const start = new Date(data.startDate);
+  const expiry = new Date(data.expiryDate);
+
+  if (isNaN(start.getTime())) {
+    throw new Error(FeeStructureError.INVALID_START_DATE);
+  }
+
+  if (isNaN(expiry.getTime())) {
+    throw new Error(FeeStructureError.INVALID_EXPIRY_DATE);
+  }
+
+  if (expiry <= start) {
+    throw new Error(FeeStructureError.EXPIRY_BEFORE_START);
+  }
   });
   return true
 }

@@ -85,8 +85,38 @@ import { SuperadminApprovalController } from "../http/controllers/ADMIN/FeeManag
 import { ExpenseApproveUseCase } from "../../applications/useCases/FeeStructure/ExpenseApprovalUseCase";
 import { PendingStatusFindUsecase } from "../../applications/useCases/FeeStructure/PendingExpenseList";
 import { ListOutFullExpense } from "../../applications/useCases/FeeStructure/ListOutFullExpense";
+import { StudentPaymentDetailList } from "../../applications/useCases/FeeStructure/StudentFeeCompleteUseCase";
 
 import { PendingStatusUpdateUseCase } from "../../applications/useCases/FeeStructure/PendingstatusUpdateUseCase";
+import { SearchStudentName } from "../../applications/useCases/FeeStructure/SearchPaymentHistory";
+
+
+
+
+
+
+
+//// Revenue Report /////
+
+import { FinanceReportUseCase } from "../../applications/useCases/FeeStructure/FinanceReport/RevenueGenarateFinanceReportUseCase";
+import { MongoRevenueGenarateReport } from "../../infrastructure/repositories/FeeManagement/FinanceReport/financeReport";
+import { FinanceReportManagementController } from "../http/controllers/ADMIN/FeeManagement/FinanceReport/FinanceReportController";
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
 const repo = new AdminRepository();
 const data = new MongoSubAdminRepo();
 const value = new MongoTeacher();
@@ -235,8 +265,13 @@ const financetype = new FeeTypeManagemnt()
 const createfinance =  new CreateFeeStructureUseCase(finance,financetype)
 const createtypeusecase = new CreateFeeTypeUseCase(financetype)
 const getallfeetype = new GetFeeTypeAll(financetype)
+const searchname = new SearchStudentName(finance)
+const studentfeehistory = new StudentPaymentDetailList(finance)
 const financemanagementcontroll = new FeeStructureManageController(
-  createfinance
+  createfinance,
+  studentfeehistory,
+  searchname
+
 )
 
 const financetypecontroller = new FeeTypeCreateController(
@@ -267,6 +302,17 @@ const expanceapprovalcontroller = new SuperadminApprovalController(
   expenseapprove,
   pendingexpense,
    
+
+)
+
+const financereport = new MongoRevenueGenarateReport()
+const financeGenarateUsecase = new FinanceReportUseCase(financereport)
+
+
+
+
+const financeReportController = new FinanceReportManagementController(
+  financeGenarateUsecase
 
 )
 
@@ -474,6 +520,25 @@ Adminrouter.put('/expense/updateexpense/:id',
     expensemanagecontroller.Pendingexpenseupdate(req as AuthRequest,res)
    }
 )
+
+
+Adminrouter.get('/peyment/class/:classId',(req,res)=>{
+  financemanagementcontroll.fullfeecompletedetails(req,res)
+  }
+
+)
+  
+
+Adminrouter.get('/finance/searchName',(req,res)=>{
+  financemanagementcontroll.SearchPeymentHistoryStudent(req,res)
+})
+
+
+
+
+Adminrouter.get('/financereport',(req,res)=>{
+  financeReportController.RevenueGenerateReport(req,res)
+})
 
 
 export default Adminrouter;

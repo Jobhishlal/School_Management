@@ -15,6 +15,8 @@ export interface IFeeStructure extends Document {
   academicYear: string;  
   feeItems: IFeeStructureItem[];
   notes?: string;
+  startDate: Date;      
+  expiryDate: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -32,7 +34,9 @@ const FeeStructureSchema = new Schema<IFeeStructure>({
   classId: { type: Schema.Types.ObjectId, ref: "Classes"},
   academicYear: { type: String},
   feeItems: { type: [FeeStructureItemSchema], default: [] },
-  notes: { type: String }
+  notes: { type: String },
+  startDate: { type: Date, required: true },
+  expiryDate: { type: Date, required: true },
 }, { timestamps: true });
 
 export const FeeStructureModel = mongoose.model<IFeeStructure>("FeeStructure", FeeStructureSchema);

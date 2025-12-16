@@ -479,7 +479,7 @@ export default function ExpenseManagement() {
           </NavLink>
 
           <NavLink
-            to="/fee-report"
+            to='/finance-report'
             className={({ isActive }) =>
               `pb-3 border-b-2 font-medium transition-colors duration-200 ${
                 isActive

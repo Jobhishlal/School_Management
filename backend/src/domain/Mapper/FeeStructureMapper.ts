@@ -14,7 +14,9 @@ export class FeeStructureMapper {
         frequency: item.frequency,
         isOptional: item.isOptional
       })),
-      notes: domain.notes
+      notes: domain.notes,
+      startDate: domain.startDate,    
+      expiryDate: domain.expiryDate   
     };
   }
 
@@ -35,7 +37,9 @@ export class FeeStructureMapper {
       ),
       model.notes,
       model.createdAt,
-      model.updatedAt
+      model.updatedAt,
+      model.startDate,   
+      model.expiryDate   
     );
   }
 }

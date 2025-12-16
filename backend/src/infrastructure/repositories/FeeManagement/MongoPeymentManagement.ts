@@ -4,6 +4,7 @@ import { IPaymentTransactionRepository } from "../../../domain/repositories/FeeD
 import "../../database/models/FeeManagement/StudentFee";
 import { InstituteModel } from "../../database/models/InstituteProfile";
 import { FeeStructureModel } from "../../database/models/FeeManagement/FeeStructure";
+import { StudentFeeModel } from "../../database/models/FeeManagement/StudentFee";
 export class MongoPeymentRepo implements IPaymentTransactionRepository {
 
   async create(txn: PeymentTransactrion): Promise<PeymentTransactrion> {

@@ -6,6 +6,7 @@ import CreateFeeTypeForm from "../../pages/admin/FeeTypeCreate";
 import { generateAcademicYears } from "../../utils/AcademicYear";
 import { showToast } from "../../utils/toast";
 import { useTheme } from "../../components/layout/ThemeContext";
+import ClassPaymentStatus from "./StudentPaymentHistory";
 
 interface FeeType {
   id: string;
@@ -29,6 +30,8 @@ const CreateFeeStructureForm: React.FC = () => {
     academicYear: "",
     feeItems: [{ feeTypeId: "", amount: 0, isOptional: false }],
     notes: "",
+    startDate: "", 
+    expiryDate: "" 
   });
 
   const [feeTypes, setFeeTypes] = useState<FeeType[]>([]);
@@ -42,7 +45,7 @@ const CreateFeeStructureForm: React.FC = () => {
         const [feeRes, classRes] = await Promise.all([GetAllFeeType(), GetAllClass()]);
         
         setFeeTypes(feeRes.data || []);
-        console.log("fees releted data get it",feeRes||feeRes.data.data)
+        // console.log("fees releted data get it",feeRes||feeRes.data.data)
         setClasses(classRes.data || []);
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -87,10 +90,13 @@ const CreateFeeStructureForm: React.FC = () => {
       console.log(response);
     } catch (err: any) {
       const backendMessage =
-        err?.response?.data?.message ||
-        err?.message ||
-        "Failed to create/update timetable";
-      showToast(backendMessage,"error");
+    err?.response?.data?.message ||
+    err?.message ||
+    "Failed to create fee structure";
+
+  showToast(backendMessage, "error");
+
+
     } finally {
       setLoading(false);
     }
@@ -156,6 +162,30 @@ const CreateFeeStructureForm: React.FC = () => {
             className={`w-full border rounded p-2 transition-colors duration-200 ${inputBg}`}
           />
 
+           <div className="flex-1">
+           <label>Start Date</label>
+           <input
+           type="date"
+           name="startDate"
+           value={formData.startDate}
+          onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+          className={`w-full border rounded p-2 transition-colors duration-200 ${inputBg}`}
+      
+          />
+           </div>
+
+          <div className="flex-1">
+          <label>Expiry Date</label>
+          <input
+            type="date"
+           name="expiryDate"
+           value={formData.expiryDate}
+           onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
+          className={`w-full border rounded p-2 transition-colors duration-200 ${inputBg}`}
+      
+          />
+         </div>
+
           <h3 className="font-semibold mt-4">Fee Items</h3>
           {formData.feeItems.map((item, index) => (
             <div key={index} className={`border p-3 rounded space-y-2 mb-3 transition-colors duration-200 ${feeItemBg}`}>
@@ -189,6 +219,7 @@ const CreateFeeStructureForm: React.FC = () => {
                 />
                 <span>Is Optional?</span>
               </label>
+              
             </div>
           ))}
 
@@ -211,6 +242,7 @@ const CreateFeeStructureForm: React.FC = () => {
           {message && <p className="mt-4 text-center text-sm">{message}</p>}
         </form>
       </div>
+      <ClassPaymentStatus/>
     </div>
   );
 };

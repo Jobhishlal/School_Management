@@ -554,6 +554,7 @@ export const CreatePayment = async (data: {
   studentId: string;
   feeRecordId: string;
   method?: string;
+ 
 }) => {
   const res = await api.post("/parents/create-payment", data);
   return res;
@@ -627,3 +628,26 @@ export const PendingExpenseUpdate = async (
   const res = await api.put(`/admin/expense/updateexpense/${id}`, data);
   return res.data;
 };
+
+
+export const StudentFinanceCompleteDetails = async(classId:string)=>{
+  const res = await api.get(`/admin/peyment/class/${classId}`)
+  return res.data
+}
+
+
+export const SearchPaymentHistoryNamebase = async (studentName: string) => {
+  const res = await api.get('/admin/finance/searchName', {
+    params: { studentName },
+  });
+  return res.data;
+};
+
+
+
+export const FinanceReportRevenue = async(startDate:string,endDate:string)=>{
+  const res  = await api.get('/admin/financereport',{
+    params:{startDate,endDate}
+  })
+  return res.data.data
+}

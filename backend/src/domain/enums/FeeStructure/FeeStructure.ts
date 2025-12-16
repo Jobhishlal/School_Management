@@ -1,4 +1,5 @@
 export enum FeeStructureError{
+  REQUIRED_FIELDS="All Fields Are Required",
   EMPTY_NAME = "Fee structure name cannot be empty",
   INVALID_CLASS_ID = "Invalid classId",
   INVALID_ACADEMIC_YEAR = "Invalid academic year",
@@ -7,4 +8,9 @@ export enum FeeStructureError{
   INVALID_AMOUNT = "Fee amount must be greater than 0",
   INVALID_FREQUENCY = "Invalid fee frequency",
   DUPLICATE_FEE_TYPE = "Duplicate fee type in fee structure",
+  START_DATE_REQUIRED = "Start date is required",
+  EXPIRY_DATE_REQUIRED = "Expiry date is required",
+  INVALID_START_DATE = "Invalid start date",
+  INVALID_EXPIRY_DATE = "Invalid expiry date",
+  EXPIRY_BEFORE_START = "Expiry date must be after start date",
 }

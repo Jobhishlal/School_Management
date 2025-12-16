@@ -151,7 +151,7 @@ import FinanceParentList from "./pages/Parents/ParentFinancePage";
 import CreateExpenseForm from "./pages/admin/ExpenseManagement";
 import SuperAdminExpenseApproval from "./pages/admin/SuperAdminApproval";
 import ExpenseHistory from "./pages/admin/ListOutFullExpense";
-
+import RevenueGenerateReport from "./pages/admin/FinanceReport/RevenueGenarateReport";
 
 function ErrorFallback({ error }: { error: Error }) {
   return <div role="alert">Something went wrong: {error.message}</div>;
@@ -186,6 +186,7 @@ function App() {
           <Route path='/finance-management' element={<PrivateRoute><CreateFeeStructureForm/></PrivateRoute>}/>
            <Route path='/expense-management' element={<PrivateRoute><CreateExpenseForm/></PrivateRoute>}/>
             <Route path='/admin-approval' element={<PrivateRoute><SuperAdminExpenseApproval/></PrivateRoute>}/>
+            <Route path='/finance-report' element={<PrivateRoute><RevenueGenerateReport/></PrivateRoute>}/>
     
             
             
