@@ -1,10 +1,15 @@
 import { Request,Response } from "express";
 import { IRevenueGenarateUseCase } from "../../../../../../domain/UseCaseInterface/FeeStructure/FinanceReport/IfinanceReport.RevanueUseCase";
 import { StatusCodes } from "../../../../../../shared/constants/statusCodes";
+import { IExpenseReportGenarate } from "../../../../../../domain/UseCaseInterface/FeeStructure/FinanceReport/IExpenseReportRevenueUseCase";
 
 
 export class FinanceReportManagementController {
-    constructor(private readonly revenue:IRevenueGenarateUseCase){}
+    constructor(
+        private readonly revenue:IRevenueGenarateUseCase,
+        private readonly expense : IExpenseReportGenarate
+    
+    ){}
 
     async RevenueGenerateReport(req:Request,res:Response):Promise<void>{
         try {
@@ -23,6 +28,25 @@ export class FinanceReportManagementController {
         } catch (error) {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR)
             .json({message:"internal server error",error})
+        }
+    }
+
+    async ExpenseGenarage(req:Request,res:Response):Promise<void>{
+        try {
+            const data = await this.expense.execute()
+            console.log("data",data)
+            if(!data){
+                console.log(data)
+                res.status(StatusCodes.BAD_REQUEST)
+                .json({message:"not fetch expense details"})
+            }
+            console.log(data)
+            res.status(StatusCodes.OK)
+            .json({message:"expense fetch successfully",data})
+        } catch (error) {
+            console.log(error)
+             res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+             .json({message:"internal server error",error})
         }
     }
 }

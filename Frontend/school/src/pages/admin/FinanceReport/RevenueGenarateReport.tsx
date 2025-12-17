@@ -3,11 +3,14 @@ import { FinanceReportRevenue } from "../../../services/authapi";
 import type { RevenueReport } from "../../../types/FinanceReport.types";
 import { showToast } from "../../../utils/toast";
 import { useTheme } from "../../../components/layout/ThemeContext";
+import { NavLink } from "react-router-dom";
 
 
 import RevenueAreaChart from "../../../components/FinanceReport/RevenueAreaChart";
 import RevenueBarChart from "../../../components/FinanceReport/RevenueBarChart";
 import { SummaryCard } from "../../../components/FinanceReport/SummaryCard";
+import { ExpenseReletedReport } from "./ExpenseGenarateReport";
+
 
 const RevenueGenerateReport: React.FC = () => {
   const { isDark } = useTheme();
@@ -53,8 +56,53 @@ const RevenueGenerateReport: React.FC = () => {
   const buttonPrimary =
     "bg-blue-600 hover:bg-blue-700 text-white";
 
+   
+  const textSecondary = isDark ? "text-slate-400" : "text-gray-600";
+
   return (
     <div className={`min-h-screen p-6 ${containerBg}`}>
+
+
+         <div className="flex gap-6 text-sm border-b mb-6" style={{ borderColor: isDark ? "rgba(71, 85, 105, 0.5)" : "rgba(229, 231, 235, 1)" }}>
+          <NavLink
+            to="/finance-management"
+            className={({ isActive }) =>
+              `pb-3 border-b-2 font-medium transition-colors duration-200 ${
+                isActive
+                  ? "border-blue-500 text-blue-600"
+                  : `border-transparent ${textSecondary} hover:text-blue-400`
+              }`
+            }
+          >
+            Fee Management
+          </NavLink>
+
+          <NavLink
+            to="/expense-management"
+            className={({ isActive }) =>
+              `pb-3 border-b-2 font-medium transition-colors duration-200 ${
+                isActive
+                  ? "border-blue-500 text-blue-600"
+                  : `border-transparent ${textSecondary} hover:text-blue-400`
+              }`
+            }
+          >
+            Expense Management
+          </NavLink>
+
+          <NavLink
+            to='/finance-report'
+            className={({ isActive }) =>
+              `pb-3 border-b-2 font-medium transition-colors duration-200 ${
+                isActive
+                  ? "border-blue-500 text-blue-600"
+                  : `border-transparent ${textSecondary} hover:text-blue-400`
+              }`
+            }
+          >
+            Fee Report
+          </NavLink>
+        </div>
       <div className="max-w-7xl mx-auto">
         <h2 className="text-2xl font-bold mb-6">
           Finance Revenue Report
@@ -95,10 +143,11 @@ const RevenueGenerateReport: React.FC = () => {
                 Fee Collection Trends
               </h3>
 
-              <RevenueAreaChart
+               <RevenueAreaChart
+                 key={isDark ? "dark" : "light"}
                 data={report.monthlyRevenue}
                 isDark={isDark}
-              />
+                  />
             </div>
 
             {/* Monthly Income */}
@@ -115,7 +164,7 @@ const RevenueGenerateReport: React.FC = () => {
           </div>
         )}
 
-        {/* 📌 Summary Cards */}
+        
         {report && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8">
             <SummaryCard
@@ -137,6 +186,7 @@ const RevenueGenerateReport: React.FC = () => {
           </div>
         )}
       </div>
+      <ExpenseReletedReport/>
     </div>
   );
 };

@@ -89,7 +89,8 @@ import { StudentPaymentDetailList } from "../../applications/useCases/FeeStructu
 
 import { PendingStatusUpdateUseCase } from "../../applications/useCases/FeeStructure/PendingstatusUpdateUseCase";
 import { SearchStudentName } from "../../applications/useCases/FeeStructure/SearchPaymentHistory";
-
+import { ExpenseReportUseCase } from "../../applications/useCases/FeeStructure/FinanceReport/ExpenseGenerateReportUseCase";
+import { MongoExpenseReport } from "../../infrastructure/repositories/FeeManagement/FinanceReport/ExpenseReport";
 
 
 
@@ -306,13 +307,16 @@ const expanceapprovalcontroller = new SuperadminApprovalController(
 )
 
 const financereport = new MongoRevenueGenarateReport()
+const expensereportmongo = new MongoExpenseReport()
 const financeGenarateUsecase = new FinanceReportUseCase(financereport)
+const expensereport = new ExpenseReportUseCase(expensereportmongo)
 
 
 
 
 const financeReportController = new FinanceReportManagementController(
-  financeGenarateUsecase
+  financeGenarateUsecase,
+  expensereport
 
 )
 
@@ -539,6 +543,14 @@ Adminrouter.get('/finance/searchName',(req,res)=>{
 Adminrouter.get('/financereport',(req,res)=>{
   financeReportController.RevenueGenerateReport(req,res)
 })
+
+
+Adminrouter.get('/expense-report',(req,res)=>{
+  financeReportController.ExpenseGenarage(req,res)
+})
+
+
+
 
 
 export default Adminrouter;

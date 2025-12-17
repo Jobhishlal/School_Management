@@ -651,3 +651,8 @@ export const FinanceReportRevenue = async(startDate:string,endDate:string)=>{
   })
   return res.data.data
 }
+
+export const ExpenseReport = async()=>{
+  const res = await api.get('/admin/expense-report')
+  return res.data.data
+}
