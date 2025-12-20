@@ -5,6 +5,9 @@ import { type CreateAssignmentDTO } from "../types/AssignmentCreate";
 import type { CreateFeeStructureDTO } from "../types/CreateFeeStructureDTO ";
 import type { CreateFeeTypePayload } from "../types/CreateFeeTypePayload";
 import type{ ExpenseFormDTO } from "../types/ExpenseCreatedto";
+import type{ CreateAnnouncementDTO } from "../types/CreateAnnouncementDTO";
+import { da } from "zod/v4/locales";
+
 
 
 
@@ -655,4 +658,46 @@ export const FinanceReportRevenue = async(startDate:string,endDate:string)=>{
 export const ExpenseReport = async()=>{
   const res = await api.get('/admin/expense-report')
   return res.data.data
+}
+
+
+
+export const AnnouncementCreate = async (data: FormData) => {
+  const res = await api.post('/admin/announcement', data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return res.data;
+};
+
+
+
+
+export const AnnouncementFetch = async (
+  studentId: string,
+  classId: string
+) => {
+  const res = await api.get("/student/announcement-find", {
+    params: {
+      studentId,
+      classId,
+    },
+  });
+  return res.data;
+};
+
+
+export const UpdateAnnouncement = async(
+  id:string,
+  data:FormData
+)=>{
+  const res = await api.put(`/admin/update-announcement/${id}`,data)
+  return res.data
+}
+
+
+export const findallAnnouncement = async()=>{
+  const res = await api.get('/admin/announcement/findall')
+  return res.data
 }

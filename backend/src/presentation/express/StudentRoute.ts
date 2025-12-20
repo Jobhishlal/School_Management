@@ -13,6 +13,11 @@ import { AssignmentViewStudentsController } from "../http/controllers/Student/St
 import { AssignmentSubmit } from "../../applications/useCases/Assignment/StudentAssignmentSubmit";
 import { assignmentUpload } from "../../infrastructure/middleware/AssignmentSubmit";
 
+
+import { AnnouncementMongo } from "../../infrastructure/repositories/Announcement/MongoAnnoucement";
+import { ClassBaseFindAnnouncementUseCase } from "../../applications/useCases/Announcement/AnnouncementFindClassBase";
+import { AnnouncementReadController } from "../http/controllers/Student/AnnouncementController";
+
 const Studentrouter = Router();
 
 const studentmongo = new MongoStudentRepo();
@@ -28,6 +33,15 @@ const assignmentrepo = new AssignmentMongo()
 const assignmentget = new StudentGetAssignment(assignmentrepo)
 const assignmentsubmit = new AssignmentSubmit(assignmentrepo)
 const assignmentcontroller = new AssignmentViewStudentsController(assignmentget,assignmentsubmit)
+
+
+const announcementrepo = new AnnouncementMongo()
+const findannouncementusecase = new ClassBaseFindAnnouncementUseCase(announcementrepo)
+const Announcementreadcontroller = new AnnouncementReadController(
+  findannouncementusecase,
+  studentgetprofile
+)
+
 
 Studentrouter.get("/profile", authMiddleware, async (req, res) => {
   const authReq = req as AuthRequest;
@@ -55,4 +69,12 @@ Studentrouter.post(
     }
   }
 );
+
+
+Studentrouter.get('/announcement-find',
+  authMiddleware, (req, res) => {
+  
+  Announcementreadcontroller.Findannouncement(req as AuthRequest, res)
+});
+
 export default Studentrouter;

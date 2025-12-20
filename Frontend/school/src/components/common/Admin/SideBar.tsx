@@ -104,6 +104,7 @@ export default function SchoolNavbar({ children }: Props) {
       { icon: Megaphone, text: "Teacher Management", path: "/teachers" },
       { icon: AlertCircle, text: "Class Base Access", path: "/classbaseview" },
       { icon: DollarSign, text: "Finance", path: "/finance-management" },
+      { icon: AlertCircle, text: "Announcement", path: '/Announcement' },
     ],
   },
 

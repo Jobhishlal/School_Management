@@ -109,8 +109,32 @@ import { FinanceReportManagementController } from "../http/controllers/ADMIN/Fee
 
 
 
+/// ANNOUNCEMENT 
 
 
+import { AnnouncementMongo } from "../../infrastructure/repositories/Announcement/MongoAnnoucement";
+import { AnnouncementUseCase } from "../../applications/useCases/Announcement/AnnouncementUseCase";
+import { AnnouncementController } from "../http/controllers/Announcement/AnnouncementController";
+import { SocketNotification } from "../../infrastructure/socket/SocketNotification";
+import { AnnouncementAttachment } from "../../infrastructure/middleware/AnnouncementFile";
+import { UpdateAnnouncementUseCase } from "../../applications/useCases/Announcement/UpdateAnnouncementUseCase";
+import { FindAllAnnoucenemt } from "../../applications/useCases/Announcement/AnnouncementFindUseCase";
+
+
+const annoucement = new AnnouncementMongo()
+const socketNotification = new SocketNotification()
+const updateannouncement = new UpdateAnnouncementUseCase(annoucement)
+const findall = new FindAllAnnoucenemt(annoucement)
+const announcementcreateusecase = new AnnouncementUseCase(annoucement,socketNotification)
+const announcementController = new AnnouncementController(
+  announcementcreateusecase,
+  updateannouncement,
+  findall
+  
+)
+
+
+/////
 
 
 
@@ -548,9 +572,23 @@ Adminrouter.get('/financereport',(req,res)=>{
 Adminrouter.get('/expense-report',(req,res)=>{
   financeReportController.ExpenseGenarage(req,res)
 })
+Adminrouter.post(
+  "/announcement",
+  AnnouncementAttachment.single("attachment"),
+  (req, res) => {
+    announcementController.create(req, res);
+  }
+);
 
 
 
+Adminrouter.put('/update-announcement/:id',(req,res)=>{
+  announcementController.UpdateAnnouncement(req,res)
+})
+
+Adminrouter.get('/announcement/findall',(req,res)=>{
+  announcementController.FindAllAnnouncement(req,res)
+})
 
 
 export default Adminrouter;

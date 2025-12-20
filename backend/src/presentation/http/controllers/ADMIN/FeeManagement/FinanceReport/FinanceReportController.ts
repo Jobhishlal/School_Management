@@ -34,17 +34,16 @@ export class FinanceReportManagementController {
     async ExpenseGenarage(req:Request,res:Response):Promise<void>{
         try {
             const data = await this.expense.execute()
-            console.log("data",data)
+           
             if(!data){
-                console.log(data)
                 res.status(StatusCodes.BAD_REQUEST)
                 .json({message:"not fetch expense details"})
             }
-            console.log(data)
+           
             res.status(StatusCodes.OK)
             .json({message:"expense fetch successfully",data})
         } catch (error) {
-            console.log(error)
+           
              res.status(StatusCodes.INTERNAL_SERVER_ERROR)
              .json({message:"internal server error",error})
         }
