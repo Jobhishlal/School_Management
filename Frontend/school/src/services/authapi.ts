@@ -6,8 +6,7 @@ import type { CreateFeeStructureDTO } from "../types/CreateFeeStructureDTO ";
 import type { CreateFeeTypePayload } from "../types/CreateFeeTypePayload";
 import type{ ExpenseFormDTO } from "../types/ExpenseCreatedto";
 import type{ CreateAnnouncementDTO } from "../types/CreateAnnouncementDTO";
-import { da } from "zod/v4/locales";
-
+import type{ TakeAttendancePayload } from "../types/AttendanceType";
 
 
 
@@ -701,3 +700,20 @@ export const findallAnnouncement = async()=>{
   const res = await api.get('/admin/announcement/findall')
   return res.data
 }
+
+
+export const GetStudentsByTeacher = async () => {
+  const res = await api.get("/teacher/attendance/students");
+  return res.data; 
+
+}
+export const AttendanceCreate = async(data:TakeAttendancePayload)=>{
+  const res = await api.post('/teacher/attendance/create',data)
+  return res.data
+}
+
+
+// export const GetStudentsByTeacher = async (teacherId: string) => {
+//   const res = await api.get(`/teacher/students?teacherId=${teacherId}`);
+//   return res.data;
+// };

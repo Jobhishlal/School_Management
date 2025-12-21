@@ -121,6 +121,13 @@ import { UpdateAnnouncementUseCase } from "../../applications/useCases/Announcem
 import { FindAllAnnoucenemt } from "../../applications/useCases/Announcement/AnnouncementFindUseCase";
 
 
+
+
+
+import { StudentFindClassBaseUseCase } from "../../applications/useCases/Students/StudentFindClassIDbaseUseCase";
+
+
+
 const annoucement = new AnnouncementMongo()
 const socketNotification = new SocketNotification()
 const updateannouncement = new UpdateAnnouncementUseCase(annoucement)
@@ -191,15 +198,20 @@ const createstudentUseCase = new StudentAddUseCase(
   genaratepassword,
   emailservice
 );
+
+
+const classReop = new MongoClassRepository();
 const getliststundetUseCase = new StudentList(studentrepo);
 const studentblockuseCase = new StudentBlock(studentrepo);
 const updatestudentuseCase = new UpdateStudentUseCase(studentrepo);
+const studentfindclassbase = new StudentFindClassBaseUseCase(studentrepo,classReop)
 const studentcreatecontroller = new StudentCreateController(
   studentrepo,
   createstudentUseCase,
   getliststundetUseCase,
   studentblockuseCase,
-  updatestudentuseCase
+  updatestudentuseCase,
+  studentfindclassbase
 );
 
 const createparentrepo = new ParentAddUseCase(parentrepo);
@@ -222,7 +234,7 @@ const AddressController = new AddressManagementController(
   updateaddrressusecase
 );
 
-const classReop = new MongoClassRepository();
+
 const createClass = new CreateClassUseCase(classReop);
 const getlistclass = new GetAllClass(classReop);
 const classupdateusecase = new UpdateClassUseCase(classReop);
@@ -343,6 +355,8 @@ const financeReportController = new FinanceReportManagementController(
   expensereport
 
 )
+
+
 
 // Adminrouter.get("/signup", (req, res) => adminController.getAll(req, res));
 // Adminrouter.post("/signuppost", (req, res) => adminController.signupRequest(req, res));
@@ -589,6 +603,8 @@ Adminrouter.put('/update-announcement/:id',(req,res)=>{
 Adminrouter.get('/announcement/findall',(req,res)=>{
   announcementController.FindAllAnnouncement(req,res)
 })
+
+
 
 
 export default Adminrouter;

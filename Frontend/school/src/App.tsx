@@ -154,6 +154,10 @@ import ExpenseHistory from "./pages/admin/ListOutFullExpense";
 import RevenueGenerateReport from "./pages/admin/FinanceReport/RevenueGenarateReport";
 import CreateAnnouncement from "./pages/admin/Announcement/Announcement";
 
+
+
+import AttendanceCreatePage from "./pages/Teacher/AttendanceCreate";
+
 function ErrorFallback({ error }: { error: Error }) {
   return <div role="alert">Something went wrong: {error.message}</div>;
 }
@@ -214,6 +218,7 @@ function App() {
 
           <Route path="/teacher/dashboard" element={<TeacherDashboard/>}/>
           <Route path="/teacher/assignments" element={<AssignmentManage/>}/>
+            <Route path="/teacher/attandance" element={<AttendanceCreatePage/>}/>
 
           </Route>
 

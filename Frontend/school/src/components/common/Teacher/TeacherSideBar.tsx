@@ -41,7 +41,7 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
   const menuItems = [
     { icon: LayoutDashboard, text: "Dashboard", path: "/teacher/dashboard" },
     { icon: Users, text: "My Classes", path: "/teacher/classes" },
-    { icon: Calendar, text: "Attendance", path: "/teacher/attendance" },
+    { icon: Calendar, text: "Attendance", path:"/teacher/attandance" },
     { icon: FileText, text: "Assignments", path: "/teacher/assignments" },
     { icon: BookOpen, text: "Exams & Marks", path: "/teacher/exams" },
     { icon: Clock, text: "Schedule", path: "/teacher/schedule" },
