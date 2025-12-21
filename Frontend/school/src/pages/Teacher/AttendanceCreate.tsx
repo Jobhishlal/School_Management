@@ -15,19 +15,25 @@ type AttendanceStatus = "Present" | "Absent";
 interface AttendanceItem {
   studentId: string;
   status: AttendanceStatus;
-  
 }
 
 const AttendanceCreatePage = () => {
   const { isDark } = useTheme();
   const [students, setStudents] = useState<Student[]>([]);
   const [attendance, setAttendance] = useState<AttendanceItem[]>([]);
-  const [session, setSession] = useState< "Morning" | "Afternoon">("Morning");
+  const [session, setSession] = useState<"Morning" | "Afternoon">("Morning");
   const [loading, setLoading] = useState(false);
-   const decoded = getDecodedToken();
+
+  const decoded = getDecodedToken();
   const teacherId = decoded?.id;
 
+  // Function to determine current session based on hour
+  const getCurrentSession = (): "Morning" | "Afternoon" => {
+    const hour = new Date().getHours();
+    return hour < 12 ? "Morning" : "Afternoon";
+  };
 
+  // Fetch students and set initial session
   useEffect(() => {
     const fetchStudents = async () => {
       try {
@@ -46,9 +52,18 @@ const AttendanceCreatePage = () => {
       }
     };
 
+    setSession(getCurrentSession()); // automatically set session
     fetchStudents();
+
+    // Optional: update session every minute if page stays open
+    const interval = setInterval(() => {
+      setSession(getCurrentSession());
+    }, 60000);
+
+    return () => clearInterval(interval);
   }, []);
 
+  // Mark individual student's attendance
   const markAttendance = (studentId: string, status: AttendanceStatus) => {
     setAttendance(prev => {
       const exists = prev.find(a => a.studentId === studentId);
@@ -58,37 +73,32 @@ const AttendanceCreatePage = () => {
     });
   };
 
- const handleSubmit = async () => {
-  if (!teacherId) {
-    return showToast("Teacher not logged in", "error");
-  }
+  // Submit attendance
+  const handleSubmit = async () => {
+    if (!teacherId) return showToast("Teacher not logged in", "error");
+    if (attendance.length !== students.length) return showToast("Mark attendance for all students", "warning");
 
-  if (attendance.length !== students.length) {
-    return showToast("Mark attendance for all students", "warning");
-  }
+    const classId = students[0]?.classId;
+    if (!classId) return showToast("Class ID not found", "error");
 
-  const classId = students[0]?.classId;
-  if (!classId) return showToast("Class ID not found", "error");
-
-  try {
-    setLoading(true);
-    await AttendanceCreate({
-      date: new Date().toISOString(),
-      attendance,
-      session,
-      classId,
-      teacherId, 
-    });
-
-    showToast("Attendance submitted successfully", "success");
-    setAttendance([]);
-  } catch (error) {
-    console.error(error);
-    showToast("Attendance submission failed", "error");
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      setLoading(true);
+      await AttendanceCreate({
+        date: new Date(),
+        attendance,
+        classId,
+        teacherId,
+        session, // auto-detected session
+      });
+      showToast("Attendance submitted successfully", "success");
+      setAttendance([]);
+    } catch (error) {
+      console.error(error);
+      showToast("Attendance submission failed", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const rowBg = isDark ? "bg-[#1e293b]" : "bg-white";
 
@@ -96,17 +106,10 @@ const AttendanceCreatePage = () => {
     <div className="p-6">
       <h2 className="text-xl font-bold mb-4">Take Attendance</h2>
 
-      <div className="mb-4">
-        <label className="font-medium mr-3">Session:</label>
-        <select
-          value={session}
-          onChange={e => setSession(e.target.value as "Morning" | "Afternoon")}
-          className="border px-3 py-1 rounded"
-        >
-          <option value="Morning">Morning</option>
-          <option value="Afternoon">Afternoon</option>
-        </select>
-      </div>
+      {/* Display current session */}
+      <p className="mb-4 font-medium">
+        Current Session: <strong>{session}</strong>
+      </p>
 
       <div className="border rounded-lg overflow-hidden">
         {loading ? (

@@ -7,7 +7,7 @@ export interface AttendanceItemPayload {
 export interface TakeAttendancePayload {
   classId: string;
   teacherId: string;
-  date: string;
+  date: Date;
   session:  "Morning" | "Afternoon"
   attendance: AttendanceItemPayload[];
 }
