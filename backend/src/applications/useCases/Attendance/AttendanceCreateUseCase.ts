@@ -4,7 +4,7 @@ import { IAttendanceCreateUseCase } from "../../../domain/UseCaseInterface/Attan
 import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
 import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
 import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
-import { getCurrentSession } from "../../../shared/constants/utils/getAttendanceSession";
+import { ValidateAttendanceCreate } from "../../validators/AttendanceValidation/AttendanceValidation";
 
 export class AttendanceCreateUseCase implements IAttendanceCreateUseCase {
   constructor(
@@ -14,15 +14,17 @@ export class AttendanceCreateUseCase implements IAttendanceCreateUseCase {
   ) {}
 
   async execute(data: TakeAttendance): Promise<AttendanceEntity> {
-    const { classId, teacherId, attendance } = data;
+    ValidateAttendanceCreate(data);
 
- 
-    const session = getCurrentSession();
+    const { classId, teacherId, attendance, session } = data;
+
+    if (!session) {
+      throw new Error("Session is required");
+    }
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-  
     const classData = await this.classRepo.findById(classId.toString());
     if (!classData) throw new Error("Class not found");
 
@@ -34,13 +36,11 @@ export class AttendanceCreateUseCase implements IAttendanceCreateUseCase {
       throw new Error("You are not authorized to take attendance for this class");
     }
 
-
     const students = await this.studentRepo.findByClassId(classId.toString());
     if (!students.length) {
       throw new Error("No students found for this class");
     }
 
-  
     const validStudentIds = students.map(s => s.id);
 
     for (const item of attendance) {
@@ -56,20 +56,15 @@ export class AttendanceCreateUseCase implements IAttendanceCreateUseCase {
     );
 
     if (existing) {
-      throw new Error(
-        `${session} attendance already taken for today`
-      );
+      throw new Error(`${session} attendance already taken for today`);
     }
 
- 
-    const createdAttendance = await this.attendanceRepo.create({
+    return await this.attendanceRepo.create({
       classId,
       teacherId,
       attendance,
       date: today,
       session,
     });
-
-    return createdAttendance;
   }
 }

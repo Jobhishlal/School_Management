@@ -712,8 +712,15 @@ export const AttendanceCreate = async(data:TakeAttendancePayload)=>{
   return res.data
 }
 
+export const fetchTodayAttendanceSummary = async (classId: string) => {
+  const res = await api.get(`/teacher/attendance/summary/${classId}`);
+  
+  
+  return res.data?.attendance?.attendance ?? [];
+};
 
-// export const GetStudentsByTeacher = async (teacherId: string) => {
-//   const res = await api.get(`/teacher/students?teacherId=${teacherId}`);
-//   return res.data;
-// };
+
+export const ParentAttendanceList = async (parentId: string) => {
+  const res = await api.get(`/parents/parent/attendance/today?parentId=${parentId}`);
+  return res.data?? [];
+};

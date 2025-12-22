@@ -18,6 +18,7 @@ import { MongoStudentRepo } from "../../infrastructure/repositories/MongoStudent
 import { StudentFindClassBaseUseCase } from "../../applications/useCases/Students/StudentFindClassIDbaseUseCase";
 import { StudentCreateController } from "../http/controllers/Student/StudentController";
 import { FindStudentsByTeacherUseCase } from "../../applications/useCases/Attendance/FindTeacherIdBaseAttendance";
+import { AttendanceListUseCase} from "../../applications/useCases/Attendance/AttendanceList";
 const Teacherrouter = Router();
 
 const assignmentRepo = new AssignmentMongo();
@@ -36,9 +37,11 @@ const studentfindclassbase = new StudentFindClassBaseUseCase(studentrepo,classre
 
 const atendancecreate = new AttendanceCreateUseCase(attendancerepo,classrepo,studentrepo)
 const attendancecheckteacher = new FindStudentsByTeacherUseCase(studentrepo,attendancerepo)
+const attendancelist = new AttendanceListUseCase(attendancerepo)
 const attendanceController = new AttendanceController(
   atendancecreate,studentfindclassbase,
-  attendancecheckteacher
+  attendancecheckteacher,
+  attendancelist
 )
 
 
@@ -91,5 +94,10 @@ Teacherrouter.get(
   authMiddleware, 
   (req, res) => attendanceController.findStudentsByTeacher(req as AuthRequest, res)
 );
+
+Teacherrouter.get( `/attendance/summary/:classId`,
+   authMiddleware,
+   (req,res)=>attendanceController.AttendanceList(req as AuthRequest,res)
+)
 
 export default Teacherrouter;

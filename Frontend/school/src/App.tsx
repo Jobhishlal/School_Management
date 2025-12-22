@@ -156,7 +156,8 @@ import CreateAnnouncement from "./pages/admin/Announcement/Announcement";
 
 
 
-import AttendanceCreatePage from "./pages/Teacher/AttendanceCreate";
+import AttendanceCreatePage from "./pages/Teacher/AttendanceCreatePage";
+import ParentAttendance from "./pages/Parents/AttendanceViewPage";
 
 function ErrorFallback({ error }: { error: Error }) {
   return <div role="alert">Something went wrong: {error.message}</div>;
@@ -227,6 +228,7 @@ function App() {
           <Route element={<ThemeProvider><ParentLayout/></ThemeProvider>}>
           <Route path="/parent/dashboard" element={<ParentDashboard/>}/>
           <Route path="/parent/financelist" element={<FinanceParentList/>}/>
+          <Route path="/parent/attendacelist" element={<ParentAttendance/>}/>
           
           </Route>
           

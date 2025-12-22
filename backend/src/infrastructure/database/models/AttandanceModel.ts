@@ -4,6 +4,7 @@ export type AttendanceStatus = "Present" | "Absent";
 
 export interface AttendanceItem {
   studentId: Types.ObjectId;
+  fullName:string;
   status: AttendanceStatus;
   remarks?: string;
 }

@@ -5,11 +5,13 @@ import { TakeAttendance } from "../../../../applications/dto/Attendance/TakeAtte
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 import { IGetStudentsByClassUseCase } from "../../../../domain/UseCaseInterface/StudentCreate/IStudentFindClassBase";
 import { IFindStudentsByTeacherUseCase } from "../../../../domain/UseCaseInterface/IFindStudentsByTeacherUseCase";
+import { IAttendanceList } from "../../../../domain/UseCaseInterface/Attandance/IAttendanceTeacherList";
 export class AttendanceController {
   constructor(
     private repo: IAttendanceCreateUseCase,
     private studentclassrepofind:IGetStudentsByClassUseCase, 
-    private findStudentsUseCase:IFindStudentsByTeacherUseCase
+    private findStudentsUseCase:IFindStudentsByTeacherUseCase,
+    private attendancelist : IAttendanceList
 
 ) {}
 
@@ -97,6 +99,34 @@ export class AttendanceController {
       });
     }
   }
-    
+
+
+async AttendanceList(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      console.log("reached here")
+      const { classId } = req.params;
+      console.log(classId)
+
+      if (!classId) {
+        res.status(400).json({ success: false, message: "Class ID is required" });
+        return;
+      }
+
+      const attendance = await this.attendancelist.execute(classId);
+      console.log(attendance)
+
+      res.status(StatusCodes.OK).json({
+        success: true,
+        attendance,
+        date: new Date().toISOString().split("T")[0],
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: "Failed to fetch attendance",
+      });
+    }
+  }
 
 }

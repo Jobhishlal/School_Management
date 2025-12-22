@@ -9,7 +9,11 @@ import { MongoPeymentRepo } from "../../infrastructure/repositories/FeeManagemen
 import { VerifyPaymentStatus } from "../../applications/useCases/Payment/VerifyRazorpayPeyment";
 import { VerifyPaymentByFeeId } from "../../applications/useCases/Payment/VerifyStatusupdateFeeId";
 import { DownLoadInvoice } from "../../applications/useCases/Payment/InvoiceSetUP";
-
+import { ParentAttendanceListController } from "../http/controllers/ParentController.ts/ParentAttendanceListController";
+import { ParentAttendanceListUseCase } from "../../applications/useCases/Attendance/AttendanceListParentUseCase";4
+import { AttendanceMongoRepository } from "../../infrastructure/repositories/Attendance/AttendanceMongoRepo";
+import { authMiddleware } from "../../infrastructure/middleware/AuthMiddleWare";
+import { AuthRequest } from "../../infrastructure/types/AuthRequest";
 
 const ParentRouter = Router()
 
@@ -27,7 +31,9 @@ const peymentcontroller = new PeymentController(createpeyment,verfystatus,verify
 
 
 
-
+const attendancerepo = new AttendanceMongoRepository()
+const Attandanceusecase = new ParentAttendanceListUseCase(attendancerepo)
+const attendanceparentcontroller = new ParentAttendanceListController(Attandanceusecase)
 
 
 ParentRouter.post('/parent-finance-list', (req, res) => ParentController.ParentList(req, res));
@@ -38,5 +44,8 @@ ParentRouter.get("/invoice/:paymentId", (req, res) => peymentcontroller.InvoiceD
 
 
 
-
+ParentRouter.get("/parent/attendance/today",
+    authMiddleware,
+    (req,res)=>attendanceparentcontroller.ParentAttendanceList(req as AuthRequest,res)
+)
 export default ParentRouter

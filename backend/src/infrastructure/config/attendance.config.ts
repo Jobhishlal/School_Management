@@ -5,6 +5,6 @@ export const ATTENDANCE_SESSIONS = {
   },
   AFTERNOON: {
     start: 13 * 60 + 30, 
-    end: 15 * 60 + 30,   
+    end: 18 * 60 + 30,   
   },
 };
