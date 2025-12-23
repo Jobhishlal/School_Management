@@ -118,13 +118,13 @@ async assignClassWithDivision(className: string): Promise<Class | null> {
   return null;
 }
 async findById(id: string): Promise<Class> {
-  console.log("reached here")
+ 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new Error(`Invalid Class ID: ${id}`);
   }
 
   const classDoc = await ClassModel.findById(id);
-  console.log("class doc",classDoc)
+ 
 
   if (!classDoc){
     throw new Error("Id cannot find")

@@ -1,0 +1,15 @@
+export enum ExamErrors {
+  REQUIRED = "All required fields must be provided",
+  INVALID_ID = "Invalid ID format",
+  INVALID_EXAM_TYPE = "Invalid exam type",
+  INVALID_DATE = "Invalid exam date",
+  INVALID_TIME = "Invalid time format",
+  INVALID_TIME_RANGE = "End time must be after start time",
+  INVALID_MARKS = "Max marks must be greater than zero",
+  INVALID_SUBJECT = "Invalid subject",
+  INVALID_CLASS = "Invalid class",
+  INVALID_TEACHER = "Invalid teacher",
+  EXAM_ALREADY_EXISTS = "Exam already exists for this class and date",
+  UNAUTHORIZED = "You are not authorized to create this exam",
+  DESCRIPTION_LENGTH = "Description length exceeded",
+}

@@ -7,7 +7,10 @@ import type { CreateFeeTypePayload } from "../types/CreateFeeTypePayload";
 import type{ ExpenseFormDTO } from "../types/ExpenseCreatedto";
 import type{ CreateAnnouncementDTO } from "../types/CreateAnnouncementDTO";
 import type{ TakeAttendancePayload } from "../types/AttendanceType";
-
+import type{ CreateExamDTO } from "../types/ExamCreateDTO";
+import type{ UpdateExamDTO } from "../types/UpdateExam";
+import { da } from "zod/v4/locales";
+import type{ ExamEntity } from "../types/ExamEntity";
 
 
 export const GetSubAdmins = async () => {
@@ -723,4 +726,24 @@ export const fetchTodayAttendanceSummary = async (classId: string) => {
 export const ParentAttendanceList = async (parentId: string) => {
   const res = await api.get(`/parents/parent/attendance/today?parentId=${parentId}`);
   return res.data?? [];
+};
+
+
+export const ExamCreate = async (data: CreateExamDTO) => {
+  console.log("formdata",data)
+  const res = await api.post("/teacher/exam/create", data);
+  return res.data;
+};
+
+
+export const updateExam = async (id:string,data:UpdateExamDTO)=>{
+  console.log(id,data)
+
+  const res = await api.put(`/teacher/exam/update/${id}`,data)
+  return res.data
+}
+
+export const GetTeacherExams = async (): Promise<ExamEntity[]> => {
+  const res = await api.get("/teacher/exams");
+  return res.data.data; 
 };

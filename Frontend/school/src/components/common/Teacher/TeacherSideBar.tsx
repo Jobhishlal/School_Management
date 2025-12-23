@@ -43,7 +43,7 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
     { icon: Users, text: "My Classes", path: "/teacher/classes" },
     { icon: Calendar, text: "Attendance", path:"/teacher/attandance" },
     { icon: FileText, text: "Assignments", path: "/teacher/assignments" },
-    { icon: BookOpen, text: "Exams & Marks", path: "/teacher/exams" },
+    { icon: BookOpen, text: "Exams & Marks", path: "/teacher/exam-management" },
     { icon: Clock, text: "Schedule", path: "/teacher/schedule" },
     { icon: MessageCircle, text: "Communication", path: "/teacher/communication" },
     { icon: UserCog, text: "Parents Management", path: "/teacher/parents" },

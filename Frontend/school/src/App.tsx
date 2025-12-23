@@ -158,6 +158,7 @@ import CreateAnnouncement from "./pages/admin/Announcement/Announcement";
 
 import AttendanceCreatePage from "./pages/Teacher/AttendanceCreatePage";
 import ParentAttendance from "./pages/Parents/AttendanceViewPage";
+import CreateExam from "./pages/Teacher/Exam/CreateExam";
 
 function ErrorFallback({ error }: { error: Error }) {
   return <div role="alert">Something went wrong: {error.message}</div>;
@@ -220,6 +221,7 @@ function App() {
           <Route path="/teacher/dashboard" element={<TeacherDashboard/>}/>
           <Route path="/teacher/assignments" element={<AssignmentManage/>}/>
             <Route path="/teacher/attandance" element={<AttendanceCreatePage/>}/>
+             <Route path="/teacher/exam-management" element={<CreateExam/>}/>
 
           </Route>
 
