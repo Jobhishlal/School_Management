@@ -7,11 +7,17 @@ import { Types } from "mongoose";
 import { IExamUpdateTeacherUseCase } from "../../../../domain/UseCaseInterface/Exam/IExamUpdateUseCase";
 import { UpdateExamDTO } from "../../../../applications/dto/Exam/UpdateExamDTO";
 import { IGetTeacherExamsUseCase } from "../../../../domain/UseCaseInterface/Exam/IExamFindTeacherIdbase";
+import { IExamFindByClassUseCase } from "../../../../domain/UseCaseInterface/Exam/IExamFindClassBase";
+
+
 export class ExamManagementController {
   constructor(
     private repo: IExamCreateRepository,
     private update :IExamUpdateTeacherUseCase,
-    private getTeacherExamsUseCase: IGetTeacherExamsUseCase
+    private getTeacherExamsUseCase: IGetTeacherExamsUseCase,
+    private examfindclassbase : IExamFindByClassUseCase,
+   
+   
 
 ) {}
 
@@ -28,7 +34,7 @@ export class ExamManagementController {
 
       const { classId, teacherId: bodyTeacherId, title, type, division, className, subject, examDate, startTime, endTime, maxMarks, description } = req.body;
 
-      console.log(req.body)
+   
      
       
 
@@ -56,7 +62,7 @@ export class ExamManagementController {
         description: description || "",
       };
 
-      // Call use case / repository
+     
       const data = await this.repo.execute(examData);
 
       res.status(StatusCodes.CREATED).json({
@@ -112,7 +118,8 @@ export class ExamManagementController {
       }
 
       const exams = await this.getTeacherExamsUseCase.execute(teacherId);
-      console.log("teacher data list",exams)
+ 
+
 
       res.status(StatusCodes.OK).json({
         success: true,
@@ -127,5 +134,43 @@ export class ExamManagementController {
         error,
       });
     }
+    
   }
+
+
+async FindExamClassBase(req: AuthRequest, res: Response): Promise<void> {
+  try {
+    console.log("rached class base find page")
+    const { classId } = req.params;
+    const teacherId = req.user?.id;
+
+    if (!classId || !teacherId) {
+      res.status(StatusCodes.BAD_REQUEST).json({
+        success: false,
+        message: "classId or teacherId missing",
+      });
+      return;
+    }
+
+    const exams = await this.examfindclassbase.execute({
+      classId,
+      teacherId,
+    });
+    console.log("exams",exams)
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "successfully fetched class based exams",
+      data: exams,
+    });
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: "internal server error",
+      error,
+    });
+  }
+}
+
+
 }

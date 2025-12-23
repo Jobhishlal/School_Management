@@ -1,5 +1,5 @@
 export interface UpdateExamDTO {
-    id:string;
+    id?:string;
     examId:string;
   title?: string;
   type?: "UNIT_TEST" | "MIDTERM" | "FINAL";

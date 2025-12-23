@@ -38,10 +38,11 @@ import { GetTeacherExamsUseCase } from "../../applications/useCases/Exam/GetTeac
 
 
 
-
-
-
-
+import { ExamMarkCreateUseCase } from "../../applications/useCases/Exam/ExamMarkCreateUseCase";
+import { ExamMarkMongoRepository } from "../../infrastructure/repositories/ExamRepo/ExamMarkMongoRepo";
+import { ExamMarkManagementController } from "../http/controllers/ExamManagement/ExamMarkManagementController";
+import { GetStudentsByExamUseCase } from "../../applications/useCases/Exam/exammarkviewgetusecase";
+import { ExamFindClassBase } from "../../applications/useCases/Exam/ExamFindClassBaseUseCase";
 
 
 
@@ -78,10 +79,23 @@ const teacherrepo = new MongoTeacher()
 const examcreate = new ExamCreateUseCase(examrepo,classrepo,teacherrepo)
 const updateexam = new ExamUpdateTeacherUseCase(examrepo,teacherrepo)
 const findall = new GetTeacherExamsUseCase(examrepo)
+
+
+const exammarkrepo = new ExamMarkMongoRepository()
+
+const exammarkcreate = new ExamMarkCreateUseCase(exammarkrepo,studentrepo,examrepo)
+const studentgetrepo = new GetStudentsByExamUseCase(examrepo,studentrepo,exammarkrepo)
+
+const exammarkcontroller = new ExamMarkManagementController(exammarkcreate,studentgetrepo)
+const examfindclassbase = new ExamFindClassBase(examrepo)
+
+
 const exammanagementcontroller = new ExamManagementController(
   examcreate,
   updateexam,
-  findall
+  findall,
+  examfindclassbase,
+ 
 )
 
 
@@ -150,8 +164,40 @@ Teacherrouter.put('/exam/update/:id',
   authMiddleware,
   (req,res)=>exammanagementcontroller.UpdateExam(req as AuthRequest,res)
 )
-Teacherrouter.get("/exams", authMiddleware, (req, res) =>
+
+
+Teacherrouter.get("/exams",
+   authMiddleware, (req, res) =>
   exammanagementcontroller.getTeacherExams(req as AuthRequest, res)
 );
+
+Teacherrouter.post('/exammark/create',
+  authMiddleware,
+  (req,res)=>exammarkcontroller.CreateExamMark(req as AuthRequest,res)
+)
+
+
+
+Teacherrouter.get(
+  "/exam/:examId/students",
+  authMiddleware,
+  (req, res) =>exammarkcontroller.getStudentsByExam(req as AuthRequest, res)
+);
+
+Teacherrouter.get(
+  "/class/:classId/exams",
+  authMiddleware,
+  (req, res) =>
+    exammanagementcontroller.FindExamClassBase(req as AuthRequest, res)
+);
+
+
+Teacherrouter.get(
+  "/class/:examId/results",
+  authMiddleware,
+  (req, res) =>
+    exammarkcontroller.getStudentsByExam(req as AuthRequest, res)
+);
+
 
 export default Teacherrouter;

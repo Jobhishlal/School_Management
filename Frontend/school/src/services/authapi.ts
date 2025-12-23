@@ -11,7 +11,7 @@ import type{ CreateExamDTO } from "../types/ExamCreateDTO";
 import type{ UpdateExamDTO } from "../types/UpdateExam";
 import { da } from "zod/v4/locales";
 import type{ ExamEntity } from "../types/ExamEntity";
-
+import type{ CreateExamMarkRequestDTO } from "../types/CreateExamMarkDto";
 
 export const GetSubAdmins = async () => {
   const res = await api.get(API_ROUTES.ADMIN.GET_SUBADMINS);
@@ -160,6 +160,7 @@ export const GetAllParents = async()=>{
   const res = await api.get(API_ROUTES.PARENTS.LIST_PARENTS)
   return res.data
 }
+
 
 export const createParent = async (parentData: {
   name: string;
@@ -377,7 +378,7 @@ export const UpdateAdminProfile = async (
   formData.append("dateOfBirth", dateOfBirth);
 
   if (addressId) formData.append("addressId", addressId);
-  if (password) formData.append("password", password); // only append if exists
+  if (password) formData.append("password", password); 
 
   documents?.forEach(file => formData.append("documents", file));
   photo?.forEach(file => formData.append("photo", file));
@@ -747,3 +748,37 @@ export const GetTeacherExams = async (): Promise<ExamEntity[]> => {
   const res = await api.get("/teacher/exams");
   return res.data.data; 
 };
+
+
+export const StudentListoutexam = async()=>{
+  const res = await api.get('/student/exam/view-exam-list')
+  return res.data
+}
+
+
+export const ExamMarkcreate = async(data:CreateExamMarkRequestDTO)=>{
+  console.log("reached here",data)
+  const res = await api.post('/teacher/exammark/create',data)
+  return res.data
+}
+
+
+
+export const getStudentsByExam = async (examId: string) => {
+  const res = await api.get(`/teacher/exam/${examId}/students`);
+  return res.data.data
+};
+
+
+export const FindClassBaseFindExam = async (classId: string) => {
+  console.log("reached here")
+  const res = await api.get(`/teacher/class/${classId}/exams`);
+  return res.data; 
+};
+
+export const getClassExamResults = async (examId: string) => {
+  console.log("get class detals",examId)
+  const res = await api.get(`/teacher/class/${examId}/results`);
+  return res.data.data;
+};
+

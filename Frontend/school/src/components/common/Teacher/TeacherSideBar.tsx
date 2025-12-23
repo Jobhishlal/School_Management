@@ -39,7 +39,7 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
   const menuItems = [
-    { icon: LayoutDashboard, text: "Dashboard", path: "/teacher/dashboard" },
+    { icon: LayoutDashboard, text: "Dashboard", path:"/teacher/exam-mark" },
     { icon: Users, text: "My Classes", path: "/teacher/classes" },
     { icon: Calendar, text: "Attendance", path:"/teacher/attandance" },
     { icon: FileText, text: "Assignments", path: "/teacher/assignments" },
@@ -51,7 +51,7 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
     { icon: Settings, text: "Settings", path: "/teacher/settings" },
   ];
 
-  // Theme-based styles
+
   const sidebarBg = isDark ? "bg-[#121A21]" : "bg-[#fafbfc]";
   const headerBg = isDark ? "bg-[#121A21]" : "bg-white";
   const headerBorder = isDark ? "border-slate-700/30" : "border-slate-200/50";

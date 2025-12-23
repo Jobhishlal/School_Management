@@ -159,7 +159,9 @@ import CreateAnnouncement from "./pages/admin/Announcement/Announcement";
 import AttendanceCreatePage from "./pages/Teacher/AttendanceCreatePage";
 import ParentAttendance from "./pages/Parents/AttendanceViewPage";
 import CreateExam from "./pages/Teacher/Exam/CreateExam";
+import StudentExamList from "./pages/Student/StudentExamListPage";
 
+import TakeMarks from "./pages/Teacher/Exam/ExamMarkListOut";
 function ErrorFallback({ error }: { error: Error }) {
   return <div role="alert">Something went wrong: {error.message}</div>;
 }
@@ -208,6 +210,7 @@ function App() {
          <Route path="/student/profile" element={<StudentProfilePage />} />
          <Route path='/student/timetable-view' element={<StudentTimeTableView/>}/>
          <Route path='/student/assignment' element={<StudentAssignmentList/>}/>
+          <Route path='/student/exam-list' element={<StudentExamList/>}/>
 
 
 
@@ -222,6 +225,9 @@ function App() {
           <Route path="/teacher/assignments" element={<AssignmentManage/>}/>
             <Route path="/teacher/attandance" element={<AttendanceCreatePage/>}/>
              <Route path="/teacher/exam-management" element={<CreateExam/>}/>
+            
+
+            
 
           </Route>
 

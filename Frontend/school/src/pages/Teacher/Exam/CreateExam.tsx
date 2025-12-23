@@ -6,7 +6,8 @@ import {
   GetAllClass,
   GetAllteacher,
   updateExam,
-  GetTeacherExams,
+  GetTeacherExams
+  
 } from "../../../services/authapi";
 import { getDecodedToken } from "../../../utils/DecodeToken";
 import { useTheme } from "../../../components/layout/ThemeContext";
@@ -14,7 +15,8 @@ import { showToast } from "../../../utils/toast";
 import { Modal } from "../../../components/common/Modal";
 import { Plus, Edit, Calendar, Clock, BookOpen, FileText } from "lucide-react";
 import { Pagination } from "../../../components/common/Pagination";
-
+import TakeMarks from "./ExamMarkListOut";
+import ClassWiseExamList from "./ClassWiseWIthExamResult";
 const generateExamId = (): string => {
   const prefix = "EX";
   const timestamp = Date.now();
@@ -40,7 +42,7 @@ interface Teacher {
   name: string;
   Subject?: Subject[];
 }
-
+ 
 interface ExamEntity {
   id: string;
   examId: string;
@@ -56,7 +58,7 @@ interface ExamEntity {
   startTime: string;
   endTime: string;
   maxMarks: number;
-  description: string;
+  description?: string;
   status: string;
 }
 
@@ -74,6 +76,11 @@ const ExamForm: React.FC = () => {
   const [editingExam, setEditingExam] = useState<UpdateExamDTO | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 const [examsPerPage] = useState(5); 
+const [selectedExam, setSelectedExam] = useState<string | null>(null);
+
+const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
+ const [viewMode, setViewMode] = useState<"NONE" | "TAKE_MARKS" | "CLASS_RESULT">("NONE");
+
 
 
   const [form, setForm] = useState<CreateExamDTO | UpdateExamDTO>({
@@ -118,6 +125,13 @@ const [examsPerPage] = useState(5);
 
     fetchData();
   }, [teacherId]);
+
+const handleTakeMarks = (exam: ExamEntity) => {
+  setSelectedExam(exam.id);
+  setSelectedClassId(exam.classId);
+  setViewMode("TAKE_MARKS");
+};
+
 
   const handleClassChange = (classId: string) => {
     const cls = classes.find((c) => c._id === classId);
@@ -241,6 +255,7 @@ const totalPages = Math.ceil(exams.length / examsPerPage);
   }
 
   return (
+  
     <div className={`min-h-screen p-6 ${isDark ? "bg-[#121A21] text-white" : "bg-gray-50"}`}>
       <div className="max-w-7xl mx-auto space-y-6">
         
@@ -346,19 +361,51 @@ const totalPages = Math.ceil(exams.length / examsPerPage);
                             {exam.status || "Scheduled"}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-center">
-                          <button
-                            onClick={() => handleEditExam(exam)}
-                            className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                              isDark
-                                ? "bg-blue-600 hover:bg-blue-700 text-white"
-                                : "bg-blue-500 hover:bg-blue-600 text-white"
-                            }`}
-                          >
-                            <Edit className="w-4 h-4" />
-                            Edit
-                          </button>
-                        </td>
+   <td className="px-4 py-3 text-center flex justify-center gap-2">
+
+
+         <button
+           onClick={() => handleEditExam(exam)}
+           className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium ${
+      isDark
+        ? "bg-blue-600 hover:bg-blue-700 text-white"
+        : "bg-blue-500 hover:bg-blue-600 text-white"
+    }`}
+  >
+    <Edit className="w-4 h-4" />
+    Edit
+  </button>
+
+
+  <button
+    onClick={() => handleTakeMarks(exam)}
+    className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium ${
+      isDark
+        ? "bg-green-600 hover:bg-green-700 text-white"
+        : "bg-green-500 hover:bg-green-600 text-white"
+    }`}
+  >
+    Take Marks
+  </button>
+
+       <button
+  onClick={() => {
+    setSelectedExam(exam.id);    
+    setViewMode("CLASS_RESULT");
+  }}
+  className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium ${
+    isDark
+      ? "bg-purple-600 hover:bg-purple-700 text-white"
+      : "bg-purple-500 hover:bg-purple-600 text-white"
+  }`}
+>
+  View Results
+</button>
+
+
+         </td>
+
+
                       </tr>
                     ))}
                   </tbody>
@@ -584,8 +631,28 @@ const totalPages = Math.ceil(exams.length / examsPerPage);
             </div>
         </Modal>
       </div>
+    {selectedExam && selectedClassId && (
+  <TakeMarks
+    examId={selectedExam}
+    classId={selectedClassId}
+    onClose={() => {
+      setSelectedExam(null);
+      setSelectedClassId(null);
+    }}
+  />
+)}
+{viewMode === "CLASS_RESULT" && selectedExam && (
+  <ClassWiseExamList examId={selectedExam}/>
+)}
+
+  
+     
     </div>
+    
+  
   );
 };
 
 export default ExamForm;
+
+

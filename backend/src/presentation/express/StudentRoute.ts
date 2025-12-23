@@ -18,6 +18,26 @@ import { AnnouncementMongo } from "../../infrastructure/repositories/Announcemen
 import { ClassBaseFindAnnouncementUseCase } from "../../applications/useCases/Announcement/AnnouncementFindClassBase";
 import { AnnouncementReadController } from "../http/controllers/Student/AnnouncementController";
 
+
+
+
+///// Exam list
+
+import { ExamMongoRepo } from "../../infrastructure/repositories/ExamRepo/ExamMongoRepo";
+import { Examclassbaseviewusecase } from "../../applications/useCases/Exam/Examclassbaseviewpage";
+import { StudentviewExamController } from "../http/controllers/Student/StudentExamController";
+
+import { GetStudentExamResultsUseCase } from "../../applications/useCases/Exam/GetStudentExamResultsUseCase";
+import { ExamMarkMongoRepository } from "../../infrastructure/repositories/ExamRepo/ExamMarkMongoRepo";
+
+
+
+
+
+
+
+
+
 const Studentrouter = Router();
 
 const studentmongo = new MongoStudentRepo();
@@ -40,6 +60,16 @@ const findannouncementusecase = new ClassBaseFindAnnouncementUseCase(announcemen
 const Announcementreadcontroller = new AnnouncementReadController(
   findannouncementusecase,
   studentgetprofile
+)
+
+
+const mongorepo = new ExamMongoRepo()
+const examlistusecase = new Examclassbaseviewusecase(mongorepo,studentmongo)
+const exammark = new ExamMarkMongoRepository()
+const examresultview = new GetStudentExamResultsUseCase(mongorepo,exammark)
+const studentexamlistcontroller = new StudentviewExamController(
+  examlistusecase,
+  examresultview
 )
 
 
@@ -76,5 +106,10 @@ Studentrouter.get('/announcement-find',
   
   Announcementreadcontroller.Findannouncement(req as AuthRequest, res)
 });
+
+Studentrouter.get('/exam/view-exam-list',
+  authMiddleware,
+  (req,res)=>studentexamlistcontroller.classbaseexamviewpage(req as AuthRequest,res)
+)
 
 export default Studentrouter;
