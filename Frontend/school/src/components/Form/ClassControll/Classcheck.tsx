@@ -1,6 +1,3 @@
-
-
-import { useEffect } from "react";
 import { SelectInput } from "../SelectInput";
 
 interface ClassOption {
@@ -8,11 +5,11 @@ interface ClassOption {
   className: string;
   division: string;
 }
-import { getclassDivision } from "../../../services/authapi";
+// import { getclassDivision } from "../../../services/authapi";
 
 interface ClassInfoProps {
-  mode?: "selectClassId" | "newClass"; 
-  classOptions?: ClassOption[];       
+  mode?: "selectClassId" | "newClass";
+  classOptions?: ClassOption[];
   classId?: string;
   setClassId?: React.Dispatch<React.SetStateAction<string>>;
   className?: "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10";
@@ -35,20 +32,6 @@ export const ClassInfo: React.FC<ClassInfoProps> = ({
   setDivision,
   isDark
 }) => {
-  useEffect(() => {
-    if (mode === "newClass" && className && setDivision) {
-      const fetchDivision = async () => {
-        try {
-          const res = await getclassDivision(className);
-          const nextDivision = res.data?.data?.division; 
-          if (nextDivision) setDivision(nextDivision);
-        } catch (error) {
-          console.error("Error fetching next division:", error);
-        }
-      };
-      fetchDivision();
-    }
-  }, [mode, className, setDivision]);
 
   if (mode === "selectClassId") {
     return (
@@ -57,9 +40,8 @@ export const ClassInfo: React.FC<ClassInfoProps> = ({
         <select
           value={classId}
           onChange={(e) => setClassId?.(e.target.value)}
-          className={`border px-3 py-2 rounded ${
-            isDark ? "bg-slate-800 text-white" : "bg-white text-black"
-          }`}
+          className={`border px-3 py-2 rounded ${isDark ? "bg-slate-800 text-white" : "bg-white text-black"
+            }`}
         >
           <option value="">Select Class</option>
           {classOptions.map((cls) => (
@@ -74,15 +56,31 @@ export const ClassInfo: React.FC<ClassInfoProps> = ({
 
   // default: new class creation
   return (
-    <div>
+    <div className="space-y-4">
       <h3 className="font-semibold text-lg pt-4">Class Info</h3>
       <SelectInput
         label="Class Name"
         value={className as string}
-        onChange={setClassName}
-        options={["1","2","3","4","5","6","7","8","9","10"]}
+        onChange={(val) => setClassName?.(val as any)}
+        options={["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]}
         isDark={isDark}
       />
+      <div className="flex flex-col gap-2">
+        <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-gray-700"}`}>
+          Division
+        </label>
+        <input
+          type="text"
+          value={division as string}
+          onChange={(e) => setDivision?.(e.target.value as any)}
+          placeholder="e.g. A, B, C, Red..."
+          className={`w-full px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm
+            ${isDark
+              ? "bg-slate-700 border-slate-600 text-slate-100"
+              : "bg-white border-gray-300 text-gray-800"
+            }`}
+        />
+      </div>
     </div>
   );
 };

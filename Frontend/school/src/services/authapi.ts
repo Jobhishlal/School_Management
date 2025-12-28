@@ -4,22 +4,22 @@ import { type CreateTimeTableDTO } from "../types/ITimetable";
 import { type CreateAssignmentDTO } from "../types/AssignmentCreate";
 import type { CreateFeeStructureDTO } from "../types/CreateFeeStructureDTO ";
 import type { CreateFeeTypePayload } from "../types/CreateFeeTypePayload";
-import type{ ExpenseFormDTO } from "../types/ExpenseCreatedto";
-import type{ CreateAnnouncementDTO } from "../types/CreateAnnouncementDTO";
-import type{ TakeAttendancePayload } from "../types/AttendanceType";
-import type{ CreateExamDTO } from "../types/ExamCreateDTO";
-import type{ UpdateExamDTO } from "../types/UpdateExam";
+import type { ExpenseFormDTO } from "../types/ExpenseCreatedto";
+import type { CreateAnnouncementDTO } from "../types/CreateAnnouncementDTO";
+import type { TakeAttendancePayload } from "../types/AttendanceType";
+import type { CreateExamDTO } from "../types/ExamCreateDTO";
+import type { UpdateExamDTO } from "../types/UpdateExam";
 import { da } from "zod/v4/locales";
-import type{ ExamEntity } from "../types/ExamEntity";
-import type{ CreateExamMarkRequestDTO } from "../types/CreateExamMarkDto";
+import type { ExamEntity } from "../types/ExamEntity";
+import type { CreateExamMarkRequestDTO } from "../types/CreateExamMarkDto";
 
 export const GetSubAdmins = async () => {
   const res = await api.get(API_ROUTES.ADMIN.GET_SUBADMINS);
   return res.data;
 };
 
-export const SubAdminCreate = async(name:string,email:string,phone:string,role:string)=>{
-  const res = await api.post(API_ROUTES.ADMIN.CREATE_SUBADMIN,{name,email,phone,role})
+export const SubAdminCreate = async (name: string, email: string, phone: string, role: string) => {
+  const res = await api.post(API_ROUTES.ADMIN.CREATE_SUBADMIN, { name, email, phone, role })
   return res.data
 }
 
@@ -35,7 +35,7 @@ export const SubAdminBlock = async (id: string, blocked: boolean) => {
   return res.data;
 };
 
-export const GetAllteacher = async ()=>{
+export const GetAllteacher = async () => {
   const res = await api.get(API_ROUTES.ADMIN.TEACHER)
   return res.data
 }
@@ -63,12 +63,12 @@ export const CreateTeachers = async (
   data.append("gender", gender);
   data.append("role", role);
   data.append("blocked", blocked.toString());
-  data.append("department", department); 
+  data.append("department", department);
 
   if (password) data.append("Password", password);
 
   if (subjects && subjects.length > 0) {
-    data.append("subjects", JSON.stringify(subjects)); 
+    data.append("subjects", JSON.stringify(subjects));
   }
 
   if (files) {
@@ -116,8 +116,8 @@ export const UpdateTeacher = async (
 };
 
 
-export const BlockTeacher = async(id:string,blocked:boolean)=>{
-  const res = await api.put(API_ROUTES.ADMIN.BLOCK_TEACHER(id),{blocked})
+export const BlockTeacher = async (id: string, blocked: boolean) => {
+  const res = await api.put(API_ROUTES.ADMIN.BLOCK_TEACHER(id), { blocked })
   return res.data
 }
 
@@ -131,7 +131,7 @@ export const CreateStudents = async (
   addressId: string,
   classId: string,
   files: File[],
-  
+
 ) => {
   const data = new FormData();
 
@@ -153,10 +153,10 @@ export const CreateStudents = async (
   });
 
 
-  return res.data; 
+  return res.data;
 };
 
-export const GetAllParents = async()=>{
+export const GetAllParents = async () => {
   const res = await api.get(API_ROUTES.PARENTS.LIST_PARENTS)
   return res.data
 }
@@ -174,7 +174,7 @@ export const createParent = async (parentData: {
 };
 
 
-export const GetAllClass = async()=>{
+export const GetAllClass = async () => {
   const res = await api.get(API_ROUTES.CLASS.LIST_CLASS)
   return res.data
 }
@@ -189,7 +189,7 @@ export const CreateClass = async (classData: {
   return res.data;
 };
 
-export const GetAllAddress=async()=>{
+export const GetAllAddress = async () => {
   const res = await api.get(API_ROUTES.ADDRRESS.LIST_ADDRESS)
   return res.data
 }
@@ -204,20 +204,20 @@ export const CreateAddress = async (addressData: {
 };
 
 
-export const GetAllStudents = async()=>{
+export const GetAllStudents = async () => {
   const res = await api.get(API_ROUTES.STUDENT.GETSTUDNET)
   return res.data
 }
 
 
-export const blockStudent = async(id:string,blocked:boolean)=>{
-  const res = await api.put(API_ROUTES.STUDENT.STUDENTBLOCK(id),{blocked})
+export const blockStudent = async (id: string, blocked: boolean) => {
+  const res = await api.put(API_ROUTES.STUDENT.STUDENTBLOCK(id), { blocked })
   return res.data
 }
 
 
 export const UpdateStudent = async (
-  id:string,
+  id: string,
   fullName: string,
   dateOfBirth: Date,
   gender: "Male" | "Female" | "Other",
@@ -225,7 +225,7 @@ export const UpdateStudent = async (
   addressId: string,
   classId: string,
   files: File[],
-  
+
 ) => {
   const data = new FormData();
 
@@ -247,7 +247,7 @@ export const UpdateStudent = async (
   });
 
 
-  return res.data; 
+  return res.data;
 };
 export const UpdateParents = async (
   id: string,
@@ -259,7 +259,7 @@ export const UpdateParents = async (
 ) => {
   return await api.put(API_ROUTES.PARENTS.UPDATE_PARENTS(id), {
     name,
-    
+
     whatsappNumber,
     email,
     relationship
@@ -286,7 +286,7 @@ export const UpdateAddress = async (
   pincode: string
 ) => {
   const res = await api.put(API_ROUTES.ADDRRESS.UPDATE_ADDRESS(id), { street, city, state, pincode });
-  return res.data; 
+  return res.data;
 };
 
 export const CreateInstituteProfile = async (
@@ -319,7 +319,7 @@ export const CreateInstituteProfile = async (
 
 export const getInstituteProfile = async () => {
   const res = await api.get(API_ROUTES.INSTITUTE.GETINSTITUTE);
-  return res.data; 
+  return res.data;
 };
 
 export const UpdateInstituteProfile = async (
@@ -352,7 +352,7 @@ export const UpdateInstituteProfile = async (
 };
 
 
-export const Getadminprofilemanagement = async()=>{
+export const Getadminprofilemanagement = async () => {
   const res = await api.get(API_ROUTES.ADMIN.ADMIN_PROFILE)
   return res.data
 }
@@ -378,7 +378,7 @@ export const UpdateAdminProfile = async (
   formData.append("dateOfBirth", dateOfBirth);
 
   if (addressId) formData.append("addressId", addressId);
-  if (password) formData.append("password", password); 
+  if (password) formData.append("password", password);
 
   documents?.forEach(file => formData.append("documents", file));
   photo?.forEach(file => formData.append("photo", file));
@@ -392,15 +392,15 @@ export const UpdateAdminProfile = async (
 
 
 
-export const RequestpasswordOtp = async (email:string)=>{
-const res = await api.post(API_ROUTES.ADMIN.ADMIN_PASSWORD_REQUEST,{email})
-return res.data
+export const RequestpasswordOtp = async (email: string) => {
+  const res = await api.post(API_ROUTES.ADMIN.ADMIN_PASSWORD_REQUEST, { email })
+  return res.data
 }
 
 export const verifyPasswordOtp = async (otpToken: string, otp: string) => {
- 
-  const res = await api.post(API_ROUTES.ADMIN.ADMIN_VERIFED_PASSWORD,{otpToken,otp})
-  return res.data; 
+
+  const res = await api.post(API_ROUTES.ADMIN.ADMIN_VERIFED_PASSWORD, { otpToken, otp })
+  return res.data;
 };
 
 
@@ -409,24 +409,24 @@ export const updatePassword = async (id: string, newPassword: string) => {
   return res.data;
 };
 
-export const getclassDivision = async(className:string)=>{
+export const getclassDivision = async (className: string) => {
   const res = await api.get(`/admin/class/next-division/${className}`)
   return res
 }
 
 
 
-export const classdivisonaccess = async()=>{
+export const classdivisonaccess = async () => {
   console.log("Get this page")
   const res = await api.get(API_ROUTES.ADMIN.Admin_Class_Division_Manage)
   return res
 }
-interface AssignClassTeacher{
-  classId:string;
-  teacherId:string;
+interface AssignClassTeacher {
+  classId: string;
+  teacherId: string;
 }
 export const AssignClassTeacherOnClass = async (payload: AssignClassTeacher) => {
-console.log("here reached")
+  console.log("here reached")
   const res = await api.post("/admin/class-assign-teacher", payload);
 
 
@@ -435,7 +435,7 @@ console.log("here reached")
 
 
 export const GetAllTeachersClassassign = async (classId: string) => {
-console.log("reached")
+  console.log("reached")
   const res = await api.get(`/admin/class-teacher/${classId}`);
 
   return res.data;
@@ -444,21 +444,21 @@ console.log("reached")
 
 export const getTeachersList = async () => {
   const res = await api.get("/admin/teacher-list");
-  if(res.data.success) {
-    return res.data.data; 
+  if (res.data.success) {
+    return res.data.data;
   }
   return [];
 };
 
 
-export const CreateTimeTable = async(dto:CreateTimeTableDTO)=>{
-  const res = await api.post(API_ROUTES.ADMIN.CREATE_TIMETABLE,dto)
+export const CreateTimeTable = async (dto: CreateTimeTableDTO) => {
+  const res = await api.post(API_ROUTES.ADMIN.CREATE_TIMETABLE, dto)
   return res.data
 }
 
 
-export const GetTimeTable = async(classId:string,division:string)=>{
- const res = await api.get(`/admin/timetable-view/${classId}/${division}`);
+export const GetTimeTable = async (classId: string, division: string) => {
+  const res = await api.get(`/admin/timetable-view/${classId}/${division}`);
   return res.data
 }
 
@@ -469,8 +469,8 @@ export const updateTimeTable = async (dto: CreateTimeTableDTO) => {
 
 
 
-export const deletetimetable=async(id?:string)=>{
-  const res = await api.delete( `/admin/delete-time-table/${id}`)
+export const deletetimetable = async (id?: string) => {
+  const res = await api.delete(`/admin/delete-time-table/${id}`)
   return res.data
 }
 
@@ -504,12 +504,12 @@ export const createAssignment = async (data: CreateAssignmentDTO, files: File[])
 
 
 
-export const GetTeachertimetableList = async()=>{
+export const GetTeachertimetableList = async () => {
   const token = localStorage.getItem("token");
   const res = await api.get("/teacher/teacher-info", {
     headers: { Authorization: `Bearer ${token}` },
   });
-  return res.data.data; 
+  return res.data.data;
 }
 
 
@@ -522,8 +522,8 @@ export const UpdateExistedAssignment = async (id: string, formData: FormData) =>
 };
 
 
-export const ListoutExistedAssignment=async()=>{
-    
+export const ListoutExistedAssignment = async () => {
+
   const res = await api.get(`/teacher/TeachAssignmentList`)
 
   return res.data
@@ -532,19 +532,19 @@ export const ListoutExistedAssignment=async()=>{
 }
 
 
-export const createFinanceStructure = async (payload:CreateFeeStructureDTO) => {
+export const createFinanceStructure = async (payload: CreateFeeStructureDTO) => {
   const res = await api.post("/admin/create-finance", payload);
   return res.data;
 };
 
 
-export const createfinancetype = async(paylaod:CreateFeeTypePayload)=>{
-  const res = await api.post('/admin/create-finance-type',paylaod)
+export const createfinancetype = async (paylaod: CreateFeeTypePayload) => {
+  const res = await api.post('/admin/create-finance-type', paylaod)
   return res.data
 }
 
 
-export const GetAllFeeType = async()=>{
+export const GetAllFeeType = async () => {
   const res = await api.get('/admin/get-allfee-type')
   return res.data
 }
@@ -560,16 +560,16 @@ export const CreatePayment = async (data: {
   studentId: string;
   feeRecordId: string;
   method?: string;
- 
+
 }) => {
   const res = await api.post("/parents/create-payment", data);
   return res;
 };
 
 
-export const VerifyPeymentStatus = async (id:string,status:string)=>{
-   const res = await api.put(`/parents/update-status/${id}`,{status})
-   return res
+export const VerifyPeymentStatus = async (id: string, status: string) => {
+  const res = await api.put(`/parents/update-status/${id}`, { status })
+  return res
 }
 
 export const ChangepeymentstatususingfeeId = async (feeId: string, paymentData: {
@@ -586,14 +586,14 @@ export const ChangepeymentstatususingfeeId = async (feeId: string, paymentData: 
 
 export const InvoiceDownload = async (paymentId: string) => {
   const res = await api.get(`/parents/invoice/${paymentId}`, {
-    responseType: "blob"  
+    responseType: "blob"
   });
   return res;
 }
 
 
-export const ExpenseCreate = async(data:ExpenseFormDTO)=>{
-  const res = await api.post('/admin/crete-expense',data)
+export const ExpenseCreate = async (data: ExpenseFormDTO) => {
+  const res = await api.post('/admin/crete-expense', data)
   return res
 }
 
@@ -616,13 +616,13 @@ export const ExpanceApproval = async (expenseId: string, action: "APPROVED" | "R
 };
 
 
-export const Pendingstatuslist=async()=>{
+export const Pendingstatuslist = async () => {
   const res = await api.get('/admin/expense/pending')
   return res.data
 }
 
 
-export const ListOutFullExpense = async()=>{
+export const ListOutFullExpense = async () => {
   const res = await api.get('/admin/expense/fulllist')
   return res.data
 }
@@ -636,7 +636,7 @@ export const PendingExpenseUpdate = async (
 };
 
 
-export const StudentFinanceCompleteDetails = async(classId:string)=>{
+export const StudentFinanceCompleteDetails = async (classId: string) => {
   const res = await api.get(`/admin/peyment/class/${classId}`)
   return res.data
 }
@@ -651,14 +651,14 @@ export const SearchPaymentHistoryNamebase = async (studentName: string) => {
 
 
 
-export const FinanceReportRevenue = async(startDate:string,endDate:string)=>{
-  const res  = await api.get('/admin/financereport',{
-    params:{startDate,endDate}
+export const FinanceReportRevenue = async (startDate: string, endDate: string) => {
+  const res = await api.get('/admin/financereport', {
+    params: { startDate, endDate }
   })
   return res.data.data
 }
 
-export const ExpenseReport = async()=>{
+export const ExpenseReport = async () => {
   const res = await api.get('/admin/expense-report')
   return res.data.data
 }
@@ -691,16 +691,16 @@ export const AnnouncementFetch = async (
 };
 
 
-export const UpdateAnnouncement = async(
-  id:string,
-  data:FormData
-)=>{
-  const res = await api.put(`/admin/update-announcement/${id}`,data)
+export const UpdateAnnouncement = async (
+  id: string,
+  data: FormData
+) => {
+  const res = await api.put(`/admin/update-announcement/${id}`, data)
   return res.data
 }
 
 
-export const findallAnnouncement = async()=>{
+export const findallAnnouncement = async () => {
   const res = await api.get('/admin/announcement/findall')
   return res.data
 }
@@ -708,63 +708,65 @@ export const findallAnnouncement = async()=>{
 
 export const GetStudentsByTeacher = async () => {
   const res = await api.get("/teacher/attendance/students");
-  return res.data; 
+  return res.data;
 
 }
-export const AttendanceCreate = async(data:TakeAttendancePayload)=>{
-  const res = await api.post('/teacher/attendance/create',data)
+export const AttendanceCreate = async (data: TakeAttendancePayload) => {
+  const res = await api.post('/teacher/attendance/create', data)
   return res.data
 }
 
 export const fetchTodayAttendanceSummary = async (classId: string) => {
   const res = await api.get(`/teacher/attendance/summary/${classId}`);
-  
-  
+
+
   return res.data?.attendance?.attendance ?? [];
 };
 
 
 export const ParentAttendanceList = async (parentId: string) => {
   const res = await api.get(`/parents/parent/attendance/today?parentId=${parentId}`);
-  return res.data?? [];
+  return res.data ?? [];
 };
 
 
 export const ExamCreate = async (data: CreateExamDTO) => {
-  console.log("formdata",data)
+  console.log("formdata", data)
   const res = await api.post("/teacher/exam/create", data);
   return res.data;
 };
 
 
-export const updateExam = async (id:string,data:UpdateExamDTO)=>{
-  console.log(id,data)
+export const updateExam = async (id: string, data: UpdateExamDTO) => {
+  console.log(id, data)
 
-  const res = await api.put(`/teacher/exam/update/${id}`,data)
+  const res = await api.put(`/teacher/exam/update/${id}`, data)
   return res.data
 }
 
 export const GetTeacherExams = async (): Promise<ExamEntity[]> => {
+
   const res = await api.get("/teacher/exams");
-  return res.data.data; 
+  return res.data.data;
 };
 
 
-export const StudentListoutexam = async()=>{
+export const StudentListoutexam = async () => {
   const res = await api.get('/student/exam/view-exam-list')
   return res.data
 }
 
 
-export const ExamMarkcreate = async(data:CreateExamMarkRequestDTO)=>{
-  console.log("reached here",data)
-  const res = await api.post('/teacher/exammark/create',data)
+export const ExamMarkcreate = async (data: CreateExamMarkRequestDTO) => {
+  console.log("reached here", data)
+  const res = await api.post('/teacher/exammark/create', data)
   return res.data
 }
 
 
 
 export const getStudentsByExam = async (examId: string) => {
+  console.log("djanfjkabjkfa bd", examId)
   const res = await api.get(`/teacher/exam/${examId}/students`);
   return res.data.data
 };
@@ -773,12 +775,32 @@ export const getStudentsByExam = async (examId: string) => {
 export const FindClassBaseFindExam = async (classId: string) => {
   console.log("reached here")
   const res = await api.get(`/teacher/class/${classId}/exams`);
-  return res.data; 
+  return res.data;
 };
 
 export const getClassExamResults = async (examId: string) => {
-  console.log("get class detals",examId)
+  console.log("get class detals", examId)
   const res = await api.get(`/teacher/class/${examId}/results`);
   return res.data.data;
 };
 
+
+export const StudentExamResultView = async (classId: string) => {
+  const res = await api.post("/student/exam/view-results", { classId });
+  return res.data;
+};
+
+
+export const assignStudentToDivision = async (payload: {
+  studentId: string | string[];
+  classId: string;
+}) => {
+  const res = await api.post("/admin/assign-student-class", payload);
+  return res.data;
+};
+
+
+export const deleteClassOrDivision = async (id: string) => {
+  const res = await api.put(`/admin/delete-classordivision/${id}`);
+  return res.data;
+};

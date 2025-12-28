@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { AttendanceCreate } from "../../services/authapi";
 import { showToast } from "../../utils/toast";
 
-type AttendanceStatus = "Present" | "Absent";
+type AttendanceStatus = "Present" | "Absent"|"Leave";
 
 interface Student {
   id: string;
@@ -105,6 +105,15 @@ const TakeAttendanceForm: React.FC<Props> = ({
                   markAttendance(student.id, "Absent")
                 }
               /> Absent
+            </label>
+            <label>
+              <input
+                type="radio"
+                name={student.id}
+                onChange={() =>
+                  markAttendance(student.id, "Leave")
+                }
+              /> Leave
             </label>
           </div>
         </div>

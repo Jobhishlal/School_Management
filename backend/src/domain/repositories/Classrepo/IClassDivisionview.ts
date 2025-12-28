@@ -1,6 +1,6 @@
 export interface IClassDivisionRepository {
-  
- getStudentsByClassAndDivision(
+
+  getStudentsByClassAndDivision(
     className?: string,
     division?: string
   ): Promise<
@@ -22,8 +22,11 @@ export interface IClassDivisionRepository {
   >;
 
 
-  AssignClassTeacher(classId: string, teacherId: string): Promise<boolean>;
+  AssignClassTeacher(
+    classId: string,
+    teacherId: string
+  ): Promise<{ success: boolean; type: "assigned" | "reassigned" }>;
   getClassTeacher(classId: string): Promise<{ teacherId: string; name: string } | null>;
-  getAllTeacher(): Promise<{ teacherId: string; name: string }[]>
+  getAllTeacher(): Promise<{ teacherId: string; name: string; subjects: { name: string }[] }[]>
 
 }

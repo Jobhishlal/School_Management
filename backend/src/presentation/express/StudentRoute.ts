@@ -66,7 +66,7 @@ const Announcementreadcontroller = new AnnouncementReadController(
 const mongorepo = new ExamMongoRepo()
 const examlistusecase = new Examclassbaseviewusecase(mongorepo,studentmongo)
 const exammark = new ExamMarkMongoRepository()
-const examresultview = new GetStudentExamResultsUseCase(mongorepo,exammark)
+const examresultview = new GetStudentExamResultsUseCase(mongorepo,exammark,studentmongo)
 const studentexamlistcontroller = new StudentviewExamController(
   examlistusecase,
   examresultview
@@ -111,5 +111,10 @@ Studentrouter.get('/exam/view-exam-list',
   authMiddleware,
   (req,res)=>studentexamlistcontroller.classbaseexamviewpage(req as AuthRequest,res)
 )
+
+Studentrouter.post('/exam/view-results',
+  authMiddleware,
+  (req,res) => studentexamlistcontroller.getStudentExamResults(req as AuthRequest, res)
+);
 
 export default Studentrouter;

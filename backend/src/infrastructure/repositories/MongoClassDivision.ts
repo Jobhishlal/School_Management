@@ -3,86 +3,86 @@ import { IClassDivisionRepository } from "../../domain/repositories/Classrepo/IC
 import { ClassModel } from "../database/models/ClassModel";
 import { TeacherModel } from "../database/models/Teachers";
 export class ClassDivisionRepository implements IClassDivisionRepository {
-async getStudentsByClassAndDivision(className?: string, division?: string) {
-  const students = await StudentModel.find()
-    .populate({
-      path: "classId",
-      match: {
-        ...(className ? { className } : {}),
-        ...(division ? { division } : {}),
-      },
-      select: "className division classTeacher",
-      populate: {
-        path: "classTeacher",
-        model: "Teacher", 
-        select: "name",   
-      },
-    })
-    .select("fullName studentId gender photos classId")
-    .lean();
+  async getStudentsByClassAndDivision(className?: string, division?: string) {
+ 
+    const classQuery: any = {};
+    if (className) classQuery.className = className;
+    if (division) classQuery.division = division;
+  
+    const allClasses = await ClassModel.find(classQuery)
+      .populate("classTeacher", "name")
+      .lean();
 
-  const filteredStudents = students.filter((s) => s.classId !== null);
-
-  const grouped: Record<string, any> = {};
-
-  for (const student of filteredStudents) {
-    const classInfo: any = student.classId;
-    if (!classInfo) continue;
-
-    const key = `${classInfo.className}-${classInfo.division}`;
-
-    if (!grouped[key]) {
-      grouped[key] = {
-        classId: classInfo._id,
-        className: classInfo.className,
-        division: classInfo.division,
-        students: [],
-        classTeacher: classInfo.classTeacher
-          ? {
-              teacherId: classInfo.classTeacher._id,
-              name:
-                classInfo.classTeacher.name ||
-                classInfo.classTeacher.fullName,
-            }
-          : null,
-      };
+    console.log(`[DEBUG] Fetched ${allClasses.length} classes from DB. Query:`, classQuery);
+    if (allClasses.length > 0) {
+      console.log("[DEBUG] First class sample:", allClasses[0]);
     }
 
-    grouped[key].students.push({
-      studentId: student.studentId,
-      fullName: student.fullName,
-      gender: student.gender,
-      photos: student.photos,
+    const students = await StudentModel.find({ classId: { $ne: null } })
+      .select("fullName studentId gender photos classId")
+      .lean();
+
+  
+    const studentsByClassId: Record<string, any[]> = {};
+
+    for (const student of students) {
+      const cId = (student.classId as any).toString();
+      if (!studentsByClassId[cId]) {
+        studentsByClassId[cId] = [];
+      }
+      studentsByClassId[cId].push({
+        studentId: student.studentId,
+        fullName: student.fullName,
+        gender: student.gender,
+        photos: student.photos,
+      });
+    }
+
+    const results = allClasses.map((cls) => {
+      const cId = cls._id.toString();
+      return {
+        classId: cId,
+        className: cls.className,
+        division: cls.division,
+        students: studentsByClassId[cId] || [], 
+        classTeacher: cls.classTeacher
+          ? {
+            teacherId: (cls.classTeacher as any)._id,
+            name: (cls.classTeacher as any).name,
+          }
+          : null,
+      };
     });
-  }
 
-  return Object.values(grouped);
-}
-
-
-  async AssignClassTeacher(classId: string, teacherId: string): Promise<boolean> {
-
-  const existingClass = await ClassModel.findById(classId);
-  if (!existingClass) {
-    throw new Error("Class not found");
-  }
-
-
-  if (existingClass.classTeacher) {
-    throw new Error("This class already has a teacher assigned");
+    return results;
   }
 
 
 
 
-  const updated = await ClassModel.findByIdAndUpdate(
-    classId,
-    { classTeacher: teacherId },
-    { new: true }
-  );
+  async AssignClassTeacher(classId: string, teacherId: string): Promise<{
+    success: boolean;
+    type: "assigned" | "reassigned";
+  }> {
+    const existingClass = await ClassModel.findById(classId);
 
-  return !!updated;
-}
+    if (!existingClass) {
+      throw new Error("Class not found");
+    }
+
+    const hadTeacher = !!existingClass.classTeacher;
+
+    await ClassModel.findByIdAndUpdate(
+      classId,
+      { classTeacher: teacherId },
+      { new: true }
+    );
+
+    return {
+      success: true,
+      type: hadTeacher ? "reassigned" : "assigned"
+    };
+  }
 
 
 
@@ -100,14 +100,15 @@ async getStudentsByClassAndDivision(className?: string, division?: string) {
     };
   }
 
-  async getAllTeacher(): Promise<{ teacherId: string; name: string }[]> {
-    return (await TeacherModel.find({}, "name").lean()).map((t) => ({
+  async getAllTeacher(): Promise<{ teacherId: string; name: string; subjects: { name: string }[] }[]> {
+    return (await TeacherModel.find({}, "name subjects").lean()).map((t) => ({
       teacherId: t._id.toString(),
       name: t.name,
+      subjects: t.subjects || []
     }));
   }
 }
 
-   
-   
+
+
 

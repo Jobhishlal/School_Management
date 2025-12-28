@@ -91,8 +91,8 @@ import { PendingStatusUpdateUseCase } from "../../applications/useCases/FeeStruc
 import { SearchStudentName } from "../../applications/useCases/FeeStructure/SearchPaymentHistory";
 import { ExpenseReportUseCase } from "../../applications/useCases/FeeStructure/FinanceReport/ExpenseGenerateReportUseCase";
 import { MongoExpenseReport } from "../../infrastructure/repositories/FeeManagement/FinanceReport/ExpenseReport";
-
-
+import { DivisionStudentUseCase } from "../../applications/useCases/Classdata/divisionStudentbaseUsecase";
+import { DeleteClassUseCase } from "../../applications/useCases/Classdata/deleteClassUseCase";
 
 
 
@@ -235,15 +235,19 @@ const AddressController = new AddressManagementController(
 );
 
 
+/// class base all functionality 
+
 const createClass = new CreateClassUseCase(classReop);
 const getlistclass = new GetAllClass(classReop);
 const classupdateusecase = new UpdateClassUseCase(classReop);
 const assignclass = new AssignClass(classReop);
+const deleteclassordivision = new DeleteClassUseCase(classReop)
 const ClassController = new ClassManagementController(
   createClass,
   getlistclass,
   classupdateusecase,
-  assignclass
+  assignclass,
+  deleteclassordivision
 );
 
 const instituterepo = new MongoInstituteProfileManage();
@@ -276,12 +280,14 @@ const classdivisionget = new ClassAndDivision(classdivisionrepo);
 const ClassTeacherAssign = new TeacherAssignClassUseCase(classdivisionrepo);
 const getAllTeachers = new GetAssignClassTeacher(classdivisionrepo);
 const getteacherdata = new GetAllTeachersInClass(classdivisionrepo);
+const divisionseparatemanually = new DivisionStudentUseCase(classReop)
 
 const classstudnetmanagecontroller = new AdminClassController(
   classdivisionget,
   ClassTeacherAssign,
   getteacherdata,
-  getAllTeachers
+  getAllTeachers,
+  divisionseparatemanually
 );
 
 const timetabledata = new MongoTimeTableCreate()
@@ -605,6 +611,14 @@ Adminrouter.get('/announcement/findall',(req,res)=>{
 })
 
 
+Adminrouter.post("/assign-student-class",(req,res)=>{
+  classstudnetmanagecontroller.StudentDivisionSepareate(req,res)
+})
+
+// class delete 
+Adminrouter.put('/delete-classordivision/:id',(req,res)=>{
+  ClassController.deleteClass(req,res)
+})
 
 
 export default Adminrouter;

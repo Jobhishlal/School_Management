@@ -3,9 +3,10 @@ import { IClassDivisionRepository } from "../../../domain/repositories/Classrepo
 
 
 export class ClassAndDivision implements IClassDivision {
-  constructor(private readonly classRepo: IClassDivisionRepository) {}
+  constructor(private readonly classRepo: IClassDivisionRepository) { }
   async execute(): Promise<Record<string, { classId: string; className: string; division: string; classTeacher?: { teacherId: string; name: string; } | null; students: { fullName: string; studentId: string; gender: string; photos: { url: string; filename: string; }[]; }[]; }>> {
-       const datacheck = await this.classRepo.getStudentsByClassAndDivision();
+    console.log(">>>>>>>> DEBUG: ClassAndDivision.execute EXECUTING <<<<<<<<");
+    const datacheck = await this.classRepo.getStudentsByClassAndDivision();
 
     const result: Record<string, any> = {};
 
@@ -20,19 +21,19 @@ export class ClassAndDivision implements IClassDivision {
           studentId: s.studentId,
           gender: s.gender,
         })),
-       
+
         classTeacher: cls.classTeacher
           ? {
-              teacherId: cls.classTeacher.teacherId,
-              name: cls.classTeacher.name,
-            }
+            teacherId: cls.classTeacher.teacherId,
+            name: cls.classTeacher.name,
+          }
           : null,
       };
     });
 
     return result;
   }
-  }
-  
+}
+
 
 

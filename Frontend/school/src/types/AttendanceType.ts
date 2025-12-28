@@ -1,6 +1,6 @@
 export interface AttendanceItemPayload {
   studentId: string;
-  status: "Present" | "Absent";
+  status: "Present" | "Absent"|"Leave";
   remarks?: string;
 }
 

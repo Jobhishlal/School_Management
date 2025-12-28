@@ -7,7 +7,7 @@ export class GetStudentsByExamUseCase {
     private examRepo: IExamRepository,
     private studentRepo: StudentDetails,
     private examMarkRepo: IExamMarkRepository
-  ) {}
+  ) { }
 
   async execute(teacherId: string, examId: string) {
 
@@ -21,20 +21,20 @@ export class GetStudentsByExamUseCase {
     const examMarks = await this.examMarkRepo.findClassResults(
       exam.classId.toString(),
       teacherId,
-      exam.id 
+      exam.id
     );
 
-   
+
     const results = students.map((student) => {
-       
+
       const mark = examMarks.find(
         (m) => m.studentId.toString() === student.id.toString()
       );
 
       return {
-        studentId: student.id,
+        _id: student.id, // Explicitly return as _id for frontend compatibility
+        studentId: student.studentId || "N/A", // Use studentId for the Roll No / Custom ID
         fullName: student.fullName,
-        rollNo: student.studentId || "N/A",
         examName: exam.title,
         marksObtained: mark?.marksObtained ?? 0,
         progress: mark?.progress ?? "Pending",

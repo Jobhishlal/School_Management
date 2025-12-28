@@ -8,10 +8,10 @@ export class ExamMarkCreateUseCase {
     private examMarkRepo: IExamMarkRepository,
     private studentRepo: StudentDetails,
     private examRepo: IExamRepository
-  ) {}
+  ) { }
 
   async execute(teacherId: string, data: CreateExamMarkDTO) {
-   
+
     const exam = await this.examRepo.findById(data.examId);
     if (!exam) {
       throw new Error("Exam not found");
@@ -21,18 +21,18 @@ export class ExamMarkCreateUseCase {
       throw new Error("You are not allowed to evaluate this exam");
     }
 
-    
-    const student = await this.studentRepo.findById(data.studentId);
+
+    const student = await this.studentRepo.findStudentById(data.studentId);
     if (!student) {
-      throw new Error("Student not found");
+      throw new Error(`Student not found: ${data.studentId}`);
     }
 
-   
+
     if (student.classId.toString() !== exam.classId.toString()) {
       throw new Error("Student does not belong to this exam class");
     }
 
-   
+
     const existing = await this.examMarkRepo.findByExamAndStudent(
       data.examId,
       data.studentId
@@ -42,7 +42,7 @@ export class ExamMarkCreateUseCase {
       throw new Error("Marks already assigned for this student");
     }
 
-   
+
     return await this.examMarkRepo.create({
       examId: data.examId,
       studentId: data.studentId,

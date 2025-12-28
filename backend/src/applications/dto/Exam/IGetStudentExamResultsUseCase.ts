@@ -1,11 +1,33 @@
-export interface StudentExamResultResponse {
+
+
+export interface StudentProfileDTO {
+  id: string;
+  fullName: string;
+  studentId: string; 
+  classId: string;
+
+  classDetails?: {
+    className: string;
+    division: string;
+    department: string;
+    rollNumber: string;
+  };
+}
+
+export interface StudentExamResultDTO {
   examId: string;
   examTitle: string;
   subject: string;
   examDate: Date;
   maxMarks: number;
-
   marksObtained: number | null;
+  percentage: number | null;
   progress: string | null;
   remarks: string | null;
+  status: "Pending" | "Passed" | "Failed";
+}
+
+export interface StudentExamResultResponse {
+  student: StudentProfileDTO;
+  results: StudentExamResultDTO[];
 }

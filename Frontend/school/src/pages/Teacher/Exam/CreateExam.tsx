@@ -7,7 +7,6 @@ import {
   GetAllteacher,
   updateExam,
   GetTeacherExams
-  
 } from "../../../services/authapi";
 import { getDecodedToken } from "../../../utils/DecodeToken";
 import { useTheme } from "../../../components/layout/ThemeContext";
@@ -16,7 +15,7 @@ import { Modal } from "../../../components/common/Modal";
 import { Plus, Edit, Calendar, Clock, BookOpen, FileText } from "lucide-react";
 import { Pagination } from "../../../components/common/Pagination";
 import TakeMarks from "./ExamMarkListOut";
-import ClassWiseExamList from "./ClassWiseWIthExamResult";
+
 const generateExamId = (): string => {
   const prefix = "EX";
   const timestamp = Date.now();
@@ -35,14 +34,20 @@ interface Class {
 interface Subject {
   _id?: string;
   name: string;
+  code?: string;
 }
 
 interface Teacher {
-  id: string;
+  id?: string;
+  _id?: string;
   name: string;
-  Subject?: Subject[];
+  email?: string;
+  phone?: string;
+  department?: string;
+  subjects?: Subject[];
+  Subject?: Subject[]; // Handle both cases
 }
- 
+
 interface ExamEntity {
   id: string;
   examId: string;
@@ -62,8 +67,6 @@ interface ExamEntity {
   status: string;
 }
 
-
-
 const ExamForm: React.FC = () => {
   const { isDark } = useTheme();
   const teacherId = getDecodedToken()?.id;
@@ -75,13 +78,9 @@ const ExamForm: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingExam, setEditingExam] = useState<UpdateExamDTO | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-const [examsPerPage] = useState(5); 
-const [selectedExam, setSelectedExam] = useState<string | null>(null);
-
-const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
- const [viewMode, setViewMode] = useState<"NONE" | "TAKE_MARKS" | "CLASS_RESULT">("NONE");
-
-
+  const [examsPerPage] = useState(5);
+  const [selectedExam, setSelectedExam] = useState<string | null>(null);
+  const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
 
   const [form, setForm] = useState<CreateExamDTO | UpdateExamDTO>({
     examId: generateExamId(),
@@ -104,20 +103,45 @@ const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
     const fetchData = async () => {
       try {
         const classRes = await GetAllClass();
-        const teacherRes: Teacher[] = await GetAllteacher();
-        const examRes: ExamEntity[] = await GetTeacherExams();
+        console.log("GetAllClass response:", classRes);
 
+        const teacherRes = await GetAllteacher();
+        console.log("GetAllteacher response:", teacherRes);
+
+        // Handle if response is wrapped
+        const teacherData = teacherRes?.data || teacherRes;
+        const teachersList: Teacher[] = Array.isArray(teacherData) ? teacherData : [];
+
+        const examRes: ExamEntity[] = await GetTeacherExams();
+        console.log("GetTeacherExams response:", examRes);
 
         setClasses(classRes.data || []);
         setExams(examRes);
 
-        const currentTeacher = teacherRes.find((t) => t.id === teacherId);
+        // Find current teacher - handle both id and _id
+        const currentTeacher = teachersList.find(
+          (t) => t.id === teacherId || t._id === teacherId
+        );
+        
+        console.log("Current Logged In Teacher:", currentTeacher);
+
         if (currentTeacher) {
-          setSubjects(currentTeacher.Subject || []);
-          setForm((prev) => ({ ...prev, teacherName: currentTeacher.name }));
+          // Handle both 'subjects' and 'Subject' property names
+          const teacherSubjects = currentTeacher.subjects || currentTeacher.Subject || [];
+          console.log("Teacher Subjects:", teacherSubjects);
+          
+          setSubjects(teacherSubjects);
+          setForm((prev) => ({ 
+            ...prev, 
+            teacherName: currentTeacher.name,
+            teacherId: currentTeacher.id || currentTeacher._id || teacherId || ""
+          }));
+        } else {
+          console.warn("Teacher not found in list. TeacherId:", teacherId);
         }
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching data:", err);
+        showToast("Failed to load data", "error");
       } finally {
         setLoading(false);
       }
@@ -125,13 +149,6 @@ const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
 
     fetchData();
   }, [teacherId]);
-
-const handleTakeMarks = (exam: ExamEntity) => {
-  setSelectedExam(exam.id);
-  setSelectedClassId(exam.classId);
-  setViewMode("TAKE_MARKS");
-};
-
 
   const handleClassChange = (classId: string) => {
     const cls = classes.find((c) => c._id === classId);
@@ -143,6 +160,11 @@ const handleTakeMarks = (exam: ExamEntity) => {
       className: cls.className,
       division: cls.division,
     }));
+  };
+
+  const handleTakeMarks = (exam: ExamEntity) => {
+    setSelectedExam(exam.id);
+    setSelectedClassId(exam.classId);
   };
 
   const handleEditExam = (exam: ExamEntity) => {
@@ -186,6 +208,11 @@ const handleTakeMarks = (exam: ExamEntity) => {
 
   const handleOpenModal = () => {
     setEditingExam(null);
+    
+    // Preserve teacherName and teacherId when opening modal
+    const currentTeacherName = form.teacherName;
+    const currentTeacherId = form.teacherId || teacherId || "";
+    
     setForm({
       examId: generateExamId(),
       title: "",
@@ -194,8 +221,8 @@ const handleTakeMarks = (exam: ExamEntity) => {
       className: "",
       division: "",
       subject: "",
-      teacherId: teacherId || "",
-      teacherName: form.teacherName,
+      teacherId: currentTeacherId,
+      teacherName: currentTeacherName,
       examDate: "",
       startTime: "",
       endTime: "",
@@ -206,36 +233,53 @@ const handleTakeMarks = (exam: ExamEntity) => {
   };
 
   const handleSubmit = async () => {
+    // Validation
+    if (!form.title || !form.classId || !form.subject || !form.examDate || !form.startTime || !form.endTime) {
+      showToast("Please fill all required fields", "error");
+      return;
+    }
+
     try {
       if (editingExam) {
         await updateExam(editingExam.id!, form as UpdateExamDTO);
         showToast("Exam updated successfully");
         setEditingExam(null);
       } else {
-        setForm((prev) => ({ ...prev, examId: generateExamId() }));
-        await ExamCreate(form as CreateExamDTO);
+        const newExamId = generateExamId();
+        const examData = {
+          ...form,
+          examId: newExamId,
+        };
+        
+        console.log("Submitting Create Exam Form Data:", examData);
+        const data = await ExamCreate(examData as CreateExamDTO);
+        console.log("ExamCreate API Response:", data);
         showToast("Exam created successfully");
       }
 
       setIsModalOpen(false);
-      setExams(await GetTeacherExams());
+      
+      // Refresh exams list
+      const updatedExams = await GetTeacherExams();
+      setExams(updatedExams);
     } catch (error: any) {
+      console.error("Exam submit error:", error);
       const message = error?.response?.data?.message || "Exam operation failed";
       showToast(message, "error");
     }
   };
-  const indexOfLastExam = currentPage * examsPerPage;
-const indexOfFirstExam = indexOfLastExam - examsPerPage;
-const currentExams = exams.slice(indexOfFirstExam, indexOfLastExam);
-const totalPages = Math.ceil(exams.length / examsPerPage);
 
+  const indexOfLastExam = currentPage * examsPerPage;
+  const indexOfFirstExam = indexOfLastExam - examsPerPage;
+  const currentExams = exams.slice(indexOfFirstExam, indexOfLastExam);
+  const totalPages = Math.ceil(exams.length / examsPerPage);
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case "completed":
         return isDark ? "bg-green-900 text-green-300" : "bg-green-100 text-green-800";
       case "ongoing":
-        return isDark ? "bg-slate-900 border-slate-700" : "bg-blue-100 text-blue-800";
+        return isDark ? "bg-blue-900 text-blue-300" : "bg-blue-100 text-blue-800";
       case "upcoming":
         return isDark ? "bg-yellow-900 text-yellow-300" : "bg-yellow-100 text-yellow-800";
       default:
@@ -255,10 +299,8 @@ const totalPages = Math.ceil(exams.length / examsPerPage);
   }
 
   return (
-  
     <div className={`min-h-screen p-6 ${isDark ? "bg-[#121A21] text-white" : "bg-gray-50"}`}>
       <div className="max-w-7xl mx-auto space-y-6">
-        
         <div className="flex items-center justify-between">
           <div>
             <h1 className={`text-3xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>
@@ -271,8 +313,8 @@ const totalPages = Math.ceil(exams.length / examsPerPage);
           <button
             onClick={handleOpenModal}
             className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all shadow-lg ${
-              isDark 
-                ? "bg-blue-600 hover:bg-blue-700 text-white" 
+              isDark
+                ? "bg-blue-600 hover:bg-blue-700 text-white"
                 : "bg-blue-500 hover:bg-blue-600 text-white"
             }`}
           >
@@ -318,8 +360,7 @@ const totalPages = Math.ceil(exams.length / examsPerPage);
                     </tr>
                   </thead>
                   <tbody>
-                   {currentExams.map((exam, index) => (
-
+                    {currentExams.map((exam, index) => (
                       <tr
                         key={exam.id}
                         className={`border-b transition-colors ${
@@ -361,51 +402,32 @@ const totalPages = Math.ceil(exams.length / examsPerPage);
                             {exam.status || "Scheduled"}
                           </span>
                         </td>
-   <td className="px-4 py-3 text-center flex justify-center gap-2">
-
-
-         <button
-           onClick={() => handleEditExam(exam)}
-           className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium ${
-      isDark
-        ? "bg-blue-600 hover:bg-blue-700 text-white"
-        : "bg-blue-500 hover:bg-blue-600 text-white"
-    }`}
-  >
-    <Edit className="w-4 h-4" />
-    Edit
-  </button>
-
-
-  <button
-    onClick={() => handleTakeMarks(exam)}
-    className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium ${
-      isDark
-        ? "bg-green-600 hover:bg-green-700 text-white"
-        : "bg-green-500 hover:bg-green-600 text-white"
-    }`}
-  >
-    Take Marks
-  </button>
-
-       <button
-  onClick={() => {
-    setSelectedExam(exam.id);    
-    setViewMode("CLASS_RESULT");
-  }}
-  className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium ${
-    isDark
-      ? "bg-purple-600 hover:bg-purple-700 text-white"
-      : "bg-purple-500 hover:bg-purple-600 text-white"
-  }`}
->
-  View Results
-</button>
-
-
-         </td>
-
-
+                        <td className="px-4 py-3 text-center">
+                          <div className="flex gap-2 justify-center">
+                            <button
+                              onClick={() => handleEditExam(exam)}
+                              className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                                isDark
+                                  ? "bg-blue-600 hover:bg-blue-700 text-white"
+                                  : "bg-blue-500 hover:bg-blue-600 text-white"
+                              }`}
+                            >
+                              <Edit className="w-4 h-4" />
+                              Edit
+                            </button>
+                            
+                            <button
+                              onClick={() => handleTakeMarks(exam)}
+                              className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                                isDark
+                                  ? "bg-green-600 hover:bg-green-700 text-white"
+                                  : "bg-green-500 hover:bg-green-600 text-white"
+                              }`}
+                            >
+                              Take Marks
+                            </button>
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -414,245 +436,254 @@ const totalPages = Math.ceil(exams.length / examsPerPage);
             )}
           </div>
 
-          <Pagination
-  currentPage={currentPage}
-  totalPages={totalPages}
-  onPageChange={(page) => setCurrentPage(page)}
-/>
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(page) => setCurrentPage(page)}
+            />
+          )}
         </div>
 
-        <Modal 
+        <Modal
           title={editingExam ? "Update Exam" : "Create New Exam"}
-          isOpen={isModalOpen} 
+          isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
         >
-            <div className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                    Exam Title *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={form.title}
-                    onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
-                    className={`w-full px-4 py-2 rounded-lg border transition-colors ${
-                      isDark
-                        ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                        : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    placeholder="Enter exam title"
-                  />
-                </div>
-
-                <div>
-                  <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                    Exam Type *
-                  </label>
-                  <select
-                    required
-                    value={form.type}
-                    onChange={(e) => setForm((p) => ({ ...p, type: e.target.value as ExamType }))}
-                    className={`w-full px-4 py-2 rounded-lg border transition-colors ${
-                      isDark
-                        ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                        : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  >
-                    <option value="UNIT_TEST">Unit Test</option>
-                    <option value="MIDTERM">Midterm</option>
-                    <option value="FINAL">Final</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                    Class *
-                  </label>
-                  <select
-                    required
-                    value={form.classId}
-                    onChange={(e) => handleClassChange(e.target.value)}
-                    className={`w-full px-4 py-2 rounded-lg border transition-colors ${
-                      isDark
-                        ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                        : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  >
-                    <option value="">Select Class</option>
-                    {classes.map((c) => (
-                      <option key={c._id} value={c._id}>
-                        {c.className} - {c.division}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                    Subject *
-                  </label>
-                  <select
-                    required
-                    value={form.subject}
-                    onChange={(e) => setForm((p) => ({ ...p, subject: e.target.value }))}
-                    className={`w-full px-4 py-2 rounded-lg border transition-colors ${
-                      isDark
-                        ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                        : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  >
-                    <option value="">Select Subject</option>
-                    {subjects.map((s) => (
-                      <option key={s._id || s.name} value={s.name}>
-                        {s.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                    <Calendar className="w-4 h-4 inline mr-1" />
-                    Exam Date *
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={form.examDate}
-                    onChange={(e) => setForm((p) => ({ ...p, examDate: e.target.value }))}
-                    className={`w-full px-4 py-2 rounded-lg border transition-colors ${
-                      isDark
-                        ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                        : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  />
-                </div>
-
-                <div>
-                  <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                    <Clock className="w-4 h-4 inline mr-1" />
-                    Start Time *
-                  </label>
-                  <input
-                    type="time"
-                    required
-                    value={form.startTime}
-                    onChange={(e) => setForm((p) => ({ ...p, startTime: e.target.value }))}
-                    className={`w-full px-4 py-2 rounded-lg border transition-colors ${
-                      isDark
-                        ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                        : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  />
-                </div>
-
-                <div>
-                  <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                    <Clock className="w-4 h-4 inline mr-1" />
-                    End Time *
-                  </label>
-                  <input
-                    type="time"
-                    required
-                    value={form.endTime}
-                    onChange={(e) => setForm((p) => ({ ...p, endTime: e.target.value }))}
-                    className={`w-full px-4 py-2 rounded-lg border transition-colors ${
-                      isDark
-                        ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                        : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  />
-                </div>
-
-                <div>
-                  <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                    <BookOpen className="w-4 h-4 inline mr-1" />
-                    Maximum Marks *
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    min="1"
-                    value={form.maxMarks}
-                    onChange={(e) => setForm((p) => ({ ...p, maxMarks: Number(e.target.value) }))}
-                    className={`w-full px-4 py-2 rounded-lg border transition-colors ${
-                      isDark
-                        ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                        : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    placeholder="100"
-                  />
-                </div>
+          <div className="space-y-4">
+            {/* Debug Info - Remove in production */}
+            {subjects.length === 0 && (
+              <div className="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg text-sm">
+                <p className="text-yellow-800 dark:text-yellow-200">
+                  No subjects found for teacher: <strong>{form.teacherName || "Unknown"}</strong>
+                </p>
+                <p className="text-xs mt-1 text-yellow-700 dark:text-yellow-300">
+                  Teacher ID: {form.teacherId || "Not set"}
+                </p>
               </div>
+            )}
 
+            <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                  Description
+                  Exam Title *
                 </label>
-                <textarea
-                  rows={3}
-                  value={form.description || ""}
-                  onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
+                <input
+                  type="text"
+                  required
+                  value={form.title}
+                  onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
                   className={`w-full px-4 py-2 rounded-lg border transition-colors ${
                     isDark
                       ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
                       : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
                   } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  placeholder="Enter exam description (optional)"
+                  placeholder="Enter exam title"
                 />
               </div>
 
-              <div className="flex gap-3 justify-end pt-4">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                  Exam Type *
+                </label>
+                <select
+                  required
+                  value={form.type}
+                  onChange={(e) => setForm((p) => ({ ...p, type: e.target.value as ExamType }))}
+                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${
                     isDark
-                      ? "bg-gray-700 hover:bg-gray-600 text-white"
-                      : "bg-gray-200 hover:bg-gray-300 text-gray-900"
-                  }`}
+                      ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                      : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                  <option value="UNIT_TEST">Unit Test</option>
+                  <option value="MIDTERM">Midterm</option>
+                  <option value="FINAL">Final</option>
+                </select>
+              </div>
+
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                  Class *
+                </label>
+                <select
+                  required
+                  value={form.classId}
+                  onChange={(e) => handleClassChange(e.target.value)}
+                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${
                     isDark
-                      ? "bg-blue-600 hover:bg-blue-700 text-white"
-                      : "bg-blue-500 hover:bg-blue-600 text-white"
-                  }`}
+                      ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                      : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 >
-                  {editingExam ? "Update Exam" : "Create Exam"}
-                </button>
+                  <option value="">Select Class</option>
+                  {classes.map((c) => (
+                    <option key={c._id} value={c._id}>
+                      {c.className} - {c.division}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                  Subject *
+                </label>
+                <select
+                  required
+                  value={form.subject}
+                  onChange={(e) => setForm((p) => ({ ...p, subject: e.target.value }))}
+                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${
+                    isDark
+                      ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                      : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  disabled={subjects.length === 0}
+                >
+                  <option value="">
+                    {subjects.length === 0 ? "No subjects available" : "Select Subject"}
+                  </option>
+                  {subjects.map((s) => (
+                    <option key={s._id || s.name} value={s.name}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                  <Calendar className="w-4 h-4 inline mr-1" />
+                  Exam Date *
+                </label>
+                <input
+                  type="date"
+                  required
+                  value={form.examDate}
+                  onChange={(e) => setForm((p) => ({ ...p, examDate: e.target.value }))}
+                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${
+                    isDark
+                      ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                      : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                />
+              </div>
+
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                  <Clock className="w-4 h-4 inline mr-1" />
+                  Start Time *
+                </label>
+                <input
+                  type="time"
+                  required
+                  value={form.startTime}
+                  onChange={(e) => setForm((p) => ({ ...p, startTime: e.target.value }))}
+                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${
+                    isDark
+                      ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                      : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                />
+              </div>
+
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                  <Clock className="w-4 h-4 inline mr-1" />
+                  End Time *
+                </label>
+                <input
+                  type="time"
+                  required
+                  value={form.endTime}
+                  onChange={(e) => setForm((p) => ({ ...p, endTime: e.target.value }))}
+                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${
+                    isDark
+                      ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                      : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                />
+              </div>
+
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                  <BookOpen className="w-4 h-4 inline mr-1" />
+                  Maximum Marks *
+                </label>
+                <input
+                  type="number"
+                  required
+                  min="1"
+                  value={form.maxMarks}
+                  onChange={(e) => setForm((p) => ({ ...p, maxMarks: Number(e.target.value) }))}
+                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${
+                    isDark
+                      ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                      : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  placeholder="100"
+                />
               </div>
             </div>
+
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                Description
+              </label>
+              <textarea
+                rows={3}
+                value={form.description || ""}
+                onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
+                className={`w-full px-4 py-2 rounded-lg border transition-colors ${
+                  isDark
+                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                placeholder="Enter exam description (optional)"
+              />
+            </div>
+
+            <div className="flex gap-3 justify-end pt-4">
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                  isDark
+                    ? "bg-gray-700 hover:bg-gray-600 text-white"
+                    : "bg-gray-200 hover:bg-gray-300 text-gray-900"
+                }`}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSubmit}
+                className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                  isDark
+                    ? "bg-blue-600 hover:bg-blue-700 text-white"
+                    : "bg-blue-500 hover:bg-blue-600 text-white"
+                }`}
+              >
+                {editingExam ? "Update Exam" : "Create Exam"}
+              </button>
+            </div>
+          </div>
         </Modal>
       </div>
-    {selectedExam && selectedClassId && (
-  <TakeMarks
-    examId={selectedExam}
-    classId={selectedClassId}
-    onClose={() => {
-      setSelectedExam(null);
-      setSelectedClassId(null);
-    }}
-  />
-)}
-{viewMode === "CLASS_RESULT" && selectedExam && (
-  <ClassWiseExamList examId={selectedExam}/>
-)}
 
-  
-     
+      {/* TakeMarks Modal - Render when exam is selected */}
+      {selectedExam && selectedClassId && (
+        <TakeMarks
+          examId={selectedExam}
+          classId={selectedClassId}
+          onClose={() => {
+            setSelectedExam(null);
+            setSelectedClassId(null);
+          }}
+        />
+      )}
     </div>
-    
-  
   );
 };
 
 export default ExamForm;
-
-

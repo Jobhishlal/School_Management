@@ -4,9 +4,9 @@ import { IClassDivisionRepository } from "../../../domain/repositories/Classrepo
 
 
 export class GetAllTeachersInClass implements IGetClassTeacher {
-  constructor(private readonly classRepo: IClassDivisionRepository) {}
+  constructor(private readonly classRepo: IClassDivisionRepository) { }
 
-  async execute(classId: string): Promise<{ teacherId: string; name: string }[]> {
+  async execute(classId: string): Promise<{ teacherId: string; name: string; subjects: { name: string }[] }[]> {
     const teachers = await this.classRepo.getAllTeacher();
     return teachers;
   }

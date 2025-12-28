@@ -130,7 +130,7 @@ async getParentAttendanceDashboard(
   parentId: string
 ): Promise<ParentAttendanceDashboardDTO> {
 
-  type AttendanceStatus = "Present" | "Absent" | "Not Marked";
+  type AttendanceStatus = "Present" | "Absent" | "Leave";
 
   const parent = await ParentSignupModel
     .findById(parentId)
@@ -153,8 +153,8 @@ async getParentAttendanceDashboard(
   const calendar: any[] = [];
   const logs: any[] = [];
 
-  let todayMorning: AttendanceStatus = "Not Marked";
-  let todayAfternoon: AttendanceStatus = "Not Marked";
+  let todayMorning: AttendanceStatus = "Leave";
+  let todayAfternoon: AttendanceStatus = "Leave";
 
   const today = new Date().toDateString();
 

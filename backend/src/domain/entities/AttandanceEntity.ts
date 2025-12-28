@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
 
-export type AttendanceStatus = "Present" | "Absent";
+export type AttendanceStatus = "Present" | "Absent" | "Leave";
+
 export type AttendanceSession = "Morning" | "Afternoon";
 
 export class AttendanceItemEntity {

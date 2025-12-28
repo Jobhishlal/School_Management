@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
 
-export type AttendanceStatus = "Present" | "Absent";
+export type AttendanceStatus = "Present" | "Absent" | "Leave";
+
 
 export interface AttendanceItem {
   studentId: Types.ObjectId;
@@ -21,7 +22,8 @@ export interface AttendanceInterface extends Document {
 
 const AttendanceItemSchema = new Schema<AttendanceItem>({
   studentId: { type: Schema.Types.ObjectId, ref: "Students", required: true },
-  status: { type: String, enum: ["Present", "Absent"], required: true },
+  status: { type: String, enum: ["Present", "Absent", "Leave"] },
+
   remarks: { type: String },
 });
 

@@ -56,7 +56,7 @@ export class ExamMarkMongoRepository implements IExamMarkRepository{
         as: "student",
       },
     },
-    { $unwind: { path: "$student", preserveNullAndEmptyArrays: true } }, // keep students even if no marks
+    { $unwind: { path: "$student", preserveNullAndEmptyArrays: true } }, 
     {
       $project: {
         _id: 1,
@@ -80,10 +80,14 @@ async findMarksForStudent(
   studentId: string,
   examIds: string[]
 ): Promise<ExamMarkEntity[]> {
-  return ExamMarkModel.find({
+   
+  const data =await ExamMarkModel.find({
     studentId: new Types.ObjectId(studentId),
     examId: { $in: examIds.map(id => new Types.ObjectId(id)) },
   }).then(docs => docs.map(toExamMarkEntity));
+  console.log(data)
+  return data
+
 }
 
 

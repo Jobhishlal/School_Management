@@ -5,11 +5,19 @@ import {
   getTeachersList,
   CreateClass,
   UpdateClass,
+  assignStudentToDivision,
+  deleteClassOrDivision,
+  GetAllStudents,
+
 } from "../../services/authapi";
+
 import { useTheme } from "../../components/layout/ThemeContext";
 import { showToast } from "../../utils/toast";
 import { AxiosError } from "axios";
 import { ClassInfo } from "../../components/Form/ClassControll/Classcheck";
+import { Modal } from "../../components/common/Modal";
+import { Pagination } from "../../components/common/Pagination";
+
 
 interface Student {
   studentId: string;
@@ -35,141 +43,401 @@ const ClassBaseAccess: React.FC = () => {
 
   const [classes, setClasses] = useState<Record<string, ClassDivision>>({});
   const [loading, setLoading] = useState(true);
-  const [selectedDivision, setSelectedDivision] = useState("");
+
   const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
+
   const [selectedTeacher, setSelectedTeacher] = useState("");
   const [selectedClassId, setSelectedClassId] = useState("");
-  const [editingClassId, setEditingClassId] = useState("");
+
+  const [selectedStudent, setSelectedStudent] = useState("");
+  const [targetClass, setTargetClass] = useState("");
+
+
+
   const [editingClassName, setEditingClassName] = useState("");
+
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newClassName, setNewClassName] = useState<
     "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10"
   >("1");
   const [division, setDivision] = useState<"A" | "B" | "C" | "D">("A");
-  const [creatingClass, setCreatingClass] = useState(false);
+
+  const [selectedDivision, setSelectedDivision] = useState("");
+
+  const [allStudents, setAllStudents] = useState<Student[]>([]);
+  const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
+  const [selectedStudentIds, setSelectedStudentIds] = useState<Set<string>>(new Set());
+  const [studentSearch, setStudentSearch] = useState("");
+  const [studentPage, setStudentPage] = useState(1);
+  const [bulkTargetClass, setBulkTargetClass] = useState("");
+
+
+
+
+
+
+  const itemsPerPage = 5;
 
   const fetchClasses = async () => {
     try {
       const res = await classdivisonaccess();
+      console.log("[DEBUG] Classes fetched from API:", res.data.data);
       if (res.data.success) setClasses(res.data.data);
-    } catch (error) {
-      console.error("Error fetching classes:", error);
+    } catch {
       showToast("Error fetching classes", "error");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchClasses();
-  }, []);
-
+  useEffect(() => { fetchClasses(); }, []);
 
   useEffect(() => {
-    const fetchTeachers = async () => {
+    const loadTeachers = async () => {
       try {
-        const teacherData = await getTeachersList();
-        setTeachers(teacherData);
-      } catch (error) {
-        console.error("Error fetching teachers:", error);
+        const t = await getTeachersList();
+        setTeachers(t);
+      } catch {
         showToast("Error fetching teachers", "error");
       }
     };
-    fetchTeachers();
+    loadTeachers();
   }, []);
 
- 
+  useEffect(() => {
+    const loadStudents = async () => {
+      try {
+        const s = await GetAllStudents();
+        setStudents(s);
+      } catch {
+        showToast("Error fetching students", "error");
+      }
+    };
+    loadStudents();
+  }, []);
+
   const assignTeacher = async () => {
-    if (!selectedClassId || !selectedTeacher) {
-      return showToast("Select both class and teacher", "info");
-    }
+    if (!selectedTeacher || !selectedClassId)
+      return showToast("Select both class & teacher", "info");
 
     try {
-      const res = await AssignClassTeacherOnClass({
+      const result = await AssignClassTeacherOnClass({
         classId: selectedClassId,
         teacherId: selectedTeacher,
       });
 
-      if (res.data.success) {
-        showToast("Teacher assigned successfully", "success");
+      if (result.success) {
+        showToast(result.message, "success");
         await fetchClasses();
         setSelectedTeacher("");
         setSelectedClassId("");
-      } else {
-        showToast(res.data.message || "Teacher assignment success", "success");
-      }
-    } catch (error: unknown) {
-      const err = error as AxiosError<{ message: string }>;
-      console.error("Error assigning teacher:", err);
-      showToast(err.response?.data?.message || "Error assigning teacher", "error");
-    }
-  };
-
- 
-  const updateClass = async (classId: string) => {
-    if (!editingClassName) return showToast("Enter class name", "info");
-    try {
-      const res = await UpdateClass(classId, { className: editingClassName });
-      if (res.data.success) {
-        showToast("Class updated", "success");
-        await fetchClasses();
-        setEditingClassId("");
-        setEditingClassName("");
-      }
+      } else showToast(result.message, "error");
     } catch (err) {
-      console.error(err);
-      showToast("Error updating class", "error");
+      const e = err as AxiosError<{ message: string }>;
+      showToast(e.response?.data?.message || "Error assigning teacher", "error");
+    }
+  };
+
+  const assignStudent = async () => {
+    if (!selectedStudent || !targetClass)
+      return showToast("Select student & class", "info");
+
+    try {
+      const result = await assignStudentToDivision({
+        studentId: selectedStudent,
+        classId: targetClass,
+      });
+
+      if (result.success) {
+        showToast(result.message, "success");
+        await fetchClasses();
+        await loadAllStudents();
+        setSelectedStudent("");
+        setTargetClass("");
+      } else showToast(result.message, "error");
+    } catch {
+      showToast("Error assigning student", "error");
     }
   };
 
 
-  const deleteClass = async (classId: string) => {
-    showToast(`Deleting class ${classId} not implemented`, "info");
+  const loadAllStudents = async () => {
+    try {
+      const data = await GetAllStudents();
+      const formatted = data.map((s: any) => ({
+        studentId: s.studentId,
+        fullName: s.fullName,
+        gender: s.gender,
+        className: s.classDetails?.className || "N/A",
+        division: s.classDetails?.division || "N/A",
+        _id: s._id || s.id
+      }));
+      setAllStudents(formatted);
+      setFilteredStudents(formatted);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
-  if (loading) {
+  useEffect(() => { loadAllStudents(); }, []);
+
+  useEffect(() => {
+    let res = allStudents;
+    if (studentSearch) {
+      res = res.filter(s =>
+        s.fullName.toLowerCase().includes(studentSearch.toLowerCase()) ||
+        s.studentId.toLowerCase().includes(studentSearch.toLowerCase()) ||
+        (s as any).className?.toLowerCase().includes(studentSearch.toLowerCase())
+      );
+    }
+    setFilteredStudents(res);
+    setStudentPage(1);
+  }, [studentSearch, allStudents]);
+
+  const handleBulkAssign = async () => {
+    if (selectedStudentIds.size === 0 || !bulkTargetClass) {
+      return showToast("Select students and target class", "info");
+    }
+
+    try {
+      const result = await assignStudentToDivision({
+        studentId: Array.from(selectedStudentIds),
+        classId: bulkTargetClass
+      });
+
+      if (result.success || result.message?.includes("success")) {
+        showToast("Students assigned successfully", "success");
+        await fetchClasses();
+        await loadAllStudents();
+        setSelectedStudentIds(new Set());
+        setBulkTargetClass("");
+      } else {
+        showToast(result.message || "Failed", "error");
+      }
+    } catch (err: any) {
+      showToast(err.response?.data?.message || "Error bulk assigning", "error");
+    }
+  };
+
+  useEffect(() => {
+    let res = allStudents;
+
+    // Filter by Search Term
+    if (studentSearch) {
+      res = res.filter(s =>
+        s.fullName.toLowerCase().includes(studentSearch.toLowerCase()) ||
+        s.studentId.toLowerCase().includes(studentSearch.toLowerCase()) ||
+        (s as any).className?.toLowerCase().includes(studentSearch.toLowerCase())
+      );
+    }
+
+    // Filter by Target Class Name (ignoring division)
+    if (bulkTargetClass) {
+      // Find the target class object to get its className (e.g., "1")
+      const targetClassObj = Object.values(classes).find(c => c.classId === bulkTargetClass);
+
+      if (targetClassObj) {
+        // Show only students belonging to this class (e.g., Class "1")
+        res = res.filter((s: any) => s.className === targetClassObj.className);
+      }
+    }
+
+    setFilteredStudents(res);
+    setStudentPage(1);
+  }, [studentSearch, allStudents, bulkTargetClass, classes]);
+  const toggleStudentSelection = (id: string) => {
+    const newSet = new Set(selectedStudentIds);
+    if (newSet.has(id)) newSet.delete(id);
+    else newSet.add(id);
+    setSelectedStudentIds(newSet);
+  };
+
+  const toggleAllPageSelection = () => {
+    const start = (studentPage - 1) * itemsPerPage;
+    const currentData = filteredStudents.slice(start, start + itemsPerPage);
+    const allSelected = currentData.every(s => selectedStudentIds.has(s.studentId)); // Using studentId as key
+
+    const newSet = new Set(selectedStudentIds);
+    currentData.forEach(s => {
+      if (allSelected) newSet.delete(s.studentId);
+      else newSet.add(s.studentId);
+    });
+    setSelectedStudentIds(newSet);
+  };
+
+
+  // ================= UPDATE CLASS =================
+
+
+  const handleDeleteClass = async (classId: string) => {
+    if (!classId) return;
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this class/division? This cannot be undone."
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const result = await deleteClassOrDivision(classId);
+
+      if (result.success) {
+        showToast(result.message || "Class deleted successfully", "success");
+        await fetchClasses();
+      } else {
+        showToast(result.message || "Failed to delete class", "error");
+      }
+
+    } catch (err: any) {
+      const message =
+        err?.response?.data?.message ||
+        "Cannot delete class. It may still have students assigned.";
+
+      showToast(message, "error");
+    }
+  };
+
+
+  const handleCreateClass = async () => {
+    if (!newClassName || !division) {
+      showToast("Please select both Class Name and Division", "info");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await CreateClass({ className: newClassName, division });
+      if (res.success) {
+        showToast(`Class ${newClassName}-${division} created successfully`, "success");
+        setShowCreateModal(false);
+        await fetchClasses();
+      } else {
+        showToast(res.message || "Failed to create class", "error");
+      }
+    } catch (error: any) {
+      showToast(error.response?.data?.message || "Error creating class", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading)
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
-  }
 
   const filteredClasses = selectedDivision
     ? { [selectedDivision]: classes[selectedDivision] }
     : classes;
 
   return (
-    <div
-      className={`min-h-screen p-4 sm:p-8 ${
-        isDark ? "bg-[#121A21] text-slate-100" : "bg-slate-50 text-slate-900"
-      }`}
-    >
+    <div className={`min-h-screen p-4 sm:p-8 ${isDark ? "bg-[#121A21] text-slate-100" : "bg-slate-50 text-slate-900"}`}>
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold mb-1">Class & Division Management</h2>
-        <p className="text-slate-400 mb-6">
-          View students, manage classes, and assign teachers
-        </p>
 
-        {/* Create Class Button */}
+        <h2 className="text-3xl font-bold mb-1">Class & Division Management</h2>
+        <p className="text-slate-400 mb-6">View students, manage classes, and assign teachers</p>
+
+        {/* CREATE CLASS BUTTON */}
         <div className="mb-4">
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="bg-green-500 text-white px-3 py-1 rounded"
-          >
+          <button onClick={() => setShowCreateModal(true)}
+            className="bg-green-500 text-white px-3 py-1 rounded">
             Create Class
           </button>
         </div>
 
-        {/* Filter */}
+        {/* ================= BULK STUDENT ASSIGNMENT UI ================= */}
+        <div className={`rounded-lg p-6 shadow mb-8 ${isDark ? "bg-slate-800/50" : "bg-white"}`}>
+          <h3 className="text-xl font-semibold mb-4">Bulk Student Assignment</h3>
+          <div className="flex flex-col sm:flex-row justify-between gap-4 mb-4">
+            <input
+              type="text"
+              placeholder="Search students (Name, ID, Class)..."
+              value={studentSearch}
+              onChange={e => setStudentSearch(e.target.value)}
+              className={`flex-1 border px-3 py-2 rounded ${isDark ? "bg-slate-700 text-white" : "bg-white"}`}
+            />
+            <div className="flex gap-2">
+              <select
+                value={bulkTargetClass}
+                onChange={e => setBulkTargetClass(e.target.value)}
+                className={`border rounded px-3 py-2 dark:bg-slate-700 dark:text-white min-w-[200px]`}
+              >
+                <option value="">Select Target Class-Division</option>
+                {Object.values(classes).map(cls => (
+                  <option key={cls.classId} value={cls.classId}>
+                    {cls.className} - {cls.division}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={handleBulkAssign}
+                disabled={selectedStudentIds.size === 0 || !bulkTargetClass}
+                className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50 hover:bg-blue-700"
+              >
+                Assign ({selectedStudentIds.size})
+              </button>
+            </div>
+          </div>
+
+          {/* STUDENT TABLE */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead className={`text-xs uppercase ${isDark ? "bg-slate-700 text-slate-300" : "bg-gray-100 text-gray-700"}`}>
+                <tr>
+                  <th className="px-4 py-3">
+                    <input type="checkbox"
+                      checked={filteredStudents.slice((studentPage - 1) * itemsPerPage, studentPage * itemsPerPage).length > 0 && filteredStudents.slice((studentPage - 1) * itemsPerPage, studentPage * itemsPerPage).every(s => selectedStudentIds.has(s.studentId))}
+                      onChange={toggleAllPageSelection}
+                    />
+                  </th>
+                  <th className="px-4 py-3">ID</th>
+                  <th className="px-4 py-3">Name</th>
+                  <th className="px-4 py-3">Current Class</th>
+                  <th className="px-4 py-3">Gender</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredStudents.slice((studentPage - 1) * itemsPerPage, studentPage * itemsPerPage).map((student) => (
+                  <tr key={student.studentId} className={`border-b ${isDark ? "border-slate-700 hover:bg-slate-700/50" : "border-gray-200 hover:bg-gray-50"}`}>
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedStudentIds.has(student.studentId)}
+                        onChange={() => toggleStudentSelection(student.studentId)}
+                      />
+                    </td>
+                    <td className="px-4 py-3">{student.studentId}</td>
+                    <td className="px-4 py-3 font-medium">{student.fullName}</td>
+                    <td className="px-4 py-3">{(student as any).className} - {(student as any).division}</td>
+                    <td className="px-4 py-3">{student.gender}</td>
+                  </tr>
+                ))}
+                {filteredStudents.length === 0 && (
+                  <tr><td colSpan={5} className="text-center py-4">No students found</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {Math.ceil(filteredStudents.length / itemsPerPage) > 1 && (
+            <Pagination
+              currentPage={studentPage}
+              totalPages={Math.ceil(filteredStudents.length / itemsPerPage)}
+              onPageChange={setStudentPage}
+            />
+          )}
+        </div>
+        {/* ================= END BULK STUDENT ASSIGNMENT ================= */}
+
+
+        {/* ================= FILTER ================= */}
         <div className="mb-6">
           <label className="mr-2 font-medium">Filter by Division:</label>
           <select
-            className={`border px-3 py-2 rounded ${
-              isDark
-                ? "bg-slate-800 border-slate-600 text-slate-200"
-                : "bg-white border-slate-300 text-slate-900"
-            }`}
+            className={`border px-3 py-2 rounded ${isDark ? "bg-slate-800 border-slate-600 text-slate-200" : "bg-white border-slate-300 text-slate-900"}`}
             value={selectedDivision}
             onChange={(e) => setSelectedDivision(e.target.value)}
           >
@@ -182,19 +450,17 @@ const ClassBaseAccess: React.FC = () => {
           </select>
         </div>
 
-        {/* Class list */}
+        {/* ================= CLASS LIST ================= */}
         {Object.keys(filteredClasses).map((key) => {
           const cls = filteredClasses[key];
+
           return (
-            <div
-              key={cls.classId}
-              className={`rounded-lg p-6 shadow-lg mb-6 ${
-                isDark ? "bg-slate-800/50" : "bg-white"
-              }`}
+            <div key={cls.classId}
+              className={`rounded-lg p-6 shadow-lg mb-6 ${isDark ? "bg-slate-800/50" : "bg-white"}`}
             >
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-semibold">
-                  Class {cls.className} - Division {cls.division}{" "}
+                  Class {cls.className} - Division {cls.division}
                   <span className="text-green-500 ml-2">
                     {cls.classTeacher
                       ? `(Teacher: ${cls.classTeacher.name})`
@@ -203,56 +469,13 @@ const ClassBaseAccess: React.FC = () => {
                 </h3>
 
                 <div className="flex items-center gap-2">
-                  {editingClassId === cls.classId ? (
-                    <div className="flex gap-2">
-                      <input
-                        value={editingClassName}
-                        onChange={(e) => setEditingClassName(e.target.value)}
-                        className="border px-2 py-1 rounded"
-                      />
-                      <button
-                        onClick={() => updateClass(cls.classId)}
-                        className="bg-blue-500 text-white px-2 py-1 rounded"
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={() => setEditingClassId("")}
-                        className="bg-gray-500 text-white px-2 py-1 rounded"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        setEditingClassId(cls.classId);
-                        setEditingClassName(cls.className);
-                      }}
-                      className="bg-yellow-500 text-white px-2 py-1 rounded"
-                    >
-                      Edit Class
-                    </button>
-                  )}
-
-                  <button
-                    onClick={() => deleteClass(cls.classId)}
-                    className="bg-red-500 text-white px-2 py-1 rounded"
-                  >
-                    Delete Class
-                  </button>
-
                   <select
-                    className={`border px-2 py-1 rounded ${
-                      isDark
-                        ? "bg-slate-700 border-slate-600 text-slate-200"
-                        : "bg-white border-slate-300 text-slate-900"
-                    }`}
                     value={selectedTeacher}
                     onChange={(e) => {
                       setSelectedTeacher(e.target.value);
                       setSelectedClassId(cls.classId);
                     }}
+                    className="border px-2 py-1 rounded dark:bg-slate-700"
                   >
                     <option value="">Select Teacher</option>
                     {teachers.map((t) => (
@@ -263,24 +486,26 @@ const ClassBaseAccess: React.FC = () => {
                   </select>
 
                   <button
+                    disabled={!selectedTeacher || !selectedClassId}
                     onClick={assignTeacher}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
+                    className="bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white px-3 py-1 rounded"
                   >
                     Assign
+                  </button>
+
+                  <button
+                    onClick={() => handleDeleteClass(cls.classId)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                  >
+                    Delete
                   </button>
                 </div>
               </div>
 
-              {/* Students Table */}
+              {/* STUDENTS TABLE */}
               <div className="overflow-x-auto">
                 <table className="min-w-full border border-slate-400 text-sm">
-                  <thead
-                    className={`${
-                      isDark
-                        ? "bg-slate-700 text-slate-200"
-                        : "bg-slate-100 text-slate-900"
-                    }`}
-                  >
+                  <thead className={isDark ? "bg-slate-700" : "bg-slate-100"}>
                     <tr>
                       <th className="px-4 py-2 border-b">ID</th>
                       <th className="px-4 py-2 border-b">Name</th>
@@ -289,14 +514,7 @@ const ClassBaseAccess: React.FC = () => {
                   </thead>
                   <tbody>
                     {cls.students.map((s) => (
-                      <tr
-                        key={s.studentId}
-                        className={`${
-                          isDark
-                            ? "border-b border-slate-600"
-                            : "border-b border-slate-300"
-                        }`}
-                      >
+                      <tr key={s.studentId}>
                         <td className="px-4 py-2">{s.studentId}</td>
                         <td className="px-4 py-2">{s.fullName}</td>
                         <td className="px-4 py-2">{s.gender}</td>
@@ -305,79 +523,43 @@ const ClassBaseAccess: React.FC = () => {
                   </tbody>
                 </table>
               </div>
+
             </div>
           );
         })}
 
-        {/* ✅ Create Class Modal */}
-        {showCreateModal && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-            <div className="bg-white dark:bg-slate-800 p-6 rounded shadow-lg w-full max-w-md">
-              <h2 className="text-xl font-bold mb-4 text-slate-900 dark:text-slate-100">
-                Create Class
-              </h2>
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  try {
-                    setCreatingClass(true);
-                    const res = await CreateClass({
-                      className: newClassName,
-                      division,
-                    });
-
-                    if (res?.data?.success) {
-                      showToast(res.data.message, "success");
-                      await fetchClasses();
-                      setShowCreateModal(false);
-                    } else {
-                      showToast(
-                        res?.data?.message || "Failed to create class",
-                        "error"
-                      );
-                    }
-                  } catch (err) {
-                    const axiosErr = err as AxiosError<{ message?: string }>;
-                    const message =
-                      axiosErr.response?.data?.message ||
-                      axiosErr.message ||
-                      "Error creating class";
-
-                    console.error("CreateClass error:", axiosErr.response);
-                    showToast(message, "error");
-                  } finally {
-                    setCreatingClass(false);
-                  }
-                }}
-              >
-                <ClassInfo
-                  className={newClassName}
-                  setClassName={setNewClassName}
-                  division={division}
-                  setDivision={setDivision}
-                  isDark={isDark}
-                />
-                <div className="flex justify-end gap-2 mt-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowCreateModal(false)}
-                    className="bg-gray-500 text-white px-3 py-1 rounded"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={creatingClass}
-                    className="bg-green-500 text-white px-3 py-1 rounded"
-                  >
-                    {creatingClass ? "Creating..." : "Create"}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
       </div>
+
+      <Modal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        title="Create New Class"
+      >
+        <div className="space-y-6">
+          <ClassInfo
+            mode="newClass"
+            className={newClassName}
+            setClassName={setNewClassName}
+            division={division}
+            setDivision={setDivision}
+            isDark={isDark}
+          />
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={() => setShowCreateModal(false)}
+              className="px-4 py-2 border rounded hover:bg-gray-100 dark:hover:bg-slate-700"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleCreateClass}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Create Class
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

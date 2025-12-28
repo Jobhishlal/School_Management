@@ -13,6 +13,7 @@ export class ExamMarkEntity {
     public readonly studentId: Types.ObjectId,
     public readonly teacherId: Types.ObjectId,
     public readonly marksObtained: number,
+    
     public readonly progress: StudentProgress,
     public readonly remarks: string,
     public readonly createdAt: Date,

@@ -39,14 +39,15 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
   const menuItems = [
-    { icon: LayoutDashboard, text: "Dashboard", path:"/teacher/exam-mark" },
+    { icon: LayoutDashboard, text: "Dashboard", path: "/teacher/exam-mark" },
     { icon: Users, text: "My Classes", path: "/teacher/classes" },
-    { icon: Calendar, text: "Attendance", path:"/teacher/attandance" },
+    { icon: Calendar, text: "Attendance", path: "/teacher/attandance" },
     { icon: FileText, text: "Assignments", path: "/teacher/assignments" },
     { icon: BookOpen, text: "Exams & Marks", path: "/teacher/exam-management" },
     { icon: Clock, text: "Schedule", path: "/teacher/schedule" },
     { icon: MessageCircle, text: "Communication", path: "/teacher/communication" },
-    { icon: UserCog, text: "Parents Management", path: "/teacher/parents" },
+    { icon: MessageCircle, text: "Communication", path: "/teacher/communication" },
+    { icon: UserCog, text: "Parents Details", path: "/teacher/parents" },
     { icon: Users, text: "Student Management", path: "/teacher/students" },
     { icon: Settings, text: "Settings", path: "/teacher/settings" },
   ];
@@ -69,9 +70,8 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
 
   return (
     <div
-      className={`h-screen overflow-hidden transition-all duration-500 ${
-        isDark ? "bg-[#121A21]" : "bg-slate-50"
-      }`}
+      className={`h-screen overflow-hidden transition-all duration-500 ${isDark ? "bg-[#121A21]" : "bg-slate-50"
+        }`}
     >
       {/* ---------- MOBILE HEADER ---------- */}
       <div
@@ -133,11 +133,10 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
                 <Link
                   key={index}
                   to={item.path}
-                  className={`relative group flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-300 ${
-                    isActive
+                  className={`relative group flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-300 ${isActive
                       ? `${activeBg} ${activeText} font-semibold`
                       : `${hoverBg} ${textSecondary} hover:text-white`
-                  }`}
+                    }`}
                 >
                   {isActive && (
                     <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-6 bg-blue-500 rounded-r-full"></div>
@@ -218,9 +217,8 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
                   <span className={`text-sm font-medium ${textPrimary}`}>Teacher</span>
                   <ChevronDown
                     size={16}
-                    className={`${textSecondary} transition-transform duration-200 ${
-                      showProfileDropdown ? "rotate-180" : ""
-                    }`}
+                    className={`${textSecondary} transition-transform duration-200 ${showProfileDropdown ? "rotate-180" : ""
+                      }`}
                   />
                 </button>
 
@@ -248,14 +246,14 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
             </div>
           </div>
 
-       
+
           <main className="flex-1 p-6 lg:p-8 overflow-y-auto no-scrollbar">
             <div className="max-w-full mx-auto">{children || <Outlet />}</div>
           </main>
         </div>
       </div>
 
-  
+
       {isMobileMenuOpen && (
         <div
           className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300"
