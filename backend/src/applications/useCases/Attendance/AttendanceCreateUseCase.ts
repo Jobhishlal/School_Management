@@ -7,6 +7,7 @@ import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassR
 import { ValidateAttendanceCreate } from "../../validators/AttendanceValidation/AttendanceValidation";
 import { SendEMail } from "../../../infrastructure/providers/EmailService";
 import { IParentRepository } from "../../../domain/repositories/IParentsRepository";
+import { EMAIL_SUBJECTS,EmailTemplates } from "../../../shared/constants/utils/Email/emailTemplates";
 
 export class AttendanceCreateUseCase implements IAttendanceCreateUseCase {
   constructor(
@@ -70,7 +71,7 @@ export class AttendanceCreateUseCase implements IAttendanceCreateUseCase {
       session,
     });
 
-    // Send email notification for absent students
+  
     const absentStudents = attendance.filter(
       (a) => a.status === "Absent" || a.status === "Leave"
     );
@@ -79,18 +80,24 @@ export class AttendanceCreateUseCase implements IAttendanceCreateUseCase {
       for (const item of absentStudents) {
         try {
 
-          // Find student and parent details
           const student = students.find((s) => s.id === item.studentId);
           if (student && student.parentId) {
             const parent = await this.parentRepo.getById(student.parentId);
 
-            if (parent && parent.email) {
-              const subject = `Student Absence Notification - ${student.fullName}`;
-              const message = `Dear Parent,\n\nYour child ${student.fullName} was marked ${item.status} for the ${session} session on ${today.toLocaleDateString()}.\n\nPlease contact the school for any clarifications.\n\nRegards,\nSchool Administration`;
+           if (parent && parent.email) {
+                 const subject = `${EMAIL_SUBJECTS.STUDENT_ABSENT} - ${student.fullName}`;
 
-              await SendEMail(parent.email, subject, message);
-              console.log(`Email sent to ${parent.email} for student ${student.fullName}`);
-            }
+                 const message = EmailTemplates.studentAbsent({
+                 studentName: student.fullName,
+                 status: item.status,
+                  session,
+                   date: today.toLocaleDateString(),
+                     });
+
+                         await SendEMail(parent.email, subject, message);
+                             console.log(`Email sent to ${parent.email} for student ${student.fullName}`);
+                             }
+
           }
         } catch (emailError) {
           console.error(`Failed to send email for student ${item.studentId}:`, emailError);

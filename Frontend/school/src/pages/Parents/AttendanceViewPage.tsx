@@ -15,6 +15,8 @@ import { ParentAttendanceList, attendacedatebasefilterparents } from "../../serv
 import { getDecodedToken } from "../../utils/DecodeToken";
 import type { DashboardData } from "../../types/ParentsattendanceList";
 import { useTheme } from "../../components/layout/ThemeContext";
+import { Pagination } from "../../components/common/Pagination";
+import { showToast } from "../../utils/toast";
 
 const ParentAttendance: React.FC = () => {
   const { isDark } = useTheme();
@@ -25,6 +27,8 @@ const ParentAttendance: React.FC = () => {
 
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const parentId = getDecodedToken()?.id;
 
@@ -84,7 +88,7 @@ const ParentAttendance: React.FC = () => {
         setError("No records found for selected date range");
       }
     } catch (err: any) {
-      setError(err.message || "Something went wrong");
+      showToast(err.response?.data?.message || err.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -284,26 +288,36 @@ const ParentAttendance: React.FC = () => {
           {(!logs || logs.length === 0) ? (
             <p className={mutedText}>No attendance records found</p>
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left py-2">Date</th>
-                  <th className="text-left py-2">Session</th>
-                  <th className="text-left py-2">Status</th>
-                  <th className="text-left py-2">Remark</th>
-                </tr>
-              </thead>
-              <tbody>
-                {logs.map((log, idx) => (
-                  <tr key={idx} className="border-b">
-                    <td className="py-2">{log.date}</td>
-                    <td className="py-2">{log.session}</td>
-                    <td className="py-2">{log.status}</td>
-                    <td className="py-2">{log.remark || "-"}</td>
+            <>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-2">Date</th>
+                    <th className="text-left py-2">Session</th>
+                    <th className="text-left py-2">Status</th>
+                    <th className="text-left py-2">Remark</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {logs
+                    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                    .map((log, idx) => (
+                      <tr key={idx} className="border-b">
+                        <td className="py-2">{log.date}</td>
+                        <td className="py-2">{log.session}</td>
+                        <td className="py-2">{log.status}</td>
+                        <td className="py-2">{log.remark || "-"}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+
+              <Pagination
+                currentPage={currentPage}
+                totalPages={Math.ceil((logs.length || 0) / itemsPerPage)}
+                onPageChange={setCurrentPage}
+              />
+            </>
           )}
         </div>
 

@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { IParentDateBaseAttendance } from "../../../../domain/UseCaseInterface/Attandance/IParentDateBaseAttendance";
+import { AttendanceErrorEnums } from "../../../../shared/constants/AttendanceErrorEnums";
 
 export class ParentAttendanceListController {
   constructor(
@@ -64,6 +65,7 @@ export class ParentAttendanceListController {
       }
 
       if (!startDate || !endDate) {
+        
         res.status(StatusCodes.BAD_REQUEST).json({
           message: "startDate and endDate are required",
         });
@@ -82,6 +84,12 @@ export class ParentAttendanceListController {
         result,
       });
     } catch (error: any) {
+      if (Object.values(AttendanceErrorEnums).includes(error.message)) {
+        res.status(StatusCodes.BAD_REQUEST).json({
+          message: error.message,
+        });
+        return;
+      }
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: error?.message ?? "Internal server error",
       });
