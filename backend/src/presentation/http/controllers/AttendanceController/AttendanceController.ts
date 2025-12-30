@@ -118,6 +118,7 @@ export class AttendanceController {
     try {
       console.log("reached here")
       const { classId } = req.params;
+      const { status } = req.query; // Extract status from query params
       console.log(classId)
 
       if (!classId) {
@@ -125,7 +126,7 @@ export class AttendanceController {
         return;
       }
 
-      const attendance = await this.attendancelist.execute(classId);
+      const attendance = await this.attendancelist.execute(classId, status as string);
       console.log(attendance)
 
       res.status(StatusCodes.OK).json({

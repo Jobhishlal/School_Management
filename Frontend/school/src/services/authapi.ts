@@ -716,8 +716,9 @@ export const AttendanceCreate = async (data: TakeAttendancePayload) => {
   return res.data
 }
 
-export const fetchTodayAttendanceSummary = async (classId: string) => {
-  const res = await api.get(`/teacher/attendance/summary/${classId}`);
+export const fetchTodayAttendanceSummary = async (classId: string, status?: string) => {
+  const query = status ? `?status=${status}` : "";
+  const res = await api.get(`/teacher/attendance/summary/${classId}${query}`);
 
 
   return res.data?.attendance?.attendance ?? [];

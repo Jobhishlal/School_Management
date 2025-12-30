@@ -79,7 +79,7 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
   }
 
 
-  async getTodayAttendanceByClass(classId: string): Promise<TodayAttendanceItemDTO[]> {
+  async getTodayAttendanceByClass(classId: string, status?: string): Promise<TodayAttendanceItemDTO[]> {
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
     const todayEnd = new Date();
@@ -106,12 +106,18 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
     });
 
 
-    return allStudents.map(s => ({
+    let result = allStudents.map(s => ({
       studentId: s._id.toString(),
       studentName: s.fullName,
       Morning: (attendanceMap[s._id.toString()]?.Morning as any) ?? "Not Marked",
       Afternoon: (attendanceMap[s._id.toString()]?.Afternoon as any) ?? "Not Marked",
     }));
+
+    if (status) {
+      result = result.filter(r => r.Morning === status || r.Afternoon === status);
+    }
+
+    return result;
   }
   async findParentWithStudent(parentId: string) {
     const parent = await ParentSignupModel
