@@ -3,7 +3,7 @@ import { authMiddleware } from "../../infrastructure/middleware/AuthMiddleWare";
 import { AssignmentMongo } from "../../infrastructure/repositories/Assiggment/MongoAssignment";
 import { AssignmentCreate } from "../../applications/useCases/Assignment/AssignmentCreateUseCase";
 import { AssignmentManageController } from "../http/controllers/Teacher/AssignmentCreateController";
-import { Assignmentupload } from "../../infrastructure/middleware/AssignmentDocument"; 
+import { Assignmentupload } from "../../infrastructure/middleware/AssignmentDocument";
 import { GetTimeTableteacherList } from "../../applications/useCases/Assignment/GetAssignmentTeacherList";
 import { UpdateAssignment } from "../../applications/useCases/Assignment/UpdateAssignmentUseCase";
 import { GetAllTeacherAssignment } from "../../applications/useCases/Assignment/GetTeacherAssignment";
@@ -18,8 +18,11 @@ import { MongoStudentRepo } from "../../infrastructure/repositories/MongoStudent
 import { StudentFindClassBaseUseCase } from "../../applications/useCases/Students/StudentFindClassIDbaseUseCase";
 import { StudentCreateController } from "../http/controllers/Student/StudentController";
 import { FindStudentsByTeacherUseCase } from "../../applications/useCases/Attendance/FindTeacherIdBaseAttendance";
-import { AttendanceListUseCase} from "../../applications/useCases/Attendance/AttendanceList";
- 
+import { AttendanceListUseCase } from "../../applications/useCases/Attendance/AttendanceList";
+import { GetAttendanceReportUseCase } from "../../applications/useCases/Attendance/GetAttendanceReportUseCase";
+import { GetStudentAttendanceHistoryUseCase } from "../../applications/useCases/Attendance/GetStudentAttendanceHistoryUseCase";
+import { UpdateAttendanceUseCase } from "../../applications/useCases/Attendance/UpdateAttendanceUseCase";
+
 import { MongoTeacher } from "../../infrastructure/repositories/MongoTeacherRepo";
 
 
@@ -53,22 +56,29 @@ const createUseCase = new AssignmentCreate(assignmentRepo);
 const geteacherlist = new GetTimeTableteacherList(assignmentRepo)
 const updateassignment = new UpdateAssignment(assignmentRepo)
 const getallteacherdata = new GetAllTeacherAssignment(assignmentRepo)
-const assignmentController = new AssignmentManageController(createUseCase,geteacherlist,updateassignment,getallteacherdata);
+const assignmentController = new AssignmentManageController(createUseCase, geteacherlist, updateassignment, getallteacherdata);
 
 
 
 const attendancerepo = new AttendanceMongoRepository()
 const classrepo = new MongoClassRepository()
 const studentrepo = new MongoStudentRepo()
-const studentfindclassbase = new StudentFindClassBaseUseCase(studentrepo,classrepo)
+const studentfindclassbase = new StudentFindClassBaseUseCase(studentrepo, classrepo)
 
-const atendancecreate = new AttendanceCreateUseCase(attendancerepo,classrepo,studentrepo)
-const attendancecheckteacher = new FindStudentsByTeacherUseCase(studentrepo,attendancerepo)
+const atendancecreate = new AttendanceCreateUseCase(attendancerepo, classrepo, studentrepo)
+const attendancecheckteacher = new FindStudentsByTeacherUseCase(studentrepo, attendancerepo)
 const attendancelist = new AttendanceListUseCase(attendancerepo)
+const getAttendanceReport = new GetAttendanceReportUseCase(attendancerepo)
+const getStudentHistory = new GetStudentAttendanceHistoryUseCase(attendancerepo)
+const updateAttendanceUseCase = new UpdateAttendanceUseCase(attendancerepo);
+
 const attendanceController = new AttendanceController(
-  atendancecreate,studentfindclassbase,
+  atendancecreate, studentfindclassbase,
   attendancecheckteacher,
-  attendancelist
+  attendancelist,
+  getAttendanceReport,
+  getStudentHistory,
+  updateAttendanceUseCase
 )
 
 
@@ -76,17 +86,17 @@ const attendanceController = new AttendanceController(
 
 const examrepo = new ExamMongoRepo()
 const teacherrepo = new MongoTeacher()
-const examcreate = new ExamCreateUseCase(examrepo,classrepo,teacherrepo)
-const updateexam = new ExamUpdateTeacherUseCase(examrepo,teacherrepo)
+const examcreate = new ExamCreateUseCase(examrepo, classrepo, teacherrepo)
+const updateexam = new ExamUpdateTeacherUseCase(examrepo, teacherrepo)
 const findall = new GetTeacherExamsUseCase(examrepo)
 
 
 const exammarkrepo = new ExamMarkMongoRepository()
 
-const exammarkcreate = new ExamMarkCreateUseCase(exammarkrepo,studentrepo,examrepo)
-const studentgetrepo = new GetStudentsByExamUseCase(examrepo,studentrepo,exammarkrepo)
+const exammarkcreate = new ExamMarkCreateUseCase(exammarkrepo, studentrepo, examrepo)
+const studentgetrepo = new GetStudentsByExamUseCase(examrepo, studentrepo, exammarkrepo)
 
-const exammarkcontroller = new ExamMarkManagementController(exammarkcreate,studentgetrepo)
+const exammarkcontroller = new ExamMarkManagementController(exammarkcreate, studentgetrepo)
 const examfindclassbase = new ExamFindClassBase(examrepo)
 
 
@@ -95,7 +105,7 @@ const exammanagementcontroller = new ExamManagementController(
   updateexam,
   findall,
   examfindclassbase,
- 
+
 )
 
 
@@ -123,15 +133,15 @@ Teacherrouter.put(
   (req, res) => assignmentController.Updateassignment(req, res)
 );
 
-  Teacherrouter.get('/TeachAssignmentList',authMiddleware,(req,res)=> assignmentController.GetAllAssignemntExistedTeacher(req,res))
+Teacherrouter.get('/TeachAssignmentList', authMiddleware, (req, res) => assignmentController.GetAllAssignemntExistedTeacher(req, res))
 
 
 
-  Teacherrouter.post('/attendance/create',
-    authMiddleware,
-    (req,res)=>{
-  attendanceController.Create(req as AuthRequest,res)
-})
+Teacherrouter.post('/attendance/create',
+  authMiddleware,
+  (req, res) => {
+    attendanceController.Create(req as AuthRequest, res)
+  })
 
 
 
@@ -144,36 +154,53 @@ Teacherrouter.get(
 
 Teacherrouter.get(
   "/attendance/students",
-  authMiddleware, 
+  authMiddleware,
   (req, res) => attendanceController.findStudentsByTeacher(req as AuthRequest, res)
 );
 
-Teacherrouter.get( `/attendance/summary/:classId`,
-   authMiddleware,
-   (req,res)=>attendanceController.AttendanceList(req as AuthRequest,res)
+Teacherrouter.get(`/attendance/summary/:classId`,
+  authMiddleware,
+  (req, res) => attendanceController.AttendanceList(req as AuthRequest, res)
 )
+
+Teacherrouter.get('/attendance/report/:classId',
+  authMiddleware,
+  (req, res) => attendanceController.getReport(req as AuthRequest, res)
+)
+
+
+Teacherrouter.get('/attendance/student/:studentId/history',
+  authMiddleware,
+  (req, res) => attendanceController.getStudentHistory(req as AuthRequest, res)
+)
+
+Teacherrouter.put('/attendance/update',
+  authMiddleware,
+  (req, res) => attendanceController.updateAttendance(req as AuthRequest, res)
+)
+
 
 
 
 Teacherrouter.post('/exam/create',
   authMiddleware,
-  (req,res)=>exammanagementcontroller.CreateExam(req as AuthRequest,res)
+  (req, res) => exammanagementcontroller.CreateExam(req as AuthRequest, res)
 )
 
 Teacherrouter.put('/exam/update/:id',
   authMiddleware,
-  (req,res)=>exammanagementcontroller.UpdateExam(req as AuthRequest,res)
+  (req, res) => exammanagementcontroller.UpdateExam(req as AuthRequest, res)
 )
 
 
 Teacherrouter.get("/exams",
-   authMiddleware, (req, res) =>
+  authMiddleware, (req, res) =>
   exammanagementcontroller.getTeacherExams(req as AuthRequest, res)
 );
 
 Teacherrouter.post('/exammark/create',
   authMiddleware,
-  (req,res)=>exammarkcontroller.CreateExamMark(req as AuthRequest,res)
+  (req, res) => exammarkcontroller.CreateExamMark(req as AuthRequest, res)
 )
 
 
@@ -181,7 +208,7 @@ Teacherrouter.post('/exammark/create',
 Teacherrouter.get(
   "/exam/:examId/students",
   authMiddleware,
-  (req, res) =>exammarkcontroller.getStudentsByExam(req as AuthRequest, res)
+  (req, res) => exammarkcontroller.getStudentsByExam(req as AuthRequest, res)
 );
 
 Teacherrouter.get(

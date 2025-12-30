@@ -1,3 +1,4 @@
+import { Class } from "../../entities/Class";
 export interface IClassDivisionRepository {
 
   getStudentsByClassAndDivision(
@@ -28,5 +29,7 @@ export interface IClassDivisionRepository {
   ): Promise<{ success: boolean; type: "assigned" | "reassigned" }>;
   getClassTeacher(classId: string): Promise<{ teacherId: string; name: string } | null>;
   getAllTeacher(): Promise<{ teacherId: string; name: string; subjects: { name: string }[] }[]>
+  getClassByTeacherId(teacherId: string): Promise<Class | null>;
+
 
 }

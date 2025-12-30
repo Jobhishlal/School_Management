@@ -2,6 +2,7 @@ import { StudentModel } from "../database/models/StudentModel";
 import { IClassDivisionRepository } from "../../domain/repositories/Classrepo/IClassDivisionview";
 import { ClassModel } from "../database/models/ClassModel";
 import { TeacherModel } from "../database/models/Teachers";
+import { Class } from "../../domain/entities/Class";
 export class ClassDivisionRepository implements IClassDivisionRepository {
   async getStudentsByClassAndDivision(className?: string, division?: string) {
  
@@ -63,7 +64,7 @@ export class ClassDivisionRepository implements IClassDivisionRepository {
   async AssignClassTeacher(classId: string, teacherId: string): Promise<{
     success: boolean;
     type: "assigned" | "reassigned";
-  }> {
+            }> {
     const existingClass = await ClassModel.findById(classId);
 
     if (!existingClass) {
@@ -106,6 +107,11 @@ export class ClassDivisionRepository implements IClassDivisionRepository {
       name: t.name,
       subjects: t.subjects || []
     }));
+  }
+
+
+  async getClassByTeacherId(teacherId: string): Promise<Class | null> {
+    return ClassModel.findOne({ classTeacher: teacherId });
   }
 }
 

@@ -71,12 +71,12 @@ export class AdminClassController {
       const data = await this.listoutteacherlist.execute();
 
       if (!data) {
-        res.status(400).json({ success: false, message: "No teachers found" });
+        res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "No teachers found" });
       }
-      res.status(200).json({ success: true, data });
+      res.status(StatusCodes.OK).json({ success: true, data });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, message: "Internal server error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal server error" });
     }
   }
 

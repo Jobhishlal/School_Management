@@ -37,7 +37,7 @@ export const SubAdminBlock = async (id: string, blocked: boolean) => {
 
 export const GetAllteacher = async () => {
   const res = await api.get(API_ROUTES.ADMIN.TEACHER)
-  return res.data
+  return res.data.data
 }
 
 
@@ -796,6 +796,26 @@ export const assignStudentToDivision = async (payload: {
   classId: string;
 }) => {
   const res = await api.post("/admin/assign-student-class", payload);
+  return res.data;
+};
+
+export const updateAttendance = async (studentId: string, date: Date, session: string, status: string) => {
+  const res = await api.put('/teacher/attendance/update', { studentId, date, session, status });
+  return res.data;
+};
+
+
+export const getAttendanceReport = async (classId: string, startDate: Date, endDate: Date) => {
+  const res = await api.get(`/teacher/attendance/report/${classId}`, {
+    params: { startDate, endDate }
+  });
+  return res.data;
+};
+
+export const getStudentAttendanceHistory = async (studentId: string, month: number, year: number) => {
+  const res = await api.get(`/teacher/attendance/student/${studentId}/history`, {
+    params: { month, year }
+  });
   return res.data;
 };
 
