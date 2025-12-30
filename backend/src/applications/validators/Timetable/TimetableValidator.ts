@@ -2,14 +2,14 @@ import { TimeTableError } from "../../../domain/enums/TimeTable/TimeTableError";
 import { CreateTimetableDTO } from "../../dto/CreateTImeTableDTO";
 import { ClassModel } from "../../../infrastructure/database/models/ClassModel";
 import { TeacherModel } from "../../../infrastructure/database/models/Teachers";
-import { TimetableModel } from "../../../infrastructure/database/models/Admin/TimeTableCraete"; 
+import { TimetableModel } from "../../../infrastructure/database/models/Admin/TimeTableCraete";
 
 export function parseTime(time: string): number {
   const match = time.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?$/i);
   if (!match) throw new Error(`Invalid time format: ${time}`);
 
   let hour = parseInt(match[1]);
-  const minutes = parseInt(match[2] || "0"); 
+  const minutes = parseInt(match[2] || "0");
   const period = match[3]?.toUpperCase();
 
   if (period === "PM" && hour !== 12) hour += 12;
@@ -69,10 +69,9 @@ export async function validateTimetable(dto: CreateTimetableDTO): Promise<void> 
     throw new Error(TimeTableError.ClASS_NOT_FOUND);
   }
 
-  const MIN_HOUR = 9; 
-  const MAX_HOUR = 16;
-  const LUNCH_TIME_START=12;
-  const LUNCH_TIME_OVER=13; 
+  const MIN_HOUR = 9;
+  const LUNCH_TIME_START = 12;
+  const LUNCH_TIME_OVER = 13;
 
   for (const day of dto.days) {
     if (!day.day) throw new Error("Each day must have a name");
@@ -80,31 +79,55 @@ export async function validateTimetable(dto: CreateTimetableDTO): Promise<void> 
       throw new Error(`Each day (${day.day}) must have at least one period`);
     }
 
+    const MAX_LIMIT_HOUR = 16; // 16:00
+
+    if (day.breaks && Array.isArray(day.breaks)) {
+      for (const brk of day.breaks) {
+        const { startTime, endTime } = brk;
+        if (!startTime || !endTime) {
+          throw new Error(`Start and end time are required for all breaks on ${day.day}`);
+        }
+
+        const startH = parseInt(startTime.split(':')[0]);
+        const endH = parseInt(endTime.split(':')[0]);
+
+        if (startH >= MAX_LIMIT_HOUR || endH > MAX_LIMIT_HOUR) {
+          throw new Error(`Breaks cannot be scheduled after 16:00 on ${day.day}`);
+        }
+
+        const startHour = parseTime(startTime);
+        const endHour = parseTime(endTime);
+
+        if (endHour <= startHour) {
+          throw new Error(`Break end time must be after start time on ${day.day}`);
+        }
+      }
+    }
+
     const seenTimes = new Set<number>();
 
     for (const period of day.periods) {
       const { startTime, endTime, subject, teacherId } = period;
 
-      if (!startTime || !endTime || !subject || !teacherId) {
-        throw new Error(`All period fields are required for ${day.day}`);
+      if (!startTime || !endTime || (subject !== "Break" && !teacherId)) {
+        throw new Error(`Missing required fields for period on ${day.day}`);
       }
 
       const startHour = parseTime(startTime);
       const endHour = parseTime(endTime);
 
-      if (startHour < MIN_HOUR || endHour > MAX_HOUR) {
+      if (startHour < MIN_HOUR || endHour > MAX_LIMIT_HOUR) {
         throw new Error(`Time must be between 9:00 and 16:00 for ${day.day}`);
       }
 
       if (startHour >= LUNCH_TIME_START && endHour <= LUNCH_TIME_OVER) {
-         throw new Error(
-        `Cannot schedule a class during lunch break (12:00 PM - 1:00 PM) on ${day.day}`
-     );
-    }
+        throw new Error(
+          `Cannot schedule a class during lunch break (12:00 PM - 1:00 PM) on ${day.day}`
+        );
+      }
 
-
-      if (Math.abs(endHour - startHour) !== 1) {
-        throw new Error(`Each period must be exactly 1 hour long on ${day.day}`);
+      if (endHour <= startHour) {
+        throw new Error(`End time must be after start time on ${day.day}`);
       }
 
       if (seenTimes.has(startHour)) {
@@ -112,17 +135,18 @@ export async function validateTimetable(dto: CreateTimetableDTO): Promise<void> 
       }
       seenTimes.add(startHour);
 
-      const teacher = await TeacherModel.findById(teacherId);
-      if (!teacher) {
-        throw new Error(`Teacher not found for period (${subject})`);
-      }
+      if (subject !== "Break") {
+        const teacher = await TeacherModel.findById(teacherId);
+        if (!teacher) {
+          throw new Error(`Teacher not found for period (${subject})`);
+        }
 
-           if (!teacher.subjects.some(s => s.name === period.subject)) {
+        if (!teacher.subjects.some(s => s.name === period.subject)) {
           throw new Error(`${teacher.name} does not teach ${period.subject}`);
-         }
-     
+        }
 
-      await checkTeacherAvailability(day.day, startHour, endHour, teacherId, dto.classId);
+        await checkTeacherAvailability(day.day, startHour, endHour, teacherId, dto.classId);
+      }
     }
   }
 }

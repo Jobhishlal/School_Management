@@ -10,6 +10,11 @@ interface Period {
 interface DaySchedule {
   day: string;
   periods: Period[];
+  breaks: {
+    startTime: string;
+    endTime: string;
+    name?: string;
+  }[];
 }
 
 export interface TimetableDocument extends Document {
@@ -35,6 +40,16 @@ const DayScheduleSchema = new Schema<DaySchedule>(
   {
     day: { type: String, required: true },
     periods: { type: [PeriodSchema], default: [] },
+    breaks: {
+      type: [
+        {
+          startTime: { type: String, required: true },
+          endTime: { type: String, required: true },
+          name: { type: String, required: false },
+        },
+      ],
+      default: [],
+    },
   },
   { _id: false }
 );

@@ -4,17 +4,17 @@ import { ITimeTableStudentview } from "../../../../domain/UseCaseInterface/TimeT
 import { StudentTimeTableViewUseCase } from "../../../../applications/useCases/admin/TimeTable/StudentTimetableview";
 
 export class StudentTimetableController {
-  constructor(private readonly timetablerepo: StudentTimeTableViewUseCase) {}
+  constructor(private readonly timetablerepo: StudentTimeTableViewUseCase) { }
 
   async TimeTableView(req: Request, res: Response): Promise<void> {
     try {
-        console.log("reached")
+      console.log("reached")
       const { studentId } = req.query as { studentId: string };
-         console.log("student",studentId)
+      console.log("student", studentId)
 
       if (!studentId) {
         console.log("student time table")
-        console.log("studentId",studentId)
+        console.log("studentId", studentId)
         res.status(StatusCodes.BAD_REQUEST).json({
           success: false,
           message: "studentId is Required",
@@ -23,7 +23,13 @@ export class StudentTimetableController {
       }
 
       const timetable = await this.timetablerepo.execute(studentId);
-      console.log("timetable view student",timetable)
+      console.log("timetable object keys:", Object.keys(timetable || {}));
+      if (timetable && timetable.days) {
+        timetable.days.forEach((day, index) => {
+          console.log(`Day ${index} (${day.day}):`, JSON.stringify(day));
+          console.log(`Day ${index} breaks:`, day.breaks);
+        });
+      }
 
       if (!timetable) {
         res.status(StatusCodes.NOT_FOUND).json({

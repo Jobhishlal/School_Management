@@ -41,22 +41,19 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
 
 
   async create(timetable: TimetableEntity): Promise<TimetableEntity> {
-
-
-    await validateTimetable(timetable)
+    await validateTimetable(timetable);
 
     const classObjectId = new mongoose.Types.ObjectId(timetable.classId);
 
-
-    let existing = await TimetableModel.findOne({ classId: classObjectId });
+    const existing = await TimetableModel.findOne({ classId: classObjectId });
     if (existing) throw new Error("Timetable already exists for this class");
 
     const daysData = timetable.days.length > 0 ? timetable.days : [
-      { day: "Monday", periods: [] },
-      { day: "Tuesday", periods: [] },
-      { day: "Wednesday", periods: [] },
-      { day: "Thursday", periods: [] },
-      { day: "Friday", periods: [] },
+      { day: "Monday", periods: [], breaks: [] },
+      { day: "Tuesday", periods: [], breaks: [] },
+      { day: "Wednesday", periods: [], breaks: [] },
+      { day: "Thursday", periods: [], breaks: [] },
+      { day: "Friday", periods: [], breaks: [] },
     ];
 
     const doc = new TimetableModel({
@@ -70,6 +67,11 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
           endTime: p.endTime,
           subject: p.subject,
           teacherId: p.teacherId ? new mongoose.Types.ObjectId(p.teacherId) : undefined,
+        })),
+        breaks: (d.breaks || []).map((b: any) => ({
+          startTime: b.startTime,
+          endTime: b.endTime,
+          name: b.name
         }))
       }))
     });
@@ -90,7 +92,8 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
           p.endTime,
           p.subject,
           (p.teacherId as any)?._id?.toString() || p.teacherId.toString()
-        ))
+        )),
+        (d.breaks || []).map(b => ({ startTime: b.startTime, endTime: b.endTime, name: b.name }))
       ))
     );
   }
@@ -121,7 +124,8 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
           p.endTime,
           p.subject,
           (p.teacherId as any)?._id?.toString() || p.teacherId.toString()
-        ))
+        )),
+        (d.breaks || []).map(b => ({ startTime: b.startTime, endTime: b.endTime, name: b.name }))
       ))
     );
   }
@@ -141,6 +145,11 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
             endTime: p.endTime,
             subject: p.subject,
             teacherId: p.teacherId ? new mongoose.Types.ObjectId(p.teacherId) : undefined
+          })),
+          breaks: (d.breaks || []).map((b: any) => ({
+            startTime: b.startTime,
+            endTime: b.endTime,
+            name: b.name
           }))
         }))
       },
@@ -163,7 +172,8 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
           p.endTime,
           p.subject,
           (p.teacherId as any)._id?.toString() || p.teacherId.toString()
-        ))
+        )),
+        (d.breaks || []).map(b => ({ startTime: b.startTime, endTime: b.endTime, name: b.name }))
       ))
     );
   }
@@ -188,7 +198,8 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
           p.endTime,
           p.subject,
           (p.teacherId as any)._id?.toString() || p.teacherId.toString()
-        ))
+        )),
+        (d.breaks || []).map(b => ({ startTime: b.startTime, endTime: b.endTime, name: b.name }))
       ))
     );
   }
@@ -222,7 +233,8 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
               p.subject,
               p.teacherId ? (p.teacherId as any)?.name || "" : ""
             )
-          )
+          ),
+          (d.breaks || []).map(b => ({ startTime: b.startTime, endTime: b.endTime, name: b.name }))
         )
       )
     );
@@ -259,7 +271,8 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
           p.endTime,
           p.subject,
           (p.teacherId as any)?.name || ""
-        ))
+        )),
+        (d.breaks || []).map(b => ({ startTime: b.startTime, endTime: b.endTime, name: b.name }))
       ))
     ) : null;
   }

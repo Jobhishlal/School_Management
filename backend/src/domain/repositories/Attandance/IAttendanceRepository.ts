@@ -10,15 +10,15 @@ export interface IAttandanceRepository {
   create(data: TakeAttendance): Promise<AttendanceEntity>
   findByDateSession(classId: Types.ObjectId | string, date: Date, session: AttendanceSession): Promise<AttendanceEntity | null>;
   findclassTeacher(id: string): Promise<Class>
-  getTodayAttendanceByClass(classId: string): Promise<TodayAttendanceItemDTO[]>;
+  getTodayAttendanceByClass(classId: string, status?: string): Promise<TodayAttendanceItemDTO[]>;
   findParentWithStudent(parentId: string): Promise<{
     studentId: string;
   }>;
 
-  getParentAttendanceDashboard( parentId: string ): Promise<ParentAttendanceDashboardDTO>;
+  getParentAttendanceDashboard(parentId: string): Promise<ParentAttendanceDashboardDTO>;
 
   getAttendanceByDateRange(classId: string, startDate: Date, endDate: Date): Promise<any[]>;
   getStudentAttendanceHistory(studentId: string, month: number, year: number): Promise<any>;
   updateStudentAttendance(studentId: string, date: Date, session: string, status: string): Promise<boolean>;
-  getParentAttendanceByDateRange( parentId: string, startDate: Date, endDate: Date ): Promise<ParentAttendanceHistory>;
+  getParentAttendanceByDateRange(parentId: string, startDate: Date, endDate: Date): Promise<ParentAttendanceHistory>;
 }

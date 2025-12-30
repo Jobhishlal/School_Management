@@ -3,10 +3,10 @@ import { IAttandanceRepository } from "../../../domain/repositories/Attandance/I
 import { TodayAttendanceResponse, TodayAttendanceItemDTO } from "../../dto/Attendance/TodayAttendanceDTO";
 
 export class AttendanceListUseCase implements IAttendanceList {
-  constructor(private repo: IAttandanceRepository) {}
+  constructor(private repo: IAttandanceRepository) { }
 
-  async execute(classId: string): Promise<TodayAttendanceResponse> {
-    const attendanceData = await this.repo.getTodayAttendanceByClass(classId);
+  async execute(classId: string, status?: string): Promise<TodayAttendanceResponse> {
+    const attendanceData = await this.repo.getTodayAttendanceByClass(classId, status);
 
     if (!attendanceData || attendanceData.length === 0) {
       return { date: new Date(), totalStudents: 0, attendance: [] };

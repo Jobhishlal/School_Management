@@ -43,14 +43,6 @@ const AdminTimeTablePage: React.FC = () => {
   const [timetableId, setTimetableId] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
-  // Helper function to check if time is during lunch
-  const isLunchTime = (startTime: string, endTime: string): boolean => {
-    const start = parseInt(startTime.split(':')[0]);
-    const end = parseInt(endTime.split(':')[0]);
-    
-    // Check if period overlaps with 12:00-13:00
-    return (start >= 12 && start < 13) || (end > 12 && end <= 13);
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,7 +82,12 @@ const AdminTimeTablePage: React.FC = () => {
               endTime: p.endTime || "",
               subject: p.subject || "",
               teacherId: typeof p.teacherId === "object" ? p.teacherId._id : p.teacherId || ""
-            }))
+            })),
+            breaks: d.breaks?.map((b: any) => ({
+              startTime: b.startTime || "",
+              endTime: b.endTime || "",
+              name: b.name || ""
+            })) || []
           }));
           setDays(formattedDays);
           setTimetableId(res.data._id || res.data.id || "");
@@ -130,33 +127,66 @@ const AdminTimeTablePage: React.FC = () => {
           let newEndTime = "10:00";
 
           if (lastPeriod && lastPeriod.endTime) {
-            const [hours, minutes] = lastPeriod.endTime.split(':').map(Number);
+            const [lastEndH, lastEndM] = lastPeriod.endTime.split(':').map(Number);
 
-            // If last period ends at 12:00 or during lunch, skip to 13:00
-            if (hours === 12 || (hours >= 12 && hours < 13)) {
-              newStartTime = "13:00";
-              newEndTime = "14:00";
+            // 1. Determine Start Time based on Break or Lunch
+            let startH = lastEndH;
+            let startM = lastEndM;
+
+            // Check if a break exists that starts exactly when the last period ends
+            const overlappingBreak = d.breaks?.find(b => b.startTime === lastPeriod.endTime);
+            if (overlappingBreak && overlappingBreak.endTime) {
+              const [breakEndH, breakEndM] = overlappingBreak.endTime.split(':').map(Number);
+              startH = breakEndH;
+              startM = breakEndM;
             } else {
-              newStartTime = lastPeriod.endTime;
-              
-              const [newStartH, newStartM] = newStartTime.split(":").map(Number);
-              let endHours = newStartH + 1;
-              let endMinutes = newStartM;
-
-              // If adding 1 hour crosses into lunch time, skip to 13:00
-              if (newStartH < 12 && endHours >= 12) {
-                newStartTime = lastPeriod.endTime;
-                if (newStartH >= 11) {
-                  // Last period before lunch
-                  newEndTime = "12:00";
-                } else {
-                  newEndTime = `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`;
-                }
-              } else {
-                if (endHours >= 24) endHours = 0;
-                newEndTime = `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`;
+              // Legacy Lunch Logic: If no explicit break, skip 12:00-13:00
+              if (lastEndH === 12 || (lastEndH === 11 && lastEndM >= 60)) {
+                startH = 13;
+                startM = 0;
               }
             }
+
+            // Check 16:00 Limit for Start Time
+            if (startH >= 16) {
+              showToast("Cannot add periods after 4:00 PM", "error");
+              return d;
+            }
+
+            newStartTime = `${String(startH).padStart(2, '0')}:${String(startM).padStart(2, '0')}`;
+
+            // 2. Determine Duration (match last period)
+            let effectiveDuration = 60; // Default 1 hour
+            if (lastPeriod.startTime) {
+              const [lastStartH, lastStartM] = lastPeriod.startTime.split(':').map(Number);
+              const durationMinutes = (lastEndH * 60 + lastEndM) - (lastStartH * 60 + lastStartM);
+              if (durationMinutes > 0) effectiveDuration = durationMinutes;
+            }
+
+            // 3. Calculate New End Time
+            const newStartTotalMinutes = startH * 60 + startM;
+            const newEndTotalMinutes = newStartTotalMinutes + effectiveDuration;
+
+            let endH = Math.floor(newEndTotalMinutes / 60);
+            let endM = newEndTotalMinutes % 60;
+
+            // Cap at 16:00
+            if (endH > 16 || (endH === 16 && endM > 0)) {
+              endH = 16;
+              endM = 0;
+            }
+
+            newEndTime = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+          }
+
+          // Final safety check if end time <= start time (e.g. capped at 16:00 but start was 15:50)
+          // Ideally we allow it and let validator catch or user fix, but let's ensure it's validish
+          const [finalStartH, finalStartM] = newStartTime.split(':').map(Number);
+          const [finalEndH, finalEndM] = newEndTime.split(':').map(Number);
+
+          if (finalEndH < finalStartH || (finalEndH === finalStartH && finalEndM <= finalStartM)) {
+            // If duration squeeze made it invalid, just add 10 mins or cap
+            // But if start is 16:00, we already returned above.
           }
 
           periods.push({
@@ -176,6 +206,7 @@ const AdminTimeTablePage: React.FC = () => {
             periods: [
               { startTime: "09:00", endTime: "10:00", subject: "", teacherId: "" },
             ],
+            breaks: []
           }
         ];
       }
@@ -206,6 +237,66 @@ const AdminTimeTablePage: React.FC = () => {
         if (d.day === day) {
           const newPeriods = d.periods.filter((_, i) => i !== idx);
           return { ...d, periods: newPeriods };
+        }
+        return d;
+      })
+    );
+  };
+
+  const addBreak = (day: string) => {
+    setDays(prev => {
+      const dayIndex = prev.findIndex(d => d.day === day);
+      if (dayIndex >= 0) {
+        return prev.map(d => {
+          if (d.day === day) {
+            const breaks = d.breaks ? [...d.breaks] : [];
+            breaks.push({ startTime: "10:00", endTime: "10:15", name: "Break" });
+            return { ...d, breaks };
+          }
+          return d;
+        });
+      } else {
+        return [
+          ...prev,
+          {
+            day,
+            periods: [],
+            breaks: [{ startTime: "10:00", endTime: "10:15", name: "Break" }]
+          }
+        ];
+      }
+    });
+  };
+
+  const removeBreak = (day: string, idx: number) => {
+    setDays(prev =>
+      prev.map(d => {
+        if (d.day === day) {
+          const breaks = d.breaks ? d.breaks.filter((_, i) => i !== idx) : [];
+          return { ...d, breaks };
+        }
+        return d;
+      })
+    );
+  };
+
+  const updateBreak = (day: string, idx: number, key: 'startTime' | 'endTime' | 'name', value: string) => {
+    setDays(prev =>
+      prev.map(d => {
+        if (d.day === day) {
+          const breaks = d.breaks ? [...d.breaks] : [];
+          if (breaks[idx]) {
+            // Validate time limit for breaks too
+            if (key === 'startTime' || key === 'endTime') {
+              const [h, m] = value.split(":").map(Number);
+              if (h > 16 || (h === 16 && m > 0)) {
+                showToast("Breaks cannot go beyond 4:00 PM", "error");
+                return d; // Ignore change
+              }
+            }
+            breaks[idx] = { ...breaks[idx], [key]: value };
+          }
+          return { ...d, breaks };
         }
         return d;
       })
@@ -288,7 +379,7 @@ const AdminTimeTablePage: React.FC = () => {
       {weekDays.map(day => {
         const daySchedule = days.find(d => d.day === day);
         const allPeriods = daySchedule?.periods || [];
-        
+
         // Sort periods by start time
         const sortedPeriods = [...allPeriods].sort((a, b) => {
           const timeA = parseInt(a.startTime.replace(':', ''));
@@ -296,29 +387,58 @@ const AdminTimeTablePage: React.FC = () => {
           return timeA - timeB;
         });
 
-        // Check if lunch break needs to be shown
-        const hasPeriodsBeforeLunch = sortedPeriods.some(p => {
-          const endHour = parseInt(p.endTime.split(':')[0]);
-          return endHour === 12;
-        });
-
-        const hasPeriodsAfterLunch = sortedPeriods.some(p => {
-          const startHour = parseInt(p.startTime.split(':')[0]);
-          return startHour >= 13;
-        });
-
-        const showLunchBreak = hasPeriodsBeforeLunch || hasPeriodsAfterLunch;
 
         return (
           <div key={day} className={`mb-4 border p-4 rounded ${cardBg}`}>
-            <h3 className="font-semibold mb-3 text-lg">{day}</h3>
-            
+            <div className="flex justify-between items-start mb-3">
+              <h3 className="font-semibold text-lg">{day}</h3>
+              <div className="flex flex-col gap-2">
+                {daySchedule?.breaks?.map((b, bIdx) => (
+                  <div key={bIdx} className="flex gap-2 items-end bg-gray-50 dark:bg-gray-800 p-2 rounded">
+                    <TextInput
+                      label="Name"
+                      type="text"
+                      value={b.name || "Break"}
+                      onChange={(val) => updateBreak(day, bIdx, "name", val)}
+                      isDark={isDark}
+                    />
+                    <TextInput
+                      label="Start"
+                      type="time"
+                      value={b.startTime}
+                      onChange={(val) => updateBreak(day, bIdx, "startTime", val)}
+                      isDark={isDark}
+                    />
+                    <TextInput
+                      label="End"
+                      type="time"
+                      value={b.endTime}
+                      onChange={(val) => updateBreak(day, bIdx, "endTime", val)}
+                      isDark={isDark}
+                    />
+                    <button
+                      onClick={() => removeBreak(day, bIdx)}
+                      className={`px-2 py-1 text-xs rounded ${buttonDanger} h-8 self-end mb-1`}
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={() => addBreak(day)}
+                  className={`px-3 py-1 text-xs rounded ${buttonAdd} self-end`}
+                >
+                  + Add Break
+                </button>
+              </div>
+            </div>
+
             {sortedPeriods.length === 0 ? (
               <p className={`text-sm mb-3 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
                 No periods added yet
               </p>
             ) : (
-              sortedPeriods.map((p, idx) => {
+              sortedPeriods.map((p) => {
                 const actualIdx = allPeriods.indexOf(p);
                 const shouldShowLunchAfter = parseInt(p.endTime.split(':')[0]) === 12;
 
@@ -339,12 +459,31 @@ const AdminTimeTablePage: React.FC = () => {
                         onChange={val => updatePeriod(day, actualIdx, "endTime", val)}
                         isDark={isDark}
                       />
+                      <div className="flex flex-col items-center justify-end pb-2 px-1">
+                        <label className={`text-xs mb-1 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                          Break?
+                        </label>
+                        <input
+                          type="checkbox"
+                          checked={p.subject === "Break"}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              updatePeriod(day, actualIdx, "subject", "Break");
+                              updatePeriod(day, actualIdx, "teacherId", "");
+                            } else {
+                              updatePeriod(day, actualIdx, "subject", "");
+                            }
+                          }}
+                          className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                      </div>
                       <SelectInput
                         label="Teacher"
                         value={p.teacherId}
                         onChange={val => updatePeriod(day, actualIdx, "teacherId", val)}
                         options={teachers.map(t => ({ value: getTeacherId(t), label: t.name }))}
                         isDark={isDark}
+                        disabled={p.subject === "Break"}
                       />
                       <SelectInput
                         label="Subject"
@@ -357,7 +496,7 @@ const AdminTimeTablePage: React.FC = () => {
                           })) || []
                         }
                         isDark={isDark}
-                        disabled={!p.teacherId}
+                        disabled={(!p.teacherId && p.subject !== "Break") || p.subject === "Break"}
                       />
                       <button
                         onClick={() => removePeriod(day, actualIdx)}

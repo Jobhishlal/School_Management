@@ -1,6 +1,6 @@
 export interface CreateTimetableDTO {
   classId: string;
-  className:string;
+  className: string;
   division: string;
   days: {
     day: string;
@@ -9,6 +9,11 @@ export interface CreateTimetableDTO {
       endTime: string;
       subject: string;
       teacherId: string;
+    }[];
+    breaks?: {
+      startTime: string;
+      endTime: string;
+      name?: string;
     }[];
   }[];
 }
