@@ -10,7 +10,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { ParentAttendanceList } from "../../services/authapi";
+import { ParentAttendanceList, attendacedatebasefilterparents } from "../../services/authapi";
+
 import { getDecodedToken } from "../../utils/DecodeToken";
 import type { DashboardData } from "../../types/ParentsattendanceList";
 import { useTheme } from "../../components/layout/ThemeContext";
@@ -22,9 +23,11 @@ const ParentAttendance: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
   const parentId = getDecodedToken()?.id;
 
-  /* ---------------- THEME CLASSES ---------------- */
   const pageBg = isDark
     ? "bg-[#121A21] text-white"
     : "bg-gray-100 text-gray-900";
@@ -35,7 +38,7 @@ const ParentAttendance: React.FC = () => {
 
   const mutedText = isDark ? "text-gray-400" : "text-gray-600";
 
-  /* ---------------- FETCH DATA ---------------- */
+  /* ---------------- INITIAL LOAD ---------------- */
   useEffect(() => {
     const fetchAttendance = async () => {
       if (!parentId) {
@@ -63,6 +66,30 @@ const ParentAttendance: React.FC = () => {
     fetchAttendance();
   }, [parentId]);
 
+  /* ---------------- DATE FILTER FETCH ---------------- */
+  const fetchFilteredAttendance = async () => {
+    try {
+      setLoading(true);
+      const res = await attendacedatebasefilterparents(
+
+        startDate,
+        endDate
+      );
+      console.log("result")
+
+      if (res?.result) {
+        setDashboard(res.result);
+        setError("");
+      } else {
+        setError("No records found for selected date range");
+      }
+    } catch (err: any) {
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   /* ---------------- TREND DATA ---------------- */
   const generateTrendData = () => {
     if (!dashboard?.logs) return [];
@@ -72,7 +99,7 @@ const ParentAttendance: React.FC = () => {
       { present: number; absent: number; leave: number }
     > = {};
 
-    dashboard.logs.forEach((log) => {
+    dashboard.logs?.forEach((log) => {
       const month = new Date(log.date).toLocaleDateString("en-US", {
         month: "short",
       });
@@ -92,7 +119,7 @@ const ParentAttendance: React.FC = () => {
     }));
   };
 
-  /* ---------------- STATES ---------------- */
+  /* ---------------- UI STATES ---------------- */
   if (loading) {
     return (
       <div className={`flex items-center justify-center h-screen ${pageBg}`}>
@@ -125,7 +152,7 @@ const ParentAttendance: React.FC = () => {
   const { student, summary, today, logs } = dashboard;
   const trendData = generateTrendData();
 
-  /* ---------------- UI ---------------- */
+  /* ---------------- MAIN UI ---------------- */
   return (
     <div className={`min-h-screen p-6 ${pageBg}`}>
       <div className="max-w-7xl mx-auto space-y-6">
@@ -141,16 +168,54 @@ const ParentAttendance: React.FC = () => {
             <div>
               <h2 className="text-xl font-bold">{student.name}</h2>
               <p className={`text-sm mt-1 ${mutedText}`}>
-                Morning:{" "}
+                Morning:
                 <span className="text-green-500 font-medium">
-                  {today.Morning}
+                  {" "}
+                  {today?.Morning ?? "Not Marked"}
                 </span>{" "}
-                | Afternoon:{" "}
+                | Afternoon:
                 <span className="text-green-500 font-medium">
-                  {today.Afternoon}
+                  {" "}
+                  {today?.Afternoon ?? "Not Marked"}
                 </span>
               </p>
+
             </div>
+          </div>
+        </div>
+
+        {/* DATE FILTER */}
+        <div className={`rounded-xl p-6 border shadow ${cardBg}`}>
+          <h3 className="font-semibold mb-4">Filter Attendance by Date</h3>
+
+          <div className="flex gap-4 items-end flex-wrap">
+            <div>
+              <p className="text-sm mb-1">Start Date</p>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="border rounded px-3 py-2"
+              />
+            </div>
+
+            <div>
+              <p className="text-sm mb-1">End Date</p>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="border rounded px-3 py-2"
+              />
+            </div>
+
+            <button
+              onClick={fetchFilteredAttendance}
+              className="px-4 py-2 bg-blue-500 text-white rounded shadow"
+              disabled={!startDate || !endDate}
+            >
+              Apply Filter
+            </button>
           </div>
         </div>
 
@@ -158,10 +223,10 @@ const ParentAttendance: React.FC = () => {
         <div>
           <h3 className="text-lg font-semibold mb-3">Attendance Summary</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <StatCard label="Total Classes" value={summary.totalClasses} />
-            <StatCard label="Present" value={summary.present} color="text-green-500" />
-            <StatCard label="Absent" value={summary.absent} color="text-red-500" />
-            <StatCard label="Leave" value={summary.leave} color="text-yellow-500" />
+            <StatCard label="Total Classes" value={summary?.totalClasses || 0} />
+            <StatCard label="Present" value={summary?.present || 0} color="text-green-500" />
+            <StatCard label="Absent" value={summary?.absent || 0} color="text-red-500" />
+            <StatCard label="Leave" value={summary?.leave || 0} color="text-yellow-500" />
           </div>
         </div>
 
@@ -170,7 +235,7 @@ const ParentAttendance: React.FC = () => {
           <div className="flex justify-between mb-2">
             <h3 className="font-semibold">Attendance Percentage</h3>
             <span className="text-xl font-bold text-blue-500">
-              {summary.percentage}%
+              {summary?.percentage || 0}%
             </span>
           </div>
           <div className="h-3 bg-gray-300 rounded-full overflow-hidden">
@@ -181,7 +246,7 @@ const ParentAttendance: React.FC = () => {
           </div>
         </div>
 
-        {/* CHARTS */}
+        {/* TREND CHARTS */}
         {trendData.length > 0 && (
           <div className={`rounded-xl p-6 border shadow ${cardBg}`}>
             <h3 className="font-semibold mb-4">Attendance Trend</h3>
@@ -216,7 +281,7 @@ const ParentAttendance: React.FC = () => {
         <div className={`rounded-xl p-6 border shadow ${cardBg}`}>
           <h3 className="font-semibold mb-4">Attendance Logs</h3>
 
-          {logs.length === 0 ? (
+          {(!logs || logs.length === 0) ? (
             <p className={mutedText}>No attendance records found</p>
           ) : (
             <table className="w-full text-sm">

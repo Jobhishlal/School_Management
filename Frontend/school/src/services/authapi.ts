@@ -824,3 +824,14 @@ export const deleteClassOrDivision = async (id: string) => {
   const res = await api.put(`/admin/delete-classordivision/${id}`);
   return res.data;
 };
+
+export const attendacedatebasefilterparents = async (
+  startDate: string,
+  endDate: string
+) => {
+  const res = await api.get(`/parents/attendance/filter`, {
+    params: { startDate, endDate }
+  });
+
+  return res.data;
+};

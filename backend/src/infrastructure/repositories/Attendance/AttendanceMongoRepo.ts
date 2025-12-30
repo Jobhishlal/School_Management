@@ -9,6 +9,8 @@ import { TodayAttendanceResponse, TodayAttendanceItemDTO } from "../../../applic
 import { StudentModel } from "../../database/models/StudentModel";
 import { ParentSignupModel } from "../../database/models/ParentSignupModel";
 import { ParentAttendanceDashboardDTO } from "../../../applications/dto/Attendance/ParentAttendanceDashboardDTO";
+import { ParentAttendanceHistory } from "../../../applications/dto/Attendance/ParentAttendanceHistory";
+import { AttendanceHistoryItem } from "../../../applications/dto/Attendance/ParentAttendanceHistory";
 
 export class AttendanceMongoRepository implements IAttandanceRepository {
 
@@ -300,4 +302,64 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
 
     return result.modifiedCount > 0;
   }
+
+
+
+  async getParentAttendanceByDateRange(parentId: string, startDate: Date, endDate: Date): Promise<ParentAttendanceHistory> {
+    const parent = await ParentSignupModel.findById(parentId)
+      .populate("student", "_id fullName photos classId")
+
+    if (!parent || !parent.student) {
+      throw new Error("student does not found")
+    }
+    const studentId = parent.student._id;
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    const records = await AttendanceModel.find({
+      "attendance.studentId": new Types.ObjectId(studentId),
+      date: { $gte: start, $lte: end }
+    }).sort({ date: 1 });
+
+
+
+    const history: AttendanceHistoryItem[] = records.map(doc => {
+      const item = doc.attendance.find(
+        a => a.studentId.toString() === studentId.toString()
+      );
+
+      return {
+        date: doc.date.toISOString().split("T")[0],
+        session: doc.session as "Morning" | "Afternoon",
+        status: (item?.status as any) ?? "Not Marked",
+        remarks: item?.remarks ?? ""
+      };
+    });
+
+    const present = history.filter(h => h.status === "Present").length;
+    const absent = history.filter(h => h.status === "Absent").length;
+    const total = history.length;
+    const percentage = total ? Math.round((present / total) * 100) : 0;
+
+    return {
+      student: {
+        id: studentId.toString(),
+        name: parent.student.fullName,
+        classId: parent.student.classId.toString(),
+        photo: parent.student.photos?.[0]?.url
+      },
+      summary: {
+        totalClasses: total,
+        present,
+        absent,
+        percentage
+      },
+      logs: history
+    };
+
+  }
+
 }

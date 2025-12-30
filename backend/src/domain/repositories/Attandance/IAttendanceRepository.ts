@@ -4,7 +4,7 @@ import { Types } from "mongoose";
 import { Class } from "../../entities/Class";
 import { TodayAttendanceResponse, TodayAttendanceItemDTO } from "../../../applications/dto/Attendance/TodayAttendanceDTO";
 import { ParentAttendanceDashboardDTO } from "../../../applications/dto/Attendance/ParentAttendanceDashboardDTO";
-
+import { ParentAttendanceHistory } from "../../../applications/dto/Attendance/ParentAttendanceHistory";
 
 export interface IAttandanceRepository {
   create(data: TakeAttendance): Promise<AttendanceEntity>
@@ -20,4 +20,5 @@ export interface IAttandanceRepository {
   getAttendanceByDateRange(classId: string, startDate: Date, endDate: Date): Promise<any[]>;
   getStudentAttendanceHistory(studentId: string, month: number, year: number): Promise<any>;
   updateStudentAttendance(studentId: string, date: Date, session: string, status: string): Promise<boolean>;
+  getParentAttendanceByDateRange( parentId: string, startDate: Date, endDate: Date ): Promise<ParentAttendanceHistory>;
 }

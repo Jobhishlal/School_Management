@@ -14,7 +14,7 @@ import { ParentAttendanceListUseCase } from "../../applications/useCases/Attenda
 import { AttendanceMongoRepository } from "../../infrastructure/repositories/Attendance/AttendanceMongoRepo";
 import { authMiddleware } from "../../infrastructure/middleware/AuthMiddleWare";
 import { AuthRequest } from "../../infrastructure/types/AuthRequest";
-
+import { ParentDateBaseAttendanceSearch } from "../../applications/useCases/Attendance/ParentAttendanceDateBase";
 const ParentRouter = Router()
 
 const data = new ParentRepository()
@@ -33,7 +33,8 @@ const peymentcontroller = new PeymentController(createpeyment,verfystatus,verify
 
 const attendancerepo = new AttendanceMongoRepository()
 const Attandanceusecase = new ParentAttendanceListUseCase(attendancerepo)
-const attendanceparentcontroller = new ParentAttendanceListController(Attandanceusecase)
+const parentDatebasefetchattendance = new ParentDateBaseAttendanceSearch(attendancerepo)
+const attendanceparentcontroller = new ParentAttendanceListController(Attandanceusecase,parentDatebasefetchattendance)
 
 
 ParentRouter.post('/parent-finance-list', (req, res) => ParentController.ParentList(req, res));
@@ -48,4 +49,16 @@ ParentRouter.get("/parent/attendance/today",
     authMiddleware,
     (req,res)=>attendanceparentcontroller.ParentAttendanceList(req as AuthRequest,res)
 )
+
+
+ParentRouter.get('/attendance/filter',
+    authMiddleware,
+    (req,res)=>attendanceparentcontroller.ParentDateBaseFindAttendance(req as AuthRequest, res)
+)
+
+
+
+
+
+
 export default ParentRouter

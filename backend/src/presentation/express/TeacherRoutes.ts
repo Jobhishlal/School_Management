@@ -24,6 +24,7 @@ import { GetStudentAttendanceHistoryUseCase } from "../../applications/useCases/
 import { UpdateAttendanceUseCase } from "../../applications/useCases/Attendance/UpdateAttendanceUseCase";
 
 import { MongoTeacher } from "../../infrastructure/repositories/MongoTeacherRepo";
+import { ParentMongoRepository } from "../../infrastructure/repositories/ParentRepository";
 
 
 
@@ -65,7 +66,8 @@ const classrepo = new MongoClassRepository()
 const studentrepo = new MongoStudentRepo()
 const studentfindclassbase = new StudentFindClassBaseUseCase(studentrepo, classrepo)
 
-const atendancecreate = new AttendanceCreateUseCase(attendancerepo, classrepo, studentrepo)
+const parentrepo = new ParentMongoRepository()
+const atendancecreate = new AttendanceCreateUseCase(attendancerepo, classrepo, studentrepo, parentrepo)
 const attendancecheckteacher = new FindStudentsByTeacherUseCase(studentrepo, attendancerepo)
 const attendancelist = new AttendanceListUseCase(attendancerepo)
 const getAttendanceReport = new GetAttendanceReportUseCase(attendancerepo)
