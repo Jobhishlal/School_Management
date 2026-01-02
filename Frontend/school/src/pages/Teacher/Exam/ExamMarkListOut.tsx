@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getStudentsByExam, ExamMarkcreate } from "../../../services/authapi";
+import { getStudentsByExam, ExamMarkcreate, getClassExamResults, updateExamMark } from "../../../services/authapi";
 import { showToast } from "../../../utils/toast";
 import { Modal } from "../../../components/common/Modal";
 import { useTheme } from "../../../components/layout/ThemeContext";
@@ -16,6 +16,8 @@ interface ExamMark {
   marksObtained: number;
   progress?: "EXCELLENT" | "GOOD" | "NEEDS_IMPROVEMENT" | "POOR";
   remarks?: string;
+  description?: string; // Should match DTO if needed
+  isExisting?: boolean; // To track if we should update or create
 }
 
 interface TakeMarksProps {
@@ -31,51 +33,59 @@ const TakeMarks: React.FC<TakeMarksProps> = ({ examId, classId, onClose }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchStudents = async () => {
+    const fetchData = async () => {
       try {
-        const res = await getStudentsByExam(examId);
-        console.log("Fetched students:", res);
+        setLoading(true);
+        // 1. Fetch all students for the exam
+        const studentsRes = await getStudentsByExam(examId);
 
-        const mappedStudents = (res || []).map((student: any) => {
+        // 2. Fetch existing marks for the exam
+        let existingMarks: any[] = [];
+        try {
+          existingMarks = await getClassExamResults(examId) || [];
+        } catch (e) {
+          console.warn("Could not fetch existing marks", e);
+        }
 
-          // Now backend returns _id (database ID) and studentId (Roll No) explicitly
-          const studentDbId = student._id || student.id;
-          const studentRollId = student.studentId || "N/A";
+        const mappedStudents = (studentsRes || []).map((student: any) => ({
+          _id: student._id || student.id,
+          name: student.fullName || student.name,
+          studentId: student.studentId || "N/A",
+          classId: student.classId || "Unknown",
+        }));
 
-          console.log("Mapping student:", {
-            originalId: student._id || student.id,
-            rollId: studentRollId,
-            name: student.fullName || student.name
-          });
-
-          return {
-            _id: studentDbId,
-            name: student.fullName || student.name,
-            studentId: studentRollId,
-            classId: student.classId || "Unknown",
-          };
-        });
-
-        console.log("Mapped students:", mappedStudents);
         setStudents(mappedStudents);
 
-        // Initialize marks per student with unique IDs
-        setMarks(
-          mappedStudents.map((student: Student) => ({
+        // 3. Initialize marks state, pre-filling if exists
+        const initialMarks = mappedStudents.map((student: Student) => {
+          const foundMark = existingMarks.find((em: any) => em.studentId === student._id);
+          if (foundMark) {
+            return {
+              studentId: student._id,
+              marksObtained: foundMark.marksObtained,
+              remarks: foundMark.remarks || "",
+              isExisting: true
+            };
+          }
+          return {
             studentId: student._id,
             marksObtained: 0,
             remarks: "",
-          }))
-        );
+            isExisting: false
+          };
+        });
+
+        setMarks(initialMarks);
+
       } catch (err) {
-        console.error("Error fetching students:", err);
-        showToast("Failed to fetch students", "error");
+        console.error("Error fetching data:", err);
+        showToast("Failed to fetch students/marks", "error");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchStudents();
+    fetchData();
   }, [examId]);
 
   const handleMarksChange = (studentId: string, value: number) => {
@@ -83,14 +93,10 @@ const TakeMarks: React.FC<TakeMarksProps> = ({ examId, classId, onClose }) => {
     if (validValue < 0) validValue = 0;
     if (validValue > 100) validValue = 100;
 
-    console.log("Updating marks for student:", studentId, "to:", validValue);
-
     setMarks((prev) => {
-      const updated = prev.map((m) =>
+      return prev.map((m) =>
         m.studentId === studentId ? { ...m, marksObtained: validValue } : m
       );
-      console.log("Updated marks state:", updated);
-      return updated;
     });
   };
 
@@ -104,22 +110,19 @@ const TakeMarks: React.FC<TakeMarksProps> = ({ examId, classId, onClose }) => {
 
   const handleSubmit = async () => {
     try {
-      // Validate all marks
+      // Validate
       for (const mark of marks) {
         if (mark.marksObtained < 0 || mark.marksObtained > 100) {
-          showToast(
-            `Invalid marks. Must be between 0-100.`,
-            "error"
-          );
+          showToast(`Invalid marks. Must be between 0-100.`, "error");
           return;
         }
       }
 
-      // Submit marks for each student
+      // Submit each mark
       for (const mark of marks) {
-        await ExamMarkcreate({
+        const payload = {
           examId,
-          classId,
+          classId, // Only needed for create? Update might ignore it but safe to pass
           studentId: mark.studentId,
           marksObtained: mark.marksObtained,
           progress:
@@ -131,10 +134,20 @@ const TakeMarks: React.FC<TakeMarksProps> = ({ examId, classId, onClose }) => {
                   ? "NEEDS_IMPROVEMENT"
                   : "POOR",
           remarks: mark.remarks || "",
-        });
+        };
+
+        if (mark.isExisting) {
+          await updateExamMark(payload);
+        } else {
+          // Only create if marks > 0 or if you want to allow 0 marks creation?
+          // Usually we submit all.
+          // But if a student was absent/not marked, creating 0 might be desired or not.
+          // Let's assume we submit everything.
+          await ExamMarkcreate(payload);
+        }
       }
 
-      showToast("Marks submitted successfully");
+      showToast("Marks saved successfully");
       onClose();
     } catch (err: any) {
       console.error("Error submitting marks:", err);
@@ -149,7 +162,7 @@ const TakeMarks: React.FC<TakeMarksProps> = ({ examId, classId, onClose }) => {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className={`w-12 h-12 border-4 ${isDark ? "border-blue-500" : "border-blue-600"} border-t-transparent rounded-full animate-spin mx-auto mb-4`}></div>
-            <p>Loading students...</p>
+            <p>Loading data...</p>
           </div>
         </div>
       </Modal>
@@ -157,7 +170,7 @@ const TakeMarks: React.FC<TakeMarksProps> = ({ examId, classId, onClose }) => {
   }
 
   return (
-    <Modal title="Take Marks" isOpen={true} onClose={onClose}>
+    <Modal title="Take / Update Marks" isOpen={true} onClose={onClose}>
       <div className="space-y-4">
         {students.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
@@ -185,6 +198,9 @@ const TakeMarks: React.FC<TakeMarksProps> = ({ examId, classId, onClose }) => {
                     <div className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}>
                       Roll No: {student.studentId}
                     </div>
+                    {studentMark?.isExisting && (
+                      <span className="text-xs text-green-500 font-semibold">Existing Mark</span>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -195,7 +211,7 @@ const TakeMarks: React.FC<TakeMarksProps> = ({ examId, classId, onClose }) => {
                       type="number"
                       min={0}
                       max={100}
-                      value={studentMark?.marksObtained || ""}
+                      value={studentMark?.marksObtained || 0} // handle undefined
                       placeholder="0"
                       onChange={(e) => {
                         const val = e.target.value === "" ? 0 : Number(e.target.value);
@@ -220,7 +236,7 @@ const TakeMarks: React.FC<TakeMarksProps> = ({ examId, classId, onClose }) => {
                       onChange={(e) =>
                         handleRemarksChange(student._id, e.target.value)
                       }
-                      placeholder="Enter remarks (optional)"
+                      placeholder="Enter remarks"
                       rows={2}
                       className={`w-full px-3 py-2 border rounded-lg ${isDark
                         ? "bg-slate-700 border-slate-600 text-slate-100"
@@ -252,7 +268,7 @@ const TakeMarks: React.FC<TakeMarksProps> = ({ examId, classId, onClose }) => {
               : "bg-blue-500 hover:bg-blue-600 text-white"
               } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
-            Submit Marks
+            Save Marks
           </button>
         </div>
       </div>

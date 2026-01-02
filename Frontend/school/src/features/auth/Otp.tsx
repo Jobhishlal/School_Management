@@ -97,12 +97,12 @@
 // // }
 // //     } catch (err) {
 // //   if (axios.isAxiosError(err)) {
-    
+
 // //     const serverError = err as AxiosError<{ message: string }>;
 // //     const errorMessage = serverError.response?.data?.message || "Invalid OTP";
 // //     showToast(errorMessage, "error");
 // //   } else {
-  
+
 // //     showToast("Unexpected error occurred", "error");
 // //   }
 // // } finally {
@@ -552,9 +552,22 @@ export default function VerifyOtpPage() {
       const res = (await VerifyOtp(otpToken, otp)) as VerifyOtpResponse;
 
       // Save access token and user info
+      // Save access token and user info
       localStorage.setItem("accessToken", res.authToken);
-      localStorage.setItem("role", res.role.toLowerCase());
+      const role = res.role.toLowerCase();
+      localStorage.setItem("role", role);
       localStorage.removeItem("otpToken"); // clear temp token
+
+      // Store role-specific tokens
+      if (role === "teacher") {
+        localStorage.setItem("teacherAccessToken", res.authToken);
+      } else if (role === "students") {
+        localStorage.setItem("studentAccessToken", res.authToken);
+      } else if (role === "parent") {
+        localStorage.setItem("parentAccessToken", res.authToken);
+      } else if (role === "super_admin" || role === "sub_admin") {
+        localStorage.setItem("adminAccessToken", res.authToken);
+      }
 
       dispatch(
         setCredentials({

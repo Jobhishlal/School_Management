@@ -6,7 +6,11 @@ export interface AssignmentSubmitDTO {
   url: string;
   fileName: string;
   uploadedAt: Date;
-   studentDescription?: string;
+  studentDescription?: string;
+  grade?: number;
+  feedback?: string;
+  badge?: string;
+  status?: string;
 }
 
 export class AssignmentEntity {
@@ -22,7 +26,7 @@ export class AssignmentEntity {
     public maxMarks: number,
     public teacherId: string,
     public className?: string,
-    public division?:string,
+    public division?: string,
     public assignmentSubmitFile?: AssignmentSubmitDTO[]
-  ) {}
+  ) { }
 }

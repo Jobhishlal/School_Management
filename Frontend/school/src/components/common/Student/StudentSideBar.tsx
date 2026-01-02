@@ -16,8 +16,8 @@ import {
   ChevronDown,
   X,
   Menu,
-  LogOut, 
-  School, 
+  LogOut,
+  School,
 } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../layout/ThemeContext";
@@ -30,20 +30,70 @@ export default function StudentSidebar({ children }: Props) {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const studentId = localStorage.getItem("studentId");
   console.log(studentId)
-    const [showNotifications, setShowNotifications] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [announcements, setAnnouncements] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch announcements on mount and calculate unread count
+  React.useEffect(() => {
+    const fetchAnnouncements = async () => {
+      try {
+        setLoading(true);
+        const { AnnouncementFetch } = await import("../../../services/authapi"); // Dynamic import to avoid circular dependency if any
+        const res = await AnnouncementFetch();
+
+        let fetchedData: any[] = [];
+        if (res && res.success && Array.isArray(res.data)) {
+          fetchedData = res.data;
+        } else if (Array.isArray(res)) {
+          fetchedData = res;
+        }
+
+        setAnnouncements(fetchedData);
+
+        // Calculate unread count
+        const readIds = JSON.parse(localStorage.getItem("readAnnouncementIds") || "[]");
+        const unread = fetchedData.filter((a: any) => !readIds.includes(a._id)).length;
+        setUnreadCount(unread);
+
+      } catch (err) {
+        console.error("Failed to fetch notifications", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnnouncements();
+    // Poll every 60 seconds to keep updated
+    const interval = setInterval(fetchAnnouncements, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const markAllAsRead = () => {
+    if (announcements.length === 0) return;
+
+    const allIds = announcements.map(a => a._id);
+    localStorage.setItem("readAnnouncementIds", JSON.stringify(allIds));
+    setUnreadCount(0);
+  };
 
   const location = useLocation();
   const navigate = useNavigate();
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
+  React.useEffect(() => {
+    localStorage.setItem("role", "students");
+  }, []);
+
   const menuItems = [
     { icon: LayoutDashboard, text: "Dashboard", path: "/student-dashboard" },
     { icon: User, text: "Profile", path: "/student/profile" },
-    { icon: Calendar, text: "Attendance", path: "/student/attendance" },
+    { icon: Calendar, text: "Attendance", path: "/student/attendance-view" },
     { icon: FileText, text: "Assignments", path: "/student/assignment" },
     { icon: Calendar, text: "Time Table", path: "/student/timetable-view" },
-    { icon: BookOpen, text: "Exams & Results", path:'/student/exam-list' },
+    { icon: BookOpen, text: "Exams & Results", path: '/student/exam-list' },
     { icon: CreditCard, text: "Fees", path: "/student/fees" },
     { icon: MessageCircle, text: "Notices / Messages", path: "/student/notices" },
     { icon: Users, text: "Meet", path: "/student/meet" },
@@ -62,17 +112,20 @@ export default function StudentSidebar({ children }: Props) {
   const activeText = isDark ? "text-blue-400" : "text-blue-600";
 
   const handleLogout = () => {
-    localStorage.clear();
+    localStorage.removeItem("studentAccessToken");
+    if (localStorage.getItem("role") === "students") {
+      localStorage.removeItem("role");
+      localStorage.removeItem("accessToken");
+    }
     navigate("/login", { replace: true });
   };
 
   return (
     <div
-      className={`h-screen overflow-hidden transition-all duration-500 ${
-        isDark ? "bg-[#121A21]" : "bg-slate-50"
-      }`}
+      className={`h-screen overflow-hidden transition-all duration-500 ${isDark ? "bg-[#121A21]" : "bg-slate-50"
+        }`}
     >
-    
+
       <div
         className={`lg:hidden flex items-center justify-between px-4 py-3 ${headerBg} ${headerBorder} border-b backdrop-blur-xl`}
       >
@@ -83,7 +136,7 @@ export default function StudentSidebar({ children }: Props) {
           >
             {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
-        
+
           <h1 className={`text-lg font-bold ${textPrimary}`}>Student Portal</h1>
         </div>
         <button
@@ -105,7 +158,7 @@ export default function StudentSidebar({ children }: Props) {
             overflow-y-auto no-scrollbar
           `}
         >
-     
+
           <div className="p-6">
             <div className={`flex items-center space-x-3 p-4 rounded-2xl`}>
               <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
@@ -137,7 +190,7 @@ export default function StudentSidebar({ children }: Props) {
                     ${isActive ? `${activeBg} ${activeText} font-semibold` : `${hoverBg} ${textSecondary} hover:text-white`}
                   `}
                 >
-        
+
                   {isActive && (
                     <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-6 bg-blue-500 rounded-r-full"></div>
                   )}
@@ -148,7 +201,7 @@ export default function StudentSidebar({ children }: Props) {
             })}
           </div>
 
-   
+
           <div className="p-4 mt-auto">
             <button
               onClick={handleLogout}
@@ -160,10 +213,10 @@ export default function StudentSidebar({ children }: Props) {
           </div>
         </div>
 
-     
+
         <div className={`flex-1 flex flex-col h-full ${isDark ? "bg-[#121A21]" : "bg-slate-50"}`}>
-          
-     
+
+
           <div
             className={`hidden lg:flex items-center justify-between px-8 py-4 ${headerBg} ${headerBorder} border-b backdrop-blur-xl shadow-sm`}
           >
@@ -175,22 +228,28 @@ export default function StudentSidebar({ children }: Props) {
             </div>
 
             <div className="flex items-center space-x-4">
-           
-             <button
-        className={`relative p-3 rounded-xl ${hoverBg} transition-all duration-300 hover:scale-105`}
-        onClick={() => setShowNotifications(!showNotifications)}
-      >
-        <Bell className={textSecondary} size={20} />
-        <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-          <span className="text-white text-xs font-bold">3</span>
-        </div>
-      </button>
 
-      <NotificationDropdown
-        isOpen={showNotifications}
-        onClose={() => setShowNotifications(false)}
-      />
-          
+              <button
+                className={`relative p-3 rounded-xl ${hoverBg} transition-all duration-300 hover:scale-105`}
+                onClick={() => setShowNotifications(!showNotifications)}
+              >
+                <Bell className={textSecondary} size={20} />
+                {unreadCount > 0 && (
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">{unreadCount}</span>
+                  </div>
+                )}
+              </button>
+
+              <NotificationDropdown
+                isOpen={showNotifications}
+                onClose={() => setShowNotifications(false)}
+                announcements={announcements}
+                loading={loading}
+                onClear={markAllAsRead}
+                unreadCount={unreadCount}
+              />
+
               <button
                 onClick={toggleTheme}
                 className={`flex items-center space-x-3 px-4 py-3 rounded-xl ${hoverBg} transition-all duration-300 hover:scale-105`}
@@ -208,7 +267,7 @@ export default function StudentSidebar({ children }: Props) {
                 )}
               </button>
 
-           
+
               <div className="relative">
                 <button
                   onClick={() => setShowProfileDropdown(!showProfileDropdown)}
@@ -224,15 +283,15 @@ export default function StudentSidebar({ children }: Props) {
                   />
                 </button>
 
-            
+
                 {showProfileDropdown && (
                   <div
                     className={`absolute right-0 top-full mt-2 w-48 ${cardBg} backdrop-blur-xl border ${headerBorder} rounded-xl shadow-xl z-50 py-2`}
                   >
-                       <Link to="/student/profile">
-  <User size={16} className={textSecondary} />
-  <span className={`text-sm ${textPrimary}`}>Profile</span>
-</Link>
+                    <Link to="/student/profile">
+                      <User size={16} className={textSecondary} />
+                      <span className={`text-sm ${textPrimary}`}>Profile</span>
+                    </Link>
 
 
 
@@ -260,15 +319,15 @@ export default function StudentSidebar({ children }: Props) {
         </div>
       </div>
 
-      
+
       {isMobileMenuOpen && (
         <div
           className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300"
           onClick={toggleMobileMenu}
         />
       )}
-      
-     
+
+
       {showProfileDropdown && (
         <div className="fixed inset-0 z-30" onClick={() => setShowProfileDropdown(false)} />
       )}

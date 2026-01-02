@@ -52,7 +52,7 @@ const studenttimetablecontroller = new StudentTimetableController(studentusecase
 const assignmentrepo = new AssignmentMongo()
 const assignmentget = new StudentGetAssignment(assignmentrepo)
 const assignmentsubmit = new AssignmentSubmit(assignmentrepo)
-const assignmentcontroller = new AssignmentViewStudentsController(assignmentget,assignmentsubmit)
+const assignmentcontroller = new AssignmentViewStudentsController(assignmentget, assignmentsubmit)
 
 
 const announcementrepo = new AnnouncementMongo()
@@ -64,9 +64,9 @@ const Announcementreadcontroller = new AnnouncementReadController(
 
 
 const mongorepo = new ExamMongoRepo()
-const examlistusecase = new Examclassbaseviewusecase(mongorepo,studentmongo)
+const examlistusecase = new Examclassbaseviewusecase(mongorepo, studentmongo)
 const exammark = new ExamMarkMongoRepository()
-const examresultview = new GetStudentExamResultsUseCase(mongorepo,exammark,studentmongo)
+const examresultview = new GetStudentExamResultsUseCase(mongorepo, exammark, studentmongo)
 const studentexamlistcontroller = new StudentviewExamController(
   examlistusecase,
   examresultview
@@ -79,18 +79,18 @@ Studentrouter.get("/profile", authMiddleware, async (req, res) => {
 });
 
 
-Studentrouter.get('/timetable-view',(req,res)=>studenttimetablecontroller.TimeTableView(req,res))
+Studentrouter.get('/timetable-view', (req, res) => studenttimetablecontroller.TimeTableView(req, res))
 
 Studentrouter.get('/assignment-view',
-  authMiddleware,(req,res)=>{
-  const authReq = req as AuthRequest;
-  return assignmentcontroller.AssignmentStudentview(authReq,res)
+  authMiddleware, (req, res) => {
+    const authReq = req as AuthRequest;
+    return assignmentcontroller.AssignmentStudentview(authReq, res)
 
-})
+  })
 Studentrouter.post(
   "/assignment-submit",
   authMiddleware,
-  assignmentUpload.array("documents", 5), 
+  assignmentUpload.array("documents", 5),
   async (req, res) => {
     try {
       await assignmentcontroller.SubmitData(req, res);
@@ -103,18 +103,39 @@ Studentrouter.post(
 
 Studentrouter.get('/announcement-find',
   authMiddleware, (req, res) => {
-  
-  Announcementreadcontroller.Findannouncement(req as AuthRequest, res)
-});
+
+    Announcementreadcontroller.Findannouncement(req as AuthRequest, res)
+  });
 
 Studentrouter.get('/exam/view-exam-list',
   authMiddleware,
-  (req,res)=>studentexamlistcontroller.classbaseexamviewpage(req as AuthRequest,res)
+  (req, res) => studentexamlistcontroller.classbaseexamviewpage(req as AuthRequest, res)
 )
 
 Studentrouter.post('/exam/view-results',
   authMiddleware,
-  (req,res) => studentexamlistcontroller.getStudentExamResults(req as AuthRequest, res)
+  (req, res) => studentexamlistcontroller.getStudentExamResults(req as AuthRequest, res)
 );
+
+import { AttendanceMongoRepository } from "../../infrastructure/repositories/Attendance/AttendanceMongoRepo";
+import { StudentAttendanceDashboardUseCase } from "../../applications/useCases/Students/StudentAttendanceDashboardUseCase";
+import { StudentDateBaseAttendanceSearchUseCase } from "../../applications/useCases/Students/StudentDateBaseAttendanceSearchUseCase";
+import { StudentAttendanceController } from "../http/controllers/Student/StudentAttendanceController";
+
+const attRep = new AttendanceMongoRepository();
+const stAttDash = new StudentAttendanceDashboardUseCase(attRep);
+const stAttDate = new StudentDateBaseAttendanceSearchUseCase(attRep);
+const stAttController = new StudentAttendanceController(stAttDash, stAttDate);
+
+Studentrouter.get('/attendance/today',
+  authMiddleware,
+  (req, res) => stAttController.getAttendanceDashboard(req as AuthRequest, res)
+);
+
+Studentrouter.get('/attendance/filter',
+  authMiddleware,
+  (req, res) => stAttController.findAttendanceByDateRange(req as AuthRequest, res)
+);
+
 
 export default Studentrouter;

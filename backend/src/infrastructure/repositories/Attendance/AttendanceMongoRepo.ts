@@ -368,4 +368,130 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
 
   }
 
+  async getStudentOwnAttendanceDashboard(studentId: string): Promise<ParentAttendanceDashboardDTO> {
+    type AttendanceStatus = "Present" | "Absent" | "Leave";
+
+    const student = await StudentModel.findById(studentId);
+    if (!student) throw new Error("Student not found");
+
+    const records = await AttendanceModel.find({
+      "attendance.studentId": new Types.ObjectId(studentId),
+    }).sort({ date: -1 });
+
+    let present = 0;
+    let absent = 0;
+    let leave = 0;
+
+    const calendar: any[] = [];
+    const logs: any[] = [];
+
+    let todayMorning: AttendanceStatus = "Leave";
+    let todayAfternoon: AttendanceStatus = "Leave";
+
+    const today = new Date().toDateString();
+
+    records.forEach(doc => {
+      const item = doc.attendance.find(
+        a => a.studentId.toString() === studentId.toString()
+      );
+      if (!item) return;
+
+      if (item.status === "Present") present++;
+      if (item.status === "Absent") absent++;
+      if (item.status === "Leave") leave++;
+
+      calendar.push({
+        date: doc.date.toISOString().split("T")[0],
+        status: item.status,
+      });
+
+      logs.push({
+        date: doc.date.toISOString().split("T")[0],
+        session: doc.session,
+        status: item.status,
+        remark: item.remarks,
+      });
+
+      if (doc.date.toDateString() === today) {
+        if (doc.session === "Morning") todayMorning = item.status as AttendanceStatus;
+        if (doc.session === "Afternoon") todayAfternoon = item.status as AttendanceStatus;
+      }
+    });
+
+    const total = present + absent + leave;
+    const percentage = total ? Math.round((present / total) * 100) : 0;
+
+    return {
+      student: {
+        id: studentId.toString(),
+        name: student.fullName,
+        photo: student.photos?.[0]?.url,
+        classId: student.classId.toString(),
+      },
+      summary: {
+        totalClasses: total,
+        present,
+        absent,
+        leave,
+        percentage,
+      },
+      today: {
+        Morning: todayMorning,
+        Afternoon: todayAfternoon,
+      },
+      calendar,
+      logs,
+    };
+  }
+
+  async getStudentOwnAttendanceByDateRange(studentId: string, startDate: Date, endDate: Date): Promise<ParentAttendanceHistory> {
+    const student = await StudentModel.findById(studentId);
+    if (!student) throw new Error("Student not found");
+
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    const records = await AttendanceModel.find({
+      "attendance.studentId": new Types.ObjectId(studentId),
+      date: { $gte: start, $lte: end }
+    }).sort({ date: 1 });
+
+    const history: AttendanceHistoryItem[] = records.map(doc => {
+      const item = doc.attendance.find(
+        a => a.studentId.toString() === studentId.toString()
+      );
+
+      return {
+        date: doc.date.toISOString().split("T")[0],
+        session: doc.session as "Morning" | "Afternoon",
+        status: (item?.status as any) ?? "Not Marked",
+        remarks: item?.remarks ?? ""
+      };
+    });
+
+    const present = history.filter(h => h.status === "Present").length;
+    const absent = history.filter(h => h.status === "Absent").length;
+    // const leave = history.filter(h => h.status === "Leave").length; // If needed
+    const total = history.length;
+    const percentage = total ? Math.round((present / total) * 100) : 0;
+
+    return {
+      student: {
+        id: studentId.toString(),
+        name: student.fullName,
+        classId: student.classId.toString(),
+        photo: student.photos?.[0]?.url
+      },
+      summary: {
+        totalClasses: total,
+        present,
+        absent,
+        percentage
+      },
+      logs: history
+    };
+  }
 }

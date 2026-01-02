@@ -7,6 +7,8 @@ import { Assignmentupload } from "../../infrastructure/middleware/AssignmentDocu
 import { GetTimeTableteacherList } from "../../applications/useCases/Assignment/GetAssignmentTeacherList";
 import { UpdateAssignment } from "../../applications/useCases/Assignment/UpdateAssignmentUseCase";
 import { GetAllTeacherAssignment } from "../../applications/useCases/Assignment/GetTeacherAssignment";
+import { ValidateAssignment } from "../../applications/useCases/Assignment/ValidateAssignment";
+import { GetAssignmentSubmissions } from "../../applications/useCases/Assignment/GetAssignmentSubmissions";
 
 
 import { AttendanceMongoRepository } from "../../infrastructure/repositories/Attendance/AttendanceMongoRepo";
@@ -34,6 +36,12 @@ import { ParentMongoRepository } from "../../infrastructure/repositories/ParentR
 ////////////////// exam management controller
 
 
+import { ClassManagementController } from "../http/controllers/Classroom/ClassController";
+import { CreateClassUseCase } from "../../applications/useCases/Classdata/CreateClass";
+import { GetAllClass } from "../../applications/useCases/Classdata/GeallClass";
+import { UpdateClassUseCase } from "../../applications/useCases/Classdata/ClassUpdate";
+import { AssignClass } from "../../applications/useCases/Classdata/ClassAssignUseCase";
+import { DeleteClassUseCase } from "../../applications/useCases/Classdata/deleteClassUseCase";
 import { ExamManagementController } from "../http/controllers/ExamManagement/ExamManagementController";
 import { ExamMongoRepo } from "../../infrastructure/repositories/ExamRepo/ExamMongoRepo";
 import { ExamCreateUseCase } from "../../applications/useCases/Exam/ExamCreateUseCase";
@@ -47,6 +55,7 @@ import { ExamMarkMongoRepository } from "../../infrastructure/repositories/ExamR
 import { ExamMarkManagementController } from "../http/controllers/ExamManagement/ExamMarkManagementController";
 import { GetStudentsByExamUseCase } from "../../applications/useCases/Exam/exammarkviewgetusecase";
 import { ExamFindClassBase } from "../../applications/useCases/Exam/ExamFindClassBaseUseCase";
+import { UpdateExamMarkUseCase } from "../../applications/useCases/Exam/UpdateExamMarkUseCase";
 
 
 
@@ -57,7 +66,17 @@ const createUseCase = new AssignmentCreate(assignmentRepo);
 const geteacherlist = new GetTimeTableteacherList(assignmentRepo)
 const updateassignment = new UpdateAssignment(assignmentRepo)
 const getallteacherdata = new GetAllTeacherAssignment(assignmentRepo)
-const assignmentController = new AssignmentManageController(createUseCase, geteacherlist, updateassignment, getallteacherdata);
+const validateAssignmentUseCase = new ValidateAssignment(assignmentRepo);
+const getSubmissionsUseCase = new GetAssignmentSubmissions(assignmentRepo);
+
+const assignmentController = new AssignmentManageController(
+  createUseCase,
+  geteacherlist,
+  updateassignment,
+  getallteacherdata,
+  validateAssignmentUseCase,
+  getSubmissionsUseCase
+);
 
 
 
@@ -65,6 +84,20 @@ const attendancerepo = new AttendanceMongoRepository()
 const classrepo = new MongoClassRepository()
 const studentrepo = new MongoStudentRepo()
 const studentfindclassbase = new StudentFindClassBaseUseCase(studentrepo, classrepo)
+
+const createClass = new CreateClassUseCase(classrepo);
+const getlistclass = new GetAllClass(classrepo);
+const classupdateusecase = new UpdateClassUseCase(classrepo);
+const assignclass = new AssignClass(classrepo);
+const deleteclassordivision = new DeleteClassUseCase(classrepo);
+
+const classController = new ClassManagementController(
+  createClass,
+  getlistclass,
+  classupdateusecase,
+  assignclass,
+  deleteclassordivision
+);
 
 const parentrepo = new ParentMongoRepository()
 const atendancecreate = new AttendanceCreateUseCase(attendancerepo, classrepo, studentrepo, parentrepo)
@@ -97,8 +130,9 @@ const exammarkrepo = new ExamMarkMongoRepository()
 
 const exammarkcreate = new ExamMarkCreateUseCase(exammarkrepo, studentrepo, examrepo)
 const studentgetrepo = new GetStudentsByExamUseCase(examrepo, studentrepo, exammarkrepo)
+const updateExamMarkUseCase = new UpdateExamMarkUseCase(exammarkrepo, examrepo)
 
-const exammarkcontroller = new ExamMarkManagementController(exammarkcreate, studentgetrepo)
+const exammarkcontroller = new ExamMarkManagementController(exammarkcreate, studentgetrepo, updateExamMarkUseCase)
 const examfindclassbase = new ExamFindClassBase(examrepo)
 
 
@@ -135,7 +169,10 @@ Teacherrouter.put(
   (req, res) => assignmentController.Updateassignment(req, res)
 );
 
-Teacherrouter.get('/TeachAssignmentList', authMiddleware, (req, res) => assignmentController.GetAllAssignemntExistedTeacher(req, res))
+Teacherrouter.get('/assignments', authMiddleware, (req, res) => assignmentController.GetAllAssignemntExistedTeacher(req, res))
+
+Teacherrouter.post('/assignment/validate', authMiddleware, (req, res) => assignmentController.validateAssignment(req, res));
+Teacherrouter.get('/assignment/:id/submissions', authMiddleware, (req, res) => assignmentController.getAssignmentSubmissions(req, res));
 
 
 
@@ -144,6 +181,11 @@ Teacherrouter.post('/attendance/create',
   (req, res) => {
     attendanceController.Create(req as AuthRequest, res)
   })
+
+// Route to get all classes for assignment creation
+Teacherrouter.get("/get-all-classes", (req, res) => {
+  classController.getAll(req, res);
+});
 
 
 
@@ -228,5 +270,11 @@ Teacherrouter.get(
     exammarkcontroller.getStudentsByExam(req as AuthRequest, res)
 );
 
+
+
+Teacherrouter.put('/exammark/update',
+  authMiddleware,
+  (req, res) => exammarkcontroller.updateExamMark(req as AuthRequest, res)
+)
 
 export default Teacherrouter;

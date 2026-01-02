@@ -512,6 +512,11 @@ export const GetTeachertimetableList = async () => {
   return res.data.data;
 }
 
+export const GetAllClassesAPI = async () => {
+  const res = await api.get("/teacher/get-all-classes");
+  return res.data.data;
+};
+
 
 export const UpdateExistedAssignment = async (id: string, formData: FormData) => {
 
@@ -524,7 +529,7 @@ export const UpdateExistedAssignment = async (id: string, formData: FormData) =>
 
 export const ListoutExistedAssignment = async () => {
 
-  const res = await api.get(`/teacher/TeachAssignmentList`)
+  const res = await api.get(`/teacher/assignments`)
 
   return res.data
 
@@ -677,16 +682,8 @@ export const AnnouncementCreate = async (data: FormData) => {
 
 
 
-export const AnnouncementFetch = async (
-  studentId: string,
-  classId: string
-) => {
-  const res = await api.get("/student/announcement-find", {
-    params: {
-      studentId,
-      classId,
-    },
-  });
+export const AnnouncementFetch = async () => {
+  const res = await api.get("/student/announcement-find");
   return res.data;
 };
 
@@ -800,6 +797,25 @@ export const assignStudentToDivision = async (payload: {
   return res.data;
 };
 
+export const validateAssignment = async (data: any) => {
+  const res = await api.post("/teacher/assignment/validate", data);
+  return res.data;
+};
+
+export const deleteAnnouncement = async (id: string, config = {}) => {
+  return await api.delete(`/admin/delete-announcement/${id}`, config);
+};
+
+
+export const getAssignmentSubmissions = async (assignmentId: string) => {
+  try {
+    const res = await api.get(`/teacher/assignment/${assignmentId}/submissions`);
+    return res.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const updateAttendance = async (studentId: string, date: Date, session: string, status: string) => {
   const res = await api.put('/teacher/attendance/update', { studentId, date, session, status });
   return res.data;
@@ -835,4 +851,29 @@ export const attendacedatebasefilterparents = async (
   });
 
   return res.data;
+};
+
+export const StudentAttendanceList = async () => {
+  const token = localStorage.getItem("studentAccessToken") || localStorage.getItem("accessToken");
+  const res = await api.get(`/student/attendance/today`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return res.data;
+}
+
+export const studentAttendanceDateFilter = async (
+  startDate: string,
+  endDate: string
+) => {
+  const token = localStorage.getItem("studentAccessToken") || localStorage.getItem("accessToken");
+  const res = await api.get(`/student/attendance/filter`, {
+    params: { startDate, endDate },
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  return res.data;
+};
+
+export const updateExamMark = async (data: any, config = {}) => {
+  return await api.put("/teacher/exammark/update", data, config);
 };

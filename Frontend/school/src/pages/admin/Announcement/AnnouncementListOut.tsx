@@ -1,19 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { findallAnnouncement } from "../../../services/authapi";
+import { findallAnnouncement, deleteAnnouncement } from "../../../services/authapi";
 import { showToast } from "../../../utils/toast";
 import { Pagination } from "../../../components/common/Pagination";
 import { useTheme } from "../../../components/layout/ThemeContext";
-import { Table } from "../../../components/Table/Table";
+import { Table, type Column } from "../../../components/Table/Table";
 
-interface Announcement {
-  _id: string;
-  title: string;
-  content: string;
-  scope: string;
-  status: string;
-  classes?: string[];
-  division?: string;
-}
+import { type Announcement } from "../../../types/Announcement";
 
 const PAGE_SIZE = 5;
 
@@ -47,6 +39,18 @@ const AnnouncementListOut = ({
     }
   };
 
+  const handleDelete = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this announcement?")) {
+      try {
+        await deleteAnnouncement(id);
+        showToast("Announcement deleted successfully", "success");
+        fetchAnnouncements(); // Refresh list
+      } catch (error) {
+        showToast("Failed to delete announcement", "error");
+      }
+    }
+  };
+
   // Slice announcements for current page
   const startIndex = (currentPage - 1) * PAGE_SIZE;
   const currentAnnouncements = announcements.slice(
@@ -76,12 +80,20 @@ const AnnouncementListOut = ({
             data={currentAnnouncements}
             isDark={isDark}
             actions={(a) => (
-              <button
-                onClick={() => onEdit(a)}
-                className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm"
-              >
-                Edit
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => onEdit(a)}
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(a._id)}
+                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
+                >
+                  Delete
+                </button>
+              </div>
             )}
           />
 

@@ -38,6 +38,10 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
+  React.useEffect(() => {
+    localStorage.setItem("role", "teacher");
+  }, []);
+
   const menuItems = [
     { icon: LayoutDashboard, text: "Dashboard", path: "/teacher/exam-mark" },
     { icon: Users, text: "My Classes", path: "/teacher/classes" },
@@ -64,7 +68,11 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
   const activeText = isDark ? "text-blue-400" : "text-blue-600";
 
   const handleLogout = () => {
-    localStorage.clear();
+    localStorage.removeItem("teacherAccessToken");
+    if (localStorage.getItem("role") === "teacher") {
+      localStorage.removeItem("role");
+      localStorage.removeItem("accessToken");
+    }
     navigate("/login", { replace: true });
   };
 
@@ -134,8 +142,8 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
                   key={index}
                   to={item.path}
                   className={`relative group flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-300 ${isActive
-                      ? `${activeBg} ${activeText} font-semibold`
-                      : `${hoverBg} ${textSecondary} hover:text-white`
+                    ? `${activeBg} ${activeText} font-semibold`
+                    : `${hoverBg} ${textSecondary} hover:text-white`
                     }`}
                 >
                   {isActive && (
