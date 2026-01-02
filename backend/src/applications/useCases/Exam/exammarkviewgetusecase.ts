@@ -25,11 +25,20 @@ export class GetStudentsByExamUseCase {
     );
 
 
+    console.log(`ExamID: ${examId}, Students Found: ${students.length}, Marks Found: ${examMarks.length}`);
+    console.log("First Mark Sample:", examMarks[0]);
+
     const results = students.map((student) => {
 
       const mark = examMarks.find(
-        (m) => m.studentId.toString() === student.id.toString()
+        (m) => {
+          const markStuId = m.studentId.toString();
+          const stuId = student.id.toString();
+          return markStuId === stuId;
+        }
       );
+
+      console.log(`Student: ${student.fullName} (${student.id}), Found Mark: ${!!mark ? mark.marksObtained : 'No'}`);
 
       return {
         _id: student.id, // Explicitly return as _id for frontend compatibility
@@ -39,6 +48,7 @@ export class GetStudentsByExamUseCase {
         marksObtained: mark?.marksObtained ?? 0,
         progress: mark?.progress ?? "Pending",
         remarks: mark?.remarks ?? "-",
+        isMarked: !!mark,
       };
     });
 

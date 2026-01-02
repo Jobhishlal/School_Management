@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { getStudentsByExam, ExamMarkcreate, getClassExamResults, updateExamMark } from "../../../services/authapi";
+import { getStudentsByExam, ExamMarkcreate, updateExamMark } from "../../../services/authapi";
+import type { StudentProgress } from "../../../types/CreateExamMarkDto";
 import { showToast } from "../../../utils/toast";
 import { Modal } from "../../../components/common/Modal";
 import { useTheme } from "../../../components/layout/ThemeContext";
@@ -36,34 +37,29 @@ const TakeMarks: React.FC<TakeMarksProps> = ({ examId, classId, onClose }) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // 1. Fetch all students for the exam
+        // 1. Fetch all students for the exam (includes mark info now)
         const studentsRes = await getStudentsByExam(examId);
-
-        // 2. Fetch existing marks for the exam
-        let existingMarks: any[] = [];
-        try {
-          existingMarks = await getClassExamResults(examId) || [];
-        } catch (e) {
-          console.warn("Could not fetch existing marks", e);
-        }
 
         const mappedStudents = (studentsRes || []).map((student: any) => ({
           _id: student._id || student.id,
           name: student.fullName || student.name,
           studentId: student.studentId || "N/A",
           classId: student.classId || "Unknown",
+          // Backend now marks existing marks
+          isMarked: student.isMarked,
+          originalMark: student.marksObtained,
+          originalRemarks: student.remarks
         }));
 
         setStudents(mappedStudents);
 
-        // 3. Initialize marks state, pre-filling if exists
-        const initialMarks = mappedStudents.map((student: Student) => {
-          const foundMark = existingMarks.find((em: any) => em.studentId === student._id);
-          if (foundMark) {
+        // 2. Initialize marks state
+        const initialMarks = mappedStudents.map((student: any) => {
+          if (student.isMarked) {
             return {
               studentId: student._id,
-              marksObtained: foundMark.marksObtained,
-              remarks: foundMark.remarks || "",
+              marksObtained: student.originalMark,
+              remarks: student.originalRemarks === "-" ? "" : student.originalRemarks, // Handle default dash
               isExisting: true
             };
           }
@@ -125,14 +121,13 @@ const TakeMarks: React.FC<TakeMarksProps> = ({ examId, classId, onClose }) => {
           classId, // Only needed for create? Update might ignore it but safe to pass
           studentId: mark.studentId,
           marksObtained: mark.marksObtained,
-          progress:
-            mark.marksObtained >= 90
-              ? "EXCELLENT"
-              : mark.marksObtained >= 70
-                ? "GOOD"
-                : mark.marksObtained >= 50
-                  ? "NEEDS_IMPROVEMENT"
-                  : "POOR",
+          progress: (mark.marksObtained >= 90
+            ? "EXCELLENT"
+            : mark.marksObtained >= 70
+              ? "GOOD"
+              : mark.marksObtained >= 50
+                ? "NEEDS_IMPROVEMENT"
+                : "POOR") as StudentProgress,
           remarks: mark.remarks || "",
         };
 

@@ -16,7 +16,19 @@ const TeacherExams: React.FC<TeacherExamsProps> = ({ onEditExam }) => {
     const fetchExams = async () => {
       try {
         const data = await GetTeacherExams();
-        setExams(data);
+        // Sort by examDate descending (Newest first)
+        // Using [...data] to ensure we don't mutate the original array if it was cached/state
+        const sortedData = [...data].sort((a: ExamEntity, b: ExamEntity) => {
+          // Sort by examDate descending
+          const dateA = new Date(a.examDate).getTime();
+          const dateB = new Date(b.examDate).getTime();
+          if (dateB !== dateA) {
+            return dateB - dateA;
+          }
+          // Fallback to ID sorting (assuming MongoID, higher = newer) if dates are same
+          return b.id.localeCompare(a.id);
+        });
+        setExams(sortedData);
       } catch (err) {
         console.error(err);
         setError("Failed to fetch exams");

@@ -43,8 +43,6 @@ export class ExamMarkMongoRepository implements IExamMarkRepository {
     const data = await ExamMarkModel.aggregate([
       {
         $match: {
-          classId: new Types.ObjectId(classId),
-          teacherId: new Types.ObjectId(teacherId),
           examId: new Types.ObjectId(examId),
         },
       },

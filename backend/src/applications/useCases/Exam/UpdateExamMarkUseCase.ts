@@ -28,7 +28,7 @@ export class UpdateExamMarkUseCase {
             throw new Error("Marks not found for this student. Use create instead.");
         }
 
-        return await this.examMarkRepo.updateMark(existing._id, {
+        return await this.examMarkRepo.updateMark(existing.id, {
             marksObtained: data.marksObtained,
             progress: data.progress,
             remarks: data.remarks

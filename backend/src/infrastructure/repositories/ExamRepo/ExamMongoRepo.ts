@@ -24,7 +24,7 @@ export class ExamMongoRepo implements IExamRepository {
   }
 
   async getExamsByTeacher(teacherId: string): Promise<ExamEntity[]> {
-    const exams = await ExamModel.find({ teacherId: new Types.ObjectId(teacherId) });
+    const exams = await ExamModel.find({ teacherId: new Types.ObjectId(teacherId) }).sort({ _id: -1 });
     return exams.map(toExamEntity);
   }
   async getExamsByTeacherWithStudents(classId: string) {
