@@ -553,7 +553,19 @@ export default function AssignmentManage() {
         Create Assignment
       </button>
 
-      <TeacherAssignmentList setCurrentAssignment={setCurrentAssignment} refreshTrigger={refreshList} />
+      <TeacherAssignmentList
+        setCurrentAssignment={(assignment) => {
+          setCurrentAssignment({
+            ...assignment,
+            Assignment_date: new Date(assignment.Assignment_date),
+            Assignment_Due_Date: new Date(assignment.Assignment_Due_Date),
+            // Note: attachments from backend cannot be converted to File objects.
+            // You might need to adjust logic if you want to show existing attachments.
+            attachments: []
+          });
+        }}
+        refreshTrigger={refreshList}
+      />
 
       <Modal
         title={form.id ? "Update Assignment" : "Create Assignment"}

@@ -26,6 +26,8 @@ export class ExamEntity {
     public readonly maxMarks: number,
 
     public readonly description: string = "",
-    public readonly status: ExamStatus = "DRAFT"
-  ) {}
+    public readonly status: ExamStatus = "DRAFT",
+    public readonly pendingConcerns: number = 0,
+    public readonly concerns: Array<{ studentName: string, concern: string, studentId: string }> = []
+  ) { }
 }

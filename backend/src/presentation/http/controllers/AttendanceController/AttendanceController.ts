@@ -10,6 +10,8 @@ import { IGetAttendanceReportUseCase } from "../../../../domain/UseCaseInterface
 import { IGetStudentAttendanceHistoryUseCase } from "../../../../domain/UseCaseInterface/Attandance/IGetStudentAttendanceHistoryUseCase";
 import { IUpdateAttendanceUseCase } from "../../../../domain/UseCaseInterface/Attandance/IUpdateAttendanceUseCase";
 
+
+
 export class AttendanceController {
   constructor(
     private repo: IAttendanceCreateUseCase,
@@ -19,7 +21,7 @@ export class AttendanceController {
     private getReportUseCase: IGetAttendanceReportUseCase,
     private getStudentHistoryUseCase: IGetStudentAttendanceHistoryUseCase,
     private updateAttendanceUseCase: IUpdateAttendanceUseCase
-  ) { }
+  ) {}
 
   async Create(req: AuthRequest, res: Response): Promise<void> {
     try {
@@ -118,7 +120,7 @@ export class AttendanceController {
     try {
       console.log("reached here")
       const { classId } = req.params;
-      const { status } = req.query; // Extract status from query params
+      const { status } = req.query;
       console.log(classId)
 
       if (!classId) {

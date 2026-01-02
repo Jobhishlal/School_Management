@@ -5,13 +5,39 @@ import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { CreateExamMarkDTO } from "../../../../applications/dto/Exam/CreateExamMarkDTO";
 import { GetStudentsByExamUseCase } from "../../../../applications/useCases/Exam/exammarkviewgetusecase";
 import { UpdateExamMarkUseCase } from "../../../../applications/useCases/Exam/UpdateExamMarkUseCase";
+import { ResolveExamConcernUseCase } from "../../../../applications/useCases/Exam/ResolveExamConcernUseCase";
 
 export class ExamMarkManagementController {
   constructor(
     private repo: ExamMarkCreateUseCase,
     private getexammark: GetStudentsByExamUseCase,
-    private updateMarkUseCase: UpdateExamMarkUseCase
+    private updateMarkUseCase: UpdateExamMarkUseCase,
+    private resolveConcernUseCase: ResolveExamConcernUseCase
   ) { }
+
+  // ... existing methods ...
+
+  async resolveConcern(req: AuthRequest, res: Response) {
+    try {
+      const { examMarkId, status, newMarks, responseMessage } = req.body;
+      const teacherId = req.user?.id;
+
+      if (!teacherId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
+
+      const result = await this.resolveConcernUseCase.execute(examMarkId, status, newMarks, responseMessage);
+
+      if (result) {
+        return res.status(StatusCodes.OK).json({ success: true, message: "Concern resolved successfully" });
+      } else {
+        return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Failed to resolve concern" });
+      }
+    } catch (error: any) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: error.message || "Internal server error",
+      });
+    }
+  }
 
 
   async CreateExamMark(req: AuthRequest, res: Response): Promise<void> {
@@ -89,6 +115,7 @@ export class ExamMarkManagementController {
 
       const values: CreateExamMarkDTO = req.body;
       const data = await this.updateMarkUseCase.execute(teacherId, values);
+      console.log("data", data)
 
       res.status(StatusCodes.OK).json({
         message: "Exam mark updated successfully",

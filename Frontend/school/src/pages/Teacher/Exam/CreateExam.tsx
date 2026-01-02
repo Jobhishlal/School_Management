@@ -12,7 +12,7 @@ import { getDecodedToken } from "../../../utils/DecodeToken";
 import { useTheme } from "../../../components/layout/ThemeContext";
 import { showToast } from "../../../utils/toast";
 import { Modal } from "../../../components/common/Modal";
-import { Plus, Edit, Calendar, Clock, BookOpen, FileText } from "lucide-react";
+import { Plus, Edit, Calendar, Clock, BookOpen, FileText, Eye } from "lucide-react";
 import { Pagination } from "../../../components/common/Pagination";
 import TakeMarks from "./ExamMarkListOut";
 
@@ -65,6 +65,8 @@ interface ExamEntity {
   maxMarks: number;
   description?: string;
   status: string;
+  pendingConcerns?: number;
+  concerns?: Array<{ studentName: string; concern: string; studentId: string }>;
 }
 
 const ExamForm: React.FC = () => {
@@ -81,6 +83,8 @@ const ExamForm: React.FC = () => {
   const [examsPerPage] = useState(5);
   const [selectedExam, setSelectedExam] = useState<string | null>(null);
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
+  const [isViewOnly, setIsViewOnly] = useState(false);
+  const [viewingConcerns, setViewingConcerns] = useState<ExamEntity | null>(null);
 
   const [form, setForm] = useState<CreateExamDTO | UpdateExamDTO>({
     examId: generateExamId(),
@@ -122,17 +126,17 @@ const ExamForm: React.FC = () => {
         const currentTeacher = teachersList.find(
           (t) => t.id === teacherId || t._id === teacherId
         );
-        
+
         console.log("Current Logged In Teacher:", currentTeacher);
 
         if (currentTeacher) {
           // Handle both 'subjects' and 'Subject' property names
           const teacherSubjects = currentTeacher.subjects || currentTeacher.Subject || [];
           console.log("Teacher Subjects:", teacherSubjects);
-          
+
           setSubjects(teacherSubjects);
-          setForm((prev) => ({ 
-            ...prev, 
+          setForm((prev) => ({
+            ...prev,
             teacherName: currentTeacher.name,
             teacherId: currentTeacher.id || currentTeacher._id || teacherId || ""
           }));
@@ -165,6 +169,13 @@ const ExamForm: React.FC = () => {
   const handleTakeMarks = (exam: ExamEntity) => {
     setSelectedExam(exam.id);
     setSelectedClassId(exam.classId);
+    setIsViewOnly(false);
+  };
+
+  const handleViewExam = (exam: ExamEntity) => {
+    setSelectedExam(exam.id);
+    setSelectedClassId(exam.classId);
+    setIsViewOnly(true);
   };
 
   const handleEditExam = (exam: ExamEntity) => {
@@ -208,11 +219,11 @@ const ExamForm: React.FC = () => {
 
   const handleOpenModal = () => {
     setEditingExam(null);
-    
+
     // Preserve teacherName and teacherId when opening modal
     const currentTeacherName = form.teacherName;
     const currentTeacherId = form.teacherId || teacherId || "";
-    
+
     setForm({
       examId: generateExamId(),
       title: "",
@@ -250,7 +261,7 @@ const ExamForm: React.FC = () => {
           ...form,
           examId: newExamId,
         };
-        
+
         console.log("Submitting Create Exam Form Data:", examData);
         const data = await ExamCreate(examData as CreateExamDTO);
         console.log("ExamCreate API Response:", data);
@@ -258,7 +269,7 @@ const ExamForm: React.FC = () => {
       }
 
       setIsModalOpen(false);
-      
+
       // Refresh exams list
       const updatedExams = await GetTeacherExams();
       setExams(updatedExams);
@@ -312,11 +323,10 @@ const ExamForm: React.FC = () => {
           </div>
           <button
             onClick={handleOpenModal}
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all shadow-lg ${
-              isDark
-                ? "bg-blue-600 hover:bg-blue-700 text-white"
-                : "bg-blue-500 hover:bg-blue-600 text-white"
-            }`}
+            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all shadow-lg ${isDark
+              ? "bg-blue-600 hover:bg-blue-700 text-white"
+              : "bg-blue-500 hover:bg-blue-600 text-white"
+              }`}
           >
             <Plus className="w-5 h-5" />
             Create Exam
@@ -335,9 +345,8 @@ const ExamForm: React.FC = () => {
                 <p className={isDark ? "text-gray-400" : "text-gray-600"}>No exams found</p>
                 <button
                   onClick={handleOpenModal}
-                  className={`mt-4 px-6 py-2 rounded-lg ${
-                    isDark ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"
-                  } text-white`}
+                  className={`mt-4 px-6 py-2 rounded-lg ${isDark ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"
+                    } text-white`}
                 >
                   Create Your First Exam
                 </button>
@@ -363,15 +372,14 @@ const ExamForm: React.FC = () => {
                     {currentExams.map((exam, index) => (
                       <tr
                         key={exam.id}
-                        className={`border-b transition-colors ${
-                          isDark
-                            ? index % 2 === 0
-                              ? "bg-gray-800 border-gray-700 hover:bg-gray-750"
-                              : "bg-gray-750 border-gray-700 hover:bg-gray-800"
-                            : index % 2 === 0
+                        className={`border-b transition-colors ${isDark
+                          ? index % 2 === 0
+                            ? "bg-gray-800 border-gray-700 hover:bg-gray-750"
+                            : "bg-gray-750 border-gray-700 hover:bg-gray-800"
+                          : index % 2 === 0
                             ? "bg-white border-gray-200 hover:bg-gray-50"
                             : "bg-gray-50 border-gray-200 hover:bg-gray-100"
-                        }`}
+                          }`}
                       >
                         <td className={`px-4 py-3 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
                           {exam.examId}
@@ -405,27 +413,54 @@ const ExamForm: React.FC = () => {
                         <td className="px-4 py-3 text-center">
                           <div className="flex gap-2 justify-center">
                             <button
+                              onClick={() => handleViewExam(exam)}
+                              className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium transition-colors ${isDark
+                                ? "bg-purple-600 hover:bg-purple-700 text-white"
+                                : "bg-purple-500 hover:bg-purple-600 text-white"
+                                }`}
+                            >
+                              <Eye className="w-4 h-4" />
+                              View
+                            </button>
+
+                            <button
                               onClick={() => handleEditExam(exam)}
-                              className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                                isDark
-                                  ? "bg-blue-600 hover:bg-blue-700 text-white"
-                                  : "bg-blue-500 hover:bg-blue-600 text-white"
-                              }`}
+                              className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium transition-colors ${isDark
+                                ? "bg-blue-600 hover:bg-blue-700 text-white"
+                                : "bg-blue-500 hover:bg-blue-600 text-white"
+                                }`}
                             >
                               <Edit className="w-4 h-4" />
                               Edit
                             </button>
-                            
-                            <button
-                              onClick={() => handleTakeMarks(exam)}
-                              className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                                isDark
+
+                            <div className="relative">
+                              <button
+                                onClick={() => handleTakeMarks(exam)}
+                                className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium transition-colors ${isDark
                                   ? "bg-green-600 hover:bg-green-700 text-white"
                                   : "bg-green-500 hover:bg-green-600 text-white"
-                              }`}
-                            >
-                              Take Marks
-                            </button>
+                                  }`}
+                              >
+                                Take Marks
+                              </button>
+                              <div className="relative group">
+                                {(exam.pendingConcerns || 0) > 0 && (
+                                  <>
+                                    <span
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setViewingConcerns(exam);
+                                      }}
+                                      className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse shadow-md cursor-pointer hover:scale-110 transition-transform z-10"
+                                      title="Click to view pending concerns"
+                                    >
+                                      {exam.pendingConcerns}
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         </td>
                       </tr>
@@ -473,11 +508,10 @@ const ExamForm: React.FC = () => {
                   required
                   value={form.title}
                   onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
-                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${
-                    isDark
-                      ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                      : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${isDark
+                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   placeholder="Enter exam title"
                 />
               </div>
@@ -490,11 +524,10 @@ const ExamForm: React.FC = () => {
                   required
                   value={form.type}
                   onChange={(e) => setForm((p) => ({ ...p, type: e.target.value as ExamType }))}
-                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${
-                    isDark
-                      ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                      : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${isDark
+                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 >
                   <option value="UNIT_TEST">Unit Test</option>
                   <option value="MIDTERM">Midterm</option>
@@ -510,11 +543,10 @@ const ExamForm: React.FC = () => {
                   required
                   value={form.classId}
                   onChange={(e) => handleClassChange(e.target.value)}
-                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${
-                    isDark
-                      ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                      : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${isDark
+                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 >
                   <option value="">Select Class</option>
                   {classes.map((c) => (
@@ -533,11 +565,10 @@ const ExamForm: React.FC = () => {
                   required
                   value={form.subject}
                   onChange={(e) => setForm((p) => ({ ...p, subject: e.target.value }))}
-                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${
-                    isDark
-                      ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                      : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${isDark
+                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   disabled={subjects.length === 0}
                 >
                   <option value="">
@@ -561,11 +592,10 @@ const ExamForm: React.FC = () => {
                   required
                   value={form.examDate}
                   onChange={(e) => setForm((p) => ({ ...p, examDate: e.target.value }))}
-                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${
-                    isDark
-                      ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                      : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${isDark
+                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 />
               </div>
 
@@ -579,11 +609,10 @@ const ExamForm: React.FC = () => {
                   required
                   value={form.startTime}
                   onChange={(e) => setForm((p) => ({ ...p, startTime: e.target.value }))}
-                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${
-                    isDark
-                      ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                      : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${isDark
+                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 />
               </div>
 
@@ -597,11 +626,10 @@ const ExamForm: React.FC = () => {
                   required
                   value={form.endTime}
                   onChange={(e) => setForm((p) => ({ ...p, endTime: e.target.value }))}
-                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${
-                    isDark
-                      ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                      : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${isDark
+                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 />
               </div>
 
@@ -616,11 +644,10 @@ const ExamForm: React.FC = () => {
                   min="1"
                   value={form.maxMarks}
                   onChange={(e) => setForm((p) => ({ ...p, maxMarks: Number(e.target.value) }))}
-                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${
-                    isDark
-                      ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                      : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${isDark
+                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   placeholder="100"
                 />
               </div>
@@ -634,11 +661,10 @@ const ExamForm: React.FC = () => {
                 rows={3}
                 value={form.description || ""}
                 onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
-                className={`w-full px-4 py-2 rounded-lg border transition-colors ${
-                  isDark
-                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                className={`w-full px-4 py-2 rounded-lg border transition-colors ${isDark
+                  ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                  : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 placeholder="Enter exam description (optional)"
               />
             </div>
@@ -647,22 +673,20 @@ const ExamForm: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                  isDark
-                    ? "bg-gray-700 hover:bg-gray-600 text-white"
-                    : "bg-gray-200 hover:bg-gray-300 text-gray-900"
-                }`}
+                className={`px-6 py-2 rounded-lg font-medium transition-colors ${isDark
+                  ? "bg-gray-700 hover:bg-gray-600 text-white"
+                  : "bg-gray-200 hover:bg-gray-300 text-gray-900"
+                  }`}
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleSubmit}
-                className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                  isDark
-                    ? "bg-blue-600 hover:bg-blue-700 text-white"
-                    : "bg-blue-500 hover:bg-blue-600 text-white"
-                }`}
+                className={`px-6 py-2 rounded-lg font-medium transition-colors ${isDark
+                  ? "bg-blue-600 hover:bg-blue-700 text-white"
+                  : "bg-blue-500 hover:bg-blue-600 text-white"
+                  }`}
               >
                 {editingExam ? "Update Exam" : "Create Exam"}
               </button>
@@ -672,17 +696,79 @@ const ExamForm: React.FC = () => {
       </div>
 
       {/* TakeMarks Modal - Render when exam is selected */}
-      {selectedExam && selectedClassId && (
-        <TakeMarks
-          examId={selectedExam}
-          classId={selectedClassId}
-          onClose={() => {
-            setSelectedExam(null);
-            setSelectedClassId(null);
-          }}
-        />
-      )}
-    </div>
+      {
+        selectedExam && selectedClassId && (
+          <TakeMarks
+            examId={selectedExam}
+            classId={selectedClassId}
+            isReadOnly={isViewOnly}
+            onClose={async () => {
+              setSelectedExam(null);
+              setSelectedClassId(null);
+              setIsViewOnly(false);
+              // Refresh exams to update concern counts
+              try {
+                const updatedExams = await GetTeacherExams();
+                setExams(updatedExams);
+              } catch (error) {
+                console.error("Failed to refresh exams:", error);
+              }
+            }}
+          />
+        )
+      }
+
+      {/* Concern Details Modal - Replaces the tooltip */}
+      <Modal
+        title="Student Concerns"
+        isOpen={!!viewingConcerns}
+        onClose={() => setViewingConcerns(null)}
+        className="max-w-md"
+      >
+        {viewingConcerns && (
+          <div className="space-y-4">
+            <div className={`p-4 rounded-lg ${isDark ? "bg-slate-800" : "bg-gray-50"}`}>
+              <h4 className={`font-medium mb-3 ${isDark ? "text-gray-200" : "text-gray-700"}`}>
+                Pending Concerns ({viewingConcerns.pendingConcerns})
+              </h4>
+              <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+                {viewingConcerns.concerns?.map((c, i) => (
+                  <div key={i} className={`p-3 rounded border ${isDark ? "bg-slate-700 border-slate-600" : "bg-white border-gray-200"}`}>
+                    <div className="flex justify-between items-start mb-2">
+                      <span className="font-semibold text-blue-600 dark:text-blue-400 text-sm">
+                        {c.studentName}
+                      </span>
+                    </div>
+                    <p className={`text-sm italic ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                      "{c.concern}"
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-2">
+              <button
+                onClick={() => setViewingConcerns(null)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium ${isDark ? "bg-gray-700 hover:bg-gray-600" : "bg-gray-200 hover:bg-gray-300"}`}
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  const examToResolve = viewingConcerns;
+                  setViewingConcerns(null);
+                  handleTakeMarks(examToResolve);
+                }}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Resolve Now
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
+    </div >
   );
 };
 

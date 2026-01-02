@@ -4,7 +4,7 @@ import { ListoutExistedAssignment } from "../../services/authapi";
 import { useTheme } from "../../components/layout/ThemeContext";
 import { useNavigate } from "react-router-dom";
 
-interface Assignment {
+export interface Assignment {
   id: string;
   Assignment_Title: string;
   description: string;

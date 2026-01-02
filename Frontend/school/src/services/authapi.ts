@@ -783,10 +783,31 @@ export const getClassExamResults = async (examId: string) => {
 };
 
 
-export const StudentExamResultView = async (classId: string) => {
-  const res = await api.post("/student/exam/view-results", { classId });
+export const StudentExamResultView = async (classId: string, studentId?: string) => {
+  const payload: any = { classId };
+  if (studentId) {
+    payload.studentId = studentId;
+  }
+  const res = await api.post("/student/exam/view-results", payload);
   return res.data;
 };
+
+export const RaiseExamConcern = async (examMarkId: string, concern: string) => {
+  const res = await api.post("/student/exam/raise-concern", { examMarkId, concern });
+  return res.data;
+}
+
+
+export const ResolveExamConcern = async (examMarkId: string, status: "Resolved" | "Rejected", newMarks?: number, responseMessage?: string) => {
+  const res = await api.post("/teacher/exammark/resolve-concern", { examMarkId, status, newMarks, responseMessage });
+  return res.data;
+}
+
+export const getParentProfile = async (id: string) => {
+  const res = await api.get(`/parents/profile/${id}`);
+  return res.data;
+};
+
 
 
 export const assignStudentToDivision = async (payload: {

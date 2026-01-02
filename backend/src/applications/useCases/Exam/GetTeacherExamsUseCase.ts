@@ -2,14 +2,31 @@ import { IGetTeacherExamsUseCase } from "../../../domain/UseCaseInterface/Exam/I
 import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
 import { ExamEntity } from "../../../domain/entities/Exam/ExamEntity";
 
+import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMarkRepoInterface";
+
 export class GetTeacherExamsUseCase implements IGetTeacherExamsUseCase {
-  constructor(private examRepo: IExamRepository) {}
+  constructor(
+    private examRepo: IExamRepository,
+    private examMarkRepo: IExamMarkRepository
+  ) { }
 
   async execute(teacherId: string): Promise<ExamEntity[]> {
     if (!teacherId) throw new Error("Teacher ID is required");
 
     const exams = await this.examRepo.getExamsByTeacher(teacherId);
 
-    return exams;
+    // Fetch pending concerns info for these exams
+    const examIds = exams.map(e => e.id);
+    const concernInfo = await this.examMarkRepo.getPendingConcernsInfoByExamIds(examIds);
+
+    // Map counts to exams
+    return exams.map(exam => {
+      const details = concernInfo[exam.id] || [];
+      return {
+        ...exam,
+        pendingConcerns: details.length,
+        concerns: details
+      };
+    });
   }
 }

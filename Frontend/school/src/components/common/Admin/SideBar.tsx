@@ -26,11 +26,9 @@ import {
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../layout/ThemeContext";
 
-type Props = {
-  children?: React.ReactNode;
-};
+type Props = {};
 
-export default function SchoolNavbar({ children }: Props) {
+export default function SchoolNavbar({ }: Props) {
   const { isDark, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
@@ -128,7 +126,7 @@ export default function SchoolNavbar({ children }: Props) {
   ];
 
   const sidebarBg = isDark ? "bg-[#121A21]" : "bg-[#fafbfc]";
-  const sidebarBorder = isDark ? "border-slate-700/50" : "border-slate-200/60";
+  // const sidebarBorder = isDark ? "border-slate-700/50" : "border-slate-200/60";
   const headerBg = isDark ? "bg-[#121A21]" : "bg-white";
   const headerBorder = isDark ? "border-slate-700/30" : "border-slate-200/50";
   const cardBg = isDark ? "bg-slate-800/50" : "bg-white";

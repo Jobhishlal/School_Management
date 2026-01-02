@@ -121,18 +121,32 @@ const attendanceController = new AttendanceController(
 
 const examrepo = new ExamMongoRepo()
 const teacherrepo = new MongoTeacher()
+const exammarkrepo = new ExamMarkMongoRepository()
 const examcreate = new ExamCreateUseCase(examrepo, classrepo, teacherrepo)
 const updateexam = new ExamUpdateTeacherUseCase(examrepo, teacherrepo)
-const findall = new GetTeacherExamsUseCase(examrepo)
+const findall = new GetTeacherExamsUseCase(examrepo, exammarkrepo)
 
 
-const exammarkrepo = new ExamMarkMongoRepository()
+import { ResolveExamConcernUseCase } from "../../applications/useCases/Exam/ResolveExamConcernUseCase";
+
 
 const exammarkcreate = new ExamMarkCreateUseCase(exammarkrepo, studentrepo, examrepo)
 const studentgetrepo = new GetStudentsByExamUseCase(examrepo, studentrepo, exammarkrepo)
 const updateExamMarkUseCase = new UpdateExamMarkUseCase(exammarkrepo, examrepo)
+const resolveConcernUseCase = new ResolveExamConcernUseCase(exammarkrepo);
 
-const exammarkcontroller = new ExamMarkManagementController(exammarkcreate, studentgetrepo, updateExamMarkUseCase)
+const exammarkcontroller = new ExamMarkManagementController(exammarkcreate, studentgetrepo, updateExamMarkUseCase, resolveConcernUseCase)
+// ...
+
+Teacherrouter.put('/exammark/update',
+  authMiddleware,
+  (req, res) => exammarkcontroller.updateExamMark(req as AuthRequest, res)
+)
+
+Teacherrouter.post('/exammark/resolve-concern',
+  authMiddleware,
+  (req, res) => exammarkcontroller.resolveConcern(req as AuthRequest, res)
+)
 const examfindclassbase = new ExamFindClassBase(examrepo)
 
 

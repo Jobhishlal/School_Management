@@ -14,7 +14,9 @@ export interface ExamMarkDocument extends Document {
   marksObtained: number;
   progress: StudentProgress;
   remarks?: string;
-
+  concern?: string;
+  concernStatus?: "Pending" | "Resolved" | "Rejected";
+  concernResponse?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -52,6 +54,19 @@ const ExamMarkSchema = new Schema<ExamMarkDocument>(
     },
 
     remarks: {
+      type: String,
+      default: "",
+    },
+    concern: {
+      type: String,
+      default: null,
+    },
+    concernStatus: {
+      type: String,
+      enum: ["Pending", "Resolved", "Rejected"],
+      default: null,
+    },
+    concernResponse: {
       type: String,
       default: "",
     },

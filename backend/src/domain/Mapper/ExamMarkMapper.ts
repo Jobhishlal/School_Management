@@ -10,6 +10,9 @@ export const toExamMarkEntity = (doc: ExamMarkDocument): ExamMarkEntity => {
     doc.marksObtained,
     doc.progress,
     doc.remarks ?? "",
+    doc.concern ?? null,
+    doc.concernStatus ?? null,
+    doc.concernResponse ?? null,
     doc.createdAt,
     doc.updatedAt
   );

@@ -49,6 +49,10 @@ export class GetStudentsByExamUseCase {
         progress: mark?.progress ?? "Pending",
         remarks: mark?.remarks ?? "-",
         isMarked: !!mark,
+        concern: (mark as any)?.concern ?? null,
+        concernStatus: (mark as any)?.concernStatus ?? null,
+        concernResponse: (mark as any)?.concernResponse ?? null,
+        examMarkId: (mark as any)?._id ?? null
       };
     });
 

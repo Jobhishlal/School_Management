@@ -214,14 +214,19 @@ const studentcreatecontroller = new StudentCreateController(
   studentfindclassbase
 );
 
+
+import { GetParentProfileUseCase } from "../../applications/useCases/Parent/GetParentProfileUseCase";
+
 const createparentrepo = new ParentAddUseCase(parentrepo);
 const getallparentrepo = new GetAllParentsUseCase(parentrepo);
 const updateParentrepo = new UpdateParentUseCase(parentrepo);
+const getParentProfileUseCase = new GetParentProfileUseCase();
 
 const ParentControllerroute = new ParentManagementCOntroller(
   createparentrepo,
   getallparentrepo,
-  updateParentrepo
+  updateParentrepo,
+  getParentProfileUseCase
 );
 
 const addressrepo = new AddressMongoRepository();

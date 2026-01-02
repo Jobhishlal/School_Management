@@ -4,6 +4,7 @@ import { GenarateOtp } from "../../../shared/constants/utils/Otpgenarator";
 import { AdminError } from "../../../domain/enums/Adminsinguperror";
 
 export class ResendOtp {
+  
   async execute(oldOtpToken: string) {
     const decoded = verifiedOtptoken(oldOtpToken);
 

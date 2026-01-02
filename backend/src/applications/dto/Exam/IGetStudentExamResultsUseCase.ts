@@ -3,7 +3,7 @@
 export interface StudentProfileDTO {
   id: string;
   fullName: string;
-  studentId: string; 
+  studentId: string;
   classId: string;
 
   classDetails?: {
@@ -24,6 +24,11 @@ export interface StudentExamResultDTO {
   percentage: number | null;
   progress: string | null;
   remarks: string | null;
+  _id?: string;
+  concern?: string | null;
+  concernStatus?: "Pending" | "Resolved" | "Rejected" | null;
+  concernResponse?: string | null;
+  updatedAt?: Date | null;
   status: "Pending" | "Passed" | "Failed";
 }
 

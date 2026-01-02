@@ -165,6 +165,8 @@ import ParentAttendance from "./pages/Parents/AttendanceViewPage";
 import CreateExam from "./pages/Teacher/Exam/CreateExam";
 import TakeMarks from "./pages/Teacher/Exam/ExamMarkListOut";
 import { TeacherParentList } from "./pages/Teacher/TeacherParentList";
+import ParentExamResults from "./pages/Parents/ParentExamResults";
+import ParentProfile from "./pages/Parents/ParentProfile";
 function ErrorFallback({ error }: { error: Error }) {
   return <div role="alert">Something went wrong: {error.message}</div>;
 }
@@ -239,6 +241,10 @@ function App() {
           <Route path="/parent/dashboard" element={<ParentDashboard />} />
           <Route path="/parent/financelist" element={<FinanceParentList />} />
           <Route path="/parent/attendacelist" element={<ParentAttendance />} />
+
+          <Route path="/parent/exams" element={<ParentExamResults />} />
+          <Route path="/parent/profile" element={<ParentProfile />} />
+
 
         </Route>
 

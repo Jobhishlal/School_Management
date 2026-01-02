@@ -80,6 +80,11 @@ export class GetStudentExamResultsUseCase
         percentage,
         progress: mark?.progress ?? null,
         remarks: mark?.remarks ?? null,
+        _id: mark?.id,
+        concern: mark?.concern ?? null,
+        concernStatus: mark?.concernStatus ?? null,
+        concernResponse: (mark as any)?.concernResponse ?? null,
+        updatedAt: mark?.updatedAt ?? null,
         status,
       };
     });

@@ -13,10 +13,13 @@ export class ExamMarkEntity {
     public readonly studentId: Types.ObjectId,
     public readonly teacherId: Types.ObjectId,
     public readonly marksObtained: number,
-    
+
     public readonly progress: StudentProgress,
     public readonly remarks: string,
+    public readonly concern: string | null,
+    public readonly concernStatus: "Pending" | "Resolved" | "Rejected" | null,
+    public readonly concernResponse: string | null,
     public readonly createdAt: Date,
     public readonly updatedAt: Date
-  ) {}
+  ) { }
 }

@@ -65,11 +65,16 @@ const Announcementreadcontroller = new AnnouncementReadController(
 
 const mongorepo = new ExamMongoRepo()
 const examlistusecase = new Examclassbaseviewusecase(mongorepo, studentmongo)
+import { RaiseExamConcernUseCase } from "../../applications/useCases/Exam/RaiseExamConcernUseCase";
+
 const exammark = new ExamMarkMongoRepository()
 const examresultview = new GetStudentExamResultsUseCase(mongorepo, exammark, studentmongo)
+const raiseConcernUseCase = new RaiseExamConcernUseCase(exammark);
+
 const studentexamlistcontroller = new StudentviewExamController(
   examlistusecase,
-  examresultview
+  examresultview,
+  raiseConcernUseCase
 )
 
 
@@ -115,6 +120,11 @@ Studentrouter.get('/exam/view-exam-list',
 Studentrouter.post('/exam/view-results',
   authMiddleware,
   (req, res) => studentexamlistcontroller.getStudentExamResults(req as AuthRequest, res)
+);
+
+Studentrouter.post('/exam/raise-concern',
+  authMiddleware,
+  (req, res) => studentexamlistcontroller.raiseConcern(req as AuthRequest, res)
 );
 
 import { AttendanceMongoRepository } from "../../infrastructure/repositories/Attendance/AttendanceMongoRepo";
