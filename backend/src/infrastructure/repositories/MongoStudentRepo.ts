@@ -181,6 +181,19 @@ async findById(id: string): Promise<Students | null> {
       
     }
 
+    async findByClassId(classId: string): Promise<Students[]> {
+      if (!mongoose.Types.ObjectId.isValid(classId)) {
+        throw new Error(`Invalid Class ID: ${classId}`);
+      }
+
+  const students = await StudentModel.find({ classId: classId })
+    .populate("parent")
+    .populate("address")
+    .populate("classId");
+
+  return students.map(s => this.mapToDomainPopulated(s));
+    }
+
 
 
 
@@ -230,5 +243,18 @@ private mapToDomainPopulated(student: StudentInterface & { parent: any; address:
 }
 
 
+  async findByStudentClassIdBase(classId: string): Promise<Students[]> {
+    if (!mongoose.Types.ObjectId.isValid(classId)) {
+    throw new Error("Invalid classId");
+  }
 
+  const students = await StudentModel.find({
+    classId: new mongoose.Types.ObjectId(classId),
+  })
+    .populate("parent")
+    .populate("address")
+    .populate("classId");
+
+  return students.map(s => this.mapToDomainPopulated(s));
+  }
 }

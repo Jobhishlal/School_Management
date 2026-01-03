@@ -42,36 +42,81 @@ export default function SchoolNavbar({ children }: Props) {
 
   const userRole = localStorage.getItem("role");
 
+  // const menuItems = [
+  //   {
+  //     label: "SCHOOL MANAGEMENT",
+  //     links: [
+  //       { icon: LayoutDashboard, text: "Dashboard", path: "/dashboard" },
+  //       { icon: Users, text: "Admins Management", path: "/admins" },
+  //       { icon: GraduationCap, text: "Student Management", path: "/students" },
+
+  //       ...(userRole === "sub_admin"
+  //         ? [{ icon: UserCheck, text: "Admin Profile", path: "/adminprofile" }]
+  //         : []),
+  //       ...(userRole === "super_admin"
+  //         ? [{ icon: Settings, text: "Institute Profile", path: "/instituteprofile" }]
+  //         : []),
+
+  //       { icon: Megaphone, text: "Teacher Management", path: "/teachers" },
+  //       { icon: AlertCircle, text: "Class Base Access", path: "/classbaseview" },
+  //       { icon: DollarSign, text: "Finance", path: "/finance-management" },
+        
+  //       ...(userRole==="super_admin"
+  //         ?[{
+  //           icon: GraduationCap, text: "Student Management", path: "/student-management"
+  //         }]:[]
+
+
+  //       ),
+  //       { icon: GraduationCap, text: "approvals", path: "/admin-approval" },
+  //     ],
+  //   },
+  //   {
+  //     label: "COMMUNICATION",
+  //     links: [
+  //       { icon: MessageCircle, text: "Communication", path: "/communication" },
+  //       { icon: FileText, text: "Leave Request", path: "/leave-request" },
+  //       { icon: Calendar, text: "Time Table", path: "/timetable-management" },
+  //     ],
+  //   },
+  // ];
+
+
   const menuItems = [
-    {
-      label: "SCHOOL MANAGEMENT",
-      links: [
-        { icon: LayoutDashboard, text: "Dashboard", path: "/dashboard" },
-        { icon: Users, text: "Admins Management", path: "/admins" },
-        { icon: GraduationCap, text: "Student Management", path: "/students" },
+  {
+    label: "SCHOOL MANAGEMENT",
+    links: [
+      { icon: LayoutDashboard, text: "Dashboard", path: "/dashboard" },
+      { icon: Users, text: "Admins Management", path: "/admins" },
+      { icon: GraduationCap, text: "Student Management", path: "/student-management"},
 
-        ...(userRole === "sub_admin"
-          ? [{ icon: UserCheck, text: "Admin Profile", path: "/adminprofile" }]
-          : []),
-        ...(userRole === "super_admin"
-          ? [{ icon: Settings, text: "Institute Profile", path: "/instituteprofile" }]
-          : []),
+      ...(userRole === "sub_admin"
+        ? [{ icon: UserCheck, text: "Admin Profile", path: "/adminprofile" }]
+        : []),
 
-        { icon: Megaphone, text: "Teacher Management", path: "/teachers" },
-        { icon: AlertCircle, text: "Class Base Access", path: "/classbaseview" },
-        { icon: DollarSign, text: "Finance", path: "/finance-management" },
-        { icon: GraduationCap, text: "Student Management", path: "/student-management" },
-      ],
-    },
-    {
-      label: "COMMUNICATION",
-      links: [
-        { icon: MessageCircle, text: "Communication", path: "/communication" },
-        { icon: FileText, text: "Leave Request", path: "/leave-request" },
-        { icon: Calendar, text: "Time Table", path: "/timetable-management" },
-      ],
-    },
-  ];
+      ...(userRole === "super_admin"
+        ? [
+            { icon: Settings, text: "Institute Profile", path: "/instituteprofile" },
+            { icon: GraduationCap, text: "Approvals", path: "/admin-approval" }, 
+          ]
+        : []),
+
+      { icon: Megaphone, text: "Teacher Management", path: "/teachers" },
+      { icon: AlertCircle, text: "Class Base Access", path: "/classbaseview" },
+      { icon: DollarSign, text: "Finance", path: "/finance-management" },
+      { icon: AlertCircle, text: "Announcement", path: '/Announcement' },
+    ],
+  },
+
+  {
+    label: "COMMUNICATION",
+    links: [
+      { icon: MessageCircle, text: "Communication", path: "/communication" },
+      { icon: FileText, text: "Leave Request", path: "/leave-request" },
+      { icon: Calendar, text: "Time Table", path: "/timetable-management" },
+    ],
+  },
+];
 
   const sidebarBg = isDark ? "bg-[#121A21]" : "bg-[#fafbfc]";
   const sidebarBorder = isDark ? "border-slate-700/50" : "border-slate-200/60";

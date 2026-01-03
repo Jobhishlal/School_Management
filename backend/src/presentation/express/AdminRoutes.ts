@@ -78,6 +78,75 @@ import { FeeStructureManageController } from "../http/controllers/ADMIN/FeeManag
 import { CreateFeeTypeUseCase } from "../../applications/useCases/FeeStructure/FeeTypeCreate";
 import { GetFeeTypeAll } from "../../applications/useCases/FeeStructure/FeeTypeGetAll";
 import { FeeTypeCreateController } from "../http/controllers/ADMIN/FeeManagement/FeeTypeCreateController";
+import { ExpenseManagementController } from "../http/controllers/ADMIN/FeeManagement/ExpanseManagementController";
+import { ExpenseCreate } from "../../applications/useCases/FeeStructure/ExpenseCreate";
+import { MongoExpenseManagement } from "../../infrastructure/repositories/FeeManagement/MongoExpenseManagement";
+import { SuperadminApprovalController } from "../http/controllers/ADMIN/FeeManagement/SuperadminApproveController";
+import { ExpenseApproveUseCase } from "../../applications/useCases/FeeStructure/ExpenseApprovalUseCase";
+import { PendingStatusFindUsecase } from "../../applications/useCases/FeeStructure/PendingExpenseList";
+import { ListOutFullExpense } from "../../applications/useCases/FeeStructure/ListOutFullExpense";
+import { StudentPaymentDetailList } from "../../applications/useCases/FeeStructure/StudentFeeCompleteUseCase";
+
+import { PendingStatusUpdateUseCase } from "../../applications/useCases/FeeStructure/PendingstatusUpdateUseCase";
+import { SearchStudentName } from "../../applications/useCases/FeeStructure/SearchPaymentHistory";
+import { ExpenseReportUseCase } from "../../applications/useCases/FeeStructure/FinanceReport/ExpenseGenerateReportUseCase";
+import { MongoExpenseReport } from "../../infrastructure/repositories/FeeManagement/FinanceReport/ExpenseReport";
+
+
+
+
+
+
+//// Revenue Report /////
+
+import { FinanceReportUseCase } from "../../applications/useCases/FeeStructure/FinanceReport/RevenueGenarateFinanceReportUseCase";
+import { MongoRevenueGenarateReport } from "../../infrastructure/repositories/FeeManagement/FinanceReport/financeReport";
+import { FinanceReportManagementController } from "../http/controllers/ADMIN/FeeManagement/FinanceReport/FinanceReportController";
+
+
+
+  
+
+
+
+/// ANNOUNCEMENT 
+
+
+import { AnnouncementMongo } from "../../infrastructure/repositories/Announcement/MongoAnnoucement";
+import { AnnouncementUseCase } from "../../applications/useCases/Announcement/AnnouncementUseCase";
+import { AnnouncementController } from "../http/controllers/Announcement/AnnouncementController";
+import { SocketNotification } from "../../infrastructure/socket/SocketNotification";
+import { AnnouncementAttachment } from "../../infrastructure/middleware/AnnouncementFile";
+import { UpdateAnnouncementUseCase } from "../../applications/useCases/Announcement/UpdateAnnouncementUseCase";
+import { FindAllAnnoucenemt } from "../../applications/useCases/Announcement/AnnouncementFindUseCase";
+
+
+
+
+
+import { StudentFindClassBaseUseCase } from "../../applications/useCases/Students/StudentFindClassIDbaseUseCase";
+
+
+
+const annoucement = new AnnouncementMongo()
+const socketNotification = new SocketNotification()
+const updateannouncement = new UpdateAnnouncementUseCase(annoucement)
+const findall = new FindAllAnnoucenemt(annoucement)
+const announcementcreateusecase = new AnnouncementUseCase(annoucement,socketNotification)
+const announcementController = new AnnouncementController(
+  announcementcreateusecase,
+  updateannouncement,
+  findall
+  
+)
+
+
+/////
+
+
+
+
+
 
 
 const repo = new AdminRepository();
@@ -129,15 +198,20 @@ const createstudentUseCase = new StudentAddUseCase(
   genaratepassword,
   emailservice
 );
+
+
+const classReop = new MongoClassRepository();
 const getliststundetUseCase = new StudentList(studentrepo);
 const studentblockuseCase = new StudentBlock(studentrepo);
 const updatestudentuseCase = new UpdateStudentUseCase(studentrepo);
+const studentfindclassbase = new StudentFindClassBaseUseCase(studentrepo,classReop)
 const studentcreatecontroller = new StudentCreateController(
   studentrepo,
   createstudentUseCase,
   getliststundetUseCase,
   studentblockuseCase,
-  updatestudentuseCase
+  updatestudentuseCase,
+  studentfindclassbase
 );
 
 const createparentrepo = new ParentAddUseCase(parentrepo);
@@ -160,7 +234,7 @@ const AddressController = new AddressManagementController(
   updateaddrressusecase
 );
 
-const classReop = new MongoClassRepository();
+
 const createClass = new CreateClassUseCase(classReop);
 const getlistclass = new GetAllClass(classReop);
 const classupdateusecase = new UpdateClassUseCase(classReop);
@@ -228,8 +302,13 @@ const financetype = new FeeTypeManagemnt()
 const createfinance =  new CreateFeeStructureUseCase(finance,financetype)
 const createtypeusecase = new CreateFeeTypeUseCase(financetype)
 const getallfeetype = new GetFeeTypeAll(financetype)
+const searchname = new SearchStudentName(finance)
+const studentfeehistory = new StudentPaymentDetailList(finance)
 const financemanagementcontroll = new FeeStructureManageController(
-  createfinance
+  createfinance,
+  studentfeehistory,
+  searchname
+
 )
 
 const financetypecontroller = new FeeTypeCreateController(
@@ -237,6 +316,45 @@ const financetypecontroller = new FeeTypeCreateController(
   getallfeetype
 )
 
+const createexpense = new MongoExpenseManagement()
+const expenserepo = new ExpenseCreate(createexpense)
+const expensefulllist = new ListOutFullExpense(createexpense)
+const pendingstatusupdate = new PendingStatusUpdateUseCase(createexpense)
+
+
+const expensemanagecontroller = new ExpenseManagementController(
+  expenserepo,
+  expensefulllist,
+  pendingstatusupdate
+ 
+
+
+)
+
+
+const expenseapprove = new ExpenseApproveUseCase(createexpense)
+const pendingexpense = new PendingStatusFindUsecase(createexpense)
+
+const expanceapprovalcontroller = new SuperadminApprovalController(
+  expenseapprove,
+  pendingexpense,
+   
+
+)
+
+const financereport = new MongoRevenueGenarateReport()
+const expensereportmongo = new MongoExpenseReport()
+const financeGenarateUsecase = new FinanceReportUseCase(financereport)
+const expensereport = new ExpenseReportUseCase(expensereportmongo)
+
+
+
+
+const financeReportController = new FinanceReportManagementController(
+  financeGenarateUsecase,
+  expensereport
+
+)
 
 
 
@@ -407,5 +525,86 @@ Adminrouter.post('/create-finance-type',(req,res)=>
 Adminrouter.get("/get-allfee-type", (req, res) =>
   financetypecontroller.getAllFeeTypes(req, res)
 );
+
+Adminrouter.post('/crete-expense',(req,res)=>{
+  expensemanagecontroller.create(req,res)
+})
+
+
+Adminrouter.patch(
+  "/expense/approve",
+  authMiddleware, 
+  (req,res)=>{
+      expanceapprovalcontroller.approved(req as AuthRequest,res)
+  }
+);
+
+
+
+
+  
+Adminrouter.get('/expense/pending',
+  authMiddleware,
+  (req ,res)=>{
+   expanceapprovalcontroller.getPendingExpenses(req as AuthRequest,res)
+})
+
+Adminrouter.get('/expense/fulllist',
+  authMiddleware,
+  (req,res)=>{
+    expensemanagecontroller.listAll(req as AuthRequest,res)
+  }
+)
+Adminrouter.put('/expense/updateexpense/:id',
+
+   authMiddleware,
+   (req,res)=>{
+    expensemanagecontroller.Pendingexpenseupdate(req as AuthRequest,res)
+   }
+)
+
+
+Adminrouter.get('/peyment/class/:classId',(req,res)=>{
+  financemanagementcontroll.fullfeecompletedetails(req,res)
+  }
+
+)
+  
+
+Adminrouter.get('/finance/searchName',(req,res)=>{
+  financemanagementcontroll.SearchPeymentHistoryStudent(req,res)
+})
+
+
+
+
+Adminrouter.get('/financereport',(req,res)=>{
+  financeReportController.RevenueGenerateReport(req,res)
+})
+
+
+Adminrouter.get('/expense-report',(req,res)=>{
+  financeReportController.ExpenseGenarage(req,res)
+})
+Adminrouter.post(
+  "/announcement",
+  AnnouncementAttachment.single("attachment"),
+  (req, res) => {
+    announcementController.create(req, res);
+  }
+);
+
+
+
+Adminrouter.put('/update-announcement/:id',(req,res)=>{
+  announcementController.UpdateAnnouncement(req,res)
+})
+
+Adminrouter.get('/announcement/findall',(req,res)=>{
+  announcementController.FindAllAnnouncement(req,res)
+})
+
+
+
 
 export default Adminrouter;

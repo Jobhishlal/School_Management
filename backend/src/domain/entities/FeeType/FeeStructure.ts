@@ -17,7 +17,9 @@ export class FeeStructure {
     public feeItems: FeeStructureItem[],
     public notes: string | undefined,
     public createdAt: Date,
-    public updatedAt: Date
-  ) {}
+    public updatedAt: Date,
+    public startDate: Date,
+    public expiryDate: Date
+  ) {} 
 }
 

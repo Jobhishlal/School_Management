@@ -10,9 +10,10 @@ import Studentrouter from './presentation/express/StudentRoute';
 import Teacherrouter from './presentation/express/TeacherRoutes';
 import ParentRouter from './presentation/express/ParentRooute';
 import cors from 'cors'
-import "./infrastructure/cron/monthlyFeeCron";
+import { startFeeExpiryCron } from './infrastructure/cron/FeeExpiryCron';
+import  http  from 'http';
 
-
+import { initSocket } from './infrastructure/socket/socket';
 
 const app = express();
 
@@ -29,8 +30,12 @@ app.use('/superadmin',MainRouter)
 app.use('/student',Studentrouter)
 app.use('/teacher',Teacherrouter)
 app.use('/parents',ParentRouter)
+
+export const httpServer = http.createServer(app);
 connectDB().then(() => {
-  app.listen(process.env.PORT || 5000, () => {
+  startFeeExpiryCron()
+  initSocket(httpServer)
+  httpServer.listen(process.env.PORT || 5000, () => {
     console.log(` Server running on port ${process.env.PORT || 5000}`);
   });
 });

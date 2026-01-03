@@ -8,4 +8,6 @@ export interface CreateFeeStructureDTO {
     isOptional: boolean;
   }[];
   notes?: string;
+  startDate?: string;  
+  expiryDate?: string; 
 }

@@ -25,7 +25,7 @@ export class FeeTypeCreateController {
 
       console.log("FeeType created successfully:", createdFeeType.name);
     } catch (error: any) {
-      console.error("Error creating FeeType:", error);
+      console.log("error",error)
       res.status(StatusCodes.BAD_REQUEST).json({
        success: false,
       message: error.message, 
@@ -51,7 +51,7 @@ export class FeeTypeCreateController {
         data,
       });
     } catch (error: any) {
-      console.error("Error fetching FeeTypes:", error);
+     
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: "Failed to get fee types",

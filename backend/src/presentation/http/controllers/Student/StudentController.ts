@@ -8,6 +8,8 @@ import { IGetStudentSInterface } from "../../../../domain/UseCaseInterface/IStud
 import { IStudentBlock } from "../../../../domain/UseCaseInterface/IStudentBlock";
 import logger from "../../../../shared/constants/Logger";
 import { IStudentUpdateUseCase } from "../../../../domain/UseCaseInterface/IStudentupdate";
+import { IGetStudentsByClassUseCase } from "../../../../domain/UseCaseInterface/StudentCreate/IStudentFindClassBase";
+import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 
 export class StudentCreateController {
   constructor(
@@ -15,7 +17,8 @@ export class StudentCreateController {
     private addStudent: StudentAddUseCase,
     private getStudent:IGetStudentSInterface,
     private studentblock:IStudentBlock,
-    private studentupdate:IStudentUpdateUseCase
+    private studentupdate:IStudentUpdateUseCase,
+    private studentclassrepofind:IGetStudentsByClassUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<void> {
@@ -150,6 +153,25 @@ async blockStudent(req: Request, res: Response): Promise<void> {
                 message: error.message || "Failed to update student",
             });
         }
+    }
+
+    async FindStudntSClassBase(req:AuthRequest,res:Response):Promise<void>{
+      try {
+        const {classId}=req.params
+        const teacherId = req.user?.id
+
+        const student = await this.studentclassrepofind.execute(classId,teacherId)
+        if(!student){
+          res.status(StatusCodes.BAD_REQUEST)
+          .json({message:"does not fetch student in classbase"})
+        }
+        res.status(StatusCodes.OK)
+        .json({message:"data fetching successfully",success:true,student})
+      } catch (error) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({message:"internal server error",error})
+        
+      }
     }
 
 }

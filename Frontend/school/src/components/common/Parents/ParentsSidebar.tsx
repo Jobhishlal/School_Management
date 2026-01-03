@@ -40,7 +40,7 @@ const ParentSidebar: React.FC<ParentSidebarProps> = ({ children }) => {
 
   const menuItems = [
     { icon: LayoutDashboard, text: "Dashboard", path: "/parent/dashboard" },
-    { icon: Calendar, text: "Student Attendance Report", path: "/parent/attendance" },
+    { icon: Calendar, text: "Student Attendance Report", path: "/parent/attendacelist" },
     { icon: FileText, text: "Student Exams Results", path: "/parent/exams" },
     { icon: DollarSign, text: "Student Fees Details", path: "/parent/financelist" },
     { icon: ClipboardList, text: "Assignment Submit", path: "/parent/assignments" },

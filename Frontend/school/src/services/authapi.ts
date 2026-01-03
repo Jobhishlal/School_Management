@@ -4,6 +4,9 @@ import { type CreateTimeTableDTO } from "../types/ITimetable";
 import { type CreateAssignmentDTO } from "../types/AssignmentCreate";
 import type { CreateFeeStructureDTO } from "../types/CreateFeeStructureDTO ";
 import type { CreateFeeTypePayload } from "../types/CreateFeeTypePayload";
+import type{ ExpenseFormDTO } from "../types/ExpenseCreatedto";
+import type{ CreateAnnouncementDTO } from "../types/CreateAnnouncementDTO";
+import type{ TakeAttendancePayload } from "../types/AttendanceType";
 
 
 
@@ -553,6 +556,7 @@ export const CreatePayment = async (data: {
   studentId: string;
   feeRecordId: string;
   method?: string;
+ 
 }) => {
   const res = await api.post("/parents/create-payment", data);
   return res;
@@ -582,3 +586,141 @@ export const InvoiceDownload = async (paymentId: string) => {
   });
   return res;
 }
+
+
+export const ExpenseCreate = async(data:ExpenseFormDTO)=>{
+  const res = await api.post('/admin/crete-expense',data)
+  return res
+}
+
+
+export const ExpanceApproval = async (expenseId: string, action: "APPROVED" | "REJECTED") => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) throw new Error("Not authorized");
+
+  const res = await api.patch(
+    "/admin/expense/approve",
+    { expenseId, action },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return res.data;
+};
+
+
+export const Pendingstatuslist=async()=>{
+  const res = await api.get('/admin/expense/pending')
+  return res.data
+}
+
+
+export const ListOutFullExpense = async()=>{
+  const res = await api.get('/admin/expense/fulllist')
+  return res.data
+}
+
+export const PendingExpenseUpdate = async (
+  id: string,
+  data: Partial<ExpenseFormDTO>
+) => {
+  const res = await api.put(`/admin/expense/updateexpense/${id}`, data);
+  return res.data;
+};
+
+
+export const StudentFinanceCompleteDetails = async(classId:string)=>{
+  const res = await api.get(`/admin/peyment/class/${classId}`)
+  return res.data
+}
+
+
+export const SearchPaymentHistoryNamebase = async (studentName: string) => {
+  const res = await api.get('/admin/finance/searchName', {
+    params: { studentName },
+  });
+  return res.data;
+};
+
+
+
+export const FinanceReportRevenue = async(startDate:string,endDate:string)=>{
+  const res  = await api.get('/admin/financereport',{
+    params:{startDate,endDate}
+  })
+  return res.data.data
+}
+
+export const ExpenseReport = async()=>{
+  const res = await api.get('/admin/expense-report')
+  return res.data.data
+}
+
+
+
+export const AnnouncementCreate = async (data: FormData) => {
+  const res = await api.post('/admin/announcement', data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return res.data;
+};
+
+
+
+
+export const AnnouncementFetch = async (
+  studentId: string,
+  classId: string
+) => {
+  const res = await api.get("/student/announcement-find", {
+    params: {
+      studentId,
+      classId,
+    },
+  });
+  return res.data;
+};
+
+
+export const UpdateAnnouncement = async(
+  id:string,
+  data:FormData
+)=>{
+  const res = await api.put(`/admin/update-announcement/${id}`,data)
+  return res.data
+}
+
+
+export const findallAnnouncement = async()=>{
+  const res = await api.get('/admin/announcement/findall')
+  return res.data
+}
+
+
+export const GetStudentsByTeacher = async () => {
+  const res = await api.get("/teacher/attendance/students");
+  return res.data; 
+
+}
+export const AttendanceCreate = async(data:TakeAttendancePayload)=>{
+  const res = await api.post('/teacher/attendance/create',data)
+  return res.data
+}
+
+export const fetchTodayAttendanceSummary = async (classId: string) => {
+  const res = await api.get(`/teacher/attendance/summary/${classId}`);
+  
+  
+  return res.data?.attendance?.attendance ?? [];
+};
+
+
+export const ParentAttendanceList = async (parentId: string) => {
+  const res = await api.get(`/parents/parent/attendance/today?parentId=${parentId}`);
+  return res.data?? [];
+};

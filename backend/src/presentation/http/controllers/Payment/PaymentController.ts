@@ -5,7 +5,7 @@ import { IVerifyStatusChange } from "../../../../domain/UseCaseInterface/Payment
 import { PeymentTransactrion } from "../../../../domain/entities/FeeType/PaymentTransaction";
 import { IPaymentStatusUpdateFeID } from "../../../../domain/UseCaseInterface/Payment/IPaymentStatusUpdatefeeIdbase";
 import { IDownloadInvoicePDF } from "../../../../domain/UseCaseInterface/FeeStructure/IInvoiceDownloadUseCase";
-import { error } from "console";
+
 
 export class PeymentController {
   constructor(

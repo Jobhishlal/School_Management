@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { NotificationDropdown } from "../../../pages/Student/NotificationDropdown";
 import {
   Sun,
   Moon,
@@ -28,6 +29,8 @@ export default function StudentSidebar({ children }: Props) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const studentId = localStorage.getItem("studentId");
+  console.log(studentId)
+    const [showNotifications, setShowNotifications] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -173,13 +176,20 @@ export default function StudentSidebar({ children }: Props) {
 
             <div className="flex items-center space-x-4">
            
-              <button className={`relative p-3 rounded-xl ${hoverBg} transition-all duration-300 hover:scale-105`}>
-                <Bell className={textSecondary} size={20} />
-                <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">3</span>
-                </div>
-              </button>
+             <button
+        className={`relative p-3 rounded-xl ${hoverBg} transition-all duration-300 hover:scale-105`}
+        onClick={() => setShowNotifications(!showNotifications)}
+      >
+        <Bell className={textSecondary} size={20} />
+        <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+          <span className="text-white text-xs font-bold">3</span>
+        </div>
+      </button>
 
+      <NotificationDropdown
+        isOpen={showNotifications}
+        onClose={() => setShowNotifications(false)}
+      />
           
               <button
                 onClick={toggleTheme}

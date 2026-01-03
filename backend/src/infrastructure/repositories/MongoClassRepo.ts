@@ -1,3 +1,4 @@
+import { throwDeprecation } from "process";
 import { Class } from "../../domain/entities/Class";
 import { IClassRepository } from "../../domain/repositories/Classrepo/IClassRepository";
 
@@ -116,6 +117,30 @@ async assignClassWithDivision(className: string): Promise<Class | null> {
 
   return null;
 }
+async findById(id: string): Promise<Class> {
+  console.log("reached here")
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new Error(`Invalid Class ID: ${id}`);
+  }
+
+  const classDoc = await ClassModel.findById(id);
+  console.log("class doc",classDoc)
+
+  if (!classDoc){
+    throw new Error("Id cannot find")
+  }
+
+  return new Class(
+    classDoc.id,
+    classDoc.className,
+    classDoc.division,
+    classDoc.rollNumber,
+    classDoc.department,
+    classDoc.subjects,
+    classDoc.classTeacher?.toString()  
+  );
+}
+
 
 
 }

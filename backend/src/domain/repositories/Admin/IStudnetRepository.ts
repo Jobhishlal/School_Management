@@ -8,4 +8,6 @@ export interface StudentDetails {
   updateAll(id:string,update:Partial<Students>):Promise<Students|null>
   findStudentid(studentId:string):Promise<Students | null>
   findStudentById(id:string):Promise<Students | null> 
+  findByClassId(classId: string): Promise<Students[]>;
+  findByStudentClassIdBase(classId:string):Promise<Students[]>
 }

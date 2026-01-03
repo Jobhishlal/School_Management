@@ -145,12 +145,19 @@ import { StudentAssignmentList } from "./pages/Student/StudentAssignmentView";
 import CreateFeeStructureForm from "./pages/admin/FeeStructureManagement";
 
 
-
-
-
 import ParentLayout from "./components/layout/ParentLayout";
 import ParentDashboard from "./pages/Parents/ParentDashboard";
 import FinanceParentList from "./pages/Parents/ParentFinancePage";
+import CreateExpenseForm from "./pages/admin/ExpenseManagement";
+import SuperAdminExpenseApproval from "./pages/admin/SuperAdminApproval";
+import ExpenseHistory from "./pages/admin/ListOutFullExpense";
+import RevenueGenerateReport from "./pages/admin/FinanceReport/RevenueGenarateReport";
+import CreateAnnouncement from "./pages/admin/Announcement/Announcement";
+
+
+
+import AttendanceCreatePage from "./pages/Teacher/AttendanceCreatePage";
+import ParentAttendance from "./pages/Parents/AttendanceViewPage";
 
 function ErrorFallback({ error }: { error: Error }) {
   return <div role="alert">Something went wrong: {error.message}</div>;
@@ -177,12 +184,20 @@ function App() {
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
           <Route path="/admins" element={<PrivateRoute><AdminManagement /></PrivateRoute>} />
           <Route path="/teachers" element={<PrivateRoute><TeachersManagement /></PrivateRoute>} />
-          <Route path="/students" element={<PrivateRoute><StudentList /></PrivateRoute>} />
+          <Route path="/student-management" element={<PrivateRoute><StudentList /></PrivateRoute>} />
           <Route path="/instituteprofile" element={<PrivateRoute><InstituteManagementPage /></PrivateRoute>} />
           <Route path="/adminprofile" element={<PrivateRoute><AdminProfileManagement /></PrivateRoute>} />
           <Route path="/classbaseview" element={<PrivateRoute><AdminClassDivisionView /></PrivateRoute>} />
           <Route path='/timetable-management' element={<PrivateRoute><TimeTableManagement/></PrivateRoute>}/>
           <Route path='/finance-management' element={<PrivateRoute><CreateFeeStructureForm/></PrivateRoute>}/>
+           <Route path='/expense-management' element={<PrivateRoute><CreateExpenseForm/></PrivateRoute>}/>
+            <Route path='/admin-approval' element={<PrivateRoute><SuperAdminExpenseApproval/></PrivateRoute>}/>
+            <Route path='/finance-report' element={<PrivateRoute><RevenueGenerateReport/></PrivateRoute>}/>
+             <Route path='/Announcement' element={<PrivateRoute><CreateAnnouncement/></PrivateRoute>}/>
+    
+            
+            
+
 
         </Route>
 
@@ -204,6 +219,7 @@ function App() {
 
           <Route path="/teacher/dashboard" element={<TeacherDashboard/>}/>
           <Route path="/teacher/assignments" element={<AssignmentManage/>}/>
+            <Route path="/teacher/attandance" element={<AttendanceCreatePage/>}/>
 
           </Route>
 
@@ -212,6 +228,7 @@ function App() {
           <Route element={<ThemeProvider><ParentLayout/></ThemeProvider>}>
           <Route path="/parent/dashboard" element={<ParentDashboard/>}/>
           <Route path="/parent/financelist" element={<FinanceParentList/>}/>
+          <Route path="/parent/attendacelist" element={<ParentAttendance/>}/>
           
           </Route>
           
