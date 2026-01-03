@@ -39,7 +39,6 @@ const createData = async () => {
         });
         console.log("Created Parent Profile:", parent._id);
 
-        // 4. Create Student
         const studentId = "ST" + Math.floor(Date.now() / 1000);
         const student = await StudentModel.create({
             fullName: "Test Student",
@@ -54,7 +53,7 @@ const createData = async () => {
         });
         console.log("Created Student:", student._id);
 
-        // 5. Create Parent Signup (Login)
+       
         const hashedPassword = await bcrypt.hash("password123", 10);
         const signup = await ParentSignupModel.create({
             email: "testparent@school.com",

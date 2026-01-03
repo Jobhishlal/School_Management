@@ -16,6 +16,9 @@ import { authMiddleware } from "../../infrastructure/middleware/AuthMiddleWare";
 import { AuthRequest } from "../../infrastructure/types/AuthRequest";
 import { ParentDateBaseAttendanceSearch } from "../../applications/useCases/Attendance/ParentAttendanceDateBase";
 import { GetParentProfileUseCase } from "../../applications/useCases/Parent/GetParentProfileUseCase";
+import { ParentProfileRepository } from "../../infrastructure/repositories/ParentProfileMongo/ParentProfileMongo";
+import { ParentManagementCOntroller } from "../http/controllers/ParentController.ts/ParentController"
+import { ParentProfileController } from "../http/controllers/ParentController.ts/ParentProfileController";
 const ParentRouter = Router()
 
 const data = new ParentRepository()
@@ -36,6 +39,14 @@ const attendancerepo = new AttendanceMongoRepository()
 const Attandanceusecase = new ParentAttendanceListUseCase(attendancerepo)
 const parentDatebasefetchattendance = new ParentDateBaseAttendanceSearch(attendancerepo)
 const attendanceparentcontroller = new ParentAttendanceListController(Attandanceusecase, parentDatebasefetchattendance)
+
+const perantprofile = new ParentProfileRepository()
+const parentprofileusecase = new GetParentProfileUseCase(perantprofile)
+const parentprofilercontroller = new ParentProfileController(parentprofileusecase)
+
+
+
+
 
 
 ParentRouter.post('/parent-finance-list', (req, res) => ParentController.ParentList(req, res));
@@ -58,31 +69,16 @@ ParentRouter.get('/attendance/filter',
 )
 
 
-
-
-
-
-
-const getParentProfileUseCase = new GetParentProfileUseCase();
-
-
-ParentRouter.get('/profile/:id', authMiddleware, async (req, res) => {
-    console.log("Entering /profile/:id route handler for ID:", req.params.id);
-    try {
-        if (!req.params.id) {
-            throw new Error("Missing ID parameter");
-        }
-        const profile = await getParentProfileUseCase.execute(req.params.id);
-        console.log("Successfully fetched profile for:", req.params.id);
-        res.status(200).json(profile);
-    } catch (error: any) {
-        console.error("Error fetching profile (Full Stack):", error);
-        if (error.stack) {
-            console.error(error.stack);
-        }
-        const message = error.message || "Failed to fetch profile (Unknown Error)";
-        res.status(500).json({ message: message, stack: error.toString() });
+ParentRouter.get("/profile/:id",
+    (req,res)=>{
+        parentprofilercontroller.ParentProfile(req,res)
     }
-});
+
+)
+
+
+
+
+
 
 export default ParentRouter

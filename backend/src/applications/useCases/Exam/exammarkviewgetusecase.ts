@@ -41,8 +41,8 @@ export class GetStudentsByExamUseCase {
       console.log(`Student: ${student.fullName} (${student.id}), Found Mark: ${!!mark ? mark.marksObtained : 'No'}`);
 
       return {
-        _id: student.id, // Explicitly return as _id for frontend compatibility
-        studentId: student.studentId || "N/A", // Use studentId for the Roll No / Custom ID
+        _id: student.id,
+        studentId: student.studentId || "N/A",
         fullName: student.fullName,
         examName: exam.title,
         marksObtained: mark?.marksObtained ?? 0,

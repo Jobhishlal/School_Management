@@ -124,7 +124,7 @@ export class AttendanceController {
       console.log(classId)
 
       if (!classId) {
-        res.status(400).json({ success: false, message: "Class ID is required" });
+        res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Class ID is required" });
         return;
       }
 

@@ -121,7 +121,7 @@ import { UpdateAnnouncementUseCase } from "../../applications/useCases/Announcem
 import { FindAllAnnoucenemt } from "../../applications/useCases/Announcement/AnnouncementFindUseCase";
 
 
-
+import { ParentProfileRepository } from "../../infrastructure/repositories/ParentProfileMongo/ParentProfileMongo";
 
 
 import { DeleteAnnouncementUseCase } from "../../applications/useCases/Announcement/DeleteAnnouncementUseCase";
@@ -220,7 +220,9 @@ import { GetParentProfileUseCase } from "../../applications/useCases/Parent/GetP
 const createparentrepo = new ParentAddUseCase(parentrepo);
 const getallparentrepo = new GetAllParentsUseCase(parentrepo);
 const updateParentrepo = new UpdateParentUseCase(parentrepo);
-const getParentProfileUseCase = new GetParentProfileUseCase();
+
+const perantprofile = new ParentProfileRepository()
+const getParentProfileUseCase = new GetParentProfileUseCase(perantprofile);
 
 const ParentControllerroute = new ParentManagementCOntroller(
   createparentrepo,

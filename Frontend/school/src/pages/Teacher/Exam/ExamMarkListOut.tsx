@@ -205,7 +205,7 @@ const TakeMarks: React.FC<TakeMarksProps> = ({ examId, classId, onClose, isReadO
       for (const mark of marks) {
         const payload = {
           examId,
-          classId, // Only needed for create? Update might ignore it but safe to pass
+          classId,
           studentId: mark.studentId,
           marksObtained: mark.marksObtained,
           progress: (mark.marksObtained >= 90
@@ -221,15 +221,12 @@ const TakeMarks: React.FC<TakeMarksProps> = ({ examId, classId, onClose, isReadO
         if (mark.isExisting) {
           await updateExamMark(payload);
         } else {
-          // Only create if marks > 0 or if you want to allow 0 marks creation?
-          // Usually we submit all.
-          // But if a student was absent/not marked, creating 0 might be desired or not.
-          // Let's assume we submit everything.
+     
           await ExamMarkcreate(payload);
         }
       }
 
-      showToast("Marks saved successfully");
+      showToast("Marks saved successfully","success");
       onClose();
     } catch (err: any) {
       console.error("Error submitting marks:", err);

@@ -90,17 +90,8 @@ export class ParentManagementCOntroller {
 
     async getProfile(req: Request, res: Response): Promise<void> {
         try {
-            const { id } = req.params; // Assuming id comes from params or auth middleware populates user
-            // Note: For a "me" endpoint, id usually comes from req.user.id
-            // But here keeping generic as per existing pattern or specific ID request
-            // For parent self-view, route should probably use req.user.id (from token)
-            // Let's assume the route passes ID as param for now or use middleware extracted ID if available
-            // If this is for "My Profile", usage would be: const id = (req as any).user.id;
-
-            // Let's use the ID passed in params for consistency with admin views,
-            // OR if this is strictly for Parent Portal, we might need to extract from token.
-            // Given the request "setup parents profile page", it implies Parent View.
-            // I'll stick to params for flexibility, but frontend should pass it.
+            const { id } = req.params; 
+       
 
             const profile = await this.getParentProfile.execute(id);
             res.status(StatusCodes.OK).json(profile);
