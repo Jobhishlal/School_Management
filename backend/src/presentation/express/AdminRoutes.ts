@@ -91,8 +91,8 @@ import { PendingStatusUpdateUseCase } from "../../applications/useCases/FeeStruc
 import { SearchStudentName } from "../../applications/useCases/FeeStructure/SearchPaymentHistory";
 import { ExpenseReportUseCase } from "../../applications/useCases/FeeStructure/FinanceReport/ExpenseGenerateReportUseCase";
 import { MongoExpenseReport } from "../../infrastructure/repositories/FeeManagement/FinanceReport/ExpenseReport";
-
-
+import { DivisionStudentUseCase } from "../../applications/useCases/Classdata/divisionStudentbaseUsecase";
+import { DeleteClassUseCase } from "../../applications/useCases/Classdata/deleteClassUseCase";
 
 
 
@@ -105,7 +105,7 @@ import { FinanceReportManagementController } from "../http/controllers/ADMIN/Fee
 
 
 
-  
+
 
 
 
@@ -121,23 +121,23 @@ import { UpdateAnnouncementUseCase } from "../../applications/useCases/Announcem
 import { FindAllAnnoucenemt } from "../../applications/useCases/Announcement/AnnouncementFindUseCase";
 
 
+import { ParentProfileRepository } from "../../infrastructure/repositories/ParentProfileMongo/ParentProfileMongo";
 
 
-
+import { DeleteAnnouncementUseCase } from "../../applications/useCases/Announcement/DeleteAnnouncementUseCase";
 import { StudentFindClassBaseUseCase } from "../../applications/useCases/Students/StudentFindClassIDbaseUseCase";
-
-
 
 const annoucement = new AnnouncementMongo()
 const socketNotification = new SocketNotification()
 const updateannouncement = new UpdateAnnouncementUseCase(annoucement)
 const findall = new FindAllAnnoucenemt(annoucement)
-const announcementcreateusecase = new AnnouncementUseCase(annoucement,socketNotification)
+const deleteAnnouncementUseCase = new DeleteAnnouncementUseCase(annoucement)
+const announcementcreateusecase = new AnnouncementUseCase(annoucement, socketNotification)
 const announcementController = new AnnouncementController(
   announcementcreateusecase,
   updateannouncement,
-  findall
-  
+  findall,
+  deleteAnnouncementUseCase
 )
 
 
@@ -204,7 +204,7 @@ const classReop = new MongoClassRepository();
 const getliststundetUseCase = new StudentList(studentrepo);
 const studentblockuseCase = new StudentBlock(studentrepo);
 const updatestudentuseCase = new UpdateStudentUseCase(studentrepo);
-const studentfindclassbase = new StudentFindClassBaseUseCase(studentrepo,classReop)
+const studentfindclassbase = new StudentFindClassBaseUseCase(studentrepo, classReop)
 const studentcreatecontroller = new StudentCreateController(
   studentrepo,
   createstudentUseCase,
@@ -214,14 +214,21 @@ const studentcreatecontroller = new StudentCreateController(
   studentfindclassbase
 );
 
+
+import { GetParentProfileUseCase } from "../../applications/useCases/Parent/GetParentProfileUseCase";
+
 const createparentrepo = new ParentAddUseCase(parentrepo);
 const getallparentrepo = new GetAllParentsUseCase(parentrepo);
 const updateParentrepo = new UpdateParentUseCase(parentrepo);
 
+const perantprofile = new ParentProfileRepository()
+const getParentProfileUseCase = new GetParentProfileUseCase(perantprofile);
+
 const ParentControllerroute = new ParentManagementCOntroller(
   createparentrepo,
   getallparentrepo,
-  updateParentrepo
+  updateParentrepo,
+  getParentProfileUseCase
 );
 
 const addressrepo = new AddressMongoRepository();
@@ -235,15 +242,19 @@ const AddressController = new AddressManagementController(
 );
 
 
+/// class base all functionality 
+
 const createClass = new CreateClassUseCase(classReop);
 const getlistclass = new GetAllClass(classReop);
 const classupdateusecase = new UpdateClassUseCase(classReop);
 const assignclass = new AssignClass(classReop);
+const deleteclassordivision = new DeleteClassUseCase(classReop)
 const ClassController = new ClassManagementController(
   createClass,
   getlistclass,
   classupdateusecase,
-  assignclass
+  assignclass,
+  deleteclassordivision
 );
 
 const instituterepo = new MongoInstituteProfileManage();
@@ -276,12 +287,14 @@ const classdivisionget = new ClassAndDivision(classdivisionrepo);
 const ClassTeacherAssign = new TeacherAssignClassUseCase(classdivisionrepo);
 const getAllTeachers = new GetAssignClassTeacher(classdivisionrepo);
 const getteacherdata = new GetAllTeachersInClass(classdivisionrepo);
+const divisionseparatemanually = new DivisionStudentUseCase(classReop)
 
 const classstudnetmanagecontroller = new AdminClassController(
   classdivisionget,
   ClassTeacherAssign,
   getteacherdata,
-  getAllTeachers
+  getAllTeachers,
+  divisionseparatemanually
 );
 
 const timetabledata = new MongoTimeTableCreate()
@@ -299,7 +312,7 @@ const timetablemanagecontroller = new TimeTableManageController(
 const finance = new FeeStructureRepository()
 const financetype = new FeeTypeManagemnt()
 
-const createfinance =  new CreateFeeStructureUseCase(finance,financetype)
+const createfinance = new CreateFeeStructureUseCase(finance, financetype)
 const createtypeusecase = new CreateFeeTypeUseCase(financetype)
 const getallfeetype = new GetFeeTypeAll(financetype)
 const searchname = new SearchStudentName(finance)
@@ -326,7 +339,7 @@ const expensemanagecontroller = new ExpenseManagementController(
   expenserepo,
   expensefulllist,
   pendingstatusupdate
- 
+
 
 
 )
@@ -338,7 +351,7 @@ const pendingexpense = new PendingStatusFindUsecase(createexpense)
 const expanceapprovalcontroller = new SuperadminApprovalController(
   expenseapprove,
   pendingexpense,
-   
+
 
 )
 
@@ -481,7 +494,7 @@ Adminrouter.put(
 );
 
 Adminrouter.get("/class-division-list", (req, res) => {
- 
+
   classstudnetmanagecontroller.getClassBasestudent(req, res);
 });
 Adminrouter.post("/class-assign-teacher", (req, res) =>
@@ -492,99 +505,99 @@ Adminrouter.get("/class-teacher/:classId", (req, res) =>
 );
 
 Adminrouter.get("/teacher-list", (req, res) => {
- 
+
   classstudnetmanagecontroller.GetAllTeachers(req, res);
 });
 
 
-Adminrouter.post('/create-timetable',(req,res)=>
-  timetablemanagecontroller.createTimetable(req,res)
+Adminrouter.post('/create-timetable', (req, res) =>
+  timetablemanagecontroller.createTimetable(req, res)
 )
 
 
 Adminrouter.get('/timetable-view/:classId/:division', (req, res) =>
-   timetablemanagecontroller.GetByClass(req, res)
+  timetablemanagecontroller.GetByClass(req, res)
 )
 
-Adminrouter.put('/timetable-update/:id',(req,res)=>
-  timetablemanagecontroller.UpdateTimeTable(req,res)
+Adminrouter.put('/timetable-update/:id', (req, res) =>
+  timetablemanagecontroller.UpdateTimeTable(req, res)
 )
-Adminrouter.delete('/delete-time-table/:id',(req,res)=>
-  timetablemanagecontroller.DeleteTimeTable(req,res)
-)
-
-
-Adminrouter.post('/create-finance',(req,res)=>
-  financemanagementcontroll.create(req,res)
+Adminrouter.delete('/delete-time-table/:id', (req, res) =>
+  timetablemanagecontroller.DeleteTimeTable(req, res)
 )
 
-Adminrouter.post('/create-finance-type',(req,res)=>
-  financetypecontroller.create(req,res)
+
+Adminrouter.post('/create-finance', (req, res) =>
+  financemanagementcontroll.create(req, res)
+)
+
+Adminrouter.post('/create-finance-type', (req, res) =>
+  financetypecontroller.create(req, res)
 )
 
 Adminrouter.get("/get-allfee-type", (req, res) =>
   financetypecontroller.getAllFeeTypes(req, res)
 );
 
-Adminrouter.post('/crete-expense',(req,res)=>{
-  expensemanagecontroller.create(req,res)
+Adminrouter.post('/crete-expense', (req, res) => {
+  expensemanagecontroller.create(req, res)
 })
 
 
 Adminrouter.patch(
   "/expense/approve",
-  authMiddleware, 
-  (req,res)=>{
-      expanceapprovalcontroller.approved(req as AuthRequest,res)
+  authMiddleware,
+  (req, res) => {
+    expanceapprovalcontroller.approved(req as AuthRequest, res)
   }
 );
 
 
 
 
-  
+
 Adminrouter.get('/expense/pending',
   authMiddleware,
-  (req ,res)=>{
-   expanceapprovalcontroller.getPendingExpenses(req as AuthRequest,res)
-})
+  (req, res) => {
+    expanceapprovalcontroller.getPendingExpenses(req as AuthRequest, res)
+  })
 
 Adminrouter.get('/expense/fulllist',
   authMiddleware,
-  (req,res)=>{
-    expensemanagecontroller.listAll(req as AuthRequest,res)
+  (req, res) => {
+    expensemanagecontroller.listAll(req as AuthRequest, res)
   }
 )
 Adminrouter.put('/expense/updateexpense/:id',
 
-   authMiddleware,
-   (req,res)=>{
-    expensemanagecontroller.Pendingexpenseupdate(req as AuthRequest,res)
-   }
-)
-
-
-Adminrouter.get('/peyment/class/:classId',(req,res)=>{
-  financemanagementcontroll.fullfeecompletedetails(req,res)
+  authMiddleware,
+  (req, res) => {
+    expensemanagecontroller.Pendingexpenseupdate(req as AuthRequest, res)
   }
+)
+
+
+Adminrouter.get('/peyment/class/:classId', (req, res) => {
+  financemanagementcontroll.fullfeecompletedetails(req, res)
+}
 
 )
-  
 
-Adminrouter.get('/finance/searchName',(req,res)=>{
-  financemanagementcontroll.SearchPeymentHistoryStudent(req,res)
+
+Adminrouter.get('/finance/searchName', (req, res) => {
+  financemanagementcontroll.SearchPeymentHistoryStudent(req, res)
 })
 
 
 
 
-Adminrouter.get('/financereport',(req,res)=>{
-  financeReportController.RevenueGenerateReport(req,res)
+Adminrouter.get('/financereport', (req, res) => {
+  financeReportController.RevenueGenerateReport(req, res)
 })
 
 
-Adminrouter.get('/expense-report',(req,res)=>{
-  financeReportController.ExpenseGenarage(req,res)
+Adminrouter.get('/expense-report', (req, res) => {
+  financeReportController.ExpenseGenarage(req, res)
 })
 Adminrouter.post(
   "/announcement",
@@ -596,15 +609,28 @@ Adminrouter.post(
 
 
 
-Adminrouter.put('/update-announcement/:id',(req,res)=>{
-  announcementController.UpdateAnnouncement(req,res)
+Adminrouter.put('/update-announcement/:id', (req, res) => {
+  announcementController.UpdateAnnouncement(req, res)
 })
 
-Adminrouter.get('/announcement/findall',(req,res)=>{
-  announcementController.FindAllAnnouncement(req,res)
+Adminrouter.get('/announcement/findall', (req, res) => {
+  announcementController.FindAllAnnouncement(req, res)
 })
 
 
+Adminrouter.post("/assign-student-class", (req, res) => {
+  classstudnetmanagecontroller.StudentDivisionSepareate(req, res)
+})
+
+// class delete 
+Adminrouter.put('/delete-classordivision/:id', (req, res) => {
+  ClassController.deleteClass(req, res)
+})
+
+
+Adminrouter.delete('/delete-announcement/:id', (req, res) => {
+  announcementController.delete(req, res)
+})
 
 
 export default Adminrouter;

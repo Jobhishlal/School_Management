@@ -58,7 +58,7 @@
 //         console.log("teacherData",teacherData)
 //         if (!teacherData || teacherData.length === 0) return;
 
-     
+
 //         const subjectsSet = new Set<string>(teacherData[0].subjects);
 //         setTeacherSubjects(Array.from(subjectsSet));
 
@@ -78,7 +78,7 @@
 //     fetchTeacherInfo();
 //   }, []);
 
-  
+
 //   useEffect(() => {
 //     const fetchSubjects = async () => {
 //       if (!form.classId || !form.division || !form.teacherId) return;
@@ -161,7 +161,7 @@
 //     setRefreshList(prev => !prev);
 //   } catch (err: any) {
 //     console.error(err);
-    
+
 //     showToast(err.response?.data?.message || err.message || "Failed to update assignment");
 //   }
 // };
@@ -175,7 +175,7 @@
 //     const files = attachments.map((att) => att.fileObj);
 
 //     const res = await createAssignment(payload, files);
- 
+
 //     if (res.success === false) {
 //       showToast(res.message || "Failed to create assignment");
 //       return;
@@ -187,7 +187,7 @@
 //   } catch (err: any) {
 //     console.error(err);
 
-  
+
 //     const message =
 //       err.response?.data?.message ||
 //       err.message ||
@@ -247,7 +247,7 @@
 //             onChange={(val) => setForm({ ...form, description: val })}
 //           />
 
-        
+
 //           <select
 //             value={form.classId}
 //             onChange={(e) => {
@@ -345,6 +345,7 @@ import {
   GetTimeTable,
   GetTeachertimetableList,
   UpdateExistedAssignment,
+  GetAllClassesAPI,
 } from "../../services/authapi";
 import { type CreateAssignmentDTO } from "../../types/AssignmentCreate";
 import { TextInput } from "../../components/Form/TextInput";
@@ -396,19 +397,29 @@ export default function AssignmentManage() {
   useEffect(() => {
     const fetchTeacherInfo = async () => {
       try {
+        const allClassesData = await GetAllClassesAPI();
+        if (allClassesData && Array.isArray(allClassesData)) {
+          const mappedClasses: ClassDivision[] = allClassesData.map((c: any) => ({
+            classId: c._id,
+            className: c.className,
+            division: c.division
+          }));
+          setClasses(mappedClasses);
+        }
+
         const teacherData = await GetTeachertimetableList();
         if (!teacherData || teacherData.length === 0) return;
 
-        const subjectsSet = new Set<string>(teacherData[0].subjects);
-        setTeacherSubjects(Array.from(subjectsSet));
+        const allSubjects = new Set<string>();
 
-        const classArray: ClassDivision[] = teacherData.map((item: any) => ({
-          classId: item.classId,
-          className: item.className || "Unknown",
-          division: item.divisions?.[0] || "N/A",
-        }));
+        teacherData.forEach((item: any) => {
+          // Aggregate subjects
+          if (item.subjects && Array.isArray(item.subjects)) {
+            item.subjects.forEach((s: string) => allSubjects.add(s));
+          }
+        });
 
-        setClasses(classArray);
+        setTeacherSubjects(Array.from(allSubjects));
       } catch (err) {
         console.error("Error fetching teacher info:", err);
       }
@@ -542,7 +553,19 @@ export default function AssignmentManage() {
         Create Assignment
       </button>
 
-      <TeacherAssignmentList setCurrentAssignment={setCurrentAssignment} refreshTrigger={refreshList} />
+      <TeacherAssignmentList
+        setCurrentAssignment={(assignment) => {
+          setCurrentAssignment({
+            ...assignment,
+            Assignment_date: new Date(assignment.Assignment_date),
+            Assignment_Due_Date: new Date(assignment.Assignment_Due_Date),
+            // Note: attachments from backend cannot be converted to File objects.
+            // You might need to adjust logic if you want to show existing attachments.
+            attachments: []
+          });
+        }}
+        refreshTrigger={refreshList}
+      />
 
       <Modal
         title={form.id ? "Update Assignment" : "Create Assignment"}
@@ -565,22 +588,24 @@ export default function AssignmentManage() {
           />
 
           <select
-            value={form.classId}
+            value={form.classId && form.division ? `${form.classId}|${form.division}` : ""}
             onChange={(e) => {
-              const selectedClass = classes.find((cls) => cls.classId === e.target.value);
-              if (!selectedClass) return;
+              const val = e.target.value;
+              if (!val) return;
+              const [cId, div] = val.split("|");
+
               setForm((prev) => ({
                 ...prev,
-                classId: selectedClass.classId,
-                division: selectedClass.division,
+                classId: cId,
+                division: div,
               }));
             }}
             className={`${isDark ? "bg-gray-700 text-white" : "bg-white text-black"} px-2 py-1 rounded`}
           >
             <option value="">Select Class - Division</option>
-            {classes.map((cls) => (
-              <option key={cls.classId} value={cls.classId}>
-                {cls.className}
+            {classes.map((cls, idx) => (
+              <option key={`${cls.classId}-${cls.division}-${idx}`} value={`${cls.classId}|${cls.division}`}>
+                {cls.className} - {cls.division}
               </option>
             ))}
           </select>

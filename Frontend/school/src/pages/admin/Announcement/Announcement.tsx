@@ -1,267 +1,73 @@
-import React, { useEffect, useState } from "react";
-import {
-  AnnouncementCreate,
-  GetAllClass,
-  UpdateAnnouncement,
-} from "../../../services/authapi";
+import React, { useState } from "react";
 import type { CreateAnnouncementDTO } from "../../../types/CreateAnnouncementDTO";
-import { showToast } from "../../../utils/toast";
 import { useTheme } from "../../../components/layout/ThemeContext";
-import AnnouncementList from "./AnnouncementListOut";
-
-interface ClassType {
-  _id: string;
-  className: string;
-  divisions: string[];
-}
+import AnnouncementList, { type Announcement } from "./AnnouncementListOut";
+import { Modal } from "../../../components/common/Modal";
+import { AnnouncementForm } from "./AnnouncementForm";
 
 const CreateAnnouncement: React.FC = () => {
   const { isDark } = useTheme();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editItem, setEditItem] = useState<(CreateAnnouncementDTO & { _id: string }) | undefined>(undefined);
+  const [refreshKey, setRefreshKey] = useState(0); // To trigger list refresh
 
-  const [classes, setClasses] = useState<ClassType[]>([]);
-  const [divisions, setDivisions] = useState<string[]>([]);
-  const [editItem, setEditItem] = useState<CreateAnnouncementDTO | null>(null);
-
-  const [form, setForm] = useState<CreateAnnouncementDTO>({
-    title: "",
-    content: "",
-    scope: "GLOBAL",
-    classes: [],
-    division: undefined,
-    attachment: null,
-    activeTime: "",
-    endTime: "",
-    status: "DRAFT",
-  });
-
-  useEffect(() => {
-    const fetchClasses = async () => {
-      try {
-        const res = await GetAllClass();
-        setClasses(res.data);
-      } catch {
-        showToast("Failed to load classes", "error");
-      }
+  const handleEdit = (announcement: Announcement) => {
+    const dto: CreateAnnouncementDTO & { _id: string } = {
+      _id: announcement._id,
+      title: announcement.title,
+      content: announcement.content,
+      scope: announcement.scope as "GLOBAL" | "CLASS" | "DIVISION",
+      classes: announcement.classes || [],
+      division: announcement.division,
+      attachment: null, // File input cannot be prefilled
+      activeTime: announcement.activeTime,
+      endTime: announcement.endTime,
+      status: announcement.status as "DRAFT" | "ACTIVE",
     };
-    fetchClasses();
-  }, []);
-
-  useEffect(() => {
-    if (form.scope === "DIVISION" && form.classes.length === 1) {
-      const selectedClass = classes.find((cls) => cls._id === form.classes[0]);
-      setDivisions(selectedClass?.divisions || []);
-    } else {
-      setDivisions([]);
-    }
-  }, [form.scope, form.classes, classes]);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setEditItem(dto);
+    setIsModalOpen(true);
   };
 
-  const handleScopeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const scope = e.target.value as "GLOBAL" | "CLASS" | "DIVISION";
-    setForm({
-      ...form,
-      scope,
-      classes: [],
-      division: undefined,
-    });
-    setDivisions([]);
+  const handleSuccess = () => {
+    setIsModalOpen(false);
+    setEditItem(undefined);
+    setRefreshKey((prev) => prev + 1); // Trigger list refresh
   };
 
-  const handleClassCheckbox = (classId: string) => {
-    setForm((prev) => {
-      const exists = prev.classes.includes(classId);
-      return {
-        ...prev,
-        classes: exists
-          ? prev.classes.filter((id) => id !== classId)
-          : [...prev.classes, classId],
-        division: undefined,
-      };
-    });
-  };
-
-  const submitHandler = async () => {
-    if (form.scope === "DIVISION" && form.classes.length !== 1) {
-      showToast("Division announcement must have exactly one class", "error");
-      return;
-    }
-
-    try {
-      const formData = new FormData();
-      formData.append("title", form.title);
-      formData.append("content", form.content);
-      formData.append("scope", form.scope);
-      formData.append("status", form.status);
-      formData.append("activeTime", form.activeTime);
-      formData.append("endTime", form.endTime);
-      form.classes.forEach((cls) => formData.append("classes[]", cls));
-      if (form.division) formData.append("division", form.division);
-      if (form.attachment) formData.append("attachment", form.attachment);
-
-      if (editItem) {
-        await UpdateAnnouncement(editItem._id!, formData);
-        showToast("Announcement updated successfully", "success");
-        setEditItem(null);
-      } else {
-        await AnnouncementCreate(formData);
-        showToast("Announcement created successfully", "success");
-      }
-
-      setForm({
-        title: "",
-        content: "",
-        scope: "GLOBAL",
-        classes: [],
-        division: undefined,
-        attachment: null,
-        activeTime: "",
-        endTime: "",
-        status: "DRAFT",
-      });
-    } catch (err: any) {
-      showToast(
-        err?.response?.data?.message ||
-          err?.response?.data?.error ||
-          err?.message ||
-          "Operation failed",
-        "error"
-      );
-    }
-  };
-
-  const handleEdit = (announcement: CreateAnnouncementDTO & { _id: string }) => {
-    setEditItem(announcement);
-    setForm({ ...announcement, attachment: null });
+  const handleClose = () => {
+    setIsModalOpen(false);
+    setEditItem(undefined);
   };
 
   const containerBg = isDark
     ? "bg-[#121A21] text-white"
     : "bg-white text-gray-900";
 
-  const inputBase = `w-full border p-2 rounded mb-3 focus:outline-none`;
-  const inputTheme = isDark
-    ? "bg-[#1e293b] text-white border-gray-600 placeholder-gray-400"
-    : "bg-white text-gray-900 border-gray-300";
-
   return (
-    <div>
-      <div className={`p-6 rounded-lg max-w-xl ${containerBg}`}>
-        <h2 className="text-xl font-bold mb-4">
-          {editItem ? "Edit Announcement" : "Create Announcement"}
-        </h2>
-
-        <input
-          name="title"
-          placeholder="Title"
-          value={form.title}
-          onChange={handleChange}
-          className={`${inputBase} ${inputTheme}`}
-        />
-
-        <textarea
-          name="content"
-          placeholder="Announcement content"
-          value={form.content}
-          onChange={handleChange}
-          className={`${inputBase} ${inputTheme}`}
-        />
-
-        <select
-          name="scope"
-          value={form.scope}
-          onChange={handleScopeChange}
-          className={`${inputBase} ${inputTheme}`}
-        >
-          <option value="GLOBAL">Global</option>
-          <option value="CLASS">Class</option>
-          <option value="DIVISION">Division</option>
-        </select>
-
-        {(form.scope === "CLASS" || form.scope === "DIVISION") && (
-          <div className="mb-3">
-            <p className="font-medium mb-2">Select Classes</p>
-            <div className="grid grid-cols-2 gap-2">
-              {classes.map((cls) => (
-                <label key={cls._id} className="flex gap-2 items-center">
-                  <input
-                    type="checkbox"
-                    checked={form.classes.includes(cls._id)}
-                    onChange={() => handleClassCheckbox(cls._id)}
-                  />
-                  {cls.className}
-                </label>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {form.scope === "DIVISION" && (
-          <select
-            name="division"
-            value={form.division || ""}
-            onChange={handleChange}
-            className={`${inputBase} ${inputTheme}`}
-          >
-            <option value="">Select Division</option>
-            {divisions.map((div) => (
-              <option key={div} value={div}>
-                {div}
-              </option>
-            ))}
-          </select>
-        )}
-
-        <input
-          type="file"
-          onChange={(e) =>
-            setForm({
-              ...form,
-              attachment: e.target.files ? e.target.files[0] : null,
-            })
-          }
-          className={`${inputBase} ${inputTheme}`}
-        />
-
-        <input
-          type="date"
-          name="activeTime"
-          value={form.activeTime}
-          onChange={handleChange}
-          className={`${inputBase} ${inputTheme}`}
-        />
-
-        <input
-          type="date"
-          name="endTime"
-          value={form.endTime}
-          onChange={handleChange}
-          className={`${inputBase} ${inputTheme}`}
-        />
-
-        <select
-          name="status"
-          value={form.status}
-          onChange={handleChange}
-          className={`${inputBase} ${inputTheme}`}
-        >
-          <option value="DRAFT">Draft</option>
-          <option value="ACTIVE">Publish</option>
-        </select>
-
+    <div className={`p-6 rounded-lg ${containerBg}`}>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-bold">Announcements</h2>
         <button
-          onClick={submitHandler}
-          className="bg-blue-600 text-white w-full py-2 rounded mt-2"
+          onClick={() => setIsModalOpen(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
-          {editItem ? "Update Announcement" : "Create Announcement"}
+          Add Announcement
         </button>
       </div>
 
-      <AnnouncementList onEdit={handleEdit} />
+      <AnnouncementList onEdit={handleEdit} key={refreshKey} />
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleClose}
+        title={editItem ? "Edit Announcement" : "Create Announcement"}
+      >
+        <AnnouncementForm
+          initialData={editItem}
+          onSuccess={handleSuccess}
+          onClose={handleClose}
+        />
+      </Modal>
     </div>
   );
 };

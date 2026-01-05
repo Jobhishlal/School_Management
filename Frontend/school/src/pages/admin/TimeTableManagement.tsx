@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { SelectInput } from "../../components/Form/SelectInput";
 import { TextInput } from "../../components/Form/TextInput";
@@ -14,10 +13,11 @@ import {
 import type { CreateTimeTableDTO, DaySchedule, PeriodTime } from "../../types/ITimetable";
 import { showToast } from "../../utils/toast";
 import { useTheme } from "../../components/layout/ThemeContext";
-import dayjs from "dayjs";
 
 interface Teacher {
-  teacherId: string;
+  id?: string;
+  _id?: string;
+  teacherId?: string;
   name: string;
   department: "LP" | "UP" | "HS";
   subjects: { name: string }[];
@@ -43,6 +43,7 @@ const AdminTimeTablePage: React.FC = () => {
   const [timetableId, setTimetableId] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -56,6 +57,7 @@ const AdminTimeTablePage: React.FC = () => {
         setClasses(classData);
 
         const resTeachers = await getTeachersList();
+        console.log("teacher list", resTeachers);
         setTeachers(resTeachers);
       } catch (err) {
         console.error(err);
@@ -80,7 +82,12 @@ const AdminTimeTablePage: React.FC = () => {
               endTime: p.endTime || "",
               subject: p.subject || "",
               teacherId: typeof p.teacherId === "object" ? p.teacherId._id : p.teacherId || ""
-            }))
+            })),
+            breaks: d.breaks?.map((b: any) => ({
+              startTime: b.startTime || "",
+              endTime: b.endTime || "",
+              name: b.name || ""
+            })) || []
           }));
           setDays(formattedDays);
           setTimetableId(res.data._id || res.data.id || "");
@@ -107,29 +114,190 @@ const AdminTimeTablePage: React.FC = () => {
   };
 
   const addPeriod = (day: string) => {
-    setDays(prev => {
-      const updated = [...prev];
-      const dayIndex = updated.findIndex(d => d.day === day);
+    setDays((prev) => {
+      const dayIndex = prev.findIndex((d) => d.day === day);
 
       if (dayIndex >= 0) {
-        const hasEmpty = updated[dayIndex].periods.some(
-          p => !p.startTime && !p.endTime && !p.subject && !p.teacherId
-        );
-        if (!hasEmpty) {
-          updated[dayIndex].periods.push({ startTime: "", endTime: "", subject: "", teacherId: "" });
-        }
-      } else {
-        updated.push({ day, periods: [{ startTime: "", endTime: "", subject: "", teacherId: "" }] });
-      }
+        return prev.map((d, i) => {
+          if (i !== dayIndex) return d;
 
-      return updated;
+          const periods = [...d.periods];
+          const lastPeriod = periods[periods.length - 1];
+          let newStartTime = "09:00";
+          let newEndTime = "10:00";
+
+          if (lastPeriod && lastPeriod.endTime) {
+            const [lastEndH, lastEndM] = lastPeriod.endTime.split(':').map(Number);
+
+            // 1. Determine Start Time based on Break or Lunch
+            let startH = lastEndH;
+            let startM = lastEndM;
+
+            // Check if a break exists that starts exactly when the last period ends
+            const overlappingBreak = d.breaks?.find(b => b.startTime === lastPeriod.endTime);
+            if (overlappingBreak && overlappingBreak.endTime) {
+              const [breakEndH, breakEndM] = overlappingBreak.endTime.split(':').map(Number);
+              startH = breakEndH;
+              startM = breakEndM;
+            } else {
+              // Legacy Lunch Logic: If no explicit break, skip 12:00-13:00
+              if (lastEndH === 12 || (lastEndH === 11 && lastEndM >= 60)) {
+                startH = 13;
+                startM = 0;
+              }
+            }
+
+            // Check 16:00 Limit for Start Time
+            if (startH >= 16) {
+              showToast("Cannot add periods after 4:00 PM", "error");
+              return d;
+            }
+
+            newStartTime = `${String(startH).padStart(2, '0')}:${String(startM).padStart(2, '0')}`;
+
+            // 2. Determine Duration (match last period)
+            let effectiveDuration = 60; // Default 1 hour
+            if (lastPeriod.startTime) {
+              const [lastStartH, lastStartM] = lastPeriod.startTime.split(':').map(Number);
+              const durationMinutes = (lastEndH * 60 + lastEndM) - (lastStartH * 60 + lastStartM);
+              if (durationMinutes > 0) effectiveDuration = durationMinutes;
+            }
+
+            // 3. Calculate New End Time
+            const newStartTotalMinutes = startH * 60 + startM;
+            const newEndTotalMinutes = newStartTotalMinutes + effectiveDuration;
+
+            let endH = Math.floor(newEndTotalMinutes / 60);
+            let endM = newEndTotalMinutes % 60;
+
+            // Cap at 16:00
+            if (endH > 16 || (endH === 16 && endM > 0)) {
+              endH = 16;
+              endM = 0;
+            }
+
+            newEndTime = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+          }
+
+          // Final safety check if end time <= start time (e.g. capped at 16:00 but start was 15:50)
+          // Ideally we allow it and let validator catch or user fix, but let's ensure it's validish
+          const [finalStartH, finalStartM] = newStartTime.split(':').map(Number);
+          const [finalEndH, finalEndM] = newEndTime.split(':').map(Number);
+
+          if (finalEndH < finalStartH || (finalEndH === finalStartH && finalEndM <= finalStartM)) {
+            // If duration squeeze made it invalid, just add 10 mins or cap
+            // But if start is 16:00, we already returned above.
+          }
+
+          periods.push({
+            startTime: newStartTime,
+            endTime: newEndTime,
+            subject: "",
+            teacherId: "",
+          });
+
+          return { ...d, periods };
+        });
+      } else {
+        return [
+          ...prev,
+          {
+            day,
+            periods: [
+              { startTime: "09:00", endTime: "10:00", subject: "", teacherId: "" },
+            ],
+            breaks: []
+          }
+        ];
+      }
     });
   };
 
   const updatePeriod = (day: string, idx: number, key: keyof PeriodTime, value: string) => {
     setDays(prev =>
       prev.map(d => {
-        if (d.day === day) d.periods[idx][key] = value;
+        if (d.day === day) {
+          const newPeriods = [...d.periods];
+          newPeriods[idx] = { ...newPeriods[idx], [key]: value };
+
+          if (key === 'teacherId') {
+            newPeriods[idx].subject = "";
+          }
+
+          return { ...d, periods: newPeriods };
+        }
+        return d;
+      })
+    );
+  };
+
+  const removePeriod = (day: string, idx: number) => {
+    setDays(prev =>
+      prev.map(d => {
+        if (d.day === day) {
+          const newPeriods = d.periods.filter((_, i) => i !== idx);
+          return { ...d, periods: newPeriods };
+        }
+        return d;
+      })
+    );
+  };
+
+  const addBreak = (day: string) => {
+    setDays(prev => {
+      const dayIndex = prev.findIndex(d => d.day === day);
+      if (dayIndex >= 0) {
+        return prev.map(d => {
+          if (d.day === day) {
+            const breaks = d.breaks ? [...d.breaks] : [];
+            breaks.push({ startTime: "10:00", endTime: "10:15", name: "Break" });
+            return { ...d, breaks };
+          }
+          return d;
+        });
+      } else {
+        return [
+          ...prev,
+          {
+            day,
+            periods: [],
+            breaks: [{ startTime: "10:00", endTime: "10:15", name: "Break" }]
+          }
+        ];
+      }
+    });
+  };
+
+  const removeBreak = (day: string, idx: number) => {
+    setDays(prev =>
+      prev.map(d => {
+        if (d.day === day) {
+          const breaks = d.breaks ? d.breaks.filter((_, i) => i !== idx) : [];
+          return { ...d, breaks };
+        }
+        return d;
+      })
+    );
+  };
+
+  const updateBreak = (day: string, idx: number, key: 'startTime' | 'endTime' | 'name', value: string) => {
+    setDays(prev =>
+      prev.map(d => {
+        if (d.day === day) {
+          const breaks = d.breaks ? [...d.breaks] : [];
+          if (breaks[idx]) {
+            // Validate time limit for breaks too
+            if (key === 'startTime' || key === 'endTime') {
+              const [h, m] = value.split(":").map(Number);
+              if (h > 16 || (h === 16 && m > 0)) {
+                showToast("Breaks cannot go beyond 4:00 PM", "error");
+                return d; // Ignore change
+              }
+            }
+            breaks[idx] = { ...breaks[idx], [key]: value };
+          }
+          return { ...d, breaks };
+        }
         return d;
       })
     );
@@ -180,12 +348,17 @@ const AdminTimeTablePage: React.FC = () => {
     }
   };
 
+  // Helper to extract ID
+  const getTeacherId = (t: Teacher) => t.teacherId || t.id || t._id || "";
+
   // Theme Classes
   const containerBg = isDark ? "bg-[#121A21] text-slate-100" : "bg-[#fafbfc] text-slate-900";
   const cardBg = isDark ? "bg-slate-800/50 border-gray-700" : "bg-white border-gray-300";
+  const lunchBg = isDark ? "bg-orange-900/30 border-orange-700" : "bg-orange-50 border-orange-300";
   const buttonPrimary = isDark ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-blue-600 hover:bg-blue-700 text-white";
   const buttonSecondary = isDark ? "bg-red-600 hover:bg-red-700 text-white" : "bg-red-600 hover:bg-red-700 text-white";
   const buttonAdd = isDark ? "bg-green-600 hover:bg-green-700 text-white" : "bg-green-500 hover:bg-green-600 text-white";
+  const buttonDanger = isDark ? "bg-red-500 hover:bg-red-600 text-white" : "bg-red-500 hover:bg-red-600 text-white";
 
   return (
     <div className={`p-6 rounded min-h-[calc(100vh-2rem)] transition-colors duration-300 ${containerBg}`}>
@@ -203,49 +376,159 @@ const AdminTimeTablePage: React.FC = () => {
 
       {loading && <p>Loading timetable...</p>}
 
-      {weekDays.map(day => (
-        <div key={day} className={`mb-4 border p-2 rounded ${cardBg}`}>
-          <h3 className="font-semibold mb-2">{day}</h3>
-          {days.find(d => d.day === day)?.periods.map((p, idx) => (
-            <div key={idx} className="flex gap-2 mb-2 flex-wrap">
-              <TextInput
-                label="Start"
-                type="time"
-                value={p.startTime}
-                onChange={val => updatePeriod(day, idx, "startTime", val)}
-                isDark={isDark}
-              />
-              <TextInput
-                label="End"
-                type="time"
-                value={p.endTime}
-                onChange={val => updatePeriod(day, idx, "endTime", val)}
-                isDark={isDark}
-              />
-              <TextInput
-                label="Subject"
-                value={p.subject}
-                onChange={val => updatePeriod(day, idx, "subject", val)}
-                isDark={isDark}
-              />
-              <SelectInput
-                label="Teacher"
-                value={p.teacherId}
-                onChange={val => updatePeriod(day, idx, "teacherId", val)}
-                options={teachers.map(t => ({ value: t.teacherId, label: t.name }))}
-                isDark={isDark}
-              />
-            </div>
-          ))}
+      {weekDays.map(day => {
+        const daySchedule = days.find(d => d.day === day);
+        const allPeriods = daySchedule?.periods || [];
 
-          <button
-            onClick={() => addPeriod(day)}
-            className={`px-2 py-1 rounded ${buttonAdd} transition-colors duration-200`}
-          >
-            Add Period
-          </button>
-        </div>
-      ))}
+        // Sort periods by start time
+        const sortedPeriods = [...allPeriods].sort((a, b) => {
+          const timeA = parseInt(a.startTime.replace(':', ''));
+          const timeB = parseInt(b.startTime.replace(':', ''));
+          return timeA - timeB;
+        });
+
+
+        return (
+          <div key={day} className={`mb-4 border p-4 rounded ${cardBg}`}>
+            <div className="flex justify-between items-start mb-3">
+              <h3 className="font-semibold text-lg">{day}</h3>
+              <div className="flex flex-col gap-2">
+                {daySchedule?.breaks?.map((b, bIdx) => (
+                  <div key={bIdx} className="flex gap-2 items-end bg-gray-50 dark:bg-gray-800 p-2 rounded">
+                    <TextInput
+                      label="Name"
+                      type="text"
+                      value={b.name || "Break"}
+                      onChange={(val) => updateBreak(day, bIdx, "name", val)}
+                      isDark={isDark}
+                    />
+                    <TextInput
+                      label="Start"
+                      type="time"
+                      value={b.startTime}
+                      onChange={(val) => updateBreak(day, bIdx, "startTime", val)}
+                      isDark={isDark}
+                    />
+                    <TextInput
+                      label="End"
+                      type="time"
+                      value={b.endTime}
+                      onChange={(val) => updateBreak(day, bIdx, "endTime", val)}
+                      isDark={isDark}
+                    />
+                    <button
+                      onClick={() => removeBreak(day, bIdx)}
+                      className={`px-2 py-1 text-xs rounded ${buttonDanger} h-8 self-end mb-1`}
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={() => addBreak(day)}
+                  className={`px-3 py-1 text-xs rounded ${buttonAdd} self-end`}
+                >
+                  + Add Break
+                </button>
+              </div>
+            </div>
+
+            {sortedPeriods.length === 0 ? (
+              <p className={`text-sm mb-3 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                No periods added yet
+              </p>
+            ) : (
+              sortedPeriods.map((p) => {
+                const actualIdx = allPeriods.indexOf(p);
+                const shouldShowLunchAfter = parseInt(p.endTime.split(':')[0]) === 12;
+
+                return (
+                  <React.Fragment key={actualIdx}>
+                    <div className="flex gap-2 mb-3 flex-wrap items-end">
+                      <TextInput
+                        label="Start"
+                        type="time"
+                        value={p.startTime}
+                        onChange={val => updatePeriod(day, actualIdx, "startTime", val)}
+                        isDark={isDark}
+                      />
+                      <TextInput
+                        label="End"
+                        type="time"
+                        value={p.endTime}
+                        onChange={val => updatePeriod(day, actualIdx, "endTime", val)}
+                        isDark={isDark}
+                      />
+                      <div className="flex flex-col items-center justify-end pb-2 px-1">
+                        <label className={`text-xs mb-1 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                          Break?
+                        </label>
+                        <input
+                          type="checkbox"
+                          checked={p.subject === "Break"}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              updatePeriod(day, actualIdx, "subject", "Break");
+                              updatePeriod(day, actualIdx, "teacherId", "");
+                            } else {
+                              updatePeriod(day, actualIdx, "subject", "");
+                            }
+                          }}
+                          className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                      </div>
+                      <SelectInput
+                        label="Teacher"
+                        value={p.teacherId}
+                        onChange={val => updatePeriod(day, actualIdx, "teacherId", val)}
+                        options={teachers.map(t => ({ value: getTeacherId(t), label: t.name }))}
+                        isDark={isDark}
+                        disabled={p.subject === "Break"}
+                      />
+                      <SelectInput
+                        label="Subject"
+                        value={p.subject}
+                        onChange={(val) => updatePeriod(day, actualIdx, "subject", val)}
+                        options={
+                          teachers.find((t) => getTeacherId(t) === p.teacherId)?.subjects?.map((s) => ({
+                            value: s.name,
+                            label: s.name,
+                          })) || []
+                        }
+                        isDark={isDark}
+                        disabled={(!p.teacherId && p.subject !== "Break") || p.subject === "Break"}
+                      />
+                      <button
+                        onClick={() => removePeriod(day, actualIdx)}
+                        className={`px-3 py-2 rounded text-sm ${buttonDanger} transition-colors duration-200`}
+                        title="Remove Period"
+                      >
+                        Remove
+                      </button>
+                    </div>
+
+                    {/* Show Lunch Break after period ending at 12:00 */}
+                    {shouldShowLunchAfter && (
+                      <div className={`mb-3 p-3 rounded border ${lunchBg} flex items-center justify-center`}>
+                        <span className="font-semibold text-orange-600 dark:text-orange-400">
+                          🍽️ Lunch Break (12:00 - 13:00)
+                        </span>
+                      </div>
+                    )}
+                  </React.Fragment>
+                );
+              })
+            )}
+
+            <button
+              onClick={() => addPeriod(day)}
+              className={`px-3 py-2 rounded text-sm ${buttonAdd} transition-colors duration-200`}
+            >
+              + Add Period
+            </button>
+          </div>
+        );
+      })}
 
       <div className="flex gap-2 mt-4 flex-wrap">
         <button
@@ -293,4 +576,3 @@ const AdminTimeTablePage: React.FC = () => {
 };
 
 export default AdminTimeTablePage;
-

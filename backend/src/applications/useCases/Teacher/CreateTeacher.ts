@@ -3,11 +3,11 @@ import { genaratePassword } from "../../../shared/constants/utils/TempPassGenara
 import { Teeacher } from "../../../domain/entities/Teacher";
 import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";
 import { CreateTeacherDTO, TeacherResponseDTO } from '../../dto/TeacherDto';
-import {generateSubjectCode} from '../../../shared/constants/utils/SubejctCode'
+import { generateSubjectCode } from '../../../shared/constants/utils/SubejctCode'
 import bcrypt from "bcrypt";
 
 export class TeacherCreateUseCase implements TeacherCreateUseCase {
-  constructor(private teacherRepo: ITeacherCreate) {}
+  constructor(private teacherRepo: ITeacherCreate) { }
 
   async execute(dto: CreateTeacherDTO): Promise<TeacherResponseDTO> {
     const existed = await this.teacherRepo.findByEmail(dto.email);
@@ -25,24 +25,24 @@ export class TeacherCreateUseCase implements TeacherCreateUseCase {
 
 
     let subjectsArray: { name: string; code?: string }[] = [];
-  if (dto.subjects) {
-    if (typeof dto.subjects === "string") {
-      try {
-        subjectsArray = JSON.parse(dto.subjects);
-        if (!Array.isArray(subjectsArray)) subjectsArray = [];
-      } catch (err) {
-        subjectsArray = [];
+    if (dto.subjects) {
+      if (typeof dto.subjects === "string") {
+        try {
+          subjectsArray = JSON.parse(dto.subjects);
+          if (!Array.isArray(subjectsArray)) subjectsArray = [];
+        } catch (err) {
+          subjectsArray = [];
+        }
+      } else if (Array.isArray(dto.subjects)) {
+        subjectsArray = dto.subjects;
       }
-    } else if (Array.isArray(dto.subjects)) {
-      subjectsArray = dto.subjects;
     }
-  }
 
-  
-   const subjectsWithCodes = subjectsArray.map(sub => ({
-  name: sub.name,
-  code: sub.code || generateSubjectCode(sub.name),
-}));
+
+    const subjectsWithCodes = subjectsArray.map(sub => ({
+      name: sub.name,
+      code: sub.code || generateSubjectCode(sub.name),
+    }));
 
 
     const teacher = new Teeacher(
@@ -57,12 +57,12 @@ export class TeacherCreateUseCase implements TeacherCreateUseCase {
       dto.blocked ?? false,
       hashed,
       (dto.documents ?? []).map(doc => ({
-    url: doc.url,
-    filename: doc.filename,
-    uploadedAt: doc.uploadedAt ?? new Date(), 
-  })),
-  subjectsWithCodes,
-  dto.department
+        url: doc.url,
+        filename: doc.filename,
+        uploadedAt: doc.uploadedAt ?? new Date(),
+      })),
+      subjectsWithCodes,
+      dto.department
     );
 
     const saved = await this.teacherRepo.create(teacher);
@@ -84,10 +84,10 @@ export class TeacherCreateUseCase implements TeacherCreateUseCase {
       blocked: saved.blocked,
       createdAt: saved.createdAt,
       updatedAt: saved.updatedAt,
-     documents: saved.documents ?? [],
-      Subject:saved.subjects??[],
-      department:saved.department
-      
+      documents: saved.documents ?? [],
+      subjects: saved.subjects ?? [],
+      department: saved.department
+
     };
   }
 
@@ -95,6 +95,7 @@ export class TeacherCreateUseCase implements TeacherCreateUseCase {
     const teachers = await this.teacherRepo.finByAll();
     return teachers.map(saved => ({
       id: saved.id,
+      _id: saved.id,
       name: saved.name,
       email: saved.email,
       phone: saved.phone,
@@ -104,9 +105,9 @@ export class TeacherCreateUseCase implements TeacherCreateUseCase {
       createdAt: saved.createdAt,
       updatedAt: saved.updatedAt,
       documents: saved.documents ?? [],
-      Subject:saved.subjects??[],
-      department:saved.department
-      
+      subjects: saved.subjects ?? [],
+      department: saved.department
+
     }));
   }
 }

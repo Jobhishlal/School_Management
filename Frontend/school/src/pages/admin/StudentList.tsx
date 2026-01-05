@@ -1,15 +1,15 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-import { Plus,  Eye, Edit, UserX } from "lucide-react";
+import { Plus, Eye, Edit, UserX } from "lucide-react";
 import { FaSearch } from "react-icons/fa";
 import { showToast } from "../../utils/toast";
 import { GetAllStudents } from "../../services/authapi";
 import { useTheme } from "../../components/layout/ThemeContext";
 import { Pagination } from "../../components/common/Pagination";
 import { Modal } from "../../components/common/Modal";
-import {AddStudentForm} from '../../pages/admin/StudentManagement'
+import { AddStudentForm } from '../../pages/admin/StudentManagement'
 import { Table } from "../../components/Table/Table";
-import { blockStudent,CreateStudents } from "../../services/authapi"; 
+import { blockStudent, CreateStudents } from "../../services/authapi";
 
 
 export interface Student {
@@ -19,29 +19,29 @@ export interface Student {
   gender: "Male" | "Female" | "Other";
   studentId: string;
   classDetails: {
-    _id:string;
+    _id: string;
     className: string;
     section: string;
-     division?: "A" | "B" | "C" | "D"; 
-    
+    division?: "A" | "B" | "C" | "D";
+
   };
   guardian: {
     name: string;
     phone: string;
     id?: string;
-    email:string;
-      relationship: "Son" | "Daughter";
-     
-      
-  
+    email: string;
+    relationship: "Son" | "Daughter";
+
+
+
   };
   parent?: {
     _id?: string;
-      email: string;
-     relationship: "Son" | "Daughter";
-     name:string;
-     phone:string;
-     whatsappNumber:string;
+    email: string;
+    relationship: "Son" | "Daughter";
+    name: string;
+    phone: string;
+    whatsappNumber: string;
   };
   address?: {
     _id?: string;
@@ -68,9 +68,9 @@ export function StudentList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [filterClass, setFilterClass] = useState("");
-   const [filterDivision, setFilterDivision] = useState("");
-   const [filterStatus, setFilterStatus] = useState("");
-   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
+  const [filterDivision, setFilterDivision] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
 
   const itemsPerPage = 10;
   const [newStudent, setNewStudent] = useState({
@@ -88,41 +88,42 @@ export function StudentList() {
     setLoading(true);
     try {
       const data = await GetAllStudents();
-      
-      const formattedData = data.map((student: any) => ({
-  _id: student._id || student.id,
-  fullName: student.fullName,
-  studentId: student.studentId || "N/A",
-  classDetails: {
-     _id: student.classDetails?._id || "",  
-    className: student.classDetails?.className || "N/A",
-    division: student.classDetails?.division || "N/A",
-  },
-  guardian: {                 
-    name: student.parent?.name || "N/A",         
-    phone: student.parent?.whatsappNumber || "N/A" 
-  },
-parent: student.parent
-  ? {
-      _id: student.parent._id,
-      name: student.parent.name,
-      whatsappNumber: student.parent.whatsappNumber || "",
-      email: student.parent.email || "",
-      relationship: student.parent.relationship || "Son",
-    }
-  : null,
 
-  address: {
-    street: student.address?.street || "",
-    city: student.address?.city || "",
-    state: student.address?.state || "",
-    pincode: student.address?.pincode || "",
-    _id: student.address?._id || "",
-  },
-  status: student.blocked ? "Blocked" : "Active",
-  photos: student.photos || [],
-  blocked: student.blocked ?? false
-}));
+      const formattedData = data.map((student: any) => ({
+        _id: student._id || student.id,
+        fullName: student.fullName,
+        studentId: student.studentId || "N/A",
+        classDetails: {
+          _id: student.classDetails?.id || "",
+          className: student.classDetails?.className || "N/A",
+          division: student.classDetails?.division || "N/A",
+          section: student.classDetails?.division || "N/A", // Populate section for consistency
+        },
+        guardian: {
+          name: student.parent?.name || "N/A",
+          phone: student.parent?.whatsappNumber || "N/A"
+        },
+        parent: student.parent
+          ? {
+            _id: student.parent.id,
+            name: student.parent.name,
+            whatsappNumber: student.parent.whatsappNumber || "",
+            email: student.parent.email || "",
+            relationship: student.parent.relationship || "Son",
+          }
+          : null,
+
+        address: {
+          street: student.address?.street || "",
+          city: student.address?.city || "",
+          state: student.address?.state || "",
+          pincode: student.address?.pincode || "",
+          _id: student.address?.id || "",
+        },
+        status: student.blocked ? "Blocked" : "Active",
+        photos: student.photos || [],
+        blocked: student.blocked ?? false
+      }));
 
 
       setStudents(formattedData);
@@ -150,35 +151,35 @@ parent: student.parent
     setCurrentPage(1);
   }, [searchTerm, students]);
 
-const handleCloseModal = () => {
-  setNewStudent({
-    fullName: "",
-    studentId: "",
-    class: "",
-    section: "",
-    guardianName: "",
-    guardianPhone: "",
-    status: "Active",
-    profilePic: null,
-  });
-  setShowModal(false);
-  setEditingStudent(null); 
-};
-
-  
-
-const classOptions = Array.from(new Set(students.map(s => s.classDetails.className)));
-const divisionOptions = Array.from(new Set(students.map(s => s.classDetails.section)));
+  const handleCloseModal = () => {
+    setNewStudent({
+      fullName: "",
+      studentId: "",
+      class: "",
+      section: "",
+      guardianName: "",
+      guardianPhone: "",
+      status: "Active",
+      profilePic: null,
+    });
+    setShowModal(false);
+    setEditingStudent(null);
+  };
 
 
 
+  const classOptions = Array.from(new Set(students.map(s => s.classDetails.className)));
+  const divisionOptions = Array.from(new Set(students.map(s => s.classDetails.division)));
 
-   
+
+
+
+
   const handleAddStudent = async () => {
     setLoading(true);
     try {
       const { fullName, studentId, class: className, section, guardianName, guardianPhone, status, profilePic } = newStudent;
-      
+
       await CreateStudents({
         fullName,
         studentId,
@@ -186,7 +187,7 @@ const divisionOptions = Array.from(new Set(students.map(s => s.classDetails.sect
         guardian: { name: guardianName, phone: guardianPhone },
         status,
         profilePic,
-    
+
       });
       showToast("Student added successfully", "success");
       handleCloseModal();
@@ -202,67 +203,66 @@ const divisionOptions = Array.from(new Set(students.map(s => s.classDetails.sect
   const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentStudents = filteredStudents.slice(startIndex, startIndex + itemsPerPage);
-  
+
   useEffect(() => {
-  const filtered = students.filter(student => {
-    const matchesSearch =
-      student.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.studentId.toLowerCase().includes(searchTerm.toLowerCase());
+    const filtered = students.filter(student => {
+      const matchesSearch =
+        student.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.studentId.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesClass = filterClass ? student.classDetails.className === filterClass : true;
-    const matchesDivision = filterDivision ? student.classDetails.division === filterDivision : true;
-    const matchesStatus =
-      filterStatus === "Active" ? !student.blocked :
-      filterStatus === "Blocked" ? student.blocked :
-      true;
+      const matchesClass = filterClass ? student.classDetails.className === filterClass : true;
+      const matchesDivision = filterDivision ? student.classDetails.division === filterDivision : true;
+      const matchesStatus =
+        filterStatus === "Active" ? !student.blocked :
+          filterStatus === "Blocked" ? student.blocked :
+            true;
 
-    return matchesSearch && matchesClass && matchesDivision && matchesStatus;
-  });
+      return matchesSearch && matchesClass && matchesDivision && matchesStatus;
+    });
 
-  setFilteredStudents(filtered);
-  setCurrentPage(1);
-}, [students, searchTerm, filterClass, filterDivision, filterStatus]);
+    setFilteredStudents(filtered);
+    setCurrentPage(1);
+  }, [students, searchTerm, filterClass, filterDivision, filterStatus]);
 
 
 
   const studentColumns: Column<Student>[] = [
-  {
-    label: "Profile Pic",
-    render: (s) => (
-      <div className="w-10 h-10 rounded-full overflow-hidden">
-        {s.photos.length ? (
-          <img src={s.photos[0].url} className="w-full h-full object-cover" />
-        ) : (
-          <div className="w-full h-full bg-slate-600 flex items-center justify-center text-slate-300 font-medium text-xs">
-            {s.fullName.charAt(0)}
-          </div>
-        )}
-      </div>
-    ),
-  },
-  { label: "Name", key: "fullName" },
-  { label: "Roll No/Student ID", key: "studentId" },
-  {
-    label: "Class & Section",
-    render: (s) => `${s.classDetails?.className || "N/A"} - ${s.classDetails?.division || "N/A"}`,
-  },
-  { label: "Guardian Name", render: (s) => s.guardian?.name || "N/A" },
-  { label: "Phone", render: (s) => s.guardian?.phone || "N/A" },
-  {
-    label: "Status",
-    render: (s) => (
-      <span
-        className={`px-2 py-1 rounded-full text-xs font-medium ${
-          s.blocked
+    {
+      label: "Profile Pic",
+      render: (s) => (
+        <div className="w-10 h-10 rounded-full overflow-hidden">
+          {s.photos.length ? (
+            <img src={s.photos[0].url} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full bg-slate-600 flex items-center justify-center text-slate-300 font-medium text-xs">
+              {s.fullName.charAt(0)}
+            </div>
+          )}
+        </div>
+      ),
+    },
+    { label: "Name", key: "fullName" },
+    { label: "Roll No/Student ID", key: "studentId" },
+    {
+      label: "Class & Section",
+      render: (s) => `${s.classDetails?.className || "N/A"} - ${s.classDetails?.division || "N/A"}`,
+    },
+    { label: "Guardian Name", render: (s) => s.guardian?.name || "N/A" },
+    { label: "Phone", render: (s) => s.guardian?.phone || "N/A" },
+    {
+      label: "Status",
+      render: (s) => (
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-medium ${s.blocked
             ? "bg-red-500 text-red-50"
             : "bg-green-500 text-green-50"
-        }`}
-      >
-        {s.blocked ? "Blocked" : "Active"}
-      </span>
-    ),
-  },
-];
+            }`}
+        >
+          {s.blocked ? "Blocked" : "Active"}
+        </span>
+      ),
+    },
+  ];
 
 
 
@@ -317,31 +317,31 @@ const divisionOptions = Array.from(new Set(students.map(s => s.classDetails.sect
 
 
 
-const handleToggleBlock = async (student: Student) => {
-  try {
-    const newStatus = !student.blocked;
-    await blockStudent(student._id, newStatus); 
-    console.log(blockStudent(student._id,newStatus))
-    showToast(`Student ${newStatus ? "Blocked" : "UnBlocked"} Successfully`, "success");
+  const handleToggleBlock = async (student: Student) => {
+    try {
+      const newStatus = !student.blocked;
+      await blockStudent(student._id, newStatus);
+      console.log(blockStudent(student._id, newStatus))
+      showToast(`Student ${newStatus ? "Blocked" : "UnBlocked"} Successfully`, "success");
 
-   
-    setStudents(prev =>
-      prev.map(s => (s._id === student._id ? { ...s, blocked: newStatus } : s))
-    );
-  } catch (error: any) {
-    const msg = error.response?.data?.message || error.message || "Failed to block/unblock";
-    showToast(msg, "error");
-  }
-};
 
-const handleBlock = (student: Student) => handleToggleBlock(student);
-const handleView = (student: Student) => {
-  console.log("Viewing student:", student);
-};
-const handleEdit = (student: Student) => {
-  setEditingStudent(student);
-  setShowModal(true);
-};
+      setStudents(prev =>
+        prev.map(s => (s._id === student._id ? { ...s, blocked: newStatus } : s))
+      );
+    } catch (error: any) {
+      const msg = error.response?.data?.message || error.message || "Failed to block/unblock";
+      showToast(msg, "error");
+    }
+  };
+
+  const handleBlock = (student: Student) => handleToggleBlock(student);
+  const handleView = (student: Student) => {
+    console.log("Viewing student:", student);
+  };
+  const handleEdit = (student: Student) => {
+    setEditingStudent(student);
+    setShowModal(true);
+  };
 
 
 
@@ -370,46 +370,43 @@ const handleEdit = (student: Student) => {
               <span className="xs:hidden">Add</span>
             </button>
           </div>
-          
-        <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-          <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-          className={`border rounded px-2 py-1 ${
-         isDark ? "bg-slate-700 text-white" : "bg-white text-gray-800"
-         }`}
-         >
-    <option value="">All Classes</option>
-    {classOptions.map(c => <option key={c} value={c}>{c}</option>)}
-  </select>
 
-  <select
-    value={filterDivision}
-    onChange={(e) => setFilterDivision(e.target.value)}
-   className={`border rounded px-2 py-1 ${
-         isDark ? "bg-slate-700 text-white" : "bg-white text-gray-800"
-         }`}
-  >
-    <option value="">All Divisions</option>
-    {divisionOptions.map(d => <option key={d} value={d}>{d}</option>)}
-  </select>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+            <select
+              value={filterClass}
+              onChange={(e) => setFilterClass(e.target.value)}
+              className={`border rounded px-2 py-1 ${isDark ? "bg-slate-700 text-white" : "bg-white text-gray-800"
+                }`}
+            >
+              <option value="">All Classes</option>
+              {classOptions.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
 
-  <select
-    value={filterStatus}
-    onChange={(e) => setFilterStatus(e.target.value)}
-    className={`border rounded px-2 py-1 ${
-         isDark ? "bg-slate-700 text-white" : "bg-white text-gray-800"
-         }`}
-  >
-    <option value="">All Status</option>
-    <option value="Active">Active</option>
-    <option value="Blocked">Blocked</option>
-  </select>
-</div>
+            <select
+              value={filterDivision}
+              onChange={(e) => setFilterDivision(e.target.value)}
+              className={`border rounded px-2 py-1 ${isDark ? "bg-slate-700 text-white" : "bg-white text-gray-800"
+                }`}
+            >
+              <option value="">All Divisions</option>
+              {divisionOptions.map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
+
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className={`border rounded px-2 py-1 ${isDark ? "bg-slate-700 text-white" : "bg-white text-gray-800"
+                }`}
+            >
+              <option value="">All Status</option>
+              <option value="Active">Active</option>
+              <option value="Blocked">Blocked</option>
+            </select>
+          </div>
 
         </div>
 
-       
+
         <div className={`rounded-lg overflow-hidden ${isDark ? "bg-slate-800/50" : "bg-white"} shadow-sm`}>
           {filteredStudents.length === 0 ? (
             <div className="p-8 sm:p-12 text-center">
@@ -417,24 +414,24 @@ const handleEdit = (student: Student) => {
             </div>
           ) : (
             <>
-         
+
               <div className="hidden md:block overflow-x-auto">
-              <Table
-  columns={studentColumns}
-  data={currentStudents}
-  actions={(t) => (
-    <div className="flex justify-center gap-2">
-      <button onClick={() => handleView(t)}><Eye size={16} /></button>
-      <button onClick={() => handleEdit(t)}><Edit size={16} /></button>
-      <button onClick={() => handleBlock(t)}><UserX size={16} /></button>
-    </div>
-  )}
-  isDark={isDark}
-/>
+                <Table
+                  columns={studentColumns}
+                  data={currentStudents}
+                  actions={(t) => (
+                    <div className="flex justify-center gap-2">
+                      <button onClick={() => handleView(t)}><Eye size={16} /></button>
+                      <button onClick={() => handleEdit(t)}><Edit size={16} /></button>
+                      <button onClick={() => handleBlock(t)}><UserX size={16} /></button>
+                    </div>
+                  )}
+                  isDark={isDark}
+                />
 
               </div>
 
-            
+
               <div className="md:hidden p-4">
                 {currentStudents.map((student) => (
                   <StudentCard key={student._id} student={student} />
@@ -452,23 +449,23 @@ const handleEdit = (student: Student) => {
           />
         )}
       </div>
-<Modal
-  isOpen={showModal}
-  onClose={handleCloseModal}
-  title={editingStudent ? "Edit Student" : "Add New Student"}
->
-  <AddStudentForm 
-    student={editingStudent || undefined}   
-    onSuccess={() => {
-      fetchStudents();
-      setEditingStudent(null); 
-    }}
-    onClose={() => {
-      handleCloseModal();
-      setEditingStudent(null); 
-    }}
-  />
-</Modal>
+      <Modal
+        isOpen={showModal}
+        onClose={handleCloseModal}
+        title={editingStudent ? "Edit Student" : "Add New Student"}
+      >
+        <AddStudentForm
+          student={editingStudent || undefined}
+          onSuccess={() => {
+            fetchStudents();
+            setEditingStudent(null);
+          }}
+          onClose={() => {
+            handleCloseModal();
+            setEditingStudent(null);
+          }}
+        />
+      </Modal>
 
     </div>
   );

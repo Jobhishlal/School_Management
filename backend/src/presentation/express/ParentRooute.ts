@@ -10,35 +10,48 @@ import { VerifyPaymentStatus } from "../../applications/useCases/Payment/VerifyR
 import { VerifyPaymentByFeeId } from "../../applications/useCases/Payment/VerifyStatusupdateFeeId";
 import { DownLoadInvoice } from "../../applications/useCases/Payment/InvoiceSetUP";
 import { ParentAttendanceListController } from "../http/controllers/ParentController.ts/ParentAttendanceListController";
-import { ParentAttendanceListUseCase } from "../../applications/useCases/Attendance/AttendanceListParentUseCase";4
+import { ParentAttendanceListUseCase } from "../../applications/useCases/Attendance/AttendanceListParentUseCase"; 4
 import { AttendanceMongoRepository } from "../../infrastructure/repositories/Attendance/AttendanceMongoRepo";
 import { authMiddleware } from "../../infrastructure/middleware/AuthMiddleWare";
 import { AuthRequest } from "../../infrastructure/types/AuthRequest";
-
+import { ParentDateBaseAttendanceSearch } from "../../applications/useCases/Attendance/ParentAttendanceDateBase";
+import { GetParentProfileUseCase } from "../../applications/useCases/Parent/GetParentProfileUseCase";
+import { ParentProfileRepository } from "../../infrastructure/repositories/ParentProfileMongo/ParentProfileMongo";
+import { ParentManagementCOntroller } from "../http/controllers/ParentController.ts/ParentController"
+import { ParentProfileController } from "../http/controllers/ParentController.ts/ParentProfileController";
 const ParentRouter = Router()
 
 const data = new ParentRepository()
 const parentlistfinance = new ParentListTheStudents(data)
-const ParentController =  new ParentFinanceList(parentlistfinance)
+const ParentController = new ParentFinanceList(parentlistfinance)
 
 const peyment = new RazorpayServices()
 const peymentrepo = new MongoPeymentRepo()
-const createpeyment = new CreateRazorpayOrder(peyment,peymentrepo)
+const createpeyment = new CreateRazorpayOrder(peyment, peymentrepo)
 const verfystatus = new VerifyPaymentStatus(peymentrepo)
 const verifydataFeeIdbase = new VerifyPaymentByFeeId(peymentrepo)
 const invoicedownload = new DownLoadInvoice(peymentrepo)
-const peymentcontroller = new PeymentController(createpeyment,verfystatus,verifydataFeeIdbase,invoicedownload)
+const peymentcontroller = new PeymentController(createpeyment, verfystatus, verifydataFeeIdbase, invoicedownload)
 
 
 
 const attendancerepo = new AttendanceMongoRepository()
 const Attandanceusecase = new ParentAttendanceListUseCase(attendancerepo)
-const attendanceparentcontroller = new ParentAttendanceListController(Attandanceusecase)
+const parentDatebasefetchattendance = new ParentDateBaseAttendanceSearch(attendancerepo)
+const attendanceparentcontroller = new ParentAttendanceListController(Attandanceusecase, parentDatebasefetchattendance)
+
+const perantprofile = new ParentProfileRepository()
+const parentprofileusecase = new GetParentProfileUseCase(perantprofile)
+const parentprofilercontroller = new ParentProfileController(parentprofileusecase)
+
+
+
+
 
 
 ParentRouter.post('/parent-finance-list', (req, res) => ParentController.ParentList(req, res));
-ParentRouter.post('/create-payment',(req,res)=>peymentcontroller.CreatePayment(req,res))
-ParentRouter.put('/update-status/:id',(req,res)=>peymentcontroller.StatusChange(req,res))
+ParentRouter.post('/create-payment', (req, res) => peymentcontroller.CreatePayment(req, res))
+ParentRouter.put('/update-status/:id', (req, res) => peymentcontroller.StatusChange(req, res))
 ParentRouter.post('/update-status-feeId/:feeId', (req, res) => peymentcontroller.StatusChangeByFeeId(req, res))
 ParentRouter.get("/invoice/:paymentId", (req, res) => peymentcontroller.InvoiceDownload(req, res))
 
@@ -46,6 +59,26 @@ ParentRouter.get("/invoice/:paymentId", (req, res) => peymentcontroller.InvoiceD
 
 ParentRouter.get("/parent/attendance/today",
     authMiddleware,
-    (req,res)=>attendanceparentcontroller.ParentAttendanceList(req as AuthRequest,res)
+    (req, res) => attendanceparentcontroller.ParentAttendanceList(req as AuthRequest, res)
 )
+
+
+ParentRouter.get('/attendance/filter',
+    authMiddleware,
+    (req, res) => attendanceparentcontroller.ParentDateBaseFindAttendance(req as AuthRequest, res)
+)
+
+
+ParentRouter.get("/profile/:id",
+    (req,res)=>{
+        parentprofilercontroller.ParentProfile(req,res)
+    }
+
+)
+
+
+
+
+
+
 export default ParentRouter

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { AttendanceCreate } from "../../services/authapi";
+import { AttendanceCreate,updateAttendance } from "../../services/authapi";
 import { showToast } from "../../utils/toast";
+import { useTheme } from "../../components/layout/ThemeContext";
+import { CheckCircle, XCircle, Calendar } from "lucide-react";
 
-type AttendanceStatus = "Present" | "Absent";
+type AttendanceStatus = "Present" | "Absent" | "Leave";
 
 interface Student {
   id: string;
@@ -28,6 +30,7 @@ const TakeAttendanceForm: React.FC<Props> = ({
   session,
   onSuccess,
 }) => {
+  const { isDark } = useTheme();
   const [attendance, setAttendance] = useState<AttendanceItem[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -35,9 +38,7 @@ const TakeAttendanceForm: React.FC<Props> = ({
     setAttendance(prev => {
       const exists = prev.find(a => a.studentId === studentId);
       return exists
-        ? prev.map(a =>
-            a.studentId === studentId ? { ...a, status } : a
-          )
+        ? prev.map(a => a.studentId === studentId ? { ...a, status } : a)
         : [...prev, { studentId, status }];
     });
   };
@@ -48,75 +49,150 @@ const TakeAttendanceForm: React.FC<Props> = ({
 
     try {
       setLoading(true);
-
-      await AttendanceCreate({
+     const res = await AttendanceCreate({
         date: new Date(),
         classId: students[0].classId,
         teacherId,
         session,
         attendance,
       });
-
+      console.log("result",res)
       showToast("Attendance submitted", "success");
       setAttendance([]);
       onSuccess();
-    } catch (error:any) {
-       const message =
-      error?.response?.data?.message ||
-      "Attendance submission failed";
-
-    showToast(message, "info");
+    } catch (error: any) {
+      const message = error?.response?.data?.message || "Attendance submission failed";
+      showToast(message, "info");
     } finally {
       setLoading(false);
     }
   };
 
+  const getStatusColor = (status: AttendanceStatus) => {
+    if (status === "Present") return isDark ? "bg-green-900 border-green-600" : "bg-green-50 border-green-500";
+    if (status === "Absent") return isDark ? "bg-red-900 border-red-600" : "bg-red-50 border-red-500";
+    return isDark ? "bg-yellow-900 border-yellow-600" : "bg-yellow-50 border-yellow-500";
+  };
+
+  const markedCount = attendance.length;
+  const progress = (markedCount / students.length) * 100;
+
   return (
-    <div className="border rounded-lg p-4">
-      <h3 className="font-semibold mb-3">
-        Take Attendance ({session})
-      </h3>
-
-      {students.map((student, index) => (
-        <div
-          key={student.id}
-          className="flex justify-between py-2 border-b"
-        >
-          <span>
-            {index + 1}. {student.fullName}
-          </span>
-
-          <div className="flex gap-4">
-            <label>
-              <input
-                type="radio"
-                name={student.id}
-                onChange={() =>
-                  markAttendance(student.id, "Present")
-                }
-              /> Present
-            </label>
-
-            <label>
-              <input
-                type="radio"
-                name={student.id}
-                onChange={() =>
-                  markAttendance(student.id, "Absent")
-                }
-              /> Absent
-            </label>
+    <div className={`rounded-lg border ${isDark ? "bg-[#121A21] border-gray-700" : "bg-white border-gray-200"} shadow-sm`}>
+      <div className={`px-6 py-4 border-b ${isDark ? "border-gray-700" : "border-gray-200"}`}>
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className={`text-lg font-semibold ${isDark ? "text-white" : "text-gray-900"}`}>
+              Take Attendance
+            </h3>
+            <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+              {session} Session • {new Date().toLocaleDateString()}
+            </p>
+          </div>
+          <div className={`px-4 py-2 rounded-lg ${isDark ? "bg-blue-900/30 text-blue-400" : "bg-blue-50 text-blue-700"}`}>
+            <Calendar className="inline-block w-5 h-5 mr-2" />
+            {markedCount}/{students.length}
           </div>
         </div>
-      ))}
+        
+        {/* Progress Bar */}
+        <div className="mt-4">
+          <div className={`h-2 rounded-full ${isDark ? "bg-gray-700" : "bg-gray-200"}`}>
+            <div 
+              className="h-2 rounded-full bg-blue-600 transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+      </div>
 
-      <button
-        onClick={handleSubmit}
-        disabled={loading}
-        className="mt-4 bg-green-600 text-white px-6 py-2 rounded"
-      >
-        {loading ? "Submitting..." : "Submit Attendance"}
-      </button>
+      <div className="p-6 space-y-3 max-h-[500px] overflow-y-auto">
+        {students.map((student, index) => {
+          const studentAttendance = attendance.find(a => a.studentId === student.id);
+          
+          return (
+            <div
+              key={student.id}
+              className={`p-4 rounded-lg border transition-all ${
+                studentAttendance 
+                  ? getStatusColor(studentAttendance.status)
+                  : isDark ? "bg-gray-800 border-gray-700" : "bg-gray-50 border-gray-200"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                    isDark ? "bg-gray-700 text-gray-300" : "bg-gray-200 text-gray-700"
+                  }`}>
+                    {index + 1}
+                  </div>
+                  <span className={`font-medium ${isDark ? "text-white" : "text-gray-900"}`}>
+                    {student.fullName}
+                  </span>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => markAttendance(student.id, "Present")}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      studentAttendance?.status === "Present"
+                        ? "bg-green-600 text-white shadow-md"
+                        : isDark 
+                          ? "bg-gray-700 text-gray-300 hover:bg-gray-600" 
+                          : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
+                    }`}
+                  >
+                    <CheckCircle className="inline-block w-4 h-4 mr-1" />
+                    Present
+                  </button>
+
+                  <button
+                    onClick={() => markAttendance(student.id, "Absent")}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      studentAttendance?.status === "Absent"
+                        ? "bg-red-600 text-white shadow-md"
+                        : isDark 
+                          ? "bg-gray-700 text-gray-300 hover:bg-gray-600" 
+                          : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
+                    }`}
+                  >
+                    <XCircle className="inline-block w-4 h-4 mr-1" />
+                    Absent
+                  </button>
+
+                  <button
+                    onClick={() => markAttendance(student.id, "Leave")}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      studentAttendance?.status === "Leave"
+                        ? "bg-yellow-600 text-white shadow-md"
+                        : isDark 
+                          ? "bg-gray-700 text-gray-300 hover:bg-gray-600" 
+                          : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
+                    }`}
+                  >
+                    <Calendar className="inline-block w-4 h-4 mr-1" />
+                    Leave
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className={`px-6 py-4 border-t ${isDark ? "border-gray-700 bg-[#1a2332]" : "border-gray-200 bg-gray-50"}`}>
+        <button
+          onClick={handleSubmit}
+          disabled={loading || markedCount !== students.length}
+          className={`w-full py-3 rounded-lg font-semibold transition-all ${
+            loading || markedCount !== students.length
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700 shadow-md"
+          } text-white`}
+        >
+          {loading ? "Submitting..." : "Submit Attendance"}
+        </button>
+      </div>
     </div>
   );
 };

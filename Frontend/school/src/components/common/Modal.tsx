@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import type { ModalProps } from "../../types/Modal";
 import { useTheme } from "../../components/layout/ThemeContext";
-export function Modal({ title, isOpen, onClose, children }: ModalProps) {
+export function Modal({ title, isOpen, onClose, children, className }: ModalProps) {
   const { isDark } = useTheme();
 
   if (!isOpen) return null;
@@ -13,7 +13,7 @@ export function Modal({ title, isOpen, onClose, children }: ModalProps) {
     >
       <div
         className={`relative w-full max-w-4xl max-h-[90vh] rounded-lg shadow-xl border overflow-hidden
-          ${isDark ? "bg-slate-900 border-slate-700" : "bg-white border-gray-200"}`}
+          ${isDark ? "bg-slate-900 border-slate-700" : "bg-white border-gray-200"} ${className || ""}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className={`flex items-center justify-between p-6 border-b ${isDark ? "border-slate-700" : "border-gray-200"}`}>

@@ -1,4 +1,5 @@
-export type AttendanceStatusDTO = "Present" | "Absent" | "Not Marked";
+export type AttendanceStatusDTO ="Present" | "Absent" | "Leave";
+
 
 export interface TodayAttendanceItemDTO {
   studentId: string;

@@ -1,11 +1,23 @@
-import { Navigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import type {RootState}  from '../../store/index'
+import { Navigate, useLocation } from "react-router-dom";
+import React from 'react';
 
-export default function ProtectedRoute({ children }: { children: JSX.Element }) {
-  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  const path = location.pathname;
+  let isAuthenticated = false;
 
-  if (!accessToken) {
+  if (path.startsWith("/teacher")) {
+    if (localStorage.getItem("teacherAccessToken")) isAuthenticated = true;
+  } else if (path.startsWith("/student") || path.startsWith("/student-dashboard")) {
+    if (localStorage.getItem("studentAccessToken")) isAuthenticated = true;
+  } else if (path.startsWith("/parent")) {
+    if (localStorage.getItem("parentAccessToken")) isAuthenticated = true;
+  } else {
+    // Admin or default
+    if (localStorage.getItem("adminAccessToken") || localStorage.getItem("accessToken")) isAuthenticated = true;
+  }
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 

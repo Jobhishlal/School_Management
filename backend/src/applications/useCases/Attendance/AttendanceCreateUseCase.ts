@@ -5,13 +5,17 @@ import { IAttandanceRepository } from "../../../domain/repositories/Attandance/I
 import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
 import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
 import { ValidateAttendanceCreate } from "../../validators/AttendanceValidation/AttendanceValidation";
+import { SendEMail } from "../../../infrastructure/providers/EmailService";
+import { IParentRepository } from "../../../domain/repositories/IParentsRepository";
+import { EMAIL_SUBJECTS,EmailTemplates } from "../../../shared/constants/utils/Email/emailTemplates";
 
 export class AttendanceCreateUseCase implements IAttendanceCreateUseCase {
   constructor(
     private attendanceRepo: IAttandanceRepository,
     private classRepo: IClassRepository,
-    private studentRepo: StudentDetails
-  ) {}
+    private studentRepo: StudentDetails,
+    private parentRepo: IParentRepository
+  ) { }
 
   async execute(data: TakeAttendance): Promise<AttendanceEntity> {
     ValidateAttendanceCreate(data);
@@ -59,12 +63,49 @@ export class AttendanceCreateUseCase implements IAttendanceCreateUseCase {
       throw new Error(`${session} attendance already taken for today`);
     }
 
-    return await this.attendanceRepo.create({
+    const result = await this.attendanceRepo.create({
       classId,
       teacherId,
       attendance,
       date: today,
       session,
     });
+
+  
+    const absentStudents = attendance.filter(
+      (a) => a.status === "Absent" || a.status === "Leave"
+    );
+
+    if (absentStudents.length > 0) {
+      for (const item of absentStudents) {
+        try {
+
+          const student = students.find((s) => s.id === item.studentId);
+          if (student && student.parentId) {
+            const parent = await this.parentRepo.getById(student.parentId);
+
+           if (parent && parent.email) {
+                 const subject = `${EMAIL_SUBJECTS.STUDENT_ABSENT} - ${student.fullName}`;
+
+                 const message = EmailTemplates.studentAbsent({
+                 studentName: student.fullName,
+                 status: item.status,
+                  session,
+                   date: today.toLocaleDateString(),
+                     });
+
+                         await SendEMail(parent.email, subject, message);
+                             console.log(`Email sent to ${parent.email} for student ${student.fullName}`);
+                             }
+
+          }
+        } catch (emailError) {
+          console.error(`Failed to send email for student ${item.studentId}:`, emailError);
+
+        }
+      }
+    }
+
+    return result;
   }
 }

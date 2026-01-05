@@ -26,11 +26,9 @@ import {
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../layout/ThemeContext";
 
-type Props = {
-  children?: React.ReactNode;
-};
+type Props = {};
 
-export default function SchoolNavbar({ children }: Props) {
+export default function SchoolNavbar({ }: Props) {
   const { isDark, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
@@ -60,7 +58,7 @@ export default function SchoolNavbar({ children }: Props) {
   //       { icon: Megaphone, text: "Teacher Management", path: "/teachers" },
   //       { icon: AlertCircle, text: "Class Base Access", path: "/classbaseview" },
   //       { icon: DollarSign, text: "Finance", path: "/finance-management" },
-        
+
   //       ...(userRole==="super_admin"
   //         ?[{
   //           icon: GraduationCap, text: "Student Management", path: "/student-management"
@@ -82,44 +80,53 @@ export default function SchoolNavbar({ children }: Props) {
   // ];
 
 
+
+  React.useEffect(() => {
+    // Only set if not already set to a sub-admin variant, or enforce 'admin' generic?
+    // Better to trust the userRole variable if it's already an admin type, or set to super_admin as fallback
+    if (userRole !== "sub_admin") {
+      localStorage.setItem("role", "super_admin");
+    }
+  }, [userRole]);
+
   const menuItems = [
-  {
-    label: "SCHOOL MANAGEMENT",
-    links: [
-      { icon: LayoutDashboard, text: "Dashboard", path: "/dashboard" },
-      { icon: Users, text: "Admins Management", path: "/admins" },
-      { icon: GraduationCap, text: "Student Management", path: "/student-management"},
+    {
+      label: "SCHOOL MANAGEMENT",
+      links: [
+        { icon: LayoutDashboard, text: "Dashboard", path: "/dashboard" },
+        { icon: Users, text: "Admins Management", path: "/admins" },
+        { icon: GraduationCap, text: "Student Management", path: "/student-management" },
 
-      ...(userRole === "sub_admin"
-        ? [{ icon: UserCheck, text: "Admin Profile", path: "/adminprofile" }]
-        : []),
+        ...(userRole === "sub_admin"
+          ? [{ icon: UserCheck, text: "Admin Profile", path: "/adminprofile" }]
+          : []),
 
-      ...(userRole === "super_admin"
-        ? [
+        ...(userRole === "super_admin"
+          ? [
             { icon: Settings, text: "Institute Profile", path: "/instituteprofile" },
-            { icon: GraduationCap, text: "Approvals", path: "/admin-approval" }, 
+            { icon: GraduationCap, text: "Approvals", path: "/admin-approval" },
           ]
-        : []),
+          : []),
 
-      { icon: Megaphone, text: "Teacher Management", path: "/teachers" },
-      { icon: AlertCircle, text: "Class Base Access", path: "/classbaseview" },
-      { icon: DollarSign, text: "Finance", path: "/finance-management" },
-      { icon: AlertCircle, text: "Announcement", path: '/Announcement' },
-    ],
-  },
+        { icon: Megaphone, text: "Teacher Management", path: "/teachers" },
+        { icon: AlertCircle, text: "Class Base Access", path: "/classbaseview" },
+        { icon: DollarSign, text: "Finance", path: "/finance-management" },
+        { icon: AlertCircle, text: "Announcement", path: '/Announcement' },
+      ],
+    },
 
-  {
-    label: "COMMUNICATION",
-    links: [
-      { icon: MessageCircle, text: "Communication", path: "/communication" },
-      { icon: FileText, text: "Leave Request", path: "/leave-request" },
-      { icon: Calendar, text: "Time Table", path: "/timetable-management" },
-    ],
-  },
-];
+    {
+      label: "COMMUNICATION",
+      links: [
+        { icon: MessageCircle, text: "Communication", path: "/communication" },
+        { icon: FileText, text: "Leave Request", path: "/leave-request" },
+        { icon: Calendar, text: "Time Table", path: "/timetable-management" },
+      ],
+    },
+  ];
 
   const sidebarBg = isDark ? "bg-[#121A21]" : "bg-[#fafbfc]";
-  const sidebarBorder = isDark ? "border-slate-700/50" : "border-slate-200/60";
+  // const sidebarBorder = isDark ? "border-slate-700/50" : "border-slate-200/60";
   const headerBg = isDark ? "bg-[#121A21]" : "bg-white";
   const headerBorder = isDark ? "border-slate-700/30" : "border-slate-200/50";
   const cardBg = isDark ? "bg-slate-800/50" : "bg-white";
@@ -131,26 +138,32 @@ export default function SchoolNavbar({ children }: Props) {
 
   // ------------------ LOGOUT FUNCTION ------------------
   const handleLogout = () => {
-    // Clear tokens
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("role");
-    localStorage.removeItem("otpToken");
+    // Clear admin tokens only
+    localStorage.removeItem("adminAccessToken");
+
+    // Also clear generic ones if they match admin to avoid confusion, 
+    // but primarily we rely on adminAccessToken now for protected routes.
+    // However, if we are in a shared environment, we might want to keep others.
+    // For safety in this "concurrent" requirement, we shouldn't wipe everything.
+
+    // If we are currently "acting" as admin in this tab, we might want to clear the 'role' 
+    // key if it's set to admin, but that key is shared. This is the tricky part of localStorage.
+    // The "role" key in localStorage is essentially a global "last active role". 
+    // We should probably stop relying on it for critical logic.
+
+    if (localStorage.getItem("role") === "super_admin" || localStorage.getItem("role") === "sub_admin") {
+      localStorage.removeItem("role");
+      localStorage.removeItem("accessToken");
+    }
 
     // Navigate to login
     navigate("/login", { replace: true });
-
-    // Prevent back navigation
-    window.history.pushState(null, "", "/login");
-    window.onpopstate = () => {
-      window.history.go(1);
-    };
   };
 
   return (
     <div
-      className={`h-screen overflow-hidden transition-all duration-500 ${
-        isDark ? "bg-[#121A21]" : "bg-slate-50"
-      }`}
+      className={`h-screen overflow-hidden transition-all duration-500 ${isDark ? "bg-[#121A21]" : "bg-slate-50"
+        }`}
     >
       <div
         className={`lg:hidden flex items-center justify-between px-4 py-3 ${headerBg} ${headerBorder} border-b backdrop-blur-xl`}

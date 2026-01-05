@@ -1,5 +1,5 @@
 
 import { TodayAttendanceResponse } from "../../../applications/dto/Attendance/TodayAttendanceDTO";
 export interface IAttendanceList {
-  execute(classId: string): Promise<TodayAttendanceResponse>;
+  execute(classId: string, status?: string): Promise<TodayAttendanceResponse>;
 }

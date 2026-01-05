@@ -4,6 +4,8 @@ import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 import { IStudentProfileUseCase } from "../../../../domain/UseCaseInterface/StudentCreate/IStudentProfile";
 
+
+
 export class AnnouncementReadController {
   constructor(
     private readonly announcementUseCase: IAnnoucementfindclassBase,

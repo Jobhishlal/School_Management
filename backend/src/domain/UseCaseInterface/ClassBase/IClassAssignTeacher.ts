@@ -1,3 +1,6 @@
-export interface IAssignTeacherOnClass{
-    execute(classId:string,teacherId:string):Promise<boolean>
+export interface IAssignTeacherOnClass {
+  execute(
+    classId: string,
+    teacherId: string
+  ): Promise<"assigned" | "reassigned">;
 }

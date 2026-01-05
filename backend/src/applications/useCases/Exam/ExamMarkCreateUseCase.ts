@@ -1,0 +1,55 @@
+import { CreateExamMarkDTO } from "../../dto/Exam/CreateExamMarkDTO";
+import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMarkRepoInterface";
+import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
+import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
+
+export class ExamMarkCreateUseCase {
+  constructor(
+    private examMarkRepo: IExamMarkRepository,
+    private studentRepo: StudentDetails,
+    private examRepo: IExamRepository
+  ) { }
+
+  async execute(teacherId: string, data: CreateExamMarkDTO) {
+
+    const exam = await this.examRepo.findById(data.examId);
+    if (!exam) {
+      throw new Error("Exam not found");
+    }
+
+    if (exam.teacherId.toString() !== teacherId) {
+      throw new Error("You are not allowed to evaluate this exam");
+    }
+
+
+    const student = await this.studentRepo.findStudentById(data.studentId);
+    if (!student) {
+      throw new Error(`Student not found: ${data.studentId}`);
+    }
+
+
+    if (student.classId.toString() !== exam.classId.toString()) {
+      throw new Error("Student does not belong to this exam class");
+    }
+
+
+    const existing = await this.examMarkRepo.findByExamAndStudent(
+      data.examId,
+      data.studentId
+    );
+
+    if (existing) {
+      throw new Error("Marks already assigned for this student");
+    }
+
+
+    return await this.examMarkRepo.create({
+      examId: data.examId,
+      studentId: data.studentId,
+      teacherId,
+      marksObtained: data.marksObtained,
+      progress: data.progress,
+      remarks: data.remarks,
+    });
+  }
+}

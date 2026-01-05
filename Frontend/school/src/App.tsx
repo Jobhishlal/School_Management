@@ -32,7 +32,7 @@
 //       <ToastContainer />
 
 //       <Routes>
-   
+
 //         <Route path="/" element={<SchoolLandingPage />} />
 //         <Route path="/signup" element={<SignupAdminPage />} />
 //         <Route path="/verify-otp" element={<VerifyOtpPage />} />
@@ -41,7 +41,7 @@
 
 //         <Route path="/logout" element={<Logout />} />
 
-        
+
 //         <Route element={ <ThemeProvider> <Layout /> </ThemeProvider> }>
 //         <Route path="/dashboard" element={  <PrivateRoute>   <Dashboard />  </PrivateRoute>  } />
 //           <Route path="/profile" element={<PrivateRoute>
@@ -132,7 +132,7 @@ import StudentDashboard from "./pages/Student/StudentDashboard";
 
 
 import SchoolLandingPage from "./components/common/Welcome";
-import { ThemeProvider } from "./components/layout/ThemeContext"; 
+import { ThemeProvider } from "./components/layout/ThemeContext";
 import PrivateRoute from "./components/layout/PrivateRoute";
 import { StudentProfilePage } from "./pages/Student/StudentProfile";
 import TeacherLayout from "./components/layout/TeacherLayout";
@@ -142,6 +142,10 @@ import TimeTableManagement from "./pages/admin/TimeTableManagement";
 import StudentTimeTableView from "./pages/Student/StudentTimeTableView";
 import AssignmentManage from "./pages/Teacher/AssignMentManage";
 import { StudentAssignmentList } from "./pages/Student/StudentAssignmentView";
+import { StudentAnnouncementView } from "./pages/Student/StudentAnnouncementView";
+import AssignmentSubmissions from "./pages/Teacher/AssignmentSubmissions";
+import { StudentExamResultsPage } from "./pages/Student/StudentExamResultView";
+import { StudentAttendanceView } from "./pages/Student/StudentAttendanceView";
 import CreateFeeStructureForm from "./pages/admin/FeeStructureManagement";
 
 
@@ -158,10 +162,16 @@ import CreateAnnouncement from "./pages/admin/Announcement/Announcement";
 
 import AttendanceCreatePage from "./pages/Teacher/AttendanceCreatePage";
 import ParentAttendance from "./pages/Parents/AttendanceViewPage";
-
+import CreateExam from "./pages/Teacher/Exam/CreateExam";
+import TakeMarks from "./pages/Teacher/Exam/ExamMarkListOut";
+import { TeacherParentList } from "./pages/Teacher/TeacherParentList";
+import ParentExamResults from "./pages/Parents/ParentExamResults";
+import ParentProfile from "./pages/Parents/ParentProfile";
 function ErrorFallback({ error }: { error: Error }) {
   return <div role="alert">Something went wrong: {error.message}</div>;
 }
+
+import PublicRoute from "./components/layout/PublicRoute";
 
 function App() {
   return (
@@ -170,13 +180,13 @@ function App() {
 
       <Routes>
         {/* ---------------- PUBLIC ROUTES ---------------- */}
-        <Route path="/" element={<SchoolLandingPage />} />
-        <Route path="/signup" element={<SignupAdminPage />} />
-        <Route path="/verify-otp" element={<VerifyOtpPage />} />
-        <Route path="/login" element={<MainAdminLogincheck />} />
+        <Route path="/" element={<PublicRoute restricted={true}><SchoolLandingPage /></PublicRoute>} />
+        <Route path="/signup" element={<PublicRoute restricted={true}><SignupAdminPage /></PublicRoute>} />
+        <Route path="/verify-otp" element={<PublicRoute restricted={true}><VerifyOtpPage /></PublicRoute>} />
+        <Route path="/login" element={<PublicRoute restricted={true}><MainAdminLogincheck /></PublicRoute>} />
         <Route path="/forgot-password" element={<ParentForgotPassword />} />
         <Route path="/logout" element={<Logout />} />
-        
+
 
         {/* ---------------- ADMIN ROUTES ---------------- */}
         <Route element={<ThemeProvider><Layout /></ThemeProvider>}>
@@ -188,50 +198,56 @@ function App() {
           <Route path="/instituteprofile" element={<PrivateRoute><InstituteManagementPage /></PrivateRoute>} />
           <Route path="/adminprofile" element={<PrivateRoute><AdminProfileManagement /></PrivateRoute>} />
           <Route path="/classbaseview" element={<PrivateRoute><AdminClassDivisionView /></PrivateRoute>} />
-          <Route path='/timetable-management' element={<PrivateRoute><TimeTableManagement/></PrivateRoute>}/>
-          <Route path='/finance-management' element={<PrivateRoute><CreateFeeStructureForm/></PrivateRoute>}/>
-           <Route path='/expense-management' element={<PrivateRoute><CreateExpenseForm/></PrivateRoute>}/>
-            <Route path='/admin-approval' element={<PrivateRoute><SuperAdminExpenseApproval/></PrivateRoute>}/>
-            <Route path='/finance-report' element={<PrivateRoute><RevenueGenerateReport/></PrivateRoute>}/>
-             <Route path='/Announcement' element={<PrivateRoute><CreateAnnouncement/></PrivateRoute>}/>
-    
-            
-            
+          <Route path='/timetable-management' element={<PrivateRoute><TimeTableManagement /></PrivateRoute>} />
+          <Route path='/finance-management' element={<PrivateRoute><CreateFeeStructureForm /></PrivateRoute>} />
+          <Route path='/expense-management' element={<PrivateRoute><CreateExpenseForm /></PrivateRoute>} />
+          <Route path='/admin-approval' element={<PrivateRoute><SuperAdminExpenseApproval /></PrivateRoute>} />
+          <Route path='/finance-report' element={<PrivateRoute><RevenueGenerateReport /></PrivateRoute>} />
+          <Route path='/Announcement' element={<PrivateRoute><CreateAnnouncement /></PrivateRoute>} />
+
+
+
 
 
         </Route>
 
         {/* ---------------- STUDENT ROUTES ---------------- */}
-        <Route element={<ThemeProvider><StudentLayout /></ThemeProvider>}>
+        <Route element={<ThemeProvider><PrivateRoute><StudentLayout /></PrivateRoute></ThemeProvider>}>
           <Route path="/student-dashboard" element={<StudentDashboard />} />
-         <Route path="/student/profile" element={<StudentProfilePage />} />
-         <Route path='/student/timetable-view' element={<StudentTimeTableView/>}/>
-         <Route path='/student/assignment' element={<StudentAssignmentList/>}/>
+          <Route path="/student/profile" element={<StudentProfilePage />} />
+          <Route path='/student/timetable-view' element={<StudentTimeTableView />} />
+          <Route path='/student/assignment' element={<StudentAssignmentList />} />
+          <Route path='/student/assignment' element={<StudentAssignmentList />} />
+          <Route path='/student/exam-list' element={<StudentExamResultsPage />} />
+          <Route path='/student/attendance-view' element={<StudentAttendanceView />} />
+          <Route path='/student/notices' element={<StudentAnnouncementView />} />
+        </Route>
 
+        {/* ---------------- TEACHER ROUTES ---------------- */}
+        <Route element={<ThemeProvider><PrivateRoute><TeacherLayout /></PrivateRoute></ThemeProvider>}>
 
+          <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+          <Route path="/teacher/assignments" element={<AssignmentManage />} />
+          <Route path="/teacher/assignment/:id/submissions" element={<AssignmentSubmissions />} />
+          <Route path="/teacher/attandance" element={<AttendanceCreatePage />} />
+          <Route path="/teacher/exam-management" element={<CreateExam />} />
+          <Route path="/teacher/parents" element={<TeacherParentList />} />
+          <Route path="/teacher/exam-mark" element={<TakeMarks />} />
+        </Route>
 
+        {/* --------------------PARENT ROUTES ------------------- */}
+
+        <Route element={<ThemeProvider><PrivateRoute><ParentLayout /></PrivateRoute></ThemeProvider>}>
+          <Route path="/parent/dashboard" element={<ParentDashboard />} />
+          <Route path="/parent/financelist" element={<FinanceParentList />} />
+          <Route path="/parent/attendacelist" element={<ParentAttendance />} />
+
+          <Route path="/parent/exams" element={<ParentExamResults />} />
+          <Route path="/parent/profile" element={<ParentProfile />} />
 
 
         </Route>
 
-         {/* ---------------- TEACHER ROUTES ---------------- */}
-          <Route element={<ThemeProvider><TeacherLayout/></ThemeProvider>}>
-
-          <Route path="/teacher/dashboard" element={<TeacherDashboard/>}/>
-          <Route path="/teacher/assignments" element={<AssignmentManage/>}/>
-            <Route path="/teacher/attandance" element={<AttendanceCreatePage/>}/>
-
-          </Route>
-
-          {/* --------------------PARENT ROUTES ------------------- */}
-
-          <Route element={<ThemeProvider><ParentLayout/></ThemeProvider>}>
-          <Route path="/parent/dashboard" element={<ParentDashboard/>}/>
-          <Route path="/parent/financelist" element={<FinanceParentList/>}/>
-          <Route path="/parent/attendacelist" element={<ParentAttendance/>}/>
-          
-          </Route>
-          
 
       </Routes>
     </ErrorBoundary>
