@@ -56,6 +56,8 @@ const ClassBaseAccess: React.FC = () => {
 
 
   const [editingClassName, setEditingClassName] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newClassName, setNewClassName] = useState<
@@ -223,7 +225,6 @@ const ClassBaseAccess: React.FC = () => {
   useEffect(() => {
     let res = allStudents;
 
-    // Filter by Search Term
     if (studentSearch) {
       res = res.filter(s =>
         s.fullName.toLowerCase().includes(studentSearch.toLowerCase()) ||
@@ -232,13 +233,12 @@ const ClassBaseAccess: React.FC = () => {
       );
     }
 
-    // Filter by Target Class Name (ignoring division)
     if (bulkTargetClass) {
-      // Find the target class object to get its className (e.g., "1")
+   
       const targetClassObj = Object.values(classes).find(c => c.classId === bulkTargetClass);
 
       if (targetClassObj) {
-        // Show only students belonging to this class (e.g., Class "1")
+       
         res = res.filter((s: any) => s.className === targetClassObj.className);
       }
     }
@@ -270,33 +270,30 @@ const ClassBaseAccess: React.FC = () => {
   // ================= UPDATE CLASS =================
 
 
-  const handleDeleteClass = async (classId: string) => {
-    if (!classId) return;
+const handleDeleteClass = async () => {
+  if (!deleteTarget) return;
 
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this class/division? This cannot be undone."
-    );
+  try {
+    const result = await deleteClassOrDivision(deleteTarget);
 
-    if (!confirmDelete) return;
-
-    try {
-      const result = await deleteClassOrDivision(classId);
-
-      if (result.success) {
-        showToast(result.message || "Class deleted successfully", "success");
-        await fetchClasses();
-      } else {
-        showToast(result.message || "Failed to delete class", "error");
-      }
-
-    } catch (err: any) {
-      const message =
-        err?.response?.data?.message ||
-        "Cannot delete class. It may still have students assigned.";
-
-      showToast(message, "error");
+    if (result.success) {
+      showToast(result.message || "Class deleted successfully", "success");
+      await fetchClasses();
+    } else {
+      showToast(result.message || "Failed to delete class", "error");
     }
-  };
+
+  } catch (err: any) {
+    const message =
+      err?.response?.data?.message ||
+      "Cannot delete class. It may still have students assigned.";
+
+    showToast(message, "error");
+  } finally {
+    setDeleteTarget(null);   
+  }
+};
+
 
 
   const handleCreateClass = async () => {
@@ -493,16 +490,16 @@ const ClassBaseAccess: React.FC = () => {
                     Assign
                   </button>
 
-                  <button
-                    onClick={() => handleDeleteClass(cls.classId)}
-                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                  >
-                    Delete
-                  </button>
+                 <button
+                 onClick={() => setDeleteTarget(cls.classId)}
+                 className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                 >
+                   Delete
+                 </button>
+
                 </div>
               </div>
 
-              {/* STUDENTS TABLE */}
               <div className="overflow-x-auto">
                 <table className="min-w-full border border-slate-400 text-sm">
                   <thead className={isDark ? "bg-slate-700" : "bg-slate-100"}>
@@ -560,6 +557,35 @@ const ClassBaseAccess: React.FC = () => {
           </div>
         </div>
       </Modal>
+
+      <Modal
+  isOpen={!!deleteTarget}
+  onClose={() => setDeleteTarget(null)}
+  title="Confirm Delete"
+>
+  <p className="mb-4">
+    Are you sure you want to delete this class/division? 
+    <br />
+    <strong>This cannot be undone.</strong>
+  </p>
+
+  <div className="flex justify-end gap-3">
+    <button
+      onClick={() => setDeleteTarget(null)}
+      className="px-4 py-2 border rounded hover:bg-gray-100 dark:hover:bg-slate-700"
+    >
+      Cancel
+    </button>
+
+    <button
+      onClick={handleDeleteClass}
+      className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+    >
+      Yes — Delete
+    </button>
+  </div>
+</Modal>
+
     </div>
   );
 };

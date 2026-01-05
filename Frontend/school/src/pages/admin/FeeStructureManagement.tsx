@@ -86,7 +86,7 @@ const CreateFeeStructureForm: React.FC = () => {
 
     try {
       const response = await createFinanceStructure(formData);
-      showToast(" Fee Structure created successfully!");
+      showToast(" Fee Structure created successfully!","success");
       console.log(response);
     } catch (err: any) {
       const backendMessage =

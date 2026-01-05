@@ -8,6 +8,8 @@ import { CreateRazorpayOrder } from "../../applications/useCases/Payment/CreateR
 import { MongoPeymentRepo } from "../../infrastructure/repositories/FeeManagement/MongoPeymentManagement";
 import { VerifyPaymentStatus } from "../../applications/useCases/Payment/VerifyRazorpayPeyment";
 import { VerifyPaymentByFeeId } from "../../applications/useCases/Payment/VerifyStatusupdateFeeId";
+import { GetParentPaymentHistory } from "../../applications/useCases/Payment/GetParentPaymentHistory";
+import { GetPaymentHistory } from "../../applications/useCases/Payment/GetPaymentHistory";
 import { DownLoadInvoice } from "../../applications/useCases/Payment/InvoiceSetUP";
 import { ParentAttendanceListController } from "../http/controllers/ParentController.ts/ParentAttendanceListController";
 import { ParentAttendanceListUseCase } from "../../applications/useCases/Attendance/AttendanceListParentUseCase"; 4
@@ -31,7 +33,9 @@ const createpeyment = new CreateRazorpayOrder(peyment, peymentrepo)
 const verfystatus = new VerifyPaymentStatus(peymentrepo)
 const verifydataFeeIdbase = new VerifyPaymentByFeeId(peymentrepo)
 const invoicedownload = new DownLoadInvoice(peymentrepo)
-const peymentcontroller = new PeymentController(createpeyment, verfystatus, verifydataFeeIdbase, invoicedownload)
+const getpaymenthistory = new GetPaymentHistory(peymentrepo)
+const getparentpaymenthistory = new GetParentPaymentHistory(peymentrepo)
+const peymentcontroller = new PeymentController(createpeyment, verfystatus, verifydataFeeIdbase, invoicedownload, getpaymenthistory, getparentpaymenthistory)
 
 
 
@@ -54,6 +58,7 @@ ParentRouter.post('/create-payment', (req, res) => peymentcontroller.CreatePayme
 ParentRouter.put('/update-status/:id', (req, res) => peymentcontroller.StatusChange(req, res))
 ParentRouter.post('/update-status-feeId/:feeId', (req, res) => peymentcontroller.StatusChangeByFeeId(req, res))
 ParentRouter.get("/invoice/:paymentId", (req, res) => peymentcontroller.InvoiceDownload(req, res))
+ParentRouter.get("/payment-history/:studentId", (req, res) => peymentcontroller.GetParentPaymentHistory(req, res))
 
 
 
@@ -70,8 +75,8 @@ ParentRouter.get('/attendance/filter',
 
 
 ParentRouter.get("/profile/:id",
-    (req,res)=>{
-        parentprofilercontroller.ParentProfile(req,res)
+    (req, res) => {
+        parentprofilercontroller.ParentProfile(req, res)
     }
 
 )

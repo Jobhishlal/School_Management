@@ -12,12 +12,12 @@ export interface IPayment extends Document {
   paymentDate?: Date;
   meta?: any;
   createdAt: Date;
-  invoiceUrl?: string; 
+  invoiceUrl?: string;
 }
 
 const PaymentSchema = new Schema<IPayment>(
   {
-    studentFeeId: { type: Schema.Types.ObjectId, ref: "StudentFee", required: true },
+    studentFeeId: { type: Schema.Types.ObjectId, ref: "FeeStructure", required: true },
     studentId: { type: Schema.Types.ObjectId, ref: "Students", required: true },
     razorpayOrderId: { type: String },
     razorpayPaymentId: { type: String },
@@ -25,7 +25,7 @@ const PaymentSchema = new Schema<IPayment>(
     method: { type: String },
     status: {
       type: String,
-      enum: ["PENDING" , "PAID" , "FAILED" , "REFUNDED"],
+      enum: ["PENDING", "PAID", "FAILED", "REFUNDED"],
       default: "PENDING",
     },
     paymentDate: { type: Date },
