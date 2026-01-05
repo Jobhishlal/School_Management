@@ -13,8 +13,8 @@ export interface ParentAttendanceDashboardDTO {
     percentage: number;
   };
   today: {
-    Morning:  "Present" | "Absent" | "Leave";
-    Afternoon: "Present" | "Absent" | "Leave";
+    Morning: "Present" | "Absent" | "Leave" | "Not Marked";
+    Afternoon: "Present" | "Absent" | "Leave" | "Not Marked";
   };
   calendar: {
     date: string;

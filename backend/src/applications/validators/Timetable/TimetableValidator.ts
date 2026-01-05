@@ -29,7 +29,7 @@ async function checkTeacherAvailability(
   const timetables = await TimetableModel.find({
     "days.day": day,
     ...(currentClassId ? { classId: { $ne: currentClassId } } : {}),
-  });
+  }).populate("days.periods.teacherId");
 
   let periodsCount = 0;
 
@@ -38,7 +38,13 @@ async function checkTeacherAvailability(
     if (!daySchedule) continue;
 
     for (const period of daySchedule.periods) {
-      if (period.teacherId.toString() === teacherId) {
+     
+      const teacherObj = period.teacherId as any;
+
+      
+      if (!teacherObj || !teacherObj._id) continue;
+
+      if (teacherObj._id.toString() === teacherId) {
         periodsCount++;
 
         const periodStart = parseTime(period.startTime);
@@ -46,7 +52,7 @@ async function checkTeacherAvailability(
 
         if (!(endHour <= periodStart || startHour >= periodEnd)) {
           throw new Error(
-            `Teacher is already assigned in class ${timetable.className}-${timetable.division} from ${period.startTime} to ${period.endTime}`
+            `${teacherObj.name} is already assigned in class ${timetable.className}-${timetable.division} from ${period.startTime} to ${period.endTime}`
           );
         }
       }
@@ -70,8 +76,7 @@ export async function validateTimetable(dto: CreateTimetableDTO): Promise<void> 
   }
 
   const MIN_HOUR = 9;
-  const LUNCH_TIME_START = 12;
-  const LUNCH_TIME_OVER = 13;
+
 
   for (const day of dto.days) {
     if (!day.day) throw new Error("Each day must have a name");
@@ -120,11 +125,7 @@ export async function validateTimetable(dto: CreateTimetableDTO): Promise<void> 
         throw new Error(`Time must be between 9:00 and 16:00 for ${day.day}`);
       }
 
-      if (startHour >= LUNCH_TIME_START && endHour <= LUNCH_TIME_OVER) {
-        throw new Error(
-          `Cannot schedule a class during lunch break (12:00 PM - 1:00 PM) on ${day.day}`
-        );
-      }
+
 
       if (endHour <= startHour) {
         throw new Error(`End time must be after start time on ${day.day}`);

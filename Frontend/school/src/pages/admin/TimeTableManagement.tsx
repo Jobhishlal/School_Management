@@ -129,22 +129,17 @@ const AdminTimeTablePage: React.FC = () => {
           if (lastPeriod && lastPeriod.endTime) {
             const [lastEndH, lastEndM] = lastPeriod.endTime.split(':').map(Number);
 
-            // 1. Determine Start Time based on Break or Lunch
+            
             let startH = lastEndH;
             let startM = lastEndM;
 
-            // Check if a break exists that starts exactly when the last period ends
             const overlappingBreak = d.breaks?.find(b => b.startTime === lastPeriod.endTime);
             if (overlappingBreak && overlappingBreak.endTime) {
               const [breakEndH, breakEndM] = overlappingBreak.endTime.split(':').map(Number);
               startH = breakEndH;
               startM = breakEndM;
             } else {
-              // Legacy Lunch Logic: If no explicit break, skip 12:00-13:00
-              if (lastEndH === 12 || (lastEndH === 11 && lastEndM >= 60)) {
-                startH = 13;
-                startM = 0;
-              }
+
             }
 
             // Check 16:00 Limit for Start Time
@@ -314,6 +309,43 @@ const AdminTimeTablePage: React.FC = () => {
       days
     };
 
+    // Client-side validation: Check Breaks and Gaps
+    for (const d of days) {
+      if (d.breaks) {
+        for (const b of d.breaks) {
+          const [startH, startM] = b.startTime.split(':').map(Number);
+          const [endH, endM] = b.endTime.split(':').map(Number);
+          const startTotal = startH * 60 + startM;
+          const endTotal = endH * 60 + endM;
+
+          if (endTotal <= startTotal) {
+            showToast(`Break on ${d.day} has invalid time: End time must be after Start time`, "error");
+            return;
+          }
+        }
+      }
+
+      // Check for Gaps
+      const allSlots = [
+        ...(d.periods || []).map(p => ({ ...p, type: 'Period' })),
+        ...(d.breaks || []).map(b => ({ ...b, type: 'Break' }))
+      ].sort((a, b) => {
+        const timeA = parseInt(a.startTime.replace(':', ''));
+        const timeB = parseInt(b.startTime.replace(':', ''));
+        return timeA - timeB;
+      });
+
+      for (let i = 0; i < allSlots.length - 1; i++) {
+        const current = allSlots[i];
+        const next = allSlots[i + 1];
+
+        if (current.endTime !== next.startTime) {
+          showToast(`Gap detected on ${d.day} between ${current.endTime} and ${next.startTime}`, "error");
+          return;
+        }
+      }
+    }
+
     try {
       if (timetableId) {
         await updateTimeTable(dto);
@@ -354,7 +386,7 @@ const AdminTimeTablePage: React.FC = () => {
   // Theme Classes
   const containerBg = isDark ? "bg-[#121A21] text-slate-100" : "bg-[#fafbfc] text-slate-900";
   const cardBg = isDark ? "bg-slate-800/50 border-gray-700" : "bg-white border-gray-300";
-  const lunchBg = isDark ? "bg-orange-900/30 border-orange-700" : "bg-orange-50 border-orange-300";
+
   const buttonPrimary = isDark ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-blue-600 hover:bg-blue-700 text-white";
   const buttonSecondary = isDark ? "bg-red-600 hover:bg-red-700 text-white" : "bg-red-600 hover:bg-red-700 text-white";
   const buttonAdd = isDark ? "bg-green-600 hover:bg-green-700 text-white" : "bg-green-500 hover:bg-green-600 text-white";
@@ -440,7 +472,7 @@ const AdminTimeTablePage: React.FC = () => {
             ) : (
               sortedPeriods.map((p) => {
                 const actualIdx = allPeriods.indexOf(p);
-                const shouldShowLunchAfter = parseInt(p.endTime.split(':')[0]) === 12;
+
 
                 return (
                   <React.Fragment key={actualIdx}>
@@ -508,13 +540,7 @@ const AdminTimeTablePage: React.FC = () => {
                     </div>
 
                     {/* Show Lunch Break after period ending at 12:00 */}
-                    {shouldShowLunchAfter && (
-                      <div className={`mb-3 p-3 rounded border ${lunchBg} flex items-center justify-center`}>
-                        <span className="font-semibold text-orange-600 dark:text-orange-400">
-                          🍽️ Lunch Break (12:00 - 13:00)
-                        </span>
-                      </div>
-                    )}
+
                   </React.Fragment>
                 );
               })

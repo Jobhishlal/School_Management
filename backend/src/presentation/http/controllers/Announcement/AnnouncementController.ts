@@ -7,8 +7,6 @@ import { UpdateAnnouncementDTO } from "../../../../applications/dto/UpdateAnnoun
 import { Announcement } from "../../../../domain/entities/Announcement/Announcement";
 import { FindAllaanouncement } from "../../../../domain/UseCaseInterface/Announcement/IAnnouncementFindAll";
 import mongoose from "mongoose";
-
-
 import { DeleteAnnouncementUseCase } from "../../../../applications/useCases/Announcement/DeleteAnnouncementUseCase";
 
 export class AnnouncementController {
@@ -67,18 +65,33 @@ export class AnnouncementController {
 
       if (!id || !mongoose.Types.ObjectId.isValid(id)) {
         console.log('id', id)
-        res.status(400).json({ message: "Invalid announcement ID", success: false });
+        res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid announcement ID", success: false });
       }
 
       const data: UpdateAnnouncementDTO = req.body;
 
+      console.log('Update Body:', req.body);
+      console.log('Update File:', req.file);
+
+      if (req.file) {
+        const file = req.file as any;
+        data.attachment = {
+          url: file.path || file.url || file.secure_url,
+          filename: file.originalname,
+          uploadAt: new Date().toISOString(),
+        };
+      } else {
+        delete data.attachment;
+      }
+
       const update = await this.updaterepo.execute(id, data);
 
       if (!update) {
-        res.status(400).json({ message: "It is not possible to update", success: false });
+        res.status(StatusCodes.BAD_REQUEST).json({ message: "It is not possible to update", success: false });
+        return;
       }
 
-      res.status(200).json({ message: "Update successful", success: true });
+      res.status(StatusCodes.OK).json({ message: "Update successful", success: true });
     } catch (error: any) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,

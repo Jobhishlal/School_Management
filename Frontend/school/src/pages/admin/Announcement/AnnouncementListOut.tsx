@@ -29,7 +29,13 @@ const AnnouncementListOut = ({
     try {
       setLoading(true);
       const res = await findallAnnouncement();
-      const allAnnouncements = res.data || res;
+      let allAnnouncements = res.data || res;
+      // Sort by activeTime descending (latest first)
+      if (Array.isArray(allAnnouncements)) {
+        allAnnouncements = allAnnouncements.sort((a: Announcement, b: Announcement) =>
+          new Date(b.activeTime).getTime() - new Date(a.activeTime).getTime()
+        );
+      }
       setAnnouncements(allAnnouncements);
       setTotalPages(Math.ceil(allAnnouncements.length / PAGE_SIZE));
     } catch {

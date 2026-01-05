@@ -13,40 +13,40 @@ import { IExamFindByClassUseCase } from "../../../../domain/UseCaseInterface/Exa
 export class ExamManagementController {
   constructor(
     private repo: IExamCreateRepository,
-    private update :IExamUpdateTeacherUseCase,
+    private update: IExamUpdateTeacherUseCase,
     private getTeacherExamsUseCase: IGetTeacherExamsUseCase,
-    private examfindclassbase : IExamFindByClassUseCase,
-   
-   
+    private examfindclassbase: IExamFindByClassUseCase,
 
-) {}
 
- async CreateExam(req: AuthRequest, res: Response): Promise<void> {
+
+  ) { }
+
+  async CreateExam(req: AuthRequest, res: Response): Promise<void> {
     try {
       const teacherId = req.user?.id;
 
       if (!teacherId) {
-         res.status(StatusCodes.UNAUTHORIZED).json({
+        res.status(StatusCodes.UNAUTHORIZED).json({
           success: false,
           message: "Unauthorized",
         });
       }
 
-      const { classId, teacherId: bodyTeacherId, title, type, division, className, subject, examDate, startTime, endTime, maxMarks, description } = req.body;
+      const { classId, teacherId: bodyTeacherId, title, type, division, className, subject, examDate, startTime, endTime, maxMarks, passMarks, description } = req.body;
 
-   
-     
-      
+
+
+
 
       if (!Types.ObjectId.isValid(bodyTeacherId)) {
-         res.status(StatusCodes.BAD_REQUEST).json({
+        res.status(StatusCodes.BAD_REQUEST).json({
           success: false,
           message: "Invalid teacherId",
         });
       }
 
       const examData: CreateExamDTO = {
-        examId: req.body.examId || "", 
+        examId: req.body.examId || "",
         title,
         type,
         classId,
@@ -59,10 +59,11 @@ export class ExamManagementController {
         startTime,
         endTime,
         maxMarks: Number(maxMarks),
+        passMarks: Number(passMarks),
         description: description || "",
       };
 
-     
+
       const data = await this.repo.execute(examData);
 
       res.status(StatusCodes.CREATED).json({
@@ -82,13 +83,13 @@ export class ExamManagementController {
     try {
       const { id } = req.params;
       const data: UpdateExamDTO = req.body;
-      console.log("reached here",data)
+      console.log("reached here", data)
 
-      
 
-     
+
+
       const updatedExam = await this.update.execute(id, data);
-      console.log("dsafjkhdaskfnakdbj",updatedExam)
+      console.log("dsafjkhdaskfnakdbj", updatedExam)
 
       res.status(StatusCodes.OK).json({
         success: true,
@@ -97,7 +98,7 @@ export class ExamManagementController {
       });
     } catch (error: any) {
       console.error(error);
-       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: error.message || "Internal server error",
         success: false,
       });
@@ -105,11 +106,11 @@ export class ExamManagementController {
   }
   async getTeacherExams(req: AuthRequest, res: Response): Promise<void> {
     try {
-      const teacherId = req.user?.id; 
+      const teacherId = req.user?.id;
       console.log(teacherId)
 
       if (!teacherId) {
-        console.log("reached",teacherId)
+        console.log("reached", teacherId)
         res.status(StatusCodes.UNAUTHORIZED).json({
           success: false,
           message: "Unauthorized",
@@ -118,7 +119,7 @@ export class ExamManagementController {
       }
 
       const exams = await this.getTeacherExamsUseCase.execute(teacherId);
- 
+
 
 
       res.status(StatusCodes.OK).json({
@@ -134,43 +135,43 @@ export class ExamManagementController {
         error,
       });
     }
-    
+
   }
 
 
-async FindExamClassBase(req: AuthRequest, res: Response): Promise<void> {
-  try {
-    console.log("rached class base find page")
-    const { classId } = req.params;
-    const teacherId = req.user?.id;
+  async FindExamClassBase(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      console.log("rached class base find page")
+      const { classId } = req.params;
+      const teacherId = req.user?.id;
 
-    if (!classId || !teacherId) {
-      res.status(StatusCodes.BAD_REQUEST).json({
-        success: false,
-        message: "classId or teacherId missing",
+      if (!classId || !teacherId) {
+        res.status(StatusCodes.BAD_REQUEST).json({
+          success: false,
+          message: "classId or teacherId missing",
+        });
+        return;
+      }
+
+      const exams = await this.examfindclassbase.execute({
+        classId,
+        teacherId,
       });
-      return;
+      console.log("exams", exams)
+
+      res.status(StatusCodes.OK).json({
+        success: true,
+        message: "successfully fetched class based exams",
+        data: exams,
+      });
+    } catch (error) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: "internal server error",
+        error,
+      });
     }
-
-    const exams = await this.examfindclassbase.execute({
-      classId,
-      teacherId,
-    });
-    console.log("exams",exams)
-
-    res.status(StatusCodes.OK).json({
-      success: true,
-      message: "successfully fetched class based exams",
-      data: exams,
-    });
-  } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: "internal server error",
-      error,
-    });
   }
-}
 
 
 }

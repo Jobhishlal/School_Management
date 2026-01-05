@@ -22,6 +22,7 @@ export const toExamEntity = (doc: ExamDocument): ExamEntity => {
     doc.startTime,
     doc.endTime,
     doc.maxMarks,
+    doc.passMarks,
 
     doc.description || "",
     doc.status

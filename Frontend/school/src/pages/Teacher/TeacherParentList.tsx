@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { GetStudentsByTeacher } from "../../services/authapi";
 import { Loader2, Search, User, Phone, Mail, Users } from "lucide-react";
 import { useTheme } from "../../components/layout/ThemeContext";
+import { Pagination } from "../../components/common/Pagination";
 
 interface Parent {
     name: string;
@@ -16,6 +17,10 @@ interface Student {
     studentId: string; // Roll Number
     parent?: Parent;
     photos?: { url: string }[];
+    classDetails?: {
+        className: string;
+        division: string;
+    };
 }
 
 export const TeacherParentList: React.FC = () => {
@@ -24,6 +29,8 @@ export const TeacherParentList: React.FC = () => {
     const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
 
     const bgPrimary = isDark ? "bg-[#121A21]" : "bg-slate-50";
     const cardBg = isDark ? "bg-slate-800/50" : "bg-white";
@@ -44,15 +51,14 @@ export const TeacherParentList: React.FC = () => {
                 s.parent?.name.toLowerCase().includes(lowerTerm)
         );
         setFilteredStudents(filtered);
+        setCurrentPage(1);
     }, [searchTerm, students]);
 
     const fetchStudents = async () => {
         try {
             setLoading(true);
-            const res = await GetStudentsByTeacher(); // Assuming this returns { students: [...] } or just [...]
-            // Based on previous controller check: res.students
+            const res = await GetStudentsByTeacher();
             const data = res.students || res.data || res;
-            // Adjust depending on actual API structure. The controller sent { success: true, students: [...] }
 
             if (Array.isArray(data)) {
                 setStudents(data);
@@ -74,6 +80,11 @@ export const TeacherParentList: React.FC = () => {
             </div>
         );
     }
+
+    const currentData = filteredStudents.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
 
     return (
         <div className={`min-h-screen p-6 ${bgPrimary}`}>
@@ -103,6 +114,7 @@ export const TeacherParentList: React.FC = () => {
                         <thead className={`border-b ${border} ${isDark ? "bg-slate-900/50" : "bg-slate-100"}`}>
                             <tr>
                                 <th className={`p-4 font-medium ${textSecondary}`}>Student</th>
+                                <th className={`p-4 font-medium ${textSecondary}`}>Class</th>
                                 <th className={`p-4 font-medium ${textSecondary}`}>Parent Name</th>
                                 <th className={`p-4 font-medium ${textSecondary}`}>Relationship</th>
                                 <th className={`p-4 font-medium ${textSecondary}`}>Contact</th>
@@ -112,12 +124,12 @@ export const TeacherParentList: React.FC = () => {
                         <tbody className="divide-y divide-slate-700/30">
                             {filteredStudents.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="p-8 text-center text-slate-500">
+                                    <td colSpan={6} className="p-8 text-center text-slate-500">
                                         No records found.
                                     </td>
                                 </tr>
                             ) : (
-                                filteredStudents.map((student) => (
+                                currentData.map((student) => (
                                     <tr
                                         key={student.id}
                                         className={`group transition-colors ${isDark ? "hover:bg-slate-700/30" : "hover:bg-slate-50"
@@ -142,6 +154,18 @@ export const TeacherParentList: React.FC = () => {
                                                     <div className="text-xs text-slate-500">ID: {student.studentId}</div>
                                                 </div>
                                             </div>
+                                        </td>
+
+                                        {/* Class Column */}
+                                        <td className={`p-4 ${textPrimary}`}>
+                                            {student.classDetails ? (
+                                                <span className={`px-2 py-1 rounded text-xs font-semibold ${isDark ? "bg-slate-700 text-slate-300" : "bg-slate-100 text-slate-700"
+                                                    }`}>
+                                                    {student.classDetails.className} - {student.classDetails.division}
+                                                </span>
+                                            ) : (
+                                                <span className="text-slate-500 italic">-</span>
+                                            )}
                                         </td>
 
                                         {/* Parent Name */}
@@ -183,6 +207,17 @@ export const TeacherParentList: React.FC = () => {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Pagination */}
+                {filteredStudents.length > itemsPerPage && (
+                    <div className={`p-4 border-t ${border}`}>
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={Math.ceil(filteredStudents.length / itemsPerPage)}
+                            onPageChange={setCurrentPage}
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );

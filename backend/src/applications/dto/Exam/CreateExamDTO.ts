@@ -18,5 +18,6 @@ export interface CreateExamDTO {
   startTime: string;
   endTime: string;
   maxMarks: number;
+  passMarks: number;
   description?: string;
 }

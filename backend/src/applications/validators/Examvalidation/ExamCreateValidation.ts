@@ -50,6 +50,14 @@ export function ValidateExamCreate(data: CreateExamDTO) {
     throw new Error(ExamErrors.INVALID_MARKS);
   }
 
+  if (typeof data.passMarks !== "number" || data.passMarks <= 0) {
+    throw new Error("Pass marks must be a positive number.");
+  }
+
+  if (data.passMarks > data.maxMarks) {
+    throw new Error("Pass marks cannot be greater than maximum marks.");
+  }
+
   if (typeof data.subject !== "string" || data.subject.trim().length === 0) {
     throw new Error(ExamErrors.INVALID_SUBJECT);
   }

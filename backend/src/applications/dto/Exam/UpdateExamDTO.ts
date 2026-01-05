@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 
 export interface UpdateExamDTO {
-    id:string;
+  id: string;
   title?: string;
   type?: "UNIT_TEST" | "MIDTERM" | "FINAL";
 
@@ -18,5 +18,6 @@ export interface UpdateExamDTO {
   startTime?: string;
   endTime?: string;
   maxMarks?: number;
+  passMarks?: number;
   description?: string;
 }

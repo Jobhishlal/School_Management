@@ -171,6 +171,9 @@ const ParentAttendance: React.FC = () => {
             />
             <div>
               <h2 className="text-xl font-bold">{student.name}</h2>
+              <p className={`text-sm font-medium ${mutedText} mb-1`}>
+                {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+              </p>
               <p className={`text-sm mt-1 ${mutedText}`}>
                 Morning:
                 <span className="text-green-500 font-medium">

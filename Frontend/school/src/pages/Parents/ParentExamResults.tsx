@@ -3,7 +3,7 @@ import jsPDF from "jspdf";
 import { toPng } from "html-to-image";
 import React, { useEffect, useState, useRef } from "react";
 import {
- LineChart,
+    LineChart,
     Line,
     XAxis,
     YAxis,
@@ -30,6 +30,7 @@ interface ExamResult {
     subject: string;
     examDate: string;
     maxMarks: number;
+    passMarks: number;
     marksObtained: number | null;
     percentage: number | null;
     status: "Passed" | "Failed" | "Pending";
@@ -66,7 +67,7 @@ const ParentExamResults: React.FC = () => {
                     return;
                 }
 
-               
+
                 const parentRes = await ParentAttendanceList(parentId);
                 if (!parentRes.success || !parentRes.data?.student) {
                     setError("Student information not found for this parent.");
@@ -78,7 +79,7 @@ const ParentExamResults: React.FC = () => {
                 setStudentProfile(studentData);
                 const classId = studentData.classId;
 
-                
+
                 const instituteRes = await getInstituteProfile();
                 if (instituteRes?.institute?.length > 0) {
                     setInstituteDetails(instituteRes.institute[0]);
@@ -90,7 +91,7 @@ const ParentExamResults: React.FC = () => {
                     return;
                 }
 
-               
+
                 const resultsRes = await StudentExamResultView(classId, studentData.id);
                 console.log("API Response:", resultsRes);
 
@@ -158,7 +159,7 @@ const ParentExamResults: React.FC = () => {
 
             const schoolName = instituteDetails?.instituteName || "Excellence Academy";
             const studentName = studentProfile?.name || "Student";
-           
+
             const date = new Date().toLocaleDateString();
 
             let logoDataUrl = "";
@@ -202,7 +203,7 @@ const ParentExamResults: React.FC = () => {
             pdf.setFont("helvetica", "bold");
             pdf.text(studentName, 50, 52);
 
-         
+
 
             pdf.setFont("helvetica", "normal");
             pdf.text(`Report Date:`, pdfWidth - 80, 52);
@@ -293,16 +294,16 @@ const ParentExamResults: React.FC = () => {
     return (
         <div className={`space-y-8 p-6 ${isDark ? "bg-[#121A21]" : "bg-slate-50"} min-h-screen`} ref={printRef}>
             <div className="flex items-center justify-between">
-               
+
 
 
                 <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 p-6 shadow-xl">
-                  
+
                     <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
 
                     <div className="relative flex items-center gap-4">
-                       
+
                         <div className="flex-shrink-0 w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm border-2 border-white/40 flex items-center justify-center text-2xl font-bold text-white shadow-lg">
                             {studentProfile?.name?.charAt(0).toUpperCase()}
                         </div>
@@ -486,7 +487,7 @@ const ParentExamResults: React.FC = () => {
                                 <th className={`p-4 font-medium ${textSecondary}`}>Exam Title</th>
                                 <th className={`p-4 font-medium ${textSecondary}`}>Date</th>
                                 <th className={`p-4 font-medium ${textSecondary}`}>Subject</th>
-                                <th className={`p-4 font-medium ${textSecondary}`}>Max Marks</th>
+                                <th className={`p-4 font-medium ${textSecondary}`}>Marks (Max/Pass)</th>
                                 <th className={`p-4 font-medium ${textSecondary}`}>Obtained</th>
                                 <th className={`p-4 font-medium ${textSecondary}`}>Percentage</th>
                                 <th className={`p-4 font-medium ${textSecondary}`}>Status</th>
@@ -509,7 +510,9 @@ const ParentExamResults: React.FC = () => {
                                             {new Date(result.examDate).toLocaleDateString()}
                                         </td>
                                         <td className={`p-4 ${textSecondary}`}>{result.subject}</td>
-                                        <td className={`p-4 ${textSecondary}`}>{result.maxMarks}</td>
+                                        <td className={`p-4 ${textSecondary}`}>
+                                            <span className="font-semibold text-blue-500">{result.maxMarks}</span> / <span className="text-gray-500">{result.passMarks}</span>
+                                        </td>
                                         <td className={`p-4 font-semibold ${textPrimary}`}>
                                             {result.marksObtained !== null ? result.marksObtained : "-"}
                                         </td>

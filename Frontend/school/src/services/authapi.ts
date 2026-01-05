@@ -705,13 +705,22 @@ export const AnnouncementFetch = async () => {
 };
 
 
-export const UpdateAnnouncement = async (
-  id: string,
-  data: FormData
-) => {
-  const res = await api.put(`/admin/update-announcement/${id}`, data)
-  return res.data
-}
+// export const UpdateAnnouncement = async (
+//   id: string,
+//   data: FormData
+// ) => {
+//   const res = await api.put(`/admin/update-announcement/${id}`, data)
+//   return res.data
+// }
+export const UpdateAnnouncement = async (id: string, data: FormData) => {
+  const res = await api.put(`/admin/update-announcement/${id}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return res.data;
+};
+
 
 
 export const findallAnnouncement = async () => {

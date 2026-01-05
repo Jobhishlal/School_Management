@@ -15,6 +15,7 @@ export interface ExamEntity {
   startTime: string;
   endTime: string;
   maxMarks: number;
+  passMarks: number;
   description?: string;
   status: "DRAFT" | "PUBLISHED";
 }

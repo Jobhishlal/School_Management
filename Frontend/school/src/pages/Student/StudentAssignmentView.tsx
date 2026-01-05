@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { StudentGetAssignment, StudentProfile, StudentSubmitAssignment } from "../../services/Student/StudentApi";
 import { useTheme } from "../../components/layout/ThemeContext";
-import { BookOpen, Calendar, Award, Users, FileText, Download, Clock, AlertCircle, Upload, X, CheckCircle, XCircle } from "lucide-react";
+import { BookOpen, Calendar, Award, Users, FileText, Clock, AlertCircle, Upload, X } from "lucide-react";
 import { showToast } from "../../utils/toast";
+import { Pagination } from "../../components/common/Pagination";
 
 interface Attachment {
   _id: string;
@@ -28,7 +29,7 @@ interface Assignment {
   title: string;
   description: string;
   subject: string;
-  assignmentDate: string;
+  Assignment_date: string;
   Assignment_Due_Date: string;
   maxMarks: number;
   className: string;
@@ -47,6 +48,14 @@ export const StudentAssignmentList: React.FC = () => {
   const [studentDescription, setStudentDescription] = useState<{ [key: string]: string }>({});
   const [submittingId, setSubmittingId] = useState<string | null>(null);
   const [expandedAssignment, setExpandedAssignment] = useState<string | null>(null);
+
+  // Subject Filter State
+  const [selectedSubject, setSelectedSubject] = useState<string>("all");
+  const uniqueSubjects = Array.from(new Set(assignments.map(a => a.subject)));
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchProfileAndAssignments = async () => {
@@ -79,6 +88,10 @@ export const StudentAssignmentList: React.FC = () => {
     fetchProfileAndAssignments();
   }, []);
 
+  const pageBg = isDark ? "bg-[#121A21]" : "bg-slate-50";
+  const cardBg = isDark ? "bg-slate-800/50" : "bg-white";
+  const borderColor = isDark ? "border-slate-700" : "border-slate-200";
+
   const getDaysUntilDue = (dueDate: string) => {
     const today = new Date();
     const due = new Date(dueDate);
@@ -98,16 +111,27 @@ export const StudentAssignmentList: React.FC = () => {
     }
   };
 
-  const filteredAssignments = assignments.filter((assignment) => {
-    const daysLeft = getDaysUntilDue(assignment.Assignment_Due_Date);
-    if (filter === "upcoming") return daysLeft >= 0;
-    if (filter === "overdue") return daysLeft < 0;
-    return true;
-  });
+  const filteredAssignments = assignments
+    .filter((assignment) => {
+      const daysLeft = getDaysUntilDue(assignment.Assignment_Due_Date);
+      const matchesSubject = selectedSubject === "all" || assignment.subject === selectedSubject;
 
-  const pageBg = isDark ? "bg-[#121A21]" : "bg-slate-50";
-  const cardBg = isDark ? "bg-slate-800/50" : "bg-white";
-  const borderColor = isDark ? "border-slate-700" : "border-slate-200";
+      if (!matchesSubject) return false;
+
+      if (filter === "upcoming") return daysLeft >= 0;
+      if (filter === "overdue") return daysLeft < 0;
+      return true;
+    })
+    .sort((a, b) => new Date(b.Assignment_date).getTime() - new Date(a.Assignment_date).getTime());
+
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredAssignments.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentAssignments = filteredAssignments.slice(startIndex, startIndex + itemsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const handleFileChange = (assignmentId: string, files: FileList | null) => {
     if (files) {
@@ -146,7 +170,7 @@ export const StudentAssignmentList: React.FC = () => {
       await StudentSubmitAssignment(studentId, assignmentId, files, description);
 
       showToast("Assignment submitted successfully!", "success");
-      
+
       setSelectedFiles(prev => ({ ...prev, [assignmentId]: [] }));
       setStudentDescription(prev => ({ ...prev, [assignmentId]: "" }));
       setSubmittingId(null);
@@ -199,21 +223,48 @@ export const StudentAssignmentList: React.FC = () => {
           </p>
         </div>
 
-        {/* Filter Tabs */}
-        <div className={`mb-6 flex border-b ${borderColor}`}>
-          {["all", "upcoming", "overdue"].map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f as 'all' | 'upcoming' | 'overdue')}
-              className={`px-4 py-2 font-medium transition-all ${
-                filter === f
+        {/* Filters Container */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          {/* Status Filter Tabs */}
+          <div className={`flex border-b ${borderColor} w-full md:w-auto`}>
+            {["all", "upcoming", "overdue"].map((f) => (
+              <button
+                key={f}
+                onClick={() => {
+                  setFilter(f as 'all' | 'upcoming' | 'overdue');
+                  setCurrentPage(1);
+                }}
+                className={`px-4 py-2 font-medium transition-all ${filter === f
                   ? `border-b-2 border-blue-500 ${isDark ? "text-blue-400" : "text-blue-600"}`
                   : isDark ? "text-slate-400 hover:text-slate-300" : "text-slate-600 hover:text-slate-800"
-              }`}
+                  }`}
+              >
+                {f.charAt(0).toUpperCase() + f.slice(1)}
+              </button>
+            ))}
+          </div>
+
+          {/* Subject Filter Dropdown */}
+          <div className="w-full md:w-64">
+            <select
+              value={selectedSubject}
+              onChange={(e) => {
+                setSelectedSubject(e.target.value);
+                setCurrentPage(1);
+              }}
+              className={`w-full px-4 py-2 rounded-lg border appearance-none cursor-pointer ${isDark
+                ? "bg-slate-800 border-slate-700 text-slate-200 focus:border-blue-500"
+                : "bg-white border-slate-300 text-slate-700 focus:border-blue-500"
+                } focus:outline-none focus:ring-1 focus:ring-blue-500`}
             >
-              {f.charAt(0).toUpperCase() + f.slice(1)}
-            </button>
-          ))}
+              <option value="all">All Subjects</option>
+              {uniqueSubjects.map((subject) => (
+                <option key={subject} value={subject}>
+                  {subject}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Assignments */}
@@ -231,7 +282,7 @@ export const StudentAssignmentList: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {filteredAssignments.map((assignment) => {
+            {currentAssignments.map((assignment) => {
               const daysLeft = getDaysUntilDue(assignment.Assignment_Due_Date);
               const isExpanded = expandedAssignment === assignment.id;
               const assignmentFiles = selectedFiles[assignment.id] || [];
@@ -244,7 +295,7 @@ export const StudentAssignmentList: React.FC = () => {
                   className={`${cardBg} rounded-xl shadow-lg border ${borderColor} overflow-hidden transition-all duration-300`}
                 >
                   {/* Assignment Header */}
-                  <div 
+                  <div
                     className={`p-6 cursor-pointer ${isDark ? "hover:bg-slate-700/50" : "hover:bg-slate-50"}`}
                     onClick={() => setExpandedAssignment(isExpanded ? null : assignment.id)}
                   >
@@ -346,11 +397,10 @@ export const StudentAssignmentList: React.FC = () => {
                                     href={att.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${
-                                      isDark
-                                        ? "text-slate-300 hover:bg-slate-600"
-                                        : "text-slate-700 hover:bg-slate-200"
-                                    }`}
+                                    className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${isDark
+                                      ? "text-slate-300 hover:bg-slate-600"
+                                      : "text-slate-700 hover:bg-slate-200"
+                                      }`}
                                   >
                                     Download File
                                   </a>
@@ -431,11 +481,10 @@ export const StudentAssignmentList: React.FC = () => {
                               }))}
                               rows={4}
                               placeholder="Add any notes or comments about your submission..."
-                              className={`w-full px-3 py-2 rounded-lg border ${
-                                isDark
-                                  ? "bg-slate-700/50 border-slate-600 text-slate-200 placeholder-slate-500"
-                                  : "bg-white border-slate-300 text-slate-900 placeholder-slate-400"
-                              } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                              className={`w-full px-3 py-2 rounded-lg border ${isDark
+                                ? "bg-slate-700/50 border-slate-600 text-slate-200 placeholder-slate-500"
+                                : "bg-white border-slate-300 text-slate-900 placeholder-slate-400"
+                                } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                             />
                           </div>
 
@@ -443,22 +492,20 @@ export const StudentAssignmentList: React.FC = () => {
                           <div className="flex gap-3">
                             <button
                               onClick={() => setExpandedAssignment(null)}
-                              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                                isDark
-                                  ? "bg-slate-700 text-slate-300 hover:bg-slate-600"
-                                  : "bg-slate-200 text-slate-700 hover:bg-slate-300"
-                              }`}
+                              className={`px-4 py-2 rounded-lg font-medium transition-colors ${isDark
+                                ? "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                                : "bg-slate-200 text-slate-700 hover:bg-slate-300"
+                                }`}
                             >
                               Resubmit
                             </button>
                             <button
                               onClick={() => handleSubmitAssignment(assignment.id)}
                               disabled={submittingId === assignment.id || assignmentFiles.length === 0}
-                              className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
-                                submittingId === assignment.id || assignmentFiles.length === 0
-                                  ? isDark ? "bg-slate-700 text-slate-500 cursor-not-allowed" : "bg-slate-200 text-slate-400 cursor-not-allowed"
-                                  : "bg-blue-600 text-white hover:bg-blue-700"
-                              }`}
+                              className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${submittingId === assignment.id || assignmentFiles.length === 0
+                                ? isDark ? "bg-slate-700 text-slate-500 cursor-not-allowed" : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                                : "bg-blue-600 text-white hover:bg-blue-700"
+                                }`}
                             >
                               {submittingId === assignment.id ? "Submitting..." : "Submit"}
                             </button>
@@ -476,9 +523,8 @@ export const StudentAssignmentList: React.FC = () => {
                           {assignment.assignmentSubmitFile?.map((file, idx) => (
                             <div
                               key={idx}
-                              className={`p-4 rounded-lg border mb-3 ${
-                                isDark ? "bg-slate-700/30 border-slate-600" : "bg-slate-50 border-slate-200"
-                              }`}
+                              className={`p-4 rounded-lg border mb-3 ${isDark ? "bg-slate-700/30 border-slate-600" : "bg-slate-50 border-slate-200"
+                                }`}
                             >
                               <div className="flex justify-between items-start mb-3">
                                 <div className="flex items-center gap-3">
@@ -489,13 +535,12 @@ export const StudentAssignmentList: React.FC = () => {
                                     </p>
                                     <div className="flex items-center gap-2 mt-1">
                                       <span
-                                        className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                                          file.status === 'Graded'
-                                            ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                                            : file.status === 'Resubmit'
-                                              ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
-                                              : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                                        }`}
+                                        className={`text-xs px-2 py-0.5 rounded-full font-medium ${file.status === 'Graded'
+                                          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                          : file.status === 'Resubmit'
+                                            ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+                                            : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                                          }`}
                                       >
                                         {file.status || 'Submitted'}
                                       </span>
@@ -509,11 +554,10 @@ export const StudentAssignmentList: React.FC = () => {
                                   href={`${import.meta.env.VITE_BACKEND_URL}/${file.url}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${
-                                    isDark
-                                      ? "bg-slate-700 hover:bg-slate-600 text-slate-300"
-                                      : "bg-white hover:bg-slate-50 text-slate-700 border border-slate-200"
-                                  }`}
+                                  className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${isDark
+                                    ? "bg-slate-700 hover:bg-slate-600 text-slate-300"
+                                    : "bg-white hover:bg-slate-50 text-slate-700 border border-slate-200"
+                                    }`}
                                 >
                                   Download File
                                 </a>
@@ -560,6 +604,15 @@ export const StudentAssignmentList: React.FC = () => {
                 </div>
               );
             })}
+
+            {/* Pagination */}
+            <div className="mt-8">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            </div>
           </div>
         )}
       </div>
