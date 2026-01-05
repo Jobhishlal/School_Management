@@ -127,6 +127,16 @@ import { ParentProfileRepository } from "../../infrastructure/repositories/Paren
 import { DeleteAnnouncementUseCase } from "../../applications/useCases/Announcement/DeleteAnnouncementUseCase";
 import { StudentFindClassBaseUseCase } from "../../applications/useCases/Students/StudentFindClassIDbaseUseCase";
 
+import { PeymentController } from "../http/controllers/Payment/PaymentController";
+import { RazorpayServices } from "../../infrastructure/providers/RazorpayService";
+import { CreateRazorpayOrder } from "../../applications/useCases/Payment/CreateRazorpayOrder";
+import { MongoPeymentRepo } from "../../infrastructure/repositories/FeeManagement/MongoPeymentManagement";
+import { VerifyPaymentStatus } from "../../applications/useCases/Payment/VerifyRazorpayPeyment";
+import { VerifyPaymentByFeeId } from "../../applications/useCases/Payment/VerifyStatusupdateFeeId";
+import { GetPaymentHistory } from "../../applications/useCases/Payment/GetPaymentHistory";
+import { GetParentPaymentHistory } from "../../applications/useCases/Payment/GetParentPaymentHistory";
+import { DownLoadInvoice } from "../../applications/useCases/Payment/InvoiceSetUP";
+
 const annoucement = new AnnouncementMongo()
 const socketNotification = new SocketNotification()
 const updateannouncement = new UpdateAnnouncementUseCase(annoucement)
@@ -317,11 +327,14 @@ const createtypeusecase = new CreateFeeTypeUseCase(financetype)
 const getallfeetype = new GetFeeTypeAll(financetype)
 const searchname = new SearchStudentName(finance)
 const studentfeehistory = new StudentPaymentDetailList(finance)
+import { GetAllFeeStructures } from "../../applications/useCases/FeeStructure/GetAllFeeStructures";
+const getAllFeeStructures = new GetAllFeeStructures(finance);
+
 const financemanagementcontroll = new FeeStructureManageController(
   createfinance,
   studentfeehistory,
-  searchname
-
+  searchname,
+  getAllFeeStructures
 )
 
 const financetypecontroller = new FeeTypeCreateController(
@@ -369,6 +382,27 @@ const financeReportController = new FinanceReportManagementController(
 
 )
 
+
+
+
+
+const razorpayService = new RazorpayServices();
+const paymentRepo = new MongoPeymentRepo();
+const createRazorpayOrder = new CreateRazorpayOrder(razorpayService, paymentRepo);
+const verifyPaymentStatus = new VerifyPaymentStatus(paymentRepo);
+const verifyPaymentByFeeId = new VerifyPaymentByFeeId(paymentRepo);
+const downloadInvoice = new DownLoadInvoice(paymentRepo);
+const getPaymentHistory = new GetPaymentHistory(paymentRepo);
+const getParentPaymentHistory = new GetParentPaymentHistory(paymentRepo);
+
+const paymentController = new PeymentController(
+  createRazorpayOrder,
+  verifyPaymentStatus,
+  verifyPaymentByFeeId,
+  downloadInvoice,
+  getPaymentHistory,
+  getParentPaymentHistory
+);
 
 
 // Adminrouter.get("/signup", (req, res) => adminController.getAll(req, res));
@@ -598,6 +632,14 @@ Adminrouter.get('/financereport', (req, res) => {
 
 Adminrouter.get('/expense-report', (req, res) => {
   financeReportController.ExpenseGenarage(req, res)
+})
+
+Adminrouter.get('/fee-structures', (req, res) => {
+  financemanagementcontroll.getAll(req, res)
+})
+
+Adminrouter.get('/payment-history', (req, res) => {
+  paymentController.GetPaymentHistory(req, res)
 })
 Adminrouter.post(
   "/announcement",

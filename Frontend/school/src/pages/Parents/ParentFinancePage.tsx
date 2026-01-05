@@ -1,252 +1,4 @@
 
-
-// import {
-//   ListParentfinance,
-//   CreatePayment,
-//   VerifyPeymentStatus,
-//   ChangepeymentstatususingfeeId,
-//   InvoiceDownload,
-//   getTeachersList,
-//   GetAllClass
-// } from "../../services/authapi";
-
-// import { useEffect, useState } from "react";
-// import { loadRazorpayScript } from "../../utils/Razorpay";
-// import { showToast } from "../../utils/toast";
-// import { onlyDate } from "../../utils/DateConverter";
-
-// export default function FinanceParentList() {
-//   const [studentData, setStudentData] = useState<any>(null);
-//   const [loading, setLoading] = useState(true);
-
-//   const [classes, setClasses] = useState<any[]>([]);
-//   const [teachers, setTeachers] = useState<any[]>([]);
-
-//   const email = localStorage.getItem("email");
-
-//   /* ------------------------
-//      Fetch Student Finance
-//   ------------------------ */
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         const storedStudentId = localStorage.getItem("studentId");
-//         if (!storedStudentId || !email) return;
-
-//         const res = await ListParentfinance(storedStudentId, email);
-//         const student = res.data.data?.[0]?.student;
-
-//         localStorage.setItem("studentObjectId", student._id);
-//         localStorage.setItem("studentCode", student.studentId);
-
-//         setStudentData(student);
-//       } catch (err) {
-//         console.error("Finance fetch error", err);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchData();
-//   }, [email]);
-
-//   /* ------------------------
-//      Fetch Class & Teacher
-//   ------------------------ */
-//   useEffect(() => {
-//     const fetchMeta = async () => {
-//       try {
-//         const [classRes, teacherRes] = await Promise.all([
-//           GetAllClass(),
-//           getTeachersList()
-//         ]);
-
-//         setClasses(classRes.data || []);
-//         setTeachers(teacherRes.data || []);
-//       } catch (err) {
-//         console.error("Meta fetch error", err);
-//       }
-//     };
-
-//     fetchMeta();
-//   }, []);
-
-//   /* ------------------------
-//      Teacher Lookup Map
-//   ------------------------ */
-//   const teacherMap = teachers.reduce((acc: any, t: any) => {
-//     acc[t._id] = t;
-//     return acc;
-//   }, {});
-
-//   /* ------------------------
-//      Helpers
-//   ------------------------ */
-//   const isExpired = (expiryDate: string) =>
-//     new Date(expiryDate) < new Date();
-
-//   /* ------------------------
-//      Razorpay Payment
-//   ------------------------ */
-//   const handlePayment = async (item: any) => {
-//     const isLoaded = await loadRazorpayScript();
-//     if (!isLoaded) return showToast("Razorpay failed");
-
-//     const amount = item?.feeItems?.[0]?.amount;
-//     if (!amount) return showToast("Invalid amount");
-
-//     const studentMongoId = localStorage.getItem("studentObjectId");
-
-//     const orderRes = await CreatePayment({
-//       amount,
-//       studentId: studentMongoId!,
-//       feeRecordId: item._id,
-//       method: "razorpay",
-//     });
-
-//     const order = orderRes.data.data;
-
-//     const options = {
-//       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-//       amount: order.amount,
-//       currency: "INR",
-//       name: "BRAINNIX",
-//       description: item.name,
-//       order_id: order.id,
-
-//       handler: async (response: any) => {
-//         await VerifyPeymentStatus(order.id, "PAID");
-
-//         await ChangepeymentstatususingfeeId(order.feeRecordId, {
-//           paymentId: response.razorpay_payment_id,
-//           razorpaySignature: response.razorpay_signature,
-//           status: "PAID",
-//           method: "razorpay",
-//         });
-
-//         const refreshed = await ListParentfinance(
-//           localStorage.getItem("studentId")!,
-//           email
-//         );
-
-//         setStudentData(refreshed.data.data?.[0]?.student);
-//         showToast("Payment Successful");
-//       },
-
-//       prefill: { email },
-//       theme: { color: "#3399cc" }
-//     };
-
-//     new (window as any).Razorpay(options).open();
-//   };
-
-//   /* ------------------------
-//      Invoice Download
-//   ------------------------ */
-//   const handleViewInvoice = async (item: any) => {
-//     const res = await InvoiceDownload(item.paymentId || item._id);
-//     const blob = new Blob([res.data], { type: "application/pdf" });
-//     const url = URL.createObjectURL(blob);
-
-//     const a = document.createElement("a");
-//     a.href = url;
-//     a.download = "Invoice.pdf";
-//     a.click();
-//     URL.revokeObjectURL(url);
-//   };
-
-//   /* ------------------------
-//      Render
-//   ------------------------ */
-//   if (loading) return <p className="text-white">Loading...</p>;
-//   if (!studentData) return <p>No student data</p>;
-
-//   return (
-//     <div className="p-4 text-white">
-//       <h2 className="text-xl font-bold mb-3">Finance Details</h2>
-
-//       <table className="w-full border border-gray-700">
-//         <thead>
-//           <tr>
-//             <th className="border p-2">Fee</th>
-//             <th className="border p-2">Start</th>
-//             <th className="border p-2">Expiry</th>
-//             <th className="border p-2">Amount</th>
-//             <th className="border p-2">Action</th>
-//           </tr>
-//         </thead>
-
-//         <tbody>
-//           {studentData.finance.map((item: any, i: number) => {
-//             const cls = classes.find(
-//               c => c._id === studentData.class?._id
-//             );
-//             const teacher = cls ? teacherMap[cls.classTeacher] : null;
-
-//             return (
-//               <tr key={i}>
-//                 <td className="border p-2">{item.name}</td>
-//                 <td className="border p-2">{onlyDate(item.startDate)}</td>
-//                 <td className="border p-2">{onlyDate(item.expiryDate)}</td>
-//                 <td className="border p-2">₹{item.feeItems?.[0]?.amount}</td>
-
-//                 <td className="border p-2 text-center space-y-1">
-//                   {item.status === "PAID" ? (
-//                     <button
-//                       onClick={() => handleViewInvoice(item)}
-//                       className="bg-blue-600 px-3 py-1 rounded"
-//                     >
-//                       Invoice
-//                     </button>
-//                   ) : isExpired(item.expiryDate) ? (
-//                     <>
-//                       <p className="text-red-500 font-semibold">
-//                         Not Paid
-//                       </p>
-//                          <p className="text-red-500 font-semibold">please contact class teacher</p>
-//                     </>
-//                   ) : (
-//                     <button
-//                       onClick={() => handlePayment(item)}
-//                       className="bg-green-600 px-3 py-1 rounded"
-//                     >
-//                       Pay Now
-//                     </button>
-//                   )}
-//                 </td>
-//               </tr>
-//             );
-//           })}
-//         </tbody>
-//       </table>
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import React, { useEffect, useState } from "react";
 import {
   ListParentfinance,
@@ -255,22 +7,32 @@ import {
   ChangepeymentstatususingfeeId,
   InvoiceDownload,
   getTeachersList,
-  GetAllClass
+  GetAllClass,
+  GetParentPaymentHistory
 } from "../../services/authapi";
 import { loadRazorpayScript } from "../../utils/Razorpay";
 import { showToast } from "../../utils/toast";
 import { onlyDate } from "../../utils/DateConverter";
 import { useTheme } from "../../components/layout/ThemeContext";
+import { Pagination } from "../../components/common/Pagination";
 
 export default function FinanceParentList() {
   const { isDark } = useTheme();
-  
+
+  const [viewMode, setViewMode] = useState<"FINANCE" | "HISTORY">("FINANCE");
+
+  // Finance Data States
   const [studentData, setStudentData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [classes, setClasses] = useState<any[]>([]);
   const [teachers, setTeachers] = useState<any[]>([]);
   const [processingPayment, setProcessingPayment] = useState(false);
   const [selectedFee, setSelectedFee] = useState<any>(null);
+
+  // History Data States
+  const [historyData, setHistoryData] = useState<any[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1, total: 0 });
 
   const email = localStorage.getItem("email");
 
@@ -299,10 +61,11 @@ export default function FinanceParentList() {
         const res = await ListParentfinance(storedStudentId, email);
         const student = res.data.data?.[0]?.student;
 
-        localStorage.setItem("studentObjectId", student._id);
-        localStorage.setItem("studentCode", student.studentId);
-
-        setStudentData(student);
+        if (student) {
+          localStorage.setItem("studentObjectId", student._id);
+          localStorage.setItem("studentCode", student.studentId);
+          setStudentData(student);
+        }
       } catch (err) {
         console.error("Finance fetch error", err);
         showToast("Failed to load finance details", "error");
@@ -313,6 +76,37 @@ export default function FinanceParentList() {
 
     fetchData();
   }, [email]);
+
+  /* ------------------------
+     Fetch Payment History
+  ------------------------ */
+  const fetchPaymentHistory = async (page = 1) => {
+    const studentObjectId = localStorage.getItem("studentObjectId");
+    if (!studentObjectId) return;
+
+    setHistoryLoading(true);
+    try {
+      const res = await GetParentPaymentHistory(studentObjectId, page, 10);
+      setHistoryData(res.data || []);
+      setPagination({
+        currentPage: res.page,
+        totalPages: Math.ceil(res.total / res.limit),
+        total: res.total
+      });
+    } catch (err) {
+      console.error("History fetch error", err);
+      showToast("Failed to load payment history", "error");
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (viewMode === "HISTORY") {
+      fetchPaymentHistory();
+    }
+  }, [viewMode]);
+
 
   /* ------------------------
      Fetch Class & Teacher
@@ -422,7 +216,8 @@ export default function FinanceParentList() {
         handler: async (response: any) => {
           await VerifyPeymentStatus(order.id, "PAID");
 
-          await ChangepeymentstatususingfeeId(order.feeRecordId, {
+
+          await ChangepeymentstatususingfeeId(item._id, {
             paymentId: response.razorpay_payment_id,
             razorpaySignature: response.razorpay_signature,
             status: "PAID",
@@ -434,7 +229,9 @@ export default function FinanceParentList() {
             email
           );
 
-          setStudentData(refreshed.data.data?.[0]?.student);
+          if (refreshed.data.data?.[0]?.student) {
+            setStudentData(refreshed.data.data?.[0]?.student);
+          }
           showToast("Payment Successful", "success");
         },
 
@@ -450,18 +247,19 @@ export default function FinanceParentList() {
     }
   };
 
-  /* ------------------------
-     Invoice Download
-  ------------------------ */
+
   const handleViewInvoice = async (item: any) => {
     try {
-      const res = await InvoiceDownload(item.paymentId || item._id);
+
+      const idToUse = item.paymentId || item._id;
+
+      const res = await InvoiceDownload(idToUse);
       const blob = new Blob([res.data], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
 
       const a = document.createElement("a");
       a.href = url;
-      a.download = `Invoice_${item.name}_${new Date().getTime()}.pdf`;
+      a.download = `Invoice_${item.name || "Payment"}_${new Date().getTime()}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
       showToast("Invoice downloaded successfully", "success");
@@ -470,13 +268,13 @@ export default function FinanceParentList() {
     }
   };
 
-  // Calculate statistics
+
   const totalFees = studentData?.finance?.length || 0;
   const paidFees = studentData?.finance?.filter((f: any) => f.status === "PAID").length || 0;
   const pendingFees = studentData?.finance?.filter((f: any) => f.status !== "PAID" && !isExpired(f.expiryDate)).length || 0;
   const expiredFees = studentData?.finance?.filter((f: any) => f.status !== "PAID" && isExpired(f.expiryDate)).length || 0;
 
-  const totalAmount = studentData?.finance?.reduce((sum: number, f: any) => 
+  const totalAmount = studentData?.finance?.reduce((sum: number, f: any) =>
     sum + (f.feeItems?.[0]?.amount || 0), 0) || 0;
   const paidAmount = studentData?.finance?.filter((f: any) => f.status === "PAID")
     .reduce((sum: number, f: any) => sum + (f.feeItems?.[0]?.amount || 0), 0) || 0;
@@ -517,12 +315,31 @@ export default function FinanceParentList() {
     <div className={`p-6 min-h-screen transition-colors duration-300 ${containerBg}`}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className={`text-3xl font-bold mb-2 ${textPrimary}`}>Finance Management</h1>
-          <p className={textSecondary}>View and manage your fee payments</p>
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className={`text-3xl font-bold mb-2 ${textPrimary}`}>Finance Management</h1>
+            <p className={textSecondary}>View and manage your fee payments</p>
+          </div>
+
+          <div className="flex gap-2 bg-slate-800 p-1 rounded-lg">
+            <button
+              onClick={() => setViewMode("FINANCE")}
+              className={`px-4 py-2 rounded-md transition-colors ${viewMode === "FINANCE" ? "bg-blue-600 text-white" : "text-gray-400 hover:text-white"
+                }`}
+            >
+              Finance Details
+            </button>
+            <button
+              onClick={() => setViewMode("HISTORY")}
+              className={`px-4 py-2 rounded-md transition-colors ${viewMode === "HISTORY" ? "bg-blue-600 text-white" : "text-gray-400 hover:text-white"
+                }`}
+            >
+              Transaction History
+            </button>
+          </div>
         </div>
 
-        {/* Student Info Card */}
+        {/* Student Info Card - Common for both views */}
         <div className={`rounded-lg border p-6 mb-6 transition-colors duration-300 ${cardBg}`}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
@@ -542,166 +359,230 @@ export default function FinanceParentList() {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className={`rounded-lg border p-4 transition-colors duration-300 ${cardBg}`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm ${textSecondary}`}>Total Fees</p>
-                <p className={`text-2xl font-bold ${textPrimary}`}>{totalFees}</p>
+        {viewMode === "FINANCE" ? (
+          <>
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              <div className={`rounded-lg border p-4 transition-colors duration-300 ${cardBg}`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className={`text-sm ${textSecondary}`}>Total Fees</p>
+                    <p className={`text-2xl font-bold ${textPrimary}`}>{totalFees}</p>
+                  </div>
+                  <div className="w-12 h-12 rounded-full bg-blue-900/30 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                </div>
               </div>
-              <div className="w-12 h-12 rounded-full bg-blue-900/30 flex items-center justify-center">
-                <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
+
+              <div className={`rounded-lg border p-4 transition-colors duration-300 ${cardBg}`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className={`text-sm ${textSecondary}`}>Paid</p>
+                    <p className={`text-2xl font-bold ${textPrimary}`}>{paidFees}</p>
+                    <p className={`text-xs ${textSecondary}`}>₹{paidAmount.toLocaleString()}</p>
+                  </div>
+                  <div className="w-12 h-12 rounded-full bg-green-900/30 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className={`rounded-lg border p-4 transition-colors duration-300 ${cardBg}`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className={`text-sm ${textSecondary}`}>Pending</p>
+                    <p className={`text-2xl font-bold ${textPrimary}`}>{pendingFees}</p>
+                    <p className={`text-xs ${textSecondary}`}>₹{pendingAmount.toLocaleString()}</p>
+                  </div>
+                  <div className="w-12 h-12 rounded-full bg-yellow-900/30 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className={`rounded-lg border p-4 transition-colors duration-300 ${cardBg}`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className={`text-sm ${textSecondary}`}>Expired</p>
+                    <p className={`text-2xl font-bold ${textPrimary}`}>{expiredFees}</p>
+                  </div>
+                  <div className="w-12 h-12 rounded-full bg-red-900/30 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className={`rounded-lg border p-4 transition-colors duration-300 ${cardBg}`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm ${textSecondary}`}>Paid</p>
-                <p className={`text-2xl font-bold ${textPrimary}`}>{paidFees}</p>
-                <p className={`text-xs ${textSecondary}`}>₹{paidAmount.toLocaleString()}</p>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-green-900/30 flex items-center justify-center">
-                <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
+            {/* Fee Details Table */}
+            <div>
+              <h2 className={`text-xl font-semibold mb-4 ${textPrimary}`}>Fee Details</h2>
+
+              {studentData.finance && studentData.finance.length === 0 ? (
+                <div className={`text-center py-12 ${cardBg} rounded-lg border`}>
+                  <svg className="w-16 h-16 mx-auto mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <p className={`text-lg font-medium mb-2 ${textPrimary}`}>No fee records found</p>
+                  <p className={textSecondary}>Contact administration for more details</p>
+                </div>
+              ) : (
+                <div className={`rounded-lg overflow-hidden border transition-colors duration-300 ${tableBg}`}>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className={`border-b transition-colors duration-200 ${borderColor} ${tableHeaderBg}`}>
+                          <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Fee Name</th>
+                          <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Start Date</th>
+                          <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Expiry Date</th>
+                          <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Amount</th>
+                          <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Status</th>
+                          <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {studentData.finance.map((item: any, i: number) => {
+                          const statusInfo = getStatusInfo(item);
+                          return (
+                            <tr key={i} className={`border-b transition-colors duration-200 ${borderColor} ${tableRowHover}`}>
+                              <td className={`py-4 px-4 ${textPrimary}`}>
+                                <p className="font-medium">{item.name}</p>
+                                {item.academicYear && (
+                                  <p className={`text-sm ${textSecondary}`}>{item.academicYear}</p>
+                                )}
+                              </td>
+                              <td className={`py-4 px-4 ${textPrimary}`}>{onlyDate(item.startDate)}</td>
+                              <td className={`py-4 px-4 ${textPrimary}`}>{onlyDate(item.expiryDate)}</td>
+                              <td className={`py-4 px-4 ${textPrimary} font-semibold`}>
+                                ₹{(item.feeItems?.[0]?.amount || 0).toLocaleString()}
+                              </td>
+                              <td className="py-4 px-4">
+                                <div className="flex items-center gap-2">
+                                  <span className={statusInfo.color}>
+                                    {statusInfo.icon}
+                                  </span>
+                                  <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${statusInfo.color}`}>
+                                    {statusInfo.label}
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="py-4 px-4">
+                                {item.status === "PAID" ? (
+                                  <button
+                                    onClick={() => handleViewInvoice(item)}
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2 ${buttonPrimary}`}
+                                  >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                    </svg>
+                                    Invoice
+                                  </button>
+                                ) : isExpired(item.expiryDate) ? (
+                                  <div>
+                                    <button
+                                      onClick={() => setSelectedFee(item)}
+                                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 bg-red-600 hover:bg-red-700 text-white`}
+                                    >
+                                      Contact Teacher
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <button
+                                    onClick={() => handlePayment(item)}
+                                    disabled={processingPayment}
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2 disabled:opacity-50 ${buttonSuccess}`}
+                                  >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                    </svg>
+                                    Pay Now
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
+          </>
+        ) : (
+          /* Transaction History View */
+          <div>
+            <h2 className={`text-xl font-semibold mb-4 ${textPrimary}`}>Transaction History</h2>
 
-          <div className={`rounded-lg border p-4 transition-colors duration-300 ${cardBg}`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm ${textSecondary}`}>Pending</p>
-                <p className={`text-2xl font-bold ${textPrimary}`}>{pendingFees}</p>
-                <p className={`text-xs ${textSecondary}`}>₹{pendingAmount.toLocaleString()}</p>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-yellow-900/30 flex items-center justify-center">
-                <svg className="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-            </div>
-          </div>
+            {historyLoading && <div className={`text-center py-8 ${textSecondary}`}>Loading history...</div>}
 
-          <div className={`rounded-lg border p-4 transition-colors duration-300 ${cardBg}`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm ${textSecondary}`}>Expired</p>
-                <p className={`text-2xl font-bold ${textPrimary}`}>{expiredFees}</p>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-red-900/30 flex items-center justify-center">
-                <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
+            {!historyLoading && historyData.length === 0 && (
+              <div className={`text-center py-8 ${textSecondary}`}>No transactions found</div>
+            )}
 
-        {/* Fee Details Table */}
-        <div>
-          <h2 className={`text-xl font-semibold mb-4 ${textPrimary}`}>Fee Details</h2>
-          
-          {studentData.finance && studentData.finance.length === 0 ? (
-            <div className={`text-center py-12 ${cardBg} rounded-lg border`}>
-              <svg className="w-16 h-16 mx-auto mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <p className={`text-lg font-medium mb-2 ${textPrimary}`}>No fee records found</p>
-              <p className={textSecondary}>Contact administration for more details</p>
-            </div>
-          ) : (
-            <div className={`rounded-lg overflow-hidden border transition-colors duration-300 ${tableBg}`}>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className={`border-b transition-colors duration-200 ${borderColor} ${tableHeaderBg}`}>
-                      <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Fee Name</th>
-                      <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Start Date</th>
-                      <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Expiry Date</th>
-                      <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Amount</th>
-                      <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Status</th>
-                      <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {studentData.finance.map((item: any, i: number) => {
-                      const statusInfo = getStatusInfo(item);
-                      const cls = classes.find(c => c._id === studentData.class?._id);
-                      const teacher = cls ? teacherMap[cls.classTeacher] : null;
-
-                      return (
-                        <tr key={i} className={`border-b transition-colors duration-200 ${borderColor} ${tableRowHover}`}>
+            {!historyLoading && historyData.length > 0 && (
+              <div className={`rounded-lg overflow-hidden border transition-colors duration-300 ${tableBg}`}>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className={`border-b transition-colors duration-200 ${borderColor} ${tableHeaderBg}`}>
+                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Fee Name</th>
+                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Date</th>
+                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Time</th>
+                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Amount</th>
+                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Status</th>
+                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {historyData.map((item: any) => (
+                        <tr key={item.id} className={`border-b transition-colors duration-200 ${borderColor} ${tableRowHover}`}>
                           <td className={`py-4 px-4 ${textPrimary}`}>
-                            <p className="font-medium">{item.name}</p>
-                            {item.academicYear && (
-                              <p className={`text-sm ${textSecondary}`}>{item.academicYear}</p>
-                            )}
+                            {item.studentFeeId?.name || "N/A"}
                           </td>
-                          <td className={`py-4 px-4 ${textPrimary}`}>{onlyDate(item.startDate)}</td>
-                          <td className={`py-4 px-4 ${textPrimary}`}>{onlyDate(item.expiryDate)}</td>
-                          <td className={`py-4 px-4 ${textPrimary} font-semibold`}>
-                            ₹{(item.feeItems?.[0]?.amount || 0).toLocaleString()}
+                          <td className={`py-4 px-4 ${textPrimary}`}>{onlyDate(item.paymentDate)}</td>
+                          <td className={`py-4 px-4 ${textPrimary}`}>
+                            {new Date(item.paymentDate).toLocaleTimeString()}
+                          </td>
+                          <td className={`py-4 px-4 ${textPrimary}`}>₹{item.amount}</td>
+                          <td className="py-4 px-4">
+                            <span className="bg-green-900 text-green-300 px-3 py-1 rounded-full text-sm">
+                              {item.status}
+                            </span>
                           </td>
                           <td className="py-4 px-4">
-                            <div className="flex items-center gap-2">
-                              <span className={statusInfo.color}>
-                                {statusInfo.icon}
-                              </span>
-                              <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${statusInfo.color}`}>
-                                {statusInfo.label}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="py-4 px-4">
-                            {item.status === "PAID" ? (
-                              <button
-                                onClick={() => handleViewInvoice(item)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2 ${buttonPrimary}`}
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                </svg>
-                                Invoice
-                              </button>
-                            ) : isExpired(item.expiryDate) ? (
-                              <div>
-                                <button
-                                  onClick={() => setSelectedFee(item)}
-                                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 bg-red-600 hover:bg-red-700 text-white`}
-                                >
-                                  Contact Teacher
-                                </button>
-                              </div>
-                            ) : (
-                              <button
-                                onClick={() => handlePayment(item)}
-                                disabled={processingPayment}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2 disabled:opacity-50 ${buttonSuccess}`}
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                </svg>
-                                Pay Now
-                              </button>
-                            )}
+                            <button
+                              onClick={() => handleViewInvoice(item)}
+                              className={`px-3 py-1 rounded text-sm font-medium transition-colors duration-200 ${buttonPrimary}`}
+                            >
+                              Invoice
+                            </button>
                           </td>
                         </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
 
-        {/* Contact Teacher Modal */}
+            <Pagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              onPageChange={fetchPaymentHistory}
+            />
+          </div>
+        )}
+
+
         {selectedFee && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setSelectedFee(null)}>
             <div className={`rounded-lg border p-6 max-w-md w-full transition-colors duration-300 ${modalBg}`} onClick={(e) => e.stopPropagation()}>
@@ -716,7 +597,7 @@ export default function FinanceParentList() {
                   </svg>
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="bg-red-900/20 border border-red-700 rounded-lg p-4">
                   <p className={`text-sm ${textPrimary}`}>
@@ -742,11 +623,11 @@ export default function FinanceParentList() {
                   <p className={`text-sm ${textPrimary} mb-3`}>
                     Please contact your class teacher to resolve this payment issue.
                   </p>
-                  
+
                   {(() => {
                     const cls = classes.find(c => c._id === studentData.class?._id);
                     const teacher = cls ? teacherMap[cls.classTeacher] : null;
-                    
+
                     if (teacher) {
                       return (
                         <div className={`rounded-lg p-3 ${cardBg}`}>

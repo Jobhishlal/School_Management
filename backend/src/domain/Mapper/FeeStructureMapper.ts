@@ -15,14 +15,14 @@ export class FeeStructureMapper {
         isOptional: item.isOptional
       })),
       notes: domain.notes,
-      startDate: domain.startDate,    
-      expiryDate: domain.expiryDate   
+      startDate: domain.startDate,
+      expiryDate: domain.expiryDate
     };
   }
 
   static toDomain(model: IFeeStructure): FeeStructure {
     return new FeeStructure(
-      model.id.toString(),
+      (model._id || model.id).toString(),
       model.name,
       model.classId.toString(),
       model.academicYear,
@@ -38,8 +38,8 @@ export class FeeStructureMapper {
       model.notes,
       model.createdAt,
       model.updatedAt,
-      model.startDate,   
-      model.expiryDate   
+      model.startDate,
+      model.expiryDate
     );
   }
 }
