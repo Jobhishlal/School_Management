@@ -7,14 +7,19 @@ import { IPaymentStatusUpdateFeID } from "../../../../domain/UseCaseInterface/Pa
 import { IDownloadInvoicePDF } from "../../../../domain/UseCaseInterface/FeeStructure/IInvoiceDownloadUseCase";
 
 
+import { IGetPaymentHistory } from "../../../../domain/UseCaseInterface/Payment/IGetPaymentHistory";
+import { IGetParentPaymentHistory } from "../../../../domain/UseCaseInterface/Payment/IGetParentPaymentHistory";
+
+
 export class PeymentController {
   constructor(
     private readonly Createrepo: ICreateRazorpayOrder,
-    private readonly Verifystatus:IVerifyStatusChange,
-    private readonly verifyByFeeIdUseCase:IPaymentStatusUpdateFeID,
-    private readonly invoicedownloadUseCase:IDownloadInvoicePDF
-
-  ) {}
+    private readonly Verifystatus: IVerifyStatusChange,
+    private readonly verifyByFeeIdUseCase: IPaymentStatusUpdateFeID,
+    private readonly invoicedownloadUseCase: IDownloadInvoicePDF,
+    private readonly getPaymentHistoryUseCase: IGetPaymentHistory,
+    private readonly getParentPaymentHistoryUseCase: IGetParentPaymentHistory
+  ) { }
 
   async CreatePayment(req: Request, res: Response): Promise<void> {
     try {
@@ -57,104 +62,168 @@ export class PeymentController {
     }
   }
 
-  async StatusChange(req:Request,res:Response):Promise<void>{
+  async StatusChange(req: Request, res: Response): Promise<void> {
     try {
-     const { id } = req.params;
-     console.log("id getit",id)
+      const { id } = req.params;
+      console.log("id getit", id)
       const { paymentId, razorpaySignature, status, method } = req.body;
 
-    const payment = new PeymentTransactrion(
-       id,
-       "",
-       "",
-       "",
-       paymentId,
-       0,
-       status,
-       new Date(),
-       undefined,
-       method,
-       razorpaySignature
+      const payment = new PeymentTransactrion(
+        id,
+        "",
+        "",
+        "",
+        paymentId,
+        0,
+        status,
+        new Date(),
+        undefined,
+        method,
+        razorpaySignature
       );
-  console.log('payment data',payment)
+      console.log('payment data', payment)
       const result = await this.Verifystatus.execute(id, payment);
 
       console.log("Updated payment:", result);
 
       res.status(StatusCodes.CREATED)
-      .json({
-        success:true,
-        message:"Peyment status update successfully",
-        data:result
-      })
-    } catch (error:any) {
-      console.log("error",error)
+        .json({
+          success: true,
+          message: "Peyment status update successfully",
+          data: result
+        })
+    } catch (error: any) {
+      console.log("error", error)
       res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({success:false,message:"internal server error",error})
-      
+        .json({ success: false, message: "internal server error", error })
+
     }
   }
 
- async StatusChangeByFeeId(req: Request, res: Response): Promise<void> {
-  try {
-    console.log("i am reacheed here")
-    const { feeId } = req.params;
-    console.log("feeId also getit",feeId)
-    const { paymentId, razorpaySignature, status, method } = req.body;
-    console.log("req.body data",req.body)
+  async StatusChangeByFeeId(req: Request, res: Response): Promise<void> {
+    try {
+      console.log("i am reacheed here")
+      const { feeId } = req.params;
+      console.log("feeId also getit", feeId)
+      const { paymentId, razorpaySignature, status, method } = req.body;
+      console.log("req.body data", req.body)
 
-    if (!feeId || !paymentId || !status) {
-      res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Missing required fields" });
-      return;
+      if (!feeId || !paymentId || !status) {
+        res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Missing required fields" });
+        return;
+      }
+
+      const payment = new PeymentTransactrion(
+        "",
+        "",
+        feeId,
+        "",
+        paymentId,
+        0,
+        status,
+        new Date(),
+        undefined,
+        method,
+        razorpaySignature
+      );
+
+      const result = await this.verifyByFeeIdUseCase.execute(feeId, payment);
+
+      res.status(StatusCodes.CREATED).json({
+        success: true,
+        message: "Payment status updated successfully",
+        data: result
+      });
+    } catch (error) {
+      console.error("Error updating payment status:", error);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal server error", error });
     }
-
-    const payment = new PeymentTransactrion(
-      "",
-      "", 
-      feeId,
-      "", 
-      paymentId,
-      0, 
-      status,
-      new Date(),
-      undefined, 
-      method,
-      razorpaySignature
-    );
-
-    const result = await this.verifyByFeeIdUseCase.execute(feeId, payment);
-
-    res.status(StatusCodes.CREATED).json({
-      success: true,
-      message: "Payment status updated successfully",
-      data: result
-    });
-  } catch (error) {
-    console.error("Error updating payment status:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal server error", error });
   }
-}
 
- async InvoiceDownload(req:Request,res:Response):Promise<void>{
-  try {
-    console.log("it will reached invoice controller")
-    const paymentId =req.params.paymentId;
-    console.log("paymentId",paymentId)
-    if(!paymentId){
-       res.status(StatusCodes.BAD_REQUEST)
-      .json({error:"Does not get it paymentId"})
-    }
-       const pdfBuffer = await this.invoicedownloadUseCase.execute(paymentId)
-       res.set({
+  async InvoiceDownload(req: Request, res: Response): Promise<void> {
+    try {
+      console.log("it will reached invoice controller")
+      const paymentId = req.params.paymentId;
+      console.log("paymentId", paymentId)
+      if (!paymentId) {
+        res.status(StatusCodes.BAD_REQUEST)
+          .json({ error: "Does not get it paymentId" })
+      }
+      const pdfBuffer = await this.invoicedownloadUseCase.execute(paymentId)
+      res.set({
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename=invoice-${paymentId}.pdf`,
-       });   
-       res.send(pdfBuffer);
-      } catch (error:any) {
-        console.log("error",error)
+      });
+      res.send(pdfBuffer);
+    } catch (error: any) {
+      console.log("error", error)
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).
-      json({ error: error.message || "Failed to download invoice." });
-      }
- }
+        json({ error: error.message || "Failed to download invoice." });
+    }
+  }
 
+  async GetPaymentHistory(req: Request, res: Response): Promise<void> {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const { feeStructureId, startDate, endDate } = req.query;
+
+      const result = await this.getPaymentHistoryUseCase.execute(
+        { feeStructureId, startDate, endDate },
+        page,
+        limit
+      );
+
+      res.status(StatusCodes.OK).json({
+        success: true,
+        data: result.payments,
+        total: result.total,
+        page,
+        limit,
+      });
+    } catch (error: any) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: "Failed to fetch payment history",
+        error: error.message,
+      });
+    }
+  }
+
+  async GetParentPaymentHistory(req: Request, res: Response): Promise<void> {
+    try {
+      const { studentId } = req.params;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+
+      if (!studentId) {
+        res.status(StatusCodes.BAD_REQUEST).json({
+          success: false,
+          message: "Student ID is required",
+        });
+        return;
+      }
+
+      const result = await this.getParentPaymentHistoryUseCase.execute(
+        studentId,
+        page,
+        limit
+      );
+
+      res.status(StatusCodes.OK).json({
+        success: true,
+        data: result.payments,
+        total: result.total,
+        page,
+        limit,
+      });
+    } catch (error: any) {
+      console.error("Error fetching parent payment history:", error);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: "Failed to fetch payment history",
+        error: error.message,
+      });
+    }
+  }
 }

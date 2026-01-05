@@ -108,9 +108,10 @@
 
 
 import React, { useEffect, useState } from "react";
-import { ExpanceApproval, Pendingstatuslist } from "../../services/authapi";
+import { ExpanceApproval, ListOutFullExpense, Pendingstatuslist } from "../../services/authapi";
 import { showToast } from "../../utils/toast";
 import { useTheme } from "../../components/layout/ThemeContext";
+import { Pagination } from "../../components/common/Pagination";
 
 interface Expense {
   id: string;
@@ -125,7 +126,7 @@ interface Expense {
 
 export default function SuperAdminExpenseApproval() {
   const { isDark } = useTheme();
-  
+
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
@@ -145,11 +146,15 @@ export default function SuperAdminExpenseApproval() {
   const textPrimary = isDark ? "text-slate-100" : "text-slate-900";
   const modalBg = isDark ? "bg-slate-800 border-slate-700" : "bg-white border-gray-300";
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   const fetchExpenses = async () => {
     try {
       setLoading(true);
-      const data = await Pendingstatuslist();
-      setExpenses(data);
+      const res = await ListOutFullExpense();
+      setExpenses(res.data || []);
     } catch (err: any) {
       showToast(err?.message || "Failed to fetch expenses", "error");
     } finally {
@@ -160,6 +165,11 @@ export default function SuperAdminExpenseApproval() {
   useEffect(() => {
     fetchExpenses();
   }, []);
+
+  // Reset pagination when filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterStatus]);
 
   const handleApproval = async (
     expenseId: string,
@@ -178,9 +188,15 @@ export default function SuperAdminExpenseApproval() {
     }
   };
 
-  const filteredExpenses = expenses.filter(exp => 
+  const filteredExpenses = expenses.filter(exp =>
     filterStatus === "ALL" ? true : exp.status === filterStatus
   );
+
+  // Pagination Logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const paginatedExpenses = filteredExpenses.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredExpenses.length / itemsPerPage);
 
   const getStatusBadge = (status: string) => {
     const statusColors = {
@@ -192,7 +208,7 @@ export default function SuperAdminExpenseApproval() {
   };
 
   const getPaymentModeIcon = (mode: string) => {
-    switch(mode?.toUpperCase()) {
+    switch (mode?.toUpperCase()) {
       case 'CASH':
         return (
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -290,11 +306,10 @@ export default function SuperAdminExpenseApproval() {
               <button
                 key={status}
                 onClick={() => setFilterStatus(status)}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                  filterStatus === status
-                    ? "bg-blue-600 text-white"
-                    : `${textSecondary} hover:bg-slate-700/30`
-                }`}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${filterStatus === status
+                  ? "bg-blue-600 text-white"
+                  : `${textSecondary} hover:bg-slate-700/30`
+                  }`}
               >
                 {status}
               </button>
@@ -324,90 +339,104 @@ export default function SuperAdminExpenseApproval() {
           )}
 
           {!loading && filteredExpenses.length > 0 && (
-            <div className={`rounded-lg overflow-hidden border transition-colors duration-300 ${tableBg}`}>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className={`border-b transition-colors duration-200 ${borderColor} ${tableHeaderBg}`}>
-                      <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Title</th>
-                      <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Amount</th>
-                      <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Payment Mode</th>
-                      <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Created By</th>
-                      <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Date</th>
-                      <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Status</th>
-                      <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredExpenses.map((exp) => (
-                      <tr key={exp.id} className={`border-b transition-colors duration-200 ${borderColor} ${tableRowHover}`}>
-                        <td className={`py-4 px-4 ${textPrimary}`}>
-                          <div>
-                            <p className="font-medium">{exp.title}</p>
-                            {exp.description && (
-                              <p className={`text-sm ${textSecondary} truncate max-w-xs`}>
-                                {exp.description}
-                              </p>
-                            )}
-                          </div>
-                        </td>
-                        <td className={`py-4 px-4 ${textPrimary} font-semibold`}>
-                          ₹{exp.amount.toLocaleString()}
-                        </td>
-                        <td className={`py-4 px-4`}>
-                          <div className="flex items-center gap-2">
-                            <span className={textSecondary}>
-                              {getPaymentModeIcon(exp.paymentMode)}
-                            </span>
-                            <span className={textPrimary}>{exp.paymentMode}</span>
-                          </div>
-                        </td>
-                        <td className={`py-4 px-4 ${textPrimary}`}>{exp.createdBy}</td>
-                        <td className={`py-4 px-4 ${textPrimary}`}>
-                          {new Date(exp.expenseDate).toLocaleDateString('en-IN', {
-                            day: '2-digit',
-                            month: 'short',
-                            year: 'numeric'
-                          })}
-                        </td>
-                        <td className="py-4 px-4">
-                          <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusBadge(exp.status)}`}>
-                            {exp.status}
-                          </span>
-                        </td>
-                        <td className="py-4 px-4">
-                          {exp.status === "PENDING" ? (
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => handleApproval(exp.id, "APPROVED")}
-                                disabled={loading}
-                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 disabled:opacity-50 ${buttonSuccess}`}
-                              >
-                                Approve
-                              </button>
-                              <button
-                                onClick={() => handleApproval(exp.id, "REJECTED")}
-                                disabled={loading}
-                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 disabled:opacity-50 ${buttonDanger}`}
-                              >
-                                Reject
-                              </button>
-                            </div>
-                          ) : (
-                            <button
-                              onClick={() => setSelectedExpense(exp)}
-                              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 ${inputBg} border`}
-                            >
-                              View Details
-                            </button>
-                          )}
-                        </td>
+            <>
+              <div className={`rounded-lg overflow-hidden border transition-colors duration-300 ${tableBg}`}>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className={`border-b transition-colors duration-200 ${borderColor} ${tableHeaderBg}`}>
+                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Title</th>
+                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Amount</th>
+                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Payment Mode</th>
+                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Created By</th>
+                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Date</th>
+                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Status</th>
+                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {paginatedExpenses.map((exp) => (
+                        <tr key={exp.id} className={`border-b transition-colors duration-200 ${borderColor} ${tableRowHover}`}>
+                          <td className={`py-4 px-4 ${textPrimary}`}>
+                            <div>
+                              <p className="font-medium">{exp.title}</p>
+                              {exp.description && (
+                                <p className={`text-sm ${textSecondary} truncate max-w-xs`}>
+                                  {exp.description}
+                                </p>
+                              )}
+                            </div>
+                          </td>
+                          <td className={`py-4 px-4 ${textPrimary} font-semibold`}>
+                            ₹{exp.amount.toLocaleString()}
+                          </td>
+                          <td className={`py-4 px-4`}>
+                            <div className="flex items-center gap-2">
+                              <span className={textSecondary}>
+                                {getPaymentModeIcon(exp.paymentMode)}
+                              </span>
+                              <span className={textPrimary}>{exp.paymentMode}</span>
+                            </div>
+                          </td>
+                          <td className={`py-4 px-4 ${textPrimary}`}>{exp.createdBy}</td>
+                          <td className={`py-4 px-4 ${textPrimary}`}>
+                            {new Date(exp.expenseDate).toLocaleDateString('en-IN', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric'
+                            })}
+                          </td>
+                          <td className="py-4 px-4">
+                            <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusBadge(exp.status)}`}>
+                              {exp.status}
+                            </span>
+                          </td>
+                          <td className="py-4 px-4">
+                            {exp.status === "PENDING" ? (
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => handleApproval(exp.id, "APPROVED")}
+                                  disabled={loading}
+                                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 disabled:opacity-50 ${buttonSuccess}`}
+                                >
+                                  Approve
+                                </button>
+                                <button
+                                  onClick={() => handleApproval(exp.id, "REJECTED")}
+                                  disabled={loading}
+                                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 disabled:opacity-50 ${buttonDanger}`}
+                                >
+                                  Reject
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => setSelectedExpense(exp)}
+                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 ${inputBg} border`}
+                              >
+                                View Details
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
+
+              {/* Pagination Controls */}
+              <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
+                <div className={`text-sm ${textSecondary}`}>
+                  Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredExpenses.length)} of {filteredExpenses.length} entries
+                </div>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
+            </>
           )}
         </div>
 
@@ -426,26 +455,26 @@ export default function SuperAdminExpenseApproval() {
                   </svg>
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
                   <p className={`text-sm ${textSecondary}`}>Title</p>
                   <p className={`text-lg font-medium ${textPrimary}`}>{selectedExpense.title}</p>
                 </div>
-                
+
                 {selectedExpense.description && (
                   <div>
                     <p className={`text-sm ${textSecondary}`}>Description</p>
                     <p className={textPrimary}>{selectedExpense.description}</p>
                   </div>
                 )}
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className={`text-sm ${textSecondary}`}>Amount</p>
                     <p className={`text-xl font-bold ${textPrimary}`}>₹{selectedExpense.amount.toLocaleString()}</p>
                   </div>
-                  
+
                   <div>
                     <p className={`text-sm ${textSecondary}`}>Payment Mode</p>
                     <div className="flex items-center gap-2 mt-1">
@@ -455,12 +484,12 @@ export default function SuperAdminExpenseApproval() {
                       <p className={textPrimary}>{selectedExpense.paymentMode}</p>
                     </div>
                   </div>
-                  
+
                   <div>
                     <p className={`text-sm ${textSecondary}`}>Created By</p>
                     <p className={textPrimary}>{selectedExpense.createdBy}</p>
                   </div>
-                  
+
                   <div>
                     <p className={`text-sm ${textSecondary}`}>Date</p>
                     <p className={textPrimary}>
@@ -472,7 +501,7 @@ export default function SuperAdminExpenseApproval() {
                     </p>
                   </div>
                 </div>
-                
+
                 <div>
                   <p className={`text-sm ${textSecondary}`}>Status</p>
                   <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium mt-1 ${getStatusBadge(selectedExpense.status)}`}>

@@ -647,10 +647,27 @@ export const StudentFinanceCompleteDetails = async (classId: string) => {
 }
 
 
+export const GetPaymentHistory = async (params: { feeStructureId?: string, startDate?: string, endDate?: string, page?: number, limit?: number }) => {
+  const res = await api.get('/admin/payment-history', { params });
+  return res.data;
+};
+
+export const GetParentPaymentHistory = async (studentId: string, page: number = 1, limit: number = 10) => {
+  const res = await api.get(`/parents/payment-history/${studentId}`, {
+    params: { page, limit }
+  });
+  return res.data;
+};
+
 export const SearchPaymentHistoryNamebase = async (studentName: string) => {
   const res = await api.get('/admin/finance/searchName', {
     params: { studentName },
   });
+  return res.data;
+};
+
+export const GetAllFeeStructures = async () => {
+  const res = await api.get('/admin/fee-structures');
   return res.data;
 };
 
