@@ -67,15 +67,20 @@ export class FeeStructureManageController {
 
   async fullfeecompletedetails(req: Request, res: Response): Promise<void> {
     try {
-      const { classId } = req.params
-      console.log("classId", classId)
-      const data = await this.feepaymentcompletedetails.execute(classId)
-      console.log("data", data)
-      if (!data) {
+      const { classId } = req.params;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+
+      console.log("classId", classId, "page", page, "limit", limit);
+
+      const result = await this.feepaymentcompletedetails.execute(classId, page, limit);
+
+      if (!result) {
         res.status(StatusCodes.BAD_REQUEST).json({ message: "does not get classId", success: false })
+        return;
       }
       res.status(StatusCodes.OK)
-        .json({ message: "data fetch successfully", success: true, data })
+        .json({ message: "data fetch successfully", success: true, ...result }) // Spread result to include data (students) and total
 
     } catch (error) {
       console.log(error)

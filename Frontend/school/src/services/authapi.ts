@@ -641,8 +641,10 @@ export const PendingExpenseUpdate = async (
 };
 
 
-export const StudentFinanceCompleteDetails = async (classId: string) => {
-  const res = await api.get(`/admin/peyment/class/${classId}`)
+export const StudentFinanceCompleteDetails = async (classId: string, page: number = 1, limit: number = 10) => {
+  const res = await api.get(`/admin/peyment/class/${classId}`, {
+    params: { page, limit }
+  })
   return res.data
 }
 

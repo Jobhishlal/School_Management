@@ -17,6 +17,17 @@ export class ExamCreateUseCase implements IExamCreateRepository {
   async execute(data: CreateExamDTO): Promise<ExamEntity> {
     ValidateExamCreate(data)
 
+    const examDate = new Date(data.examDate);
+    const currentDate = new Date();
+
+    
+    examDate.setHours(0, 0, 0, 0);
+    currentDate.setHours(0, 0, 0, 0);
+
+    if (examDate < currentDate) {
+      throw new Error(ExamErrorMessages.EXAM_DATE_CANNOT_BE_IN_PAST);
+    }
+
     const classData = await this.classRepo.findById(data.classId);
     if (!classData) {
 

@@ -7,4 +7,5 @@ export const ExamErrorMessages = {
     EXAM_ALREADY_EXISTS: "Exam already exists",
     INTERNAL_SERVER_ERROR: "Internal server error",
     MISSING_REQUIRED_FIELDS: "Missing required fields",
+    EXAM_DATE_CANNOT_BE_IN_PAST: "Exams date cannot be in past",
 } as const;

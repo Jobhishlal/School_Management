@@ -23,9 +23,10 @@ export class FeeStructureRepository implements IFeeStructureRepository {
 
   }
 
-  async findClassWisePaymentStatus(classId: string): Promise<any[]> {
+  async findClassWisePaymentStatus(classId: string, page: number, limit: number): Promise<{ students: any[], total: number }> {
 
     const classObjectId = new mongoose.Types.ObjectId(classId);
+    const skip = (page - 1) * limit;
 
     const fee = await FeeStructureModel.findOne({ classId: classObjectId }).lean();
 
@@ -38,9 +39,9 @@ export class FeeStructureRepository implements IFeeStructureRepository {
       0
     );
 
-
-    const students = await StudentModel.aggregate([
+    const aggregationPipeline: any[] = [
       { $match: { classId: classObjectId } },
+      // Lookups
       {
         $lookup: {
           from: "studentfees",
@@ -73,11 +74,25 @@ export class FeeStructureRepository implements IFeeStructureRepository {
           totalPaid: { $sum: "$payments.amount" },
           studentFeeDoc: { $arrayElemAt: ["$studentFee", 0] }
         }
+      },
+      { $sort: { _id: -1 } }, // Newest students first
+    ];
+
+    const facetedData = await StudentModel.aggregate([
+      ...aggregationPipeline,
+      {
+        $facet: {
+          metadata: [{ $count: "total" }],
+          data: [{ $skip: skip }, { $limit: limit }]
+        }
       }
     ]);
 
+    const result = facetedData[0];
+    const total = result.metadata[0] ? result.metadata[0].total : 0;
+    const students = result.data;
 
-    return students.map(student => {
+    const mappedStudents = students.map((student: any) => {
       let remainingPaid = student.totalPaid;
 
       const feeItemsStatus = fee.feeItems.map(item => {
@@ -116,7 +131,7 @@ export class FeeStructureRepository implements IFeeStructureRepository {
         studentName: student.fullName,
         paymentStatus,
         feeStructure: {
-          _id: student.studentFeeDoc?._id, // KEY CHANGE: Adding this ID
+          _id: student.studentFeeDoc?._id,
           name: fee.name,
           academicYear: fee.academicYear,
           notes: fee.notes,
@@ -126,6 +141,8 @@ export class FeeStructureRepository implements IFeeStructureRepository {
         }
       };
     });
+
+    return { students: mappedStudents, total };
   }
 
   async findStudentPaymentStatusByName(studentName: string): Promise<any[]> {

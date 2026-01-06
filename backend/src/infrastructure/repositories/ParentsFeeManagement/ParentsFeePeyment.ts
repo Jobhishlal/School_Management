@@ -1,4 +1,4 @@
-import { ParentSignupModel } from "../../database/models/ParentSignupModel"; 
+import { ParentSignupModel } from "../../database/models/ParentSignupModel";
 import { ParentEntity } from "../../../domain/entities/Parents";
 import { IParentFeeInterface } from "../../../domain/repositories/IParentFeeList";
 import { FeeStructureModel } from "../../database/models/FeeManagement/FeeStructure";
@@ -7,7 +7,7 @@ import { PaymentModel } from "../../database/models/FeeManagement/Payment";
 
 
 export class ParentRepository implements IParentFeeInterface {
-  
+
   async findByEmail(email: string): Promise<ParentEntity | null> {
     const parentDoc = await ParentSignupModel.findOne({ email }).exec();
     if (!parentDoc) return null;
@@ -36,7 +36,7 @@ export class ParentRepository implements IParentFeeInterface {
 
     const feeStructures = await FeeStructureModel.find({
       classId: student.classId._id,
-    }).lean();
+    }).sort({ startDate: -1 }).lean();
 
     const payments = await PaymentModel.find({
       studentId: student._id,

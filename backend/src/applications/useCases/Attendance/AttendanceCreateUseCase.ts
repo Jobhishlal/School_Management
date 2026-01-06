@@ -7,7 +7,7 @@ import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassR
 import { ValidateAttendanceCreate } from "../../validators/AttendanceValidation/AttendanceValidation";
 import { SendEMail } from "../../../infrastructure/providers/EmailService";
 import { IParentRepository } from "../../../domain/repositories/IParentsRepository";
-import { EMAIL_SUBJECTS,EmailTemplates } from "../../../shared/constants/utils/Email/emailTemplates";
+import { EMAIL_SUBJECTS, EmailTemplates } from "../../../shared/constants/utils/Email/emailTemplates";
 
 export class AttendanceCreateUseCase implements IAttendanceCreateUseCase {
   constructor(
@@ -26,8 +26,10 @@ export class AttendanceCreateUseCase implements IAttendanceCreateUseCase {
       throw new Error("Session is required");
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Date Logic: Force UTC Midnight to avoid timezone offsets
+    // Uses the provided date or defaults to now, then constructs a clean UTC date object
+    const inputDate = data.date ? new Date(data.date) : new Date();
+    const today = new Date(Date.UTC(inputDate.getFullYear(), inputDate.getMonth(), inputDate.getDate()));
 
     const classData = await this.classRepo.findById(classId.toString());
     if (!classData) throw new Error("Class not found");
@@ -71,7 +73,7 @@ export class AttendanceCreateUseCase implements IAttendanceCreateUseCase {
       session,
     });
 
-  
+
     const absentStudents = attendance.filter(
       (a) => a.status === "Absent" || a.status === "Leave"
     );
@@ -84,19 +86,19 @@ export class AttendanceCreateUseCase implements IAttendanceCreateUseCase {
           if (student && student.parentId) {
             const parent = await this.parentRepo.getById(student.parentId);
 
-           if (parent && parent.email) {
-                 const subject = `${EMAIL_SUBJECTS.STUDENT_ABSENT} - ${student.fullName}`;
+            if (parent && parent.email) {
+              const subject = `${EMAIL_SUBJECTS.STUDENT_ABSENT} - ${student.fullName}`;
 
-                 const message = EmailTemplates.studentAbsent({
-                 studentName: student.fullName,
-                 status: item.status,
-                  session,
-                   date: today.toLocaleDateString(),
-                     });
+              const message = EmailTemplates.studentAbsent({
+                studentName: student.fullName,
+                status: item.status,
+                session,
+                date: today.toLocaleDateString(),
+              });
 
-                         await SendEMail(parent.email, subject, message);
-                             console.log(`Email sent to ${parent.email} for student ${student.fullName}`);
-                             }
+              await SendEMail(parent.email, subject, message);
+              console.log(`Email sent to ${parent.email} for student ${student.fullName}`);
+            }
 
           }
         } catch (emailError) {

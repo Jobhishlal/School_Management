@@ -30,13 +30,12 @@ export class AttendanceController {
         ...req.body,
         teacherId: req.user?.id,
       };
-      console.log('data', data.teacherId)
-
+      
       const create = await this.repo.execute(data);
-      console.log("create", create)
+     
 
       if (!create) {
-        console.log("create", create)
+       
         res.status(StatusCodes.BAD_REQUEST).json({
           message: "Attendance creation failed",
           success: false,

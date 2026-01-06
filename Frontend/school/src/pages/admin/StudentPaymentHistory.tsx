@@ -47,7 +47,7 @@ interface StudentPaymentStatus {
 // Existing Class Payment Status Component Logic
 const ClassPaymentView: React.FC<{
   classes: ClassItem[];
-  fetchPaymentStatus: (classId: string) => void;
+  fetchPaymentStatus: (classId: string, page?: number) => void;
   students: StudentPaymentStatus[];
   loading: boolean;
   searchName: string;
@@ -56,6 +56,7 @@ const ClassPaymentView: React.FC<{
   selectedClassId: string;
   setSelectedClassId: (id: string) => void;
   theme: any;
+  pagination: { currentPage: number; totalPages: number; total: number };
 }> = ({
   classes,
   fetchPaymentStatus,
@@ -67,6 +68,7 @@ const ClassPaymentView: React.FC<{
   selectedClassId,
   setSelectedClassId,
   theme,
+  pagination,
 }) => {
     const {
       inputBg,
@@ -130,7 +132,7 @@ const ClassPaymentView: React.FC<{
             <div>
               <label className={`block text-sm mb-2 ${textSecondary}`}>Action</label>
               <button
-                onClick={() => fetchPaymentStatus(selectedClassId)}
+                onClick={() => fetchPaymentStatus(selectedClassId, 1)}
                 className={`w-full rounded-lg px-4 py-3 transition-colors duration-200 font-medium ${buttonPrimary}`}
               >
                 Fetch Payment Status
@@ -292,6 +294,14 @@ const ClassPaymentView: React.FC<{
                   )
               )}
             </div>
+          )}
+          {/* Pagination Controls */}
+          {students.length > 0 && (
+            <Pagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              onPageChange={(page) => fetchPaymentStatus(selectedClassId, page)}
+            />
           )}
         </div>
       </div>
@@ -477,6 +487,7 @@ const ClassPaymentStatus: React.FC = () => {
   const [students, setStudents] = useState<StudentPaymentStatus[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchName, setSearchName] = useState("");
+  const [classPagination, setClassPagination] = useState({ currentPage: 1, totalPages: 1, total: 0 });
 
   const theme = {
     containerBg: isDark ? "bg-[#121A21] text-slate-100" : "bg-[#fafbfc] text-slate-900",
@@ -507,15 +518,20 @@ const ClassPaymentStatus: React.FC = () => {
     loadClasses();
   }, []);
 
-  const fetchPaymentStatus = async (classId: string) => {
+  const fetchPaymentStatus = async (classId: string, page = 1) => {
     if (!classId) {
       showToast("Please select a class", "error");
       return;
     }
     try {
       setLoading(true);
-      const res = await StudentFinanceCompleteDetails(classId);
-      setStudents(res.data || []);
+      const res = await StudentFinanceCompleteDetails(classId, page);
+      setStudents(res.students || []); // Updated property
+      setClassPagination({
+        currentPage: page,
+        totalPages: Math.ceil(res.total / 10), // Assuming limit is 10
+        total: res.total,
+      });
     } catch (err: any) {
       showToast(
         err?.response?.data?.message || "Failed to fetch payment details",
@@ -578,6 +594,7 @@ const ClassPaymentStatus: React.FC = () => {
             selectedClassId={selectedClassId}
             setSelectedClassId={setSelectedClassId}
             theme={theme}
+            pagination={classPagination}
           />
         ) : (
           <PaymentHistoryLogView theme={theme} />

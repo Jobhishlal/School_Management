@@ -86,7 +86,7 @@ export class ExamMarkMongoRepository implements IExamMarkRepository {
       studentId: new Types.ObjectId(studentId),
       examId: { $in: examIds.map(id => new Types.ObjectId(id)) },
     }).then(docs => docs.map(toExamMarkEntity));
-    console.log(data)
+   
     return data
 
   }

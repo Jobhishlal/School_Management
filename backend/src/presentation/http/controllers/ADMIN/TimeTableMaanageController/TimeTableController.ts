@@ -26,7 +26,7 @@ export class TimeTableManageController {
       const dto: CreateTimetableDTO = req.body;
       logger.info(JSON.stringify(dto))
       const created = await this.createrepo.execute(dto);
-      console.log("created ")
+    
       res.status(StatusCodes.CREATED).json({
         success: true,
         message: "Timetable created successfully",
@@ -67,9 +67,9 @@ export class TimeTableManageController {
 
   async UpdateTimeTable(req: Request, res: Response): Promise<void> {
     try {
-      console.log("reached update")
+     
       const dto: CreateTimetableDTO = req.body;
-      console.log("i am reached here", dto)
+      
       const updated = await this.updatetimetable.execute(dto);
       res.status(StatusCodes.CREATED).json({
         success: true,
@@ -78,7 +78,7 @@ export class TimeTableManageController {
       });
     } catch (error: any) {
       console.error("Error updating timetable:", error.message);
-      res.status(400).json({ message: error.message || "Failed to update timetable" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message || "Failed to update timetable" });
     }
 
   }
@@ -93,7 +93,7 @@ export class TimeTableManageController {
       await this.deletetimetable.execute(id);
       res.status(StatusCodes.CREATED).json({ message: "Timetable deleted successfully" });
     } catch (error: any) {
-      console.log("error", error);
+    
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message || "Internal Server Error" });
     }
   }

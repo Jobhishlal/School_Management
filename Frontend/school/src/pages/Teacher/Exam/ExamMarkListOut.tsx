@@ -50,35 +50,17 @@ const TakeMarks: React.FC<TakeMarksProps> = ({ examId, classId, onClose, isReadO
   const [responseMessage, setResponseMessage] = useState("");
 
   useEffect(() => {
-    // ... (existing useEffect code remains same, no need to repeat unless changing)
-    // Wait, I cannot skip the useEffect body if I am replacing the block where it resides. 
-    // But here I am replacing lines 41-142 which encompasses useEffect.
-    // I should be careful. `handleResolveConcern` is at line 121.
-    // State declaration is at 41.
-    // I will target specific blocks instead of the whole file. 
-    // This tool call is for STATE and HANDLERS.
-  }, []); // placeholder for thought process, not actual code
 
-  // I will split this into smaller edits.
-  // Edit 1: State declarations.
-  // Edit 2: handleResolveConcern update.
-  // Edit 3: New confirm handler.
-  // Edit 4: Modal JSX.
+  }, []); 
 
-  // Let's do Edit 1 & 2 & 3 in one go if contiguous? No, they are separated by useEffect.
-  // I will use replace_file_content carefully. 
 
-  // Actually, I can just replace `handleResolveConcern` and add the new handler below it.
-  // And add state at the top.
-
-  // Let's just do state first.
 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // 1. Fetch all students for the exam (includes mark info now)
+      
         const studentsRes = await getStudentsByExam(examId);
 
         const mappedStudents = (studentsRes || []).map((student: any) => ({
@@ -86,7 +68,7 @@ const TakeMarks: React.FC<TakeMarksProps> = ({ examId, classId, onClose, isReadO
           name: student.fullName || student.name,
           studentId: student.studentId || "N/A",
           classId: student.classId || "Unknown",
-          // Backend now marks existing marks
+          
           isMarked: student.isMarked,
           originalMark: student.marksObtained,
           originalRemarks: student.remarks,
@@ -294,8 +276,8 @@ const TakeMarks: React.FC<TakeMarksProps> = ({ examId, classId, onClose, isReadO
                           type="number"
                           min={0}
                           max={100}
-                          value={studentMark?.marksObtained || 0} // handle undefined
-                          placeholder="0"
+                          value={studentMark?.marksObtained || ''}
+                          // placeholder="0"
                           disabled={isReadOnly}
                           onChange={(e) => {
                             const val = e.target.value === "" ? 0 : Number(e.target.value);

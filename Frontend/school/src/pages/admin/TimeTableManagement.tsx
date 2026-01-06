@@ -114,6 +114,30 @@ const AdminTimeTablePage: React.FC = () => {
   };
 
   const addPeriod = (day: string) => {
+   
+    const currentDay = days.find(d => d.day === day);
+
+    if (currentDay && currentDay.periods.length > 0) {
+      const periods = currentDay.periods;
+      const lastPeriod = periods[periods.length - 1];
+
+      if (lastPeriod && lastPeriod.endTime) {
+        const [lastEndH] = lastPeriod.endTime.split(':').map(Number);
+        let startH = lastEndH;
+
+        const overlappingBreak = currentDay.breaks?.find(b => b.startTime === lastPeriod.endTime);
+        if (overlappingBreak && overlappingBreak.endTime) {
+          const [breakEndH] = overlappingBreak.endTime.split(':').map(Number);
+          startH = breakEndH;
+        }
+
+        if (startH >= 16) {
+          showToast("Cannot add periods after 4:00 PM", "error");
+          return;
+        }
+      }
+    }
+
     setDays((prev) => {
       const dayIndex = prev.findIndex((d) => d.day === day);
 
@@ -128,8 +152,6 @@ const AdminTimeTablePage: React.FC = () => {
 
           if (lastPeriod && lastPeriod.endTime) {
             const [lastEndH, lastEndM] = lastPeriod.endTime.split(':').map(Number);
-
-            
             let startH = lastEndH;
             let startM = lastEndM;
 
@@ -138,27 +160,24 @@ const AdminTimeTablePage: React.FC = () => {
               const [breakEndH, breakEndM] = overlappingBreak.endTime.split(':').map(Number);
               startH = breakEndH;
               startM = breakEndM;
-            } else {
-
             }
 
-            // Check 16:00 Limit for Start Time
+        
             if (startH >= 16) {
-              showToast("Cannot add periods after 4:00 PM", "error");
               return d;
             }
 
             newStartTime = `${String(startH).padStart(2, '0')}:${String(startM).padStart(2, '0')}`;
 
-            // 2. Determine Duration (match last period)
-            let effectiveDuration = 60; // Default 1 hour
+           
+            let effectiveDuration = 60; 
             if (lastPeriod.startTime) {
               const [lastStartH, lastStartM] = lastPeriod.startTime.split(':').map(Number);
               const durationMinutes = (lastEndH * 60 + lastEndM) - (lastStartH * 60 + lastStartM);
               if (durationMinutes > 0) effectiveDuration = durationMinutes;
             }
 
-            // 3. Calculate New End Time
+            
             const newStartTotalMinutes = startH * 60 + startM;
             const newEndTotalMinutes = newStartTotalMinutes + effectiveDuration;
 
@@ -172,16 +191,6 @@ const AdminTimeTablePage: React.FC = () => {
             }
 
             newEndTime = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
-          }
-
-          // Final safety check if end time <= start time (e.g. capped at 16:00 but start was 15:50)
-          // Ideally we allow it and let validator catch or user fix, but let's ensure it's validish
-          const [finalStartH, finalStartM] = newStartTime.split(':').map(Number);
-          const [finalEndH, finalEndM] = newEndTime.split(':').map(Number);
-
-          if (finalEndH < finalStartH || (finalEndH === finalStartH && finalEndM <= finalStartM)) {
-            // If duration squeeze made it invalid, just add 10 mins or cap
-            // But if start is 16:00, we already returned above.
           }
 
           periods.push({
@@ -276,19 +285,20 @@ const AdminTimeTablePage: React.FC = () => {
   };
 
   const updateBreak = (day: string, idx: number, key: 'startTime' | 'endTime' | 'name', value: string) => {
+ 
+    if (key === 'startTime' || key === 'endTime') {
+      const [h, m] = value.split(":").map(Number);
+      if (h > 16 || (h === 16 && m > 0)) {
+        showToast("Breaks cannot go beyond 4:00 PM", "error");
+        return;
+      }
+    }
+
     setDays(prev =>
       prev.map(d => {
         if (d.day === day) {
           const breaks = d.breaks ? [...d.breaks] : [];
           if (breaks[idx]) {
-            // Validate time limit for breaks too
-            if (key === 'startTime' || key === 'endTime') {
-              const [h, m] = value.split(":").map(Number);
-              if (h > 16 || (h === 16 && m > 0)) {
-                showToast("Breaks cannot go beyond 4:00 PM", "error");
-                return d; // Ignore change
-              }
-            }
             breaks[idx] = { ...breaks[idx], [key]: value };
           }
           return { ...d, breaks };
@@ -311,10 +321,25 @@ const AdminTimeTablePage: React.FC = () => {
 
     // Client-side validation: Check Breaks and Gaps
     for (const d of days) {
+      // Validate Periods Start Time
+      for (const p of d.periods) {
+        const [startH] = p.startTime.split(':').map(Number);
+        if (startH < 9) {
+          showToast(`Period on ${d.day} starts after 9:00 AM.`, "error");
+          return;
+        }
+      }
+
       if (d.breaks) {
         for (const b of d.breaks) {
           const [startH, startM] = b.startTime.split(':').map(Number);
           const [endH, endM] = b.endTime.split(':').map(Number);
+
+          if (startH < 9) {
+            showToast(`Break on ${d.day} starts After 9:00 AM.`, "error");
+            return;
+          }
+
           const startTotal = startH * 60 + startM;
           const endTotal = endH * 60 + endM;
 
@@ -380,10 +405,9 @@ const AdminTimeTablePage: React.FC = () => {
     }
   };
 
-  // Helper to extract ID
   const getTeacherId = (t: Teacher) => t.teacherId || t.id || t._id || "";
 
-  // Theme Classes
+  
   const containerBg = isDark ? "bg-[#121A21] text-slate-100" : "bg-[#fafbfc] text-slate-900";
   const cardBg = isDark ? "bg-slate-800/50 border-gray-700" : "bg-white border-gray-300";
 
@@ -412,7 +436,6 @@ const AdminTimeTablePage: React.FC = () => {
         const daySchedule = days.find(d => d.day === day);
         const allPeriods = daySchedule?.periods || [];
 
-        // Sort periods by start time
         const sortedPeriods = [...allPeriods].sort((a, b) => {
           const timeA = parseInt(a.startTime.replace(':', ''));
           const timeB = parseInt(b.startTime.replace(':', ''));
@@ -539,7 +562,6 @@ const AdminTimeTablePage: React.FC = () => {
                       </button>
                     </div>
 
-                    {/* Show Lunch Break after period ending at 12:00 */}
 
                   </React.Fragment>
                 );
