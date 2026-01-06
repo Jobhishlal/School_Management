@@ -24,6 +24,7 @@ export class ExamEntity {
     public readonly startTime: string,
     public readonly endTime: string,
     public readonly maxMarks: number,
+    public readonly passMarks: number,
 
     public readonly description: string = "",
     public readonly status: ExamStatus = "DRAFT",

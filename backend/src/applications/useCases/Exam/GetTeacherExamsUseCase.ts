@@ -15,11 +15,10 @@ export class GetTeacherExamsUseCase implements IGetTeacherExamsUseCase {
 
     const exams = await this.examRepo.getExamsByTeacher(teacherId);
 
-    // Fetch pending concerns info for these exams
+    
     const examIds = exams.map(e => e.id);
     const concernInfo = await this.examMarkRepo.getPendingConcernsInfoByExamIds(examIds);
 
-    // Map counts to exams
     return exams.map(exam => {
       const details = concernInfo[exam.id] || [];
       return {

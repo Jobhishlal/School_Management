@@ -10,7 +10,12 @@ import { StudentModel } from "../../database/models/StudentModel";
 
 export class ExamMongoRepo implements IExamRepository {
   async createExam(data: CreateExamDTO): Promise<ExamEntity> {
-    const createdExam = await ExamModel.create(data);
+    const examData = {
+      ...data,
+      classId: new Types.ObjectId(data.classId),
+      teacherId: new Types.ObjectId(data.teacherId)
+    };
+    const createdExam = await ExamModel.create(examData);
     return toExamEntity(createdExam);
   }
 

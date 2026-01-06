@@ -45,8 +45,14 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
 
     const classObjectId = new mongoose.Types.ObjectId(timetable.classId);
 
-    const existing = await TimetableModel.findOne({ classId: classObjectId });
-    if (existing) throw new Error("Timetable already exists for this class");
+    const existing = await TimetableModel.findOne({
+      classId: classObjectId,
+      division: timetable.division
+    });
+
+    if (existing) {
+      throw new Error(`Timetable already exists for Class ${existing.className} - Division ${existing.division}`);
+    }
 
     const daysData = timetable.days.length > 0 ? timetable.days : [
       { day: "Monday", periods: [], breaks: [] },

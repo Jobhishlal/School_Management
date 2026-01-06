@@ -66,7 +66,7 @@ export class GetStudentExamResultsUseCase
           (mark.marksObtained / exam.maxMarks) * 100
         );
 
-        status = percentage >= 40 ? "Passed" : "Failed";
+        status = mark.marksObtained >= (exam.passMarks ?? 40) ? "Passed" : "Failed";
       }
 
 
@@ -76,6 +76,7 @@ export class GetStudentExamResultsUseCase
         subject: exam.subject,
         examDate: exam.examDate,
         maxMarks: exam.maxMarks,
+        passMarks: exam.passMarks ?? 40,
         marksObtained: mark?.marksObtained ?? null,
         percentage,
         progress: mark?.progress ?? null,

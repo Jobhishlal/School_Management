@@ -1,5 +1,3 @@
-import { Types } from "mongoose";
-
 export interface CreateExamDTO {
   examId?: string;
   title: string;
@@ -11,12 +9,13 @@ export interface CreateExamDTO {
 
   subject: string;
 
-  teacherId: Types.ObjectId;
+  teacherId: string;
   teacherName: string;
 
   examDate: Date;
   startTime: string;
   endTime: string;
   maxMarks: number;
+  passMarks: number;
   description?: string;
 }

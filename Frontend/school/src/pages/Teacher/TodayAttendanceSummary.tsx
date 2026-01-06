@@ -10,7 +10,8 @@ import {
   Filter,
   BarChart3,
   Search,
-  ChevronDown
+  ChevronDown,
+  Edit
 } from "lucide-react";
 
 type AttendanceStatus = "Present" | "Absent" | "Leave" | "Not Marked";
@@ -102,30 +103,32 @@ const TodayAttendanceSummary: React.FC<Props> = ({ classId }) => {
   const StatusBadge = ({ status, onClick }: { status?: string, onClick?: () => void }) => {
     const base = "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold cursor-pointer transition-all duration-200 border";
 
+    const EditIcon = () => <Edit size={12} className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />;
+
     if (status === "Present") {
       return (
-        <span onClick={onClick} className={`${base} ${isDark ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20" : "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"}`}>
-          <CheckCircle2 size={14} /> Present
+        <span onClick={onClick} className={`${base} ${isDark ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20" : "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"} group`}>
+          <CheckCircle2 size={14} /> Present <EditIcon />
         </span>
       );
     }
     if (status === "Absent") {
       return (
-        <span onClick={onClick} className={`${base} ${isDark ? "bg-rose-500/10 text-rose-400 border-rose-500/20 hover:bg-rose-500/20" : "bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100"}`}>
-          <XCircle size={14} /> Absent
+        <span onClick={onClick} className={`${base} ${isDark ? "bg-rose-500/10 text-rose-400 border-rose-500/20 hover:bg-rose-500/20" : "bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100"} group`}>
+          <XCircle size={14} /> Absent <EditIcon />
         </span>
       );
     }
     if (status === "Leave") {
       return (
-        <span onClick={onClick} className={`${base} ${isDark ? "bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20" : "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"}`}>
-          <Clock size={14} /> Leave
+        <span onClick={onClick} className={`${base} ${isDark ? "bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20" : "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"} group`}>
+          <Clock size={14} /> Leave <EditIcon />
         </span>
       );
     }
     return (
-      <span onClick={onClick} className={`${base} ${isDark ? "bg-zinc-800 text-zinc-400 border-zinc-700 hover:bg-zinc-700" : "bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200"}`}>
-        <AlertCircle size={14} /> Not Marked
+      <span onClick={onClick} className={`${base} ${isDark ? "bg-zinc-800 text-zinc-400 border-zinc-700 hover:bg-zinc-700" : "bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200"} group`}>
+        <AlertCircle size={14} /> Not Marked <EditIcon />
       </span>
     );
   };
@@ -198,8 +201,8 @@ const TodayAttendanceSummary: React.FC<Props> = ({ classId }) => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className={`pl-9 pr-4 py-2 text-sm rounded-lg border focus:ring-2 focus:ring-blue-500/20 outline-none transition-all w-full sm:w-64 ${isDark
-                    ? "bg-zinc-800 border-zinc-700 text-white placeholder:text-white-600 focus:border-blue-500/50"
-                    : "bg-gray-50 border-gray-200 text-white-900 placeholder:text-gray-400 focus:border-blue-500"
+                  ? "bg-zinc-800 border-zinc-700 text-white placeholder:text-white-600 focus:border-blue-500/50"
+                  : "bg-gray-50 border-gray-200 text-white-900 placeholder:text-gray-400 focus:border-blue-500"
                   }`}
               />
             </div>
@@ -208,8 +211,8 @@ const TodayAttendanceSummary: React.FC<Props> = ({ classId }) => {
             <div className="relative">
               <select
                 className={`appearance-none pl-9 pr-8 py-2 text-sm rounded-lg border focus:ring-2 focus:ring-blue-500/20 outline-none cursor-pointer transition-all ${isDark
-                    ? "bg-zinc-800 border-zinc-700 text-white focus:border-blue-500/50"
-                    : "bg-gray-50 border-gray-200 text-gray-900 focus:border-blue-500"
+                  ? "bg-zinc-800 border-zinc-700 text-white focus:border-blue-500/50"
+                  : "bg-gray-50 border-gray-200 text-gray-900 focus:border-blue-500"
                   }`}
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
@@ -304,10 +307,10 @@ const TodayAttendanceSummary: React.FC<Props> = ({ classId }) => {
                   key={status}
                   onClick={() => setEdit({ ...edit, status: status as AttendanceStatus })}
                   className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${edit.status === status
-                      ? "border-blue-500 bg-blue-500/10 text-blue-500 ring-1 ring-blue-500"
-                      : isDark
-                        ? "border-zinc-800 hover:bg-zinc-800 text-zinc-300"
-                        : "border-gray-200 hover:bg-gray-50 text-gray-700"
+                    ? "border-blue-500 bg-blue-500/10 text-blue-500 ring-1 ring-blue-500"
+                    : isDark
+                      ? "border-zinc-800 hover:bg-zinc-800 text-zinc-300"
+                      : "border-gray-200 hover:bg-gray-50 text-gray-700"
                     }`}
                 >
                   <span className="font-medium">{status}</span>
@@ -320,8 +323,8 @@ const TodayAttendanceSummary: React.FC<Props> = ({ classId }) => {
               <button
                 onClick={() => setEdit(null)}
                 className={`flex-1 py-2.5 rounded-lg font-medium text-sm transition-colors ${isDark
-                    ? "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  ? "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
               >
                 Cancel

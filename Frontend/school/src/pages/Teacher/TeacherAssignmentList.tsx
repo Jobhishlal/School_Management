@@ -41,7 +41,10 @@ export default function TeacherAssignmentList({ setCurrentAssignment, refreshTri
       setLoading(true);
       try {
         const res = await ListoutExistedAssignment();
-        setAssignments(res.data || []);
+        const sortedData = (res.data || []).sort((a: Assignment, b: Assignment) =>
+          new Date(b.Assignment_date).getTime() - new Date(a.Assignment_date).getTime()
+        );
+        setAssignments(sortedData);
       } catch (error) {
         console.error(error);
       } finally {

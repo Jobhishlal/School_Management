@@ -5,35 +5,35 @@ import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInte
 import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
 import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";
 import { ValidateExamCreate } from "../../validators/Examvalidation/ExamCreateValidation";
+import { ExamErrorMessages } from "../../../shared/constants/ExamErrorMessages";
 
 export class ExamCreateUseCase implements IExamCreateRepository {
   constructor(
     private examRepo: IExamRepository,
     private classRepo: IClassRepository,
     private teacherRepo: ITeacherCreate
-  ) {}
+  ) { }
 
   async execute(data: CreateExamDTO): Promise<ExamEntity> {
     ValidateExamCreate(data)
-   
-    const classData = await this.classRepo.findById(data.classId.toString());
+
+    const classData = await this.classRepo.findById(data.classId);
     if (!classData) {
-        
-      throw new Error("Class not found");
+
+      throw new Error(ExamErrorMessages.CLASS_NOT_FOUND);
     }
 
-    const teacher = await this.teacherRepo.findById(data.teacherId.toString());
+    const teacher = await this.teacherRepo.findById(data.teacherId);
     if (!teacher) {
-      throw new Error("Teacher not found");
+      throw new Error(ExamErrorMessages.TEACHER_NOT_FOUND);
     }
 
-   const subjectExists = teacher.subjects
+    const subjectExists = teacher.subjects
 
-  if (!subjectExists) {
-  throw new Error("Teacher is not assigned to this subject");
-}
+    if (!subjectExists) {
+      throw new Error(ExamErrorMessages.TEACHER_NOT_ASSIGNED_TO_SUBJECT);
+    }
 
-   console.log("data reached usecase",data)
 
     return await this.examRepo.createExam(data);
 

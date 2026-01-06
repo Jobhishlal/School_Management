@@ -623,19 +623,30 @@ export default function AssignmentManage() {
             ))}
           </select>
 
-          <input
-            type="date"
-            value={form.Assignment_date ? new Date(form.Assignment_date).toISOString().split("T")[0] : ""}
-            onChange={(e) => setForm({ ...form, Assignment_date: new Date(e.target.value) })}
-            className={`${isDark ? "bg-gray-700 text-white" : "bg-white text-black"} px-2 py-1 rounded`}
-          />
 
-          <input
-            type="date"
-            value={form.Assignment_Due_Date ? new Date(form.Assignment_Due_Date).toISOString().split("T")[0] : ""}
-            onChange={(e) => setForm({ ...form, Assignment_Due_Date: new Date(e.target.value) })}
-            className={`${isDark ? "bg-gray-700 text-white" : "bg-white text-black"} px-2 py-1 rounded`}
-          />
+          <div className="flex flex-col gap-1">
+            <label className={`text-sm font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+              Start Date
+            </label>
+            <input
+              type="date"
+              value={form.Assignment_date ? new Date(form.Assignment_date).toISOString().split("T")[0] : ""}
+              onChange={(e) => setForm({ ...form, Assignment_date: new Date(e.target.value) })}
+              className={`${isDark ? "bg-gray-700 text-white" : "bg-white text-black"} px-2 py-1 rounded border ${isDark ? "border-gray-600" : "border-gray-300"}`}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className={`text-sm font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+              Due Date
+            </label>
+            <input
+              type="date"
+              value={form.Assignment_Due_Date ? new Date(form.Assignment_Due_Date).toISOString().split("T")[0] : ""}
+              onChange={(e) => setForm({ ...form, Assignment_Due_Date: new Date(e.target.value) })}
+              className={`${isDark ? "bg-gray-700 text-white" : "bg-white text-black"} px-2 py-1 rounded border ${isDark ? "border-gray-600" : "border-gray-300"}`}
+            />
+          </div>
 
           <input
             type="number"

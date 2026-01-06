@@ -18,6 +18,7 @@ export interface ExamDocument extends Document {
   startTime: string;
   endTime: string;
   maxMarks: number;
+  passMarks: number;
   description?: string;
   status: "DRAFT" | "PUBLISHED";
 }
@@ -43,6 +44,7 @@ const ExamSchema = new Schema<ExamDocument>(
     endTime: { type: String, required: true },
 
     maxMarks: { type: Number, required: true },
+    passMarks: { type: Number, required: true },
     description: { type: String, default: "" },
 
     status: { type: String, enum: ["DRAFT", "PUBLISHED"], default: "DRAFT" },

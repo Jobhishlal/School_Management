@@ -651,7 +651,7 @@ Adminrouter.post(
 
 
 
-Adminrouter.put('/update-announcement/:id', (req, res) => {
+Adminrouter.put('/update-announcement/:id', AnnouncementAttachment.single("attachment"), (req, res) => {
   announcementController.UpdateAnnouncement(req, res)
 })
 

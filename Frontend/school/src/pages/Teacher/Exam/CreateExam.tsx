@@ -63,6 +63,7 @@ interface ExamEntity {
   startTime: string;
   endTime: string;
   maxMarks: number;
+  passMarks: number;
   description?: string;
   status: string;
   pendingConcerns?: number;
@@ -100,6 +101,7 @@ const ExamForm: React.FC = () => {
     startTime: "",
     endTime: "",
     maxMarks: 100,
+    passMarks: 40,
     description: "",
   });
 
@@ -194,6 +196,7 @@ const ExamForm: React.FC = () => {
       startTime: exam.startTime,
       endTime: exam.endTime,
       maxMarks: exam.maxMarks,
+      passMarks: exam.passMarks,
       description: exam.description,
     });
 
@@ -211,6 +214,7 @@ const ExamForm: React.FC = () => {
       startTime: exam.startTime,
       endTime: exam.endTime,
       maxMarks: exam.maxMarks,
+      passMarks: exam.passMarks,
       description: exam.description,
     });
 
@@ -238,10 +242,13 @@ const ExamForm: React.FC = () => {
       startTime: "",
       endTime: "",
       maxMarks: 100,
+      passMarks: 40,
       description: "",
     });
     setIsModalOpen(true);
   };
+
+
 
   const handleSubmit = async () => {
     // Validation
@@ -363,7 +370,7 @@ const ExamForm: React.FC = () => {
                       <th className={`text-left px-4 py-3 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Subject</th>
                       <th className={`text-left px-4 py-3 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Date</th>
                       <th className={`text-left px-4 py-3 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Time</th>
-                      <th className={`text-left px-4 py-3 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Marks</th>
+                      <th className={`text-left px-4 py-3 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Marks (Max/Pass)</th>
                       <th className={`text-left px-4 py-3 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Status</th>
                       <th className={`text-center px-4 py-3 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Actions</th>
                     </tr>
@@ -403,7 +410,7 @@ const ExamForm: React.FC = () => {
                           {exam.startTime} - {exam.endTime}
                         </td>
                         <td className={`px-4 py-3 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                          {exam.maxMarks}
+                          <span className="font-semibold text-blue-500">{exam.maxMarks}</span> / <span className="text-gray-500">{exam.passMarks}</span>
                         </td>
                         <td className="px-4 py-3">
                           <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(exam.status)}`}>
@@ -649,6 +656,25 @@ const ExamForm: React.FC = () => {
                     : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
                     } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   placeholder="100"
+                />
+              </div>
+
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                  <BookOpen className="w-4 h-4 inline mr-1" />
+                  Pass Marks *
+                </label>
+                <input
+                  type="number"
+                  required
+                  min="1"
+                  value={form.passMarks}
+                  onChange={(e) => setForm((p) => ({ ...p, passMarks: Number(e.target.value) }))}
+                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${isDark
+                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
+                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  placeholder="40"
                 />
               </div>
             </div>

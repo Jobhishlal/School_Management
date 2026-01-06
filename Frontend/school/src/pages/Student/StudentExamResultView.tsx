@@ -31,6 +31,7 @@ interface ExamResult {
     subject: string;
     examDate: string;
     maxMarks: number;
+    passMarks: number;
     marksObtained: number | null;
     percentage: number | null;
     status: "Passed" | "Failed" | "Pending";
@@ -487,7 +488,7 @@ export const StudentExamResultsPage: React.FC = () => {
                                 <th className={`p-4 font-medium ${textSecondary}`}>Exam Title</th>
                                 <th className={`p-4 font-medium ${textSecondary}`}>Date</th>
                                 <th className={`p-4 font-medium ${textSecondary}`}>Subject</th>
-                                <th className={`p-4 font-medium ${textSecondary}`}>Max Marks</th>
+                                <th className={`p-4 font-medium ${textSecondary}`}>Marks (Max/Pass)</th>
                                 <th className={`p-4 font-medium ${textSecondary}`}>Obtained</th>
                                 <th className={`p-4 font-medium ${textSecondary}`}>Percentage</th>
                                 <th className={`p-4 font-medium ${textSecondary}`}>Status</th>
@@ -511,7 +512,9 @@ export const StudentExamResultsPage: React.FC = () => {
                                             {new Date(result.examDate).toLocaleDateString()}
                                         </td>
                                         <td className={`p-4 ${textSecondary}`}>{result.subject}</td>
-                                        <td className={`p-4 ${textSecondary}`}>{result.maxMarks}</td>
+                                        <td className={`p-4 ${textSecondary}`}>
+                                            <span className="font-semibold text-blue-500">{result.maxMarks}</span> / <span className="text-gray-500">{result.passMarks}</span>
+                                        </td>
                                         <td className={`p-4 font-semibold ${textPrimary}`}>
                                             {result.marksObtained !== null ? result.marksObtained : "-"}
                                         </td>

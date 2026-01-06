@@ -1,6 +1,6 @@
 export interface UpdateExamDTO {
-    id?:string;
-    examId:string;
+  id?: string;
+  examId: string;
   title?: string;
   type?: "UNIT_TEST" | "MIDTERM" | "FINAL";
   classId?: string;
@@ -13,5 +13,6 @@ export interface UpdateExamDTO {
   startTime?: string;
   endTime?: string;
   maxMarks?: number;
+  passMarks?: number;
   description?: string;
 }

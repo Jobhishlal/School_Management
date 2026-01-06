@@ -215,6 +215,9 @@ export const StudentAttendanceView: React.FC = () => {
 
                         <div>
                             <h2 className="text-xl font-bold">{student.name}</h2>
+                            <p className={`text-sm font-medium ${mutedText} mb-1`}>
+                                {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                            </p>
                             {today && (
                                 <p className={`text-sm mt-1 ${mutedText}`}>
                                     Morning:
@@ -243,6 +246,7 @@ export const StudentAttendanceView: React.FC = () => {
                             <input
                                 type="date"
                                 value={startDate}
+                                max={new Date().toISOString().split("T")[0]}
                                 onChange={(e) => setStartDate(e.target.value)}
                                 className={`border rounded px-3 py-2 ${isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-gray-900"}`}
                             />
@@ -253,6 +257,7 @@ export const StudentAttendanceView: React.FC = () => {
                             <input
                                 type="date"
                                 value={endDate}
+                                max={new Date().toISOString().split("T")[0]}
                                 onChange={(e) => setEndDate(e.target.value)}
                                 className={`border rounded px-3 py-2 ${isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-gray-900"}`}
                             />
