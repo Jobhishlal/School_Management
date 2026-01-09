@@ -12,31 +12,33 @@ import ParentRouter from './presentation/express/ParentRooute';
 import Leaverouter from './presentation/express/LeaveRoutes';
 import cors from 'cors'
 import { startFeeExpiryCron } from './infrastructure/cron/FeeExpiryCron';
-import  http  from 'http';
+import http from 'http';
 
 import { initSocket } from './infrastructure/socket/socket';
 
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:5173",  
-  credentials: true                
+  origin: "http://localhost:5173",
+  credentials: true
 }));
 app.use(express.json());
 app.use(passport.initialize());
 
 app.use("/admin", adminRoutes);
-app.use('/auth',AuthRouter)
-app.use('/superadmin',MainRouter)
-app.use('/student',Studentrouter)
-app.use('/teacher',Teacherrouter,Leaverouter)
-app.use('/parents',ParentRouter)
+app.use('/auth', AuthRouter)
+app.use('/superadmin', MainRouter)
+app.use('/student', Studentrouter)
+app.use('/teacher', Teacherrouter);
+app.use('/teacher', Leaverouter);
+app.use('/parents', ParentRouter);
+
 
 export const httpServer = http.createServer(app);
 connectDB().then(() => {
   startFeeExpiryCron()
   initSocket(httpServer)
-  httpServer.listen(process.env.PORT || 5000, () => {
-    console.log(` Server running on port ${process.env.PORT || 5000}`);
+  httpServer.listen(process.env.PORT || 5000, () => { 
+  console.log(`Server running on port ${process.env.PORT || 5000}`);
   });
 });

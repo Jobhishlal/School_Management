@@ -37,14 +37,17 @@ export class LeaveManagementController {
       });
 
     } catch (error: any) {
-      if (error.message?.includes("already existed")) {
+      console.log("error", error)
+      if (error.message?.includes("already existed") || error.message?.includes("Insufficient")) {
         res.status(StatusCodes.BAD_REQUEST).json({
           message: error.message,
         });
         return;
       }
+      console.error("Leave creation error:", error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: "Internal server error",
+        error: error.message
       });
     }
   }
@@ -75,7 +78,7 @@ export class LeaveManagementController {
   async updateLeaveStatus(req: AuthRequest, res: Response): Promise<void> {
     try {
       const adminId = req.user?.id;
-      console.log("reacher",adminId)
+      console.log("reacher", adminId)
       const { leaveId, status, adminRemark } = req.body;
 
       if (!adminId) {
@@ -84,7 +87,7 @@ export class LeaveManagementController {
       }
 
       const updatedLeave = await this._updateLeaveStatus.execute(leaveId, status, adminId, adminRemark);
-      console.log("updateleave",updatedLeave)
+      console.log("updateleave", updatedLeave)
 
       if (!updatedLeave) {
         res.status(StatusCodes.NOT_FOUND).json({ message: "Leave request not found" });
@@ -92,8 +95,13 @@ export class LeaveManagementController {
       }
 
       res.status(StatusCodes.OK).json({ message: "Leave status updated successfully", leave: updatedLeave });
-    } catch (error) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+    } catch (error: any) {
+      console.log("error",error)
+      if (error.message?.includes("Insufficient")) {
+        res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+      } else {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+      }
     }
   }
 }

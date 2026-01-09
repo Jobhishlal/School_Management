@@ -9,16 +9,19 @@ import { MongoTeacher } from "../../infrastructure/repositories/MongoTeacherRepo
 import { authMiddleware } from "../../infrastructure/middleware/AuthMiddleWare";
 import { AuthRequest } from "../../infrastructure/types/AuthRequest";
 
+import { MongoInstituteProfileManage } from "../../infrastructure/repositories/IMongoInstituteManage";
+
 const Leaverouter = Router()
 
 
 const leaverepo = new LeaveManagementMongoRepo()
 const teacherRepo = new MongoTeacher();
+const instituterepo = new MongoInstituteProfileManage();
 
-const createleave = new CreateLeaveUseCase(leaverepo)
+const createleave = new CreateLeaveUseCase(leaverepo, teacherRepo)
 const getTeacherLeaves = new GetTeacherLeavesUseCase(leaverepo);
 const getAllLeaves = new GetAllLeavesUseCase(leaverepo);
-const updateLeaveStatus = new UpdateLeaveStatusUseCase(leaverepo, teacherRepo);
+const updateLeaveStatus = new UpdateLeaveStatusUseCase(leaverepo, teacherRepo, instituterepo);
 
 const leavemanagecontroller = new LeaveManagementController(
     createleave,
@@ -38,7 +41,6 @@ Leaverouter.get('/leave/teacher-history',
     (req, res) => leavemanagecontroller.getTeacherLeaves(req as AuthRequest, res)
 )
 
-// Routes moved to AdminRoutes.ts
 
 export default Leaverouter
 

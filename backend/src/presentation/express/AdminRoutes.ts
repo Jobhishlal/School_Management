@@ -683,10 +683,10 @@ import { GetAllLeavesUseCase } from "../../applications/useCases/Leavemanagement
 import { UpdateLeaveStatusUseCase } from "../../applications/useCases/LeavemanagementUseCase.ts/UpdateLeaveStatusUseCase";
 
 const leaverepo = new LeaveManagementMongoRepo();
-const createleave = new CreateLeaveUseCase(leaverepo);
+const createleave = new CreateLeaveUseCase(leaverepo, value);
 const getTeacherLeaves = new GetTeacherLeavesUseCase(leaverepo);
 const getAllLeaves = new GetAllLeavesUseCase(leaverepo);
-const updateLeaveStatus = new UpdateLeaveStatusUseCase(leaverepo, value); 
+const updateLeaveStatus = new UpdateLeaveStatusUseCase(leaverepo, value, instituterepo);
 
 const leavemanagecontroller = new LeaveManagementController(
   createleave,

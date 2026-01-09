@@ -6,7 +6,7 @@ export class LeaveManagementEntity {
 
     public readonly teacherId: string,
 
-    public leaveType: "CASUAL" | "SICK" | "PAID" | "UNPAID",
+    public leaveType: "CASUAL" | "SICK" | "PAID" | "UNPAID" | "EXTRA",
 
     public startDate: Date,
     public endDate: Date,

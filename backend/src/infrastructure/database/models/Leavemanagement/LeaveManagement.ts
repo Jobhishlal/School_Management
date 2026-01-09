@@ -3,7 +3,7 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 export interface InterLeaveManagement extends Document {
   teacherId: Types.ObjectId;
 
-  leaveType: "CASUAL" | "SICK" | "PAID" | "UNPAID";
+  leaveType: "CASUAL" | "SICK" | "PAID" | "UNPAID" | "EXTRA";
 
   startDate: Date;
   endDate: Date;
@@ -15,7 +15,7 @@ export interface InterLeaveManagement extends Document {
 
   appliedAt: Date;
 
-  actionBy?: Types.ObjectId;
+  actionBy?: string;
   actionAt?: Date;
   adminRemark?: string;
   warningMessage?: string;
@@ -37,7 +37,7 @@ const LeaveManagementSchema = new Schema<InterLeaveManagement>(
 
     leaveType: {
       type: String,
-      enum: ["CASUAL", "SICK", "PAID", "UNPAID"],
+      enum: ["CASUAL", "SICK", "PAID", "UNPAID", "EXTRA"],
 
     },
 
@@ -75,8 +75,8 @@ const LeaveManagementSchema = new Schema<InterLeaveManagement>(
     },
 
     actionBy: {
-      type: Types.ObjectId,
-      ref: "Admin",
+      type: String,
+      // ref: "Admin", // Removed ref to allow arbitrary string IDs like "main_admin"
     },
 
     actionAt: {

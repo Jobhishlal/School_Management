@@ -16,7 +16,7 @@ export const toLeaveManagementEntity = (
     : undefined;
 
   return new LeaveManagementEntity(
-    doc.id.toString(),
+    (doc._id || doc.id).toString(),
 
     teacherIdStr,
 

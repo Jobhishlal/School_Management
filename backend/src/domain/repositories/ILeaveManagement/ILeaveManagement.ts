@@ -22,4 +22,5 @@ export interface InterfaceLeaveManagement {
     actionBy: string,
     adminRemark?: string
   ): Promise<LeaveManagementEntity | null>;
+  findById(id: string): Promise<LeaveManagementEntity | null>;
 }

@@ -4,10 +4,10 @@ import { IGetAssignmentTeacher } from "../../../domain/UseCaseInterface/Assignme
 
 
 
-export class GetTimeTableteacherList implements IGetAssignmentTeacher{
-    constructor(private readonly assignrepo:IAssignmentRepository){}
-   async execute(teacherId: string): Promise<TeacherTimetableInfo[]> {
-       const data = await this.assignrepo.getTeacherTimeTableinfo(teacherId)
-       return data
-   }
+export class GetTimeTableteacherList implements IGetAssignmentTeacher {
+    constructor(private readonly assignrepo: IAssignmentRepository) { }
+    async execute(teacherId: string): Promise<{ timetable: TeacherTimetableInfo[], leaveBalance: { sickLeave: number, casualLeave: number } }> {
+        const data = await this.assignrepo.getTeacherTimeTableinfo(teacherId)
+        return data
+    }
 }

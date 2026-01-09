@@ -2,9 +2,11 @@ import { CreateLeaveDTO } from "../../dto/LeaveManagement/CreateLeaveManagementD
 import { ICreateLeaveusecase } from "../../../domain/UseCaseInterface/LeaveManagement/ICreateLeaveUseCase";
 import { InterfaceLeaveManagement } from "../../../domain/repositories/ILeaveManagement/ILeaveManagement";
 import { LeaveManagementEntity } from "../../../domain/entities/LeaveManagement/LeaveManagementEntity";
+import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";
 export class CreateLeaveUseCase implements ICreateLeaveusecase {
   constructor(
-    private readonly create: InterfaceLeaveManagement
+    private readonly create: InterfaceLeaveManagement,
+    private readonly teacherRepo: ITeacherCreate
   ) { }
 
   async execute(
@@ -34,6 +36,25 @@ export class CreateLeaveUseCase implements ICreateLeaveusecase {
       (1000 * 60 * 60 * 24) +
       1;
 
+
+    if (data.leaveType === "CASUAL" || data.leaveType === "SICK") {
+      const teacher = await this.teacherRepo.findById(teacherId);
+      if (!teacher) {
+        throw new Error("Teacher not found");
+      }
+
+      const balance =
+        data.leaveType === "SICK"
+          ? (teacher.leaveBalance?.sickLeave ?? 0)
+          : (teacher.leaveBalance?.casualLeave ?? 0);
+
+      if (balance < totalDays) {
+        throw new Error(
+          `Insufficient ${data.leaveType.toLowerCase()} leave balance. Available: ${balance} days, Requested: ${totalDays} days.`
+        );
+      }
+    }
+
     const leaveMonth = startDate.getMonth() + 1;
     const leaveYear = startDate.getFullYear();
 
@@ -47,7 +68,7 @@ export class CreateLeaveUseCase implements ICreateLeaveusecase {
     let warningMessage = "";
     if (
       (data.leaveType === "CASUAL" || data.leaveType === "SICK") &&
-      currentMonthLeaves >= 1
+      currentMonthLeaves >= 5
     ) {
       warningMessage = `Monthly limit exceeded for ${data.leaveType} leave. already taken ${currentMonthLeaves} leaves in this month`;
     }
@@ -66,7 +87,7 @@ export class CreateLeaveUseCase implements ICreateLeaveusecase {
       undefined,
       undefined,
       warningMessage
-    );
+    ); 
 
     return await this.create.create(leaveEntity);
   }

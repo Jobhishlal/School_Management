@@ -61,21 +61,7 @@ export class LeaveManagementMongoRepo implements InterfaceLeaveManagement {
 
     async getAllLeaves(): Promise<LeaveManagementEntity[]> {
         const docs = await LeaveManagementModel.find().populate("teacherId").sort({ createdAt: -1 });
-        // Provided mapper might fail if teacherId is populated object instead of ObjectId string.
-        // Assuming toLeaveManagementEntity handles it or I check if teacherId is object.
-        // The original toLeaveManagementEntity uses doc.teacherId.toString(). 
-        // If populated, .toString() on an object usually returns "[object Object]" or id if it has custom toString.
-        // Mongoose documents usually assume .id or ._id works. 
-        // Let's modify the mapper later if needed, but for now I will NOT populate to avoid breaking basic mapper, 
-        // OR I will fix logic in Controller to fetch teacher details separately if needed?
-        // Actually, for Admin view, we need Teacher Name. 
-        // If I populate, `doc.teacherId` becomes an object. `doc.teacherId.toString()` returns the ID if it is a populated document? 
-        // Let's check `toLeaveManagementEntity` again.
-        // It does `doc.teacherId.toString()`.
-        // If I populate, I should probably handle it.
-        // For now, let's NOT populate in this method and handle fetching teacher info if needed or rely on a different aggregation.
-        // But usually simple way is populate.
-        // Let's check LeaveManagement schema. teacherId ref is "Teacher".
+
 
         return docs.map(toLeaveManagementEntity);
     }
@@ -83,7 +69,7 @@ export class LeaveManagementMongoRepo implements InterfaceLeaveManagement {
     async updateStatus(leaveId: string, status: string, actionBy: string, adminRemark?: string): Promise<LeaveManagementEntity | null> {
         const updateData: any = {
             status: status,
-            actionBy: new Types.ObjectId(actionBy),
+            actionBy: actionBy,
             actionAt: new Date(),
         };
         if (adminRemark) {
@@ -95,6 +81,11 @@ export class LeaveManagementMongoRepo implements InterfaceLeaveManagement {
             updateData,
             { new: true }
         );
+        return doc ? toLeaveManagementEntity(doc) : null;
+    }
+
+    async findById(id: string): Promise<LeaveManagementEntity | null> {
+        const doc = await LeaveManagementModel.findById(id);
         return doc ? toLeaveManagementEntity(doc) : null;
     }
 }

@@ -90,7 +90,7 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
 
 
 
-  async getTeacherTimeTableinfo(teacherId: string): Promise<TeacherTimetableInfo[]> {
+  async getTeacherTimeTableinfo(teacherId: string): Promise<{ timetable: TeacherTimetableInfo[], leaveBalance: { sickLeave: number, casualLeave: number } }> {
 
     const timetable = await TimetableModel.find({ "days.periods.teacherId": teacherId })
 
@@ -130,13 +130,20 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
     });
 
 
-    return Object.entries(classesMap).map(([classId, val]) => ({
-      classId,
-      className: val.className,
-      division: val.division,
-      divisions: val.divisions,
-      subjects: Array.from(val.subjects),
-    }));
+    const teacher = await TeacherModel.findById(teacherId).lean();
+    const leaveBalance = teacher?.leaveBalance || { sickLeave: 5, casualLeave: 5 };
+
+
+    return {
+      timetable: Object.entries(classesMap).map(([classId, val]) => ({
+        classId,
+        className: val.className,
+        division: val.division,
+        divisions: val.divisions,
+        subjects: Array.from(val.subjects),
+      })),
+      leaveBalance
+    };
   }
 
   async updateAssignmentDTO(id: string, update: Partial<AssignmentDTO>): Promise<AssignmentEntity | null> {
@@ -334,9 +341,7 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
       submission.badge = data.badge;
       submission.status = data.status || 'Graded';
     } else {
-      // Option: create a submission entry even if no file was uploaded, 
-      // useful if teacher wants to grade a non-submission (e.g. give 0)
-      // For now, let's assume we can only grade existing submissions or we push a new one
+     
       assignment.assignmentSubmitFile.push({
         studentId: new mongoose.Types.ObjectId(data.studentId),
         url: "",

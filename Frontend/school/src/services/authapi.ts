@@ -935,6 +935,7 @@ export const LeaveRequest = async (leavedata: CreateLeaveDTO) => {
   const token = localStorage.getItem("token");
 
   const response = await api.post(
+
     "/teacher/leave/request",
     leavedata,
     {
@@ -944,6 +945,7 @@ export const LeaveRequest = async (leavedata: CreateLeaveDTO) => {
       },
     }
   );
+   console.log("i am reached heree",response)
 
   return response.data;
 }

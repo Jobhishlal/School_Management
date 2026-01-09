@@ -10,7 +10,7 @@ import { Modal } from "../../../components/common/Modal";
 import { Plus } from "lucide-react";
 
 export const LeaveManagement: React.FC = () => {
-  type LeaveType = "CASUAL" | "SICK" | "PAID" | "UNPAID";
+  type LeaveType = "CASUAL" | "SICK" | "PAID" | "UNPAID" | "EXTRA";
 
   const [leaveData, setLeaveData] = useState<{
     leaveType: LeaveType | "";
@@ -64,7 +64,7 @@ export const LeaveManagement: React.FC = () => {
       setIsSubmitting(true);
       const payload: CreateLeaveDTO = {
         ...leaveData,
-        leaveType: leaveData.leaveType as "CASUAL" | "SICK" | "PAID" | "UNPAID",
+        leaveType: leaveData.leaveType as "CASUAL" | "SICK" | "PAID" | "UNPAID" | "EXTRA",
         startDate: new Date(leaveData.startDate),
         endDate: new Date(leaveData.endDate),
       };
@@ -98,6 +98,31 @@ export const LeaveManagement: React.FC = () => {
   const sickLeaveTaken = sickLeaveTotal - sickLeaveBalance;
   const casualLeaveTaken = casualLeaveTotal - casualLeaveBalance;
 
+  // Logic for Leave Options and Button Label
+  const leaveOptions: string[] = ["PAID", "UNPAID"];
+
+  if (sickLeaveBalance > 0) {
+    leaveOptions.push("SICK");
+  }
+  if (casualLeaveBalance > 0) {
+    leaveOptions.push("CASUAL");
+  }
+
+  // If either balance is exhausted, allow EXTRA
+  // User might want to take EXTRA SICK leave even if CASUAL is available, 
+  // or generally if they are out of specific leaves.
+  // The simplest UX is to show EXTRA if *any* standard leave is exhausted 
+  // OR if both are exhausted. 
+  // Let's allow EXTRA if either is <= 0.
+  const isSickExhausted = sickLeaveBalance <= 0;
+  const isCasualExhausted = casualLeaveBalance <= 0;
+
+  if (isSickExhausted || isCasualExhausted) {
+    leaveOptions.push("EXTRA");
+  }
+
+  const isFullyExhausted = isSickExhausted && isCasualExhausted;
+
 
   return (
     <div className="p-6">
@@ -105,10 +130,11 @@ export const LeaveManagement: React.FC = () => {
         <h1 className="text-2xl font-bold text-gray-800">Leave Management</h1>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${isFullyExhausted ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"
+            } text-white`}
         >
           <Plus size={20} />
-          Apply Leave
+          {isFullyExhausted ? "Apply Extra Leave" : "Apply Leave"}
         </button>
       </div>
 
@@ -127,7 +153,7 @@ export const LeaveManagement: React.FC = () => {
             </div>
             <div>
               <p className="text-sm text-gray-500">Balance</p>
-              <p className="text-2xl font-bold text-green-600">{sickLeaveBalance}</p>
+              <p className={`text-2xl font-bold ${sickLeaveBalance <= 0 ? 'text-red-600' : 'text-green-600'}`}>{sickLeaveBalance}</p>
             </div>
           </div>
         </div>
@@ -145,7 +171,7 @@ export const LeaveManagement: React.FC = () => {
             </div>
             <div>
               <p className="text-sm text-gray-500">Balance</p>
-              <p className="text-2xl font-bold text-green-600">{casualLeaveBalance}</p>
+              <p className={`text-2xl font-bold ${casualLeaveBalance <= 0 ? 'text-red-600' : 'text-green-600'}`}>{casualLeaveBalance}</p>
             </div>
           </div>
         </div>
@@ -156,7 +182,7 @@ export const LeaveManagement: React.FC = () => {
           <SelectInput
             label="Leave Type"
             value={leaveData.leaveType}
-            options={["CASUAL", "SICK", "PAID", "UNPAID"]}
+            options={leaveOptions}
             required
             onChange={(val) =>
               setLeaveData((prev) => ({ ...prev, leaveType: val as LeaveType }))
