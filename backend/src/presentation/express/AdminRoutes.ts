@@ -664,7 +664,6 @@ Adminrouter.post("/assign-student-class", (req, res) => {
   classstudnetmanagecontroller.StudentDivisionSepareate(req, res)
 })
 
-// class delete 
 Adminrouter.put('/delete-classordivision/:id', (req, res) => {
   ClassController.deleteClass(req, res)
 })
@@ -674,5 +673,36 @@ Adminrouter.delete('/delete-announcement/:id', (req, res) => {
   announcementController.delete(req, res)
 })
 
+
+
+import { LeaveManagementController } from "../http/controllers/LeaveManagement/LeaveManageController";
+import { LeaveManagementMongoRepo } from "../../infrastructure/repositories/LeaveManagement/MongoLeaveManagement";
+import { CreateLeaveUseCase } from "../../applications/useCases/LeavemanagementUseCase.ts/LeaveCreateUseCase";
+import { GetTeacherLeavesUseCase } from "../../applications/useCases/LeavemanagementUseCase.ts/GetTeacherLeavesUseCase";
+import { GetAllLeavesUseCase } from "../../applications/useCases/LeavemanagementUseCase.ts/GetAllLeavesUseCase";
+import { UpdateLeaveStatusUseCase } from "../../applications/useCases/LeavemanagementUseCase.ts/UpdateLeaveStatusUseCase";
+
+const leaverepo = new LeaveManagementMongoRepo();
+const createleave = new CreateLeaveUseCase(leaverepo);
+const getTeacherLeaves = new GetTeacherLeavesUseCase(leaverepo);
+const getAllLeaves = new GetAllLeavesUseCase(leaverepo);
+const updateLeaveStatus = new UpdateLeaveStatusUseCase(leaverepo, value); 
+
+const leavemanagecontroller = new LeaveManagementController(
+  createleave,
+  getTeacherLeaves,
+  getAllLeaves,
+  updateLeaveStatus
+);
+
+Adminrouter.get('/leave/all-requests',
+  authMiddleware,
+  (req, res) => leavemanagecontroller.getAllLeaves(req, res)
+);
+
+Adminrouter.put('/leave/update-status',
+  authMiddleware,
+  (req, res) => leavemanagecontroller.updateLeaveStatus(req as AuthRequest, res)
+);
 
 export default Adminrouter;

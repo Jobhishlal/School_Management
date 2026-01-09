@@ -5,7 +5,7 @@ export interface TeacherDocument {
   filename: string;
   uploadedAt: Date;
 }
-interface Subject { 
+interface Subject {
   name: string;
   code: string;
 }
@@ -22,9 +22,12 @@ export interface Teachers extends Document {
   role: string;
   blocked: boolean;
   documents?: TeacherDocument[];
-  subjects:Subject[],
+  subjects: Subject[],
   department?: "LP" | "UP" | "HS";
-
+  leaveBalance: {
+    sickLeave: number;
+    casualLeave: number;
+  };
 }
 
 const TeacherDocumentSchema = new Schema<TeacherDocument>(
@@ -33,7 +36,7 @@ const TeacherDocumentSchema = new Schema<TeacherDocument>(
     filename: { type: String, required: true },
     uploadedAt: { type: Date, default: Date.now },
   },
-  { _id: false } 
+  { _id: false }
 );
 
 const TeacherSchema = new Schema<Teachers>(
@@ -46,13 +49,17 @@ const TeacherSchema = new Schema<Teachers>(
     blocked: { type: Boolean, default: false },
     Password: { type: String },
     documents: { type: [TeacherDocumentSchema], default: [] },
-    subjects:[
-        {
-            name: { type: String, required: true },
-            code: { type: String, required: true },
-        }
+    subjects: [
+      {
+        name: { type: String, required: true },
+        code: { type: String, required: true },
+      }
     ],
-   department: { type: String, enum: ["LP", "UP", "HS"] } 
+    department: { type: String, enum: ["LP", "UP", "HS"] },
+    leaveBalance: {
+      sickLeave: { type: Number, default: 5 },
+      casualLeave: { type: Number, default: 5 }
+    }
   },
   { timestamps: true }
 );

@@ -9,6 +9,7 @@ import MainRouter from './presentation/express/MainAdminRoute';
 import Studentrouter from './presentation/express/StudentRoute';
 import Teacherrouter from './presentation/express/TeacherRoutes';
 import ParentRouter from './presentation/express/ParentRooute';
+import Leaverouter from './presentation/express/LeaveRoutes';
 import cors from 'cors'
 import { startFeeExpiryCron } from './infrastructure/cron/FeeExpiryCron';
 import  http  from 'http';
@@ -28,7 +29,7 @@ app.use("/admin", adminRoutes);
 app.use('/auth',AuthRouter)
 app.use('/superadmin',MainRouter)
 app.use('/student',Studentrouter)
-app.use('/teacher',Teacherrouter)
+app.use('/teacher',Teacherrouter,Leaverouter)
 app.use('/parents',ParentRouter)
 
 export const httpServer = http.createServer(app);

@@ -50,7 +50,7 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
     { icon: BookOpen, text: "Exams & Marks", path: "/teacher/exam-management" },
     { icon: Clock, text: "Schedule", path: "/teacher/schedule" },
     { icon: MessageCircle, text: "Communication", path: "/teacher/communication" },
-    { icon: MessageCircle, text: "Communication", path: "/teacher/communication" },
+    { icon: MessageCircle, text: "Leave Management", path: "/teacher/leave-management" },
     { icon: UserCog, text: "Parents Details", path: "/teacher/parents" },
     { icon: Users, text: "Student Management", path: "/teacher/students" },
     { icon: Settings, text: "Settings", path: "/teacher/settings" },

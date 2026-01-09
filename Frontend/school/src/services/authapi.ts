@@ -12,6 +12,7 @@ import type { UpdateExamDTO } from "../types/UpdateExam";
 import { da } from "zod/v4/locales";
 import type { ExamEntity } from "../types/ExamEntity";
 import type { CreateExamMarkRequestDTO } from "../types/CreateExamMarkDto";
+import type { CreateLeaveDTO } from "../types/LeaveRequest/CreateLeaveRequest";
 
 export const GetSubAdmins = async () => {
   const res = await api.get(API_ROUTES.ADMIN.GET_SUBADMINS);
@@ -925,4 +926,56 @@ export const studentAttendanceDateFilter = async (
 
 export const updateExamMark = async (data: any, config = {}) => {
   return await api.put("/teacher/exammark/update", data, config);
+};
+
+
+
+
+export const LeaveRequest = async (leavedata: CreateLeaveDTO) => {
+  const token = localStorage.getItem("token");
+
+  const response = await api.post(
+    "/teacher/leave/request",
+    leavedata,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  return response.data;
+}
+
+export const GetTeacherLeaves = async () => {
+  const token = localStorage.getItem("token");
+  const res = await api.get("/teacher/leave/teacher-history", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return res.data.leaves;
+};
+
+export const GetAllLeavesRequest = async () => {
+  const token = localStorage.getItem("token");
+  const res = await api.get("/admin/leave/all-requests", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return res.data.leaves;
+};
+
+export const UpdateLeaveStatus = async (
+  leaveId: string,
+  status: string,
+  adminRemark?: string
+) => {
+  const token = localStorage.getItem("token");
+  const res = await api.put("/admin/leave/update-status", {
+    leaveId,
+    status,
+    adminRemark,
+  }, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return res.data;
 };

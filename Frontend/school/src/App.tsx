@@ -167,6 +167,8 @@ import TakeMarks from "./pages/Teacher/Exam/ExamMarkListOut";
 import { TeacherParentList } from "./pages/Teacher/TeacherParentList";
 import ParentExamResults from "./pages/Parents/ParentExamResults";
 import ParentProfile from "./pages/Parents/ParentProfile";
+import { LeaveManagement } from "./pages/Teacher/LeaveManagement/LeaveManagement";
+import { AdminLeaveRequest } from "./pages/admin/LeaveManagement/AdminLeaveRequest";
 function ErrorFallback({ error }: { error: Error }) {
   return <div role="alert">Something went wrong: {error.message}</div>;
 }
@@ -204,6 +206,7 @@ function App() {
           <Route path='/admin-approval' element={<PrivateRoute><SuperAdminExpenseApproval /></PrivateRoute>} />
           <Route path='/finance-report' element={<PrivateRoute><RevenueGenerateReport /></PrivateRoute>} />
           <Route path='/Announcement' element={<PrivateRoute><CreateAnnouncement /></PrivateRoute>} />
+          <Route path='/leave-management' element={<PrivateRoute><AdminLeaveRequest /></PrivateRoute>} />
 
 
 
@@ -232,7 +235,9 @@ function App() {
           <Route path="/teacher/attandance" element={<AttendanceCreatePage />} />
           <Route path="/teacher/exam-management" element={<CreateExam />} />
           <Route path="/teacher/parents" element={<TeacherParentList />} />
-          <Route path="/teacher/exam-mark" element={<TakeMarks />} />
+          {/* <Route path="/teacher/exam-mark" element={<TakeMarks />} /> */}
+          <Route path="/teacher/leave-management" element={<LeaveManagement />} />
+
         </Route>
 
         {/* --------------------PARENT ROUTES ------------------- */}

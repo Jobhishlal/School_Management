@@ -59,7 +59,7 @@ export class ExamMongoRepo implements IExamRepository {
   async findPublishedExamsByClass(classId: string): Promise<ExamEntity[]> {
     const exams = await ExamModel.find({
       classId: new Types.ObjectId(classId),
-    }).sort({ examDate: 1 });
+    }).sort({ examDate: -1 });
     console.log(exams)
 
 

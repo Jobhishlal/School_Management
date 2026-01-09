@@ -73,7 +73,7 @@ const AnnouncementListOut = ({
 
   return (
     <div className="mt-8">
-      <h2 className="text-lg font-bold mb-4">Announcements</h2>
+     
 
       {loading ? (
         <p className="text-sm opacity-70">Loading announcements...</p>

@@ -18,6 +18,6 @@ const AddressSchema = new Schema<AddressInterface>(
     pincode: { type: String, required: true },
   },
   { timestamps: true }
-);
+   );  
 
 export const AddressModel = mongoose.model<AddressInterface>("Addresses", AddressSchema);

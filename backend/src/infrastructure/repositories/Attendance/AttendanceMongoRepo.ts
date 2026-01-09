@@ -388,11 +388,10 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
     let todayMorning: AttendanceStatus | "Not Marked" = "Not Marked";
     let todayAfternoon: AttendanceStatus | "Not Marked" = "Not Marked";
 
-    const todayMidnight = new Date();
-    todayMidnight.setHours(0, 0, 0, 0);
+    const todayString = new Date().toDateString();
 
     records.forEach(doc => {
-      // ... (existing code for finding item and counting stats)
+   
       const item = doc.attendance.find(
         a => a.studentId.toString() === studentId.toString()
       );
@@ -414,9 +413,8 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
         remark: item.remarks,
       });
 
-      // Strict Timestamp Comparison for Today
-      // Use tolerance of 1000ms just in case of slight drift, though setHours should be exact
-      if (Math.abs(doc.date.getTime() - todayMidnight.getTime()) < 2000) {
+     
+      if (doc.date.toDateString() === todayString) {
         if (doc.session === "Morning") todayMorning = item.status as AttendanceStatus;
         if (doc.session === "Afternoon") todayAfternoon = item.status as AttendanceStatus;
       }
@@ -478,7 +476,7 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
 
     const present = history.filter(h => h.status === "Present").length;
     const absent = history.filter(h => h.status === "Absent").length;
-    // const leave = history.filter(h => h.status === "Leave").length; // If needed
+    
     const total = history.length;
     const percentage = total ? Math.round((present / total) * 100) : 0;
 

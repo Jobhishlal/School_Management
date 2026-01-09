@@ -132,7 +132,7 @@ const AdminTimeTablePage: React.FC = () => {
         }
 
         if (startH >= 16) {
-          showToast("Cannot add periods after 4:00 PM", "error");
+          showToast("LAST PERIOD OVER 4 PM", "error");
           return;
         }
       }

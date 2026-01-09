@@ -119,7 +119,7 @@ export default function SchoolNavbar({ }: Props) {
       label: "COMMUNICATION",
       links: [
         { icon: MessageCircle, text: "Communication", path: "/communication" },
-        { icon: FileText, text: "Leave Request", path: "/leave-request" },
+        { icon: FileText, text: "Leave Request", path: "/leave-management" },
         { icon: Calendar, text: "Time Table", path: "/timetable-management" },
       ],
     },
@@ -138,25 +138,17 @@ export default function SchoolNavbar({ }: Props) {
 
   // ------------------ LOGOUT FUNCTION ------------------
   const handleLogout = () => {
-    // Clear admin tokens only
+  
     localStorage.removeItem("adminAccessToken");
 
-    // Also clear generic ones if they match admin to avoid confusion, 
-    // but primarily we rely on adminAccessToken now for protected routes.
-    // However, if we are in a shared environment, we might want to keep others.
-    // For safety in this "concurrent" requirement, we shouldn't wipe everything.
-
-    // If we are currently "acting" as admin in this tab, we might want to clear the 'role' 
-    // key if it's set to admin, but that key is shared. This is the tricky part of localStorage.
-    // The "role" key in localStorage is essentially a global "last active role". 
-    // We should probably stop relying on it for critical logic.
+ 
 
     if (localStorage.getItem("role") === "super_admin" || localStorage.getItem("role") === "sub_admin") {
       localStorage.removeItem("role");
       localStorage.removeItem("accessToken");
     }
 
-    // Navigate to login
+
     navigate("/login", { replace: true });
   };
 

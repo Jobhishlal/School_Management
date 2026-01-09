@@ -18,10 +18,14 @@ export default function PrivateRoute({ children }: { children: JSX.Element }) {
     path.startsWith("/finance-management") ||
     path.startsWith("/expense-management") ||
     path.startsWith("/instituteprofile") ||
-    path.startsWith("/Announcement")
+    path.startsWith("/Announcement") ||
+    path.startsWith("/leave-management")
   ) {
     const token = localStorage.getItem("adminAccessToken");
-    if (token) isAuthenticated = true;
+    const role = localStorage.getItem("role");
+    if (token || (role === "super_admin" || role === "sub_admin") && localStorage.getItem("accessToken")) {
+      isAuthenticated = true;
+    }
   } else if (path.startsWith("/teacher")) {
     const token = localStorage.getItem("teacherAccessToken");
     if (token) isAuthenticated = true;
