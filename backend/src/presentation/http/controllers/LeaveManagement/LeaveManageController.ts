@@ -3,17 +3,18 @@ import { ICreateLeaveusecase } from "../../../../domain/UseCaseInterface/LeaveMa
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 import { CreateLeaveDTO } from "../../../../applications/dto/LeaveManagement/CreateLeaveManagementDTO";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
+import { IGetTeacherUseCase } from "../../../../domain/UseCaseInterface/LeaveManagement/IGetTeacherUseCase";
+import { IGetAllLeavesUseCase } from "../../../../domain/UseCaseInterface/LeaveManagement/IGetAllLeavesUseCase";
+import { IUpdateLeaveStatusUseCase } from "../../../../domain/UseCaseInterface/LeaveManagement/IUpdateLeaveStatusUseCase";
+import { LeaveError } from "../../../../domain/enums/LeaveError";
 
-import { GetTeacherLeavesUseCase } from "../../../../applications/useCases/LeavemanagementUseCase.ts/GetTeacherLeavesUseCase";
-import { GetAllLeavesUseCase } from "../../../../applications/useCases/LeavemanagementUseCase.ts/GetAllLeavesUseCase";
-import { UpdateLeaveStatusUseCase } from "../../../../applications/useCases/LeavemanagementUseCase.ts/UpdateLeaveStatusUseCase";
 
 export class LeaveManagementController {
   constructor(
     private readonly _leavecreate: ICreateLeaveusecase,
-    private readonly _getTeacherLeaves: GetTeacherLeavesUseCase,
-    private readonly _getAllLeaves: GetAllLeavesUseCase,
-    private readonly _updateLeaveStatus: UpdateLeaveStatusUseCase
+    private readonly _getTeacherLeaves: IGetTeacherUseCase,
+    private readonly _getAllLeaves: IGetAllLeavesUseCase,
+    private readonly _updateLeaveStatus: IUpdateLeaveStatusUseCase
   ) { }
 
   async LeaveCreate(req: AuthRequest, res: Response): Promise<void> {
@@ -26,6 +27,7 @@ export class LeaveManagementController {
         return;
       }
       const data: CreateLeaveDTO = req.body;
+
       const leave = await this._leavecreate.execute(
         teacherId,
         data
@@ -38,13 +40,16 @@ export class LeaveManagementController {
 
     } catch (error: any) {
       console.log("error", error)
-      if (error.message?.includes("already existed") || error.message?.includes("Insufficient")) {
+      if (
+        error.message?.includes("already existed") ||
+        error.message?.includes("Insufficient") ||
+        Object.values(LeaveError).includes(error.message)
+      ) {
         res.status(StatusCodes.BAD_REQUEST).json({
           message: error.message,
         });
         return;
       }
-      console.error("Leave creation error:", error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: "Internal server error",
         error: error.message
@@ -96,7 +101,7 @@ export class LeaveManagementController {
 
       res.status(StatusCodes.OK).json({ message: "Leave status updated successfully", leave: updatedLeave });
     } catch (error: any) {
-      console.log("error",error)
+      console.log("error", error)
       if (error.message?.includes("Insufficient")) {
         res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
       } else {

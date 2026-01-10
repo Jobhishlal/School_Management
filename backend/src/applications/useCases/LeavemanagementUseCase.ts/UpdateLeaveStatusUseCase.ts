@@ -4,8 +4,9 @@ import { LeaveManagementEntity } from "../../../domain/entities/LeaveManagement/
 import { IInstituterepo } from "../../../domain/repositories/SchoolProfile.ts/IInstituteRepo";
 import { SendEMail } from "../../../infrastructure/providers/EmailService";
 import { EmailTemplates } from "../../../shared/constants/utils/Email/emailTemplates";
+import { IUpdateLeaveStatusUseCase } from "../../../domain/UseCaseInterface/LeaveManagement/IUpdateLeaveStatusUseCase";
 
-export class UpdateLeaveStatusUseCase {
+export class UpdateLeaveStatusUseCase implements IUpdateLeaveStatusUseCase{
     constructor(
         private leaveRepo: InterfaceLeaveManagement,
         private teacherRepo: ITeacherCreate,
@@ -90,7 +91,7 @@ export class UpdateLeaveStatusUseCase {
                     }
                 } catch (emailError) {
                     console.error("Failed to send leave status email:", emailError);
-                    // Do not throw error, as the main operation succeeded
+               
                 }
             }
         }

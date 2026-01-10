@@ -1,5 +1,5 @@
 export interface CreateLeaveDTO {
-  leaveType: "CASUAL" | "SICK" | "PAID" | "UNPAID";
+  leaveType: "CASUAL" | "SICK" | "PAID" | "UNPAID" | "EXTRA";
   startDate: Date;
   endDate: Date;
   reason: string;
@@ -9,7 +9,7 @@ export interface LeaveRequestEntity {
   id: string;
   teacherId: string;
   teacherName?: string;
-  leaveType: "CASUAL" | "SICK" | "PAID" | "UNPAID";
+  leaveType: "CASUAL" | "SICK" | "PAID" | "UNPAID" | "EXTRA";
   startDate: string;
   endDate: string;
   totalDays: number;

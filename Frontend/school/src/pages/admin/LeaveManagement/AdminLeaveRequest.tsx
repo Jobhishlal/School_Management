@@ -2,10 +2,14 @@ import React, { useEffect, useState } from "react";
 import { GetAllLeavesRequest, UpdateLeaveStatus } from "../../../services/authapi";
 import type { LeaveRequestEntity } from "../../../types/LeaveRequest/CreateLeaveRequest";
 import { showToast } from "../../../utils/toast";
+import { useTheme } from "../../../components/layout/ThemeContext";
+import { Modal } from "../../../components/common/Modal";
 
 export const AdminLeaveRequest: React.FC = () => {
+    const { isDark } = useTheme();
     const [leaves, setLeaves] = useState<LeaveRequestEntity[]>([]);
     const [loading, setLoading] = useState(false);
+    const [selectedLeave, setSelectedLeave] = useState<LeaveRequestEntity | null>(null);
 
 
     const fetchLeaves = async () => {
@@ -25,14 +29,16 @@ export const AdminLeaveRequest: React.FC = () => {
         fetchLeaves();
     }, []);
 
-    const handleAction = async (leaveId: string, status: "APPROVED" | "REJECTED") => {
+    const handleAction = async (leaveId: string, status: "APPROVED" | "REJECTED", e?: React.MouseEvent) => {
+        if (e) e.stopPropagation(); 
+
         let remark = "";
         if (status === "REJECTED") {
             const input = prompt("Enter remark for rejection:");
             if (input === null) return;
             remark = input;
         } else {
-            // Optional remark for approval
+
             const input = prompt("Enter remark (optional):");
             if (input !== null) remark = input;
         }
@@ -41,45 +47,62 @@ export const AdminLeaveRequest: React.FC = () => {
             await UpdateLeaveStatus(leaveId, status, remark);
             showToast(`Leave ${status.toLowerCase()} successfully`, "success");
             fetchLeaves(); // Refresh list
+            if (selectedLeave?.id === leaveId) {
+                setSelectedLeave(null); // Close modal if action taken from there
+            }
         } catch (error: any) {
             showToast(error?.response?.data?.message || "Action failed", "error");
         }
     };
 
+    const openModal = (leave: LeaveRequestEntity) => {
+        setSelectedLeave(leave);
+    };
+
+    const closeModal = () => {
+        setSelectedLeave(null);
+    };
+
     return (
-        <div className="p-6 bg-gray-50 min-h-screen">
+        <div className={`p-6 min-h-screen ${isDark ? "bg-[#1a2632] text-white" : "bg-gray-50 text-gray-900"}`}>
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">Leave Requests</h1>
-                <div className="bg-white p-3 rounded shadow text-sm">
-                    <span className="font-semibold block text-gray-600">Total Yearly Limits:</span>
-                    <span className="text-green-600 mr-4">Sick Leave: 5</span>
-                    <span className="text-blue-600">Casual Leave: 5</span>
+                <h1 className={`text-2xl font-bold ${isDark ? "text-white" : "text-gray-800"}`}>Leave Requests</h1>
+                <div className={`p-4 rounded shadow-sm text-sm border ${isDark ? "bg-[#0d1117] border-gray-700" : "bg-white border-gray-100"}`}>
+                    <span className={`font-semibold block mb-2 ${isDark ? "text-gray-300" : "text-gray-600"}`}>Total Yearly Limits:</span>
+                    <div className="flex gap-4">
+                        <span className="font-medium text-green-500">Sick Leave: 5</span>
+                        <span className="font-medium text-blue-500">Casual Leave: 5</span>
+                    </div>
                 </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className={`rounded-lg shadow overflow-hidden border ${isDark ? "bg-[#0d1117] border-gray-700" : "bg-white border-gray-200"}`}>
                 <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+                    <table className="min-w-full divide-y">
+                        <thead className={isDark ? "bg-[#161b22] text-gray-300" : "bg-gray-50 text-gray-500"}>
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teacher</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reason</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Warning</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Teacher</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Type</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Duration</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Reason</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Warning</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className={`divide-y ${isDark ? "divide-gray-700 bg-[#0d1117]" : "divide-gray-200 bg-white"}`}>
                             {loading ? (
                                 <tr>
-                                    <td colSpan={7} className="text-center py-4">Loading...</td>
+                                    <td colSpan={7} className={`text-center py-4 ${isDark ? "text-gray-400" : "text-gray-500"}`}>Loading...</td>
                                 </tr>
                             ) : leaves.map((leave) => (
-                                <tr key={leave.id}>
+                                <tr
+                                    key={leave.id}
+                                    onClick={() => openModal(leave)}
+                                    className={`cursor-pointer transition-colors ${isDark ? "hover:bg-[#161b22]" : "hover:bg-gray-50"}`}
+                                >
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm font-medium text-gray-900">{leave.teacherName || leave.teacherId}</div>
+                                        <div className={`text-sm font-medium ${isDark ? "text-gray-200" : "text-gray-900"}`}>{leave.teacherName || leave.teacherId}</div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${leave.leaveType === 'SICK' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
@@ -87,11 +110,11 @@ export const AdminLeaveRequest: React.FC = () => {
                                             {leave.leaveType}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
                                         {new Date(leave.startDate).toLocaleDateString()} - {new Date(leave.endDate).toLocaleDateString()}
-                                        <span className="block text-xs text-gray-400">({leave.totalDays} days)</span>
+                                        <span className={`block text-xs ${isDark ? "text-gray-500" : "text-gray-400"}`}>({leave.totalDays} days)</span>
                                     </td>
-                                    <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate" title={leave.reason}>
+                                    <td className={`px-6 py-4 text-sm max-w-xs truncate ${isDark ? "text-gray-400" : "text-gray-500"}`} title={leave.reason}>
                                         {leave.reason}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
@@ -113,16 +136,16 @@ export const AdminLeaveRequest: React.FC = () => {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                                         <button
-                                            onClick={() => handleAction(leave.id, "APPROVED")}
+                                            onClick={(e) => handleAction(leave.id, "APPROVED", e)}
                                             disabled={leave.status !== 'PENDING'}
-                                            className={`text-indigo-600 hover:text-indigo-900 disabled:text-gray-400 disabled:cursor-not-allowed`}
+                                            className={`text-indigo-600 hover:text-indigo-900 disabled:text-gray-400 disabled:cursor-not-allowed ${isDark ? "hover:text-indigo-400 disabled:text-gray-600" : ""}`}
                                         >
                                             Approve
                                         </button>
                                         <button
-                                            onClick={() => handleAction(leave.id, "REJECTED")}
+                                            onClick={(e) => handleAction(leave.id, "REJECTED", e)}
                                             disabled={leave.status !== 'PENDING'}
-                                            className={`text-red-600 hover:text-red-900 disabled:text-gray-400 disabled:cursor-not-allowed`}
+                                            className={`text-red-600 hover:text-red-900 disabled:text-gray-400 disabled:cursor-not-allowed ${isDark ? "hover:text-red-400 disabled:text-gray-600" : ""}`}
                                         >
                                             Reject
                                         </button>
@@ -131,13 +154,97 @@ export const AdminLeaveRequest: React.FC = () => {
                             ))}
                             {!loading && leaves.length === 0 && (
                                 <tr>
-                                    <td colSpan={7} className="text-center py-4">No leave requests found.</td>
+                                    <td colSpan={7} className={`text-center py-4 ${isDark ? "text-gray-400" : "text-gray-500"}`}>No leave requests found.</td>
                                 </tr>
                             )}
                         </tbody>
                     </table>
                 </div>
             </div>
+
+            {/* Leave Details Modal */}
+            <Modal
+                isOpen={!!selectedLeave}
+                onClose={closeModal}
+                title="Leave Request Details"
+            >
+                {selectedLeave && (
+                    <div className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className={`block text-xs font-semibold uppercase tracking-wider mb-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>Teacher</label>
+                                <p className={`text-base font-medium ${isDark ? "text-gray-200" : "text-gray-900"}`}>{selectedLeave.teacherName || "N/A"}</p>
+                            </div>
+                            <div>
+                                <label className={`block text-xs font-semibold uppercase tracking-wider mb-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>Leave Type</label>
+                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${selectedLeave.leaveType === 'SICK' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
+                                    }`}>
+                                    {selectedLeave.leaveType}
+                                </span>
+                            </div>
+                            <div>
+                                <label className={`block text-xs font-semibold uppercase tracking-wider mb-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>Duration</label>
+                                <p className={`text-sm ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                                    {new Date(selectedLeave.startDate).toLocaleDateString()} - {new Date(selectedLeave.endDate).toLocaleDateString()}
+                                </p>
+                                <p className={`text-xs ${isDark ? "text-gray-500" : "text-gray-400"}`}>Total: {selectedLeave.totalDays} days</p>
+                            </div>
+                            <div>
+                                <label className={`block text-xs font-semibold uppercase tracking-wider mb-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>Status</label>
+                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${selectedLeave.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
+                                    selectedLeave.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
+                                        'bg-yellow-100 text-yellow-800'
+                                    }`}>
+                                    {selectedLeave.status}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className={`block text-xs font-semibold uppercase tracking-wider mb-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>Reason</label>
+                            <div className={`p-3 rounded-md text-sm ${isDark ? "bg-[#161b22] text-gray-300 border border-gray-700" : "bg-gray-50 text-gray-800 border border-gray-100"}`}>
+                                {selectedLeave.reason}
+                            </div>
+                        </div>
+
+                        {selectedLeave.warningMessage && (
+                            <div>
+                                <label className={`block text-xs font-semibold uppercase tracking-wider mb-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>System Warning</label>
+                                <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                                    <div className="flex items-start">
+                                        <span className="text-lg mr-2">⚠️</span>
+                                        <p className="text-sm text-red-700 font-medium">{selectedLeave.warningMessage}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {selectedLeave.adminRemark && (
+                            <div>
+                                <label className={`block text-xs font-semibold uppercase tracking-wider mb-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>Admin Remark</label>
+                                <p className={`text-sm italic ${isDark ? "text-gray-400" : "text-gray-600"}`}>{selectedLeave.adminRemark}</p>
+                            </div>
+                        )}
+
+                        {selectedLeave.status === 'PENDING' && (
+                            <div className={`pt-4 border-t flex justify-end gap-3 ${isDark ? "border-gray-700" : "border-gray-100"}`}>
+                                <button
+                                    onClick={() => handleAction(selectedLeave.id, "REJECTED")}
+                                    className="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                                >
+                                    Reject Request
+                                </button>
+                                <button
+                                    onClick={() => handleAction(selectedLeave.id, "APPROVED")}
+                                    className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors shadow-sm"
+                                >
+                                    Approve Request
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </Modal>
         </div>
     );
 };
