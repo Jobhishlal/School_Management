@@ -194,6 +194,39 @@ export class MongoStudentRepo implements StudentDetails {
     return students.map(s => this.mapToDomainPopulated(s));
   }
 
+  async findByClassIdWithSearch(classId: string, search: string, page: number, limit: number): Promise<{ students: Students[], total: number }> {
+    if (!mongoose.Types.ObjectId.isValid(classId)) {
+      throw new Error(`Invalid Class ID: ${classId}`);
+    }
+
+    const query: any = { classId: new mongoose.Types.ObjectId(classId) };
+
+    if (search) {
+      const searchRegex = new RegExp(search, 'i');
+      query.$or = [
+        { fullName: searchRegex },
+        { studentId: searchRegex }
+      ];
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [students, total] = await Promise.all([
+      StudentModel.find(query)
+        .populate("parent")
+        .populate("address")
+        .populate("classId")
+        .skip(skip)
+        .limit(limit),
+      StudentModel.countDocuments(query)
+    ]);
+
+    return {
+      students: students.map(s => this.mapToDomainPopulated(s)),
+      total
+    };
+  }
+
 
 
 

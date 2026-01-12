@@ -167,7 +167,7 @@ export class MongoClassRepository implements IClassRepository {
       throw new Error(`Invalid Class ID: ${id}`);
     }
 
- 
+
     const studentCount = await StudentModel.countDocuments({ classId: id });
     if (studentCount > 0) {
       throw new Error(`Cannot delete class. It has ${studentCount} students assigned.`);
@@ -175,6 +175,33 @@ export class MongoClassRepository implements IClassRepository {
 
     const deleted = await ClassModel.findByIdAndDelete(id);
     return !!deleted;
+  }
+
+  async findByTeacherId(teacherId: string): Promise<Class | null> {
+    const classDoc = await ClassModel.findOne({ classTeacher: new mongoose.Types.ObjectId(teacherId) }).populate('classTeacher');
+    if (!classDoc) return null;
+
+    // Convert populated classTeacher to any to access name safely, or keep as string if not populated
+    const teacherName = (classDoc.classTeacher as any)?.name || (classDoc.classTeacher as any)?.fullName;
+
+    // We are returning a Domain Class object. The Domain Class object takes classTeacher as string.
+    // So we can't easily pass the name through the Class entity unless we change the entity.
+    // However, the Use Case returns ClassDetailsDTO.
+    // I can modify ClassDetailsDTO to include `teacherName`.
+    // But `findByTeacherId` returns `Class`.
+    /* 
+       Optimally, I should keep Repo returning `Class` entity.
+       And UseCase should fetch Teacher Name.
+    */
+    return new Class(
+      (classDoc._id as mongoose.Types.ObjectId).toString(),
+      classDoc.className,
+      classDoc.division,
+      classDoc.rollNumber,
+      classDoc.department,
+      classDoc.subjects,
+      classDoc.classTeacher?._id?.toString() || classDoc.classTeacher?.toString() // Handle both populated and unpopulated
+    );
   }
 }
 

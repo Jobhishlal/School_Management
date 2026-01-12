@@ -311,6 +311,62 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
 
 
 
+  async calculateClassAttendancePercentage(classId: string): Promise<{ percentage: number, trend: number }> {
+    if (!classId) return { percentage: 0, trend: 0 };
+
+    const result = await AttendanceModel.aggregate([
+      { $match: { classId: new Types.ObjectId(classId) } },
+      { $unwind: "$attendance" },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: 1 },
+          present: {
+            $sum: {
+              $cond: [{ $eq: ["$attendance.status", "Present"] }, 1, 0]
+            }
+          }
+        }
+      }
+    ]);
+
+    const percentage = result.length > 0 && result[0].total > 0
+      ? Math.round((result[0].present / result[0].total) * 100)
+      : 0;
+
+    // Mock trend for now
+    const trend = 2; // +2%
+
+    return { percentage, trend };
+  }
+
+  async getAttendancePercentages(studentIds: string[]): Promise<Record<string, number>> {
+    const objectIds = studentIds.map(id => new Types.ObjectId(id));
+
+    const result = await AttendanceModel.aggregate([
+      { $unwind: "$attendance" },
+      { $match: { "attendance.studentId": { $in: objectIds } } },
+      {
+        $group: {
+          _id: "$attendance.studentId",
+          total: { $sum: 1 },
+          present: {
+            $sum: {
+              $cond: [{ $eq: ["$attendance.status", "Present"] }, 1, 0]
+            }
+          }
+        }
+      }
+    ]);
+
+    const percentages: Record<string, number> = {};
+    result.forEach(r => {
+      percentages[r._id.toString()] = r.total > 0 ? Math.round((r.present / r.total) * 100) : 0;
+    });
+
+    return percentages;
+  }
+
   async getParentAttendanceByDateRange(parentId: string, startDate: Date, endDate: Date): Promise<ParentAttendanceHistory> {
     const parent = await ParentSignupModel.findById(parentId)
       .populate("student", "_id fullName photos classId")
@@ -391,7 +447,7 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
     const todayString = new Date().toDateString();
 
     records.forEach(doc => {
-   
+
       const item = doc.attendance.find(
         a => a.studentId.toString() === studentId.toString()
       );
@@ -413,7 +469,7 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
         remark: item.remarks,
       });
 
-     
+
       if (doc.date.toDateString() === todayString) {
         if (doc.session === "Morning") todayMorning = item.status as AttendanceStatus;
         if (doc.session === "Afternoon") todayAfternoon = item.status as AttendanceStatus;
@@ -476,7 +532,7 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
 
     const present = history.filter(h => h.status === "Present").length;
     const absent = history.filter(h => h.status === "Absent").length;
-    
+
     const total = history.length;
     const percentage = total ? Math.round((present / total) * 100) : 0;
 

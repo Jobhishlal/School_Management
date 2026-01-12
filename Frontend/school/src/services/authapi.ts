@@ -881,6 +881,30 @@ export const getAssignmentSubmissions = async (assignmentId: string) => {
   }
 };
 
+export const getTeacherClass = async (search: string = "", page: number = 1, limit: number = 10) => {
+  try {
+    const response = await api.get('/teacher/my-class', {
+      params: { search, page, limit }
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getStudentPerformance = async (studentId: string) => {
+  try {
+    const response = await api.get(`/teacher/student/${studentId}/performance`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getParentExamResults = async () => {
+
+};
+
 export const updateAttendance = async (studentId: string, date: Date, session: string, status: string) => {
   const res = await api.put('/teacher/attendance/update', { studentId, date, session, status });
   return res.data;

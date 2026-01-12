@@ -8,4 +8,5 @@ export interface IClassRepository {
   assignStudentToClass(studentId: string, classId: string): Promise<boolean>;
   assignManyStudentsToClass(studentIds: string[], classId: string): Promise<boolean>;
   deleteClass(id: string): Promise<boolean>;
+  findByTeacherId(teacherId: string): Promise<Class | null>
 }

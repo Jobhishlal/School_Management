@@ -11,5 +11,11 @@ export interface IExamMarkRepository {
   findMarksForStudent(studentId: string, examIds: string[]): Promise<ExamMarkEntity[]>;
   updateConcern(id: string, concern: string): Promise<boolean>;
   resolveConcern(id: string, status: "Resolved" | "Rejected", newMarks?: number, responseMessage?: string): Promise<boolean>;
+  findAllMarksByStudentId(studentId: string): Promise<ExamMarkEntity[]>;
   getPendingConcernsInfoByExamIds(examIds: string[]): Promise<Record<string, Array<{ studentName: string, concern: string, studentId: string }>>>;
+  calculateClassAverage(classId: string): Promise<{ average: number, trend: number }>;
+  calculateSchoolAverage(): Promise<number>;
+  getClassPerformanceHistory(classId: string): Promise<Array<{ month: string, avg: number }>>;
+  getTopPerformingStudents(classId: string, limit: number): Promise<any[]>;
+  getLowPerformingStudents(classId: string, limit: number): Promise<any[]>;
 }

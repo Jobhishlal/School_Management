@@ -304,4 +304,22 @@ Teacherrouter.get('/schedule',
   (req, res) => teacherScheduleController.TeacherViewSchedule(req as AuthRequest, res)
 );
 
+import { TeacherClassStatsController } from "../http/controllers/Teacher/TeacherClassStatsController";
+import { GetTeacherClassDetailsUseCase } from "../../applications/useCases/Teacher/GetTeacherClassDetailsUseCase";
+import { GetStudentPerformanceUseCase } from "../../applications/useCases/Teacher/GetStudentPerformanceUseCase";
+
+const getClassDetailsUseCase = new GetTeacherClassDetailsUseCase(classrepo, studentrepo, teacherrepo, exammarkrepo, attendancerepo);
+const getStudentPerformanceUseCase = new GetStudentPerformanceUseCase(exammarkrepo, examrepo, attendancerepo);
+const teacherClassStatsController = new TeacherClassStatsController(getClassDetailsUseCase, getStudentPerformanceUseCase);
+
+Teacherrouter.get('/my-class',
+  authMiddleware,
+  (req, res) => teacherClassStatsController.getMyClassDetails(req as AuthRequest, res)
+);
+
+Teacherrouter.get('/student/:studentId/performance',
+  authMiddleware,
+  (req, res) => teacherClassStatsController.getStudentPerformance(req, res)
+);
+
 export default Teacherrouter;

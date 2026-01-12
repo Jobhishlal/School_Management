@@ -86,7 +86,7 @@ export class ExamMarkMongoRepository implements IExamMarkRepository {
       studentId: new Types.ObjectId(studentId),
       examId: { $in: examIds.map(id => new Types.ObjectId(id)) },
     }).then(docs => docs.map(toExamMarkEntity));
-   
+
     return data
 
   }
@@ -182,5 +182,149 @@ export class ExamMarkMongoRepository implements IExamMarkRepository {
       });
       return map;
     });
+  }
+
+  async findAllMarksByStudentId(studentId: string): Promise<ExamMarkEntity[]> {
+    if (!Types.ObjectId.isValid(studentId)) {
+      return [];
+    }
+
+    const docs = await ExamMarkModel.find({
+      studentId: new Types.ObjectId(studentId)
+    });
+
+    return docs.map(toExamMarkEntity);
+  }
+
+  async calculateClassAverage(classId: string): Promise<{ average: number, trend: number }> {
+    const result = await ExamMarkModel.aggregate([
+      {
+        $lookup: {
+          from: "students",
+          localField: "studentId",
+          foreignField: "_id",
+          as: "student"
+        }
+      },
+      { $unwind: "$student" },
+      { $match: { "student.classId": new Types.ObjectId(classId) } },
+      {
+        $group: {
+          _id: null,
+          avgMarks: { $avg: "$marksObtained" }
+        }
+      }
+    ]);
+
+    const average = result.length > 0 ? Math.round(result[0].avgMarks) : 0;
+    return { average, trend: 1 }; // Mock trend
+  }
+
+  async calculateSchoolAverage(): Promise<number> {
+    const result = await ExamMarkModel.aggregate([
+      {
+        $group: {
+          _id: null,
+          avgMarks: { $avg: "$marksObtained" }
+        }
+      }
+    ]);
+
+    return result.length > 0 ? Math.round(result[0].avgMarks) : 0;
+  }
+
+  async getClassPerformanceHistory(classId: string): Promise<Array<{ month: string, avg: number }>> {
+    // This is complex as ExamMark doesn't have date directly, it's in Exam.
+    // Need to lookup Exam to get date.
+
+    const result = await ExamMarkModel.aggregate([
+      {
+        $lookup: {
+          from: "students",
+          localField: "studentId",
+          foreignField: "_id",
+          as: "student"
+        }
+      },
+      { $unwind: "$student" },
+      { $match: { "student.classId": new Types.ObjectId(classId) } },
+      {
+        $lookup: {
+          from: "exams",
+          localField: "examId",
+          foreignField: "_id",
+          as: "exam"
+        }
+      },
+      { $unwind: "$exam" },
+      {
+        $group: {
+          _id: { $month: "$exam.examDate" }, // Assuming examDate exists
+          avg: { $avg: "$marksObtained" },
+          year: { $first: { $year: "$exam.examDate" } }
+        }
+      },
+      { $sort: { year: 1, _id: 1 } }
+    ]);
+
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    return result.map(r => ({
+      month: months[r._id - 1] || "Unknown",
+      avg: Math.round(r.avg)
+    }));
+  }
+
+  async getTopPerformingStudents(classId: string, limit: number): Promise<any[]> {
+    const result = await ExamMarkModel.aggregate([
+      {
+        $lookup: {
+          from: "students",
+          localField: "studentId",
+          foreignField: "_id",
+          as: "student",
+        },
+      },
+      { $unwind: "$student" },
+      { $match: { "student.classId": new Types.ObjectId(classId) } },
+      {
+        $group: {
+          _id: "$studentId",
+          fullName: { $first: "$student.fullName" },
+          studentId: { $first: "$student.studentId" },
+          avgMarks: { $avg: "$marksObtained" },
+          // Add photo logic if possible, otherwise mock or fetch separately
+        },
+      },
+      { $sort: { avgMarks: -1 } },
+      { $limit: limit },
+    ]);
+    return result;
+  }
+
+  async getLowPerformingStudents(classId: string, limit: number): Promise<any[]> {
+    const result = await ExamMarkModel.aggregate([
+      {
+        $lookup: {
+          from: "students",
+          localField: "studentId",
+          foreignField: "_id",
+          as: "student",
+        },
+      },
+      { $unwind: "$student" },
+      { $match: { "student.classId": new Types.ObjectId(classId) } },
+      {
+        $group: {
+          _id: "$studentId",
+          fullName: { $first: "$student.fullName" },
+          studentId: { $first: "$student.studentId" },
+          avgMarks: { $avg: "$marksObtained" },
+        },
+      },
+      { $sort: { avgMarks: 1 } },
+      { $limit: limit },
+    ]);
+    return result;
   }
 }
