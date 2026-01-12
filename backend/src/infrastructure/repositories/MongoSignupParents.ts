@@ -5,26 +5,26 @@ import { IParentRepositorySign } from "../../domain/repositories/Auth/IParentRep
 import bcrypt from 'bcrypt'
 
 export class MongoParentSignUp implements IParentRepositorySign {
-async findByEmail(email: string): Promise<ParentSignUpEntity | null> {
+  async findByEmail(email: string): Promise<ParentSignUpEntity | null> {
 
-  const parent = await ParentSignupModel.findOne({ email: { $regex: new RegExp(`^${email}$`, "i") } })
-    .populate({
-      path: "student",
-      select: "studentId fullName",
-      strictPopulate: false,
-    });
-    console.log("parent",parent)
+    const parent = await ParentSignupModel.findOne({ email: { $regex: new RegExp(`^${email}$`, "i") } })
+      .populate({
+        path: "student",
+        select: "studentId fullName",
+        strictPopulate: false,
+      });
+    console.log("parent", parent)
 
-  if (!parent) return null;
+    if (!parent) return null;
 
-  const studentId = parent.student ? parent.student.studentId : "";
-  return new ParentSignUpEntity(
-    parent._id.toString(),
-    parent.email,
-    parent.password,
-    studentId
-  );
-}
+    const studentId = parent.student ? parent.student.studentId : "";
+    return new ParentSignUpEntity(
+      parent._id.toString(),
+      parent.email,
+      parent.password,
+      studentId
+    );
+  }
 
 
   async create(parent: ParentSignUpEntity): Promise<ParentSignUpEntity> {
@@ -48,7 +48,7 @@ async findByEmail(email: string): Promise<ParentSignUpEntity | null> {
   async linkParenttoStudent(studentId: string, parentId: string) {
     await StudentModel.updateOne({ studentId }, { parent: parentId });
   }
-   async updatePassword(email: string, newPassword: string): Promise<ParentSignUpEntity> {
+  async updatePassword(email: string, newPassword: string): Promise<ParentSignUpEntity> {
     const parent = await ParentSignupModel.findOne({ email });
     if (!parent) throw new Error("Parent not found");
 
@@ -56,6 +56,17 @@ async findByEmail(email: string): Promise<ParentSignUpEntity | null> {
     parent.password = hashedPassword;
     await parent.save();
 
+    const studentId = parent.student ? (parent.student as any).studentId : "";
+    return new ParentSignUpEntity(parent._id.toString(), parent.email, parent.password, studentId);
+  }
+
+  async findById(id: string): Promise<ParentSignUpEntity | null> {
+    const parent = await ParentSignupModel.findById(id).populate({
+      path: "student",
+      select: "studentId fullName",
+      strictPopulate: false,
+    });
+    if (!parent) return null;
     const studentId = parent.student ? (parent.student as any).studentId : "";
     return new ParentSignUpEntity(parent._id.toString(), parent.email, parent.password, studentId);
   }

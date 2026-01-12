@@ -44,7 +44,7 @@ const ParentSidebar: React.FC<ParentSidebarProps> = ({ children }) => {
     { icon: FileText, text: "Student Exams Results", path: "/parent/exams" },
     { icon: DollarSign, text: "Student Fees Details", path: "/parent/financelist" },
     { icon: ClipboardList, text: "Assignment Submit", path: "/parent/assignments" },
-    { icon: Bell, text: "Leave Request", path: "/parent/leave-request" },
+    { icon: Bell, text: "Leave Request", path: "/parent/leave" },
     { icon: Video, text: "Meet", path: "/parent/meet" },
     { icon: User, text: "Profile", path: "/parent/profile" },
     { icon: MessageCircle, text: "Complaint Ticket", path: "/parent/complaints" },
@@ -70,9 +70,8 @@ const ParentSidebar: React.FC<ParentSidebarProps> = ({ children }) => {
 
   return (
     <div
-      className={`h-screen overflow-hidden transition-all duration-500 ${
-        isDark ? "bg-[#121A21]" : "bg-slate-50"
-      }`}
+      className={`h-screen overflow-hidden transition-all duration-500 ${isDark ? "bg-[#121A21]" : "bg-slate-50"
+        }`}
     >
       {/* ---------- MOBILE HEADER ---------- */}
       <div
@@ -134,11 +133,10 @@ const ParentSidebar: React.FC<ParentSidebarProps> = ({ children }) => {
                 <Link
                   key={index}
                   to={item.path}
-                  className={`relative group flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-300 ${
-                    isActive
+                  className={`relative group flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-300 ${isActive
                       ? `${activeBg} ${activeText} font-semibold`
                       : `${hoverBg} ${textSecondary} hover:text-white`
-                  }`}
+                    }`}
                 >
                   {isActive && (
                     <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-6 bg-blue-500 rounded-r-full"></div>
@@ -211,9 +209,8 @@ const ParentSidebar: React.FC<ParentSidebarProps> = ({ children }) => {
                   <span className={`text-sm font-medium ${textPrimary}`}>Parent</span>
                   <ChevronDown
                     size={16}
-                    className={`${textSecondary} transition-transform duration-200 ${
-                      showProfileDropdown ? "rotate-180" : ""
-                    }`}
+                    className={`${textSecondary} transition-transform duration-200 ${showProfileDropdown ? "rotate-180" : ""
+                      }`}
                   />
                 </button>
 

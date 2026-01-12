@@ -5,14 +5,14 @@ import { StudentProfile } from '../../../../domain/enums/Student/StudentProfile'
 import { AuthRequest } from '../../../../infrastructure/types/AuthRequest';
 
 
-export class StudentProfileController {
+export class StudentProfileController { 
   constructor(private readonly studentprofile: IStudentProfileUseCase) {}
 
   async GetProfile(req: AuthRequest, res: Response): Promise<void> {
     try {
      
       const studentId = req.params.studentId || req.user?.id;
-      console.log("student",studentId)
+    
 
       if (!studentId) {
          res.status(StatusCodes.BAD_REQUEST).json({ message: "Student ID missing" });

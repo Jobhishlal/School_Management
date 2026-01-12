@@ -6,8 +6,7 @@ export default function PrivateRoute({ children }: { children: JSX.Element }) {
 
   let isAuthenticated = false;
 
-  // Check authentication based on route prefix
-  // Check authentication based on route prefix
+
   if (
     path.startsWith("/dashboard") ||
     path.startsWith("/admin") ||
@@ -36,18 +35,18 @@ export default function PrivateRoute({ children }: { children: JSX.Element }) {
     const token = localStorage.getItem("parentAccessToken");
     if (token) isAuthenticated = true;
   } else {
-    // Fallback for generic routes or unknown paths
     const token = localStorage.getItem("accessToken");
     if (token) isAuthenticated = true;
   }
 
+  console.log("PrivateRoute checking path:", path, "isAuthenticated:", isAuthenticated);
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Handle redirect if already logged in but trying to access login (though this logic might be better in PublicRoute)
+  
   if (path === "/login") {
-    const role = localStorage.getItem("role"); // This might still be ambiguous if multiple logged in, but login page is generic
+    const role = localStorage.getItem("role"); 
     switch (role) {
       case "students":
         return <Navigate to="/student-dashboard" replace />;

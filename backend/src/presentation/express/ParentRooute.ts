@@ -21,6 +21,15 @@ import { GetParentProfileUseCase } from "../../applications/useCases/Parent/GetP
 import { ParentProfileRepository } from "../../infrastructure/repositories/ParentProfileMongo/ParentProfileMongo";
 import { ParentManagementCOntroller } from "../http/controllers/ParentController.ts/ParentController"
 import { ParentProfileController } from "../http/controllers/ParentController.ts/ParentProfileController";
+import { MongoStudentLeaveRepository } from "../../infrastructure/repositories/StudentLeave/MongoStudentLeaveRepository";
+import { ApplyStudentLeaveUseCase } from "../../applications/useCases/StudentLeave/ApplyStudentLeaveUseCase";
+import { GetStudentLeaveHistoryUseCase } from "../../applications/useCases/StudentLeave/GetStudentLeaveHistoryUseCase";
+import { GetClassStudentLeavesUseCase } from "../../applications/useCases/StudentLeave/GetClassStudentLeavesUseCase";
+import { ProcessStudentLeaveUseCase } from "../../applications/useCases/StudentLeave/ProcessStudentLeaveUseCase";
+import { StudentLeaveController } from "../http/controllers/StudentLeave/StudentLeaveController";
+import { MongoParentSignUp } from "../../infrastructure/repositories/MongoSignupParents";
+
+
 const ParentRouter = Router()
 
 const data = new ParentRepository()
@@ -48,6 +57,14 @@ const perantprofile = new ParentProfileRepository()
 const parentprofileusecase = new GetParentProfileUseCase(perantprofile)
 const parentprofilercontroller = new ParentProfileController(parentprofileusecase)
 
+// Student Leave Dependencies
+const studentLeaveRepo = new MongoStudentLeaveRepository();
+const parentAuthRepo = new MongoParentSignUp(); // Implement IParentRepositorySign
+const applyLeaveUC = new ApplyStudentLeaveUseCase(studentLeaveRepo);
+const getHistoryUC = new GetStudentLeaveHistoryUseCase(studentLeaveRepo);
+const getClassLeavesUC = new GetClassStudentLeavesUseCase(studentLeaveRepo);
+const processLeaveUC = new ProcessStudentLeaveUseCase(studentLeaveRepo, parentAuthRepo);
+const studentLeaveController = new StudentLeaveController(applyLeaveUC, getHistoryUC, getClassLeavesUC, processLeaveUC);
 
 
 
@@ -79,6 +96,17 @@ ParentRouter.get("/profile/:id",
         parentprofilercontroller.ParentProfile(req, res)
     }
 
+)
+
+// Student Leave Routes
+ParentRouter.post("/leave/apply",
+    authMiddleware,
+    (req, res) => studentLeaveController.applyLeave(req as AuthRequest, res)
+)
+
+ParentRouter.get("/leave/student/:studentId",
+    authMiddleware,
+    (req, res) => studentLeaveController.getStudentLeaves(req, res)
 )
 
 

@@ -57,6 +57,9 @@ import { AdminLeaveRequest } from "./pages/admin/LeaveManagement/AdminLeaveReque
 import { SubAdminLeaveApplication } from "./pages/admin/LeaveManagement/SubAdminLeaveApplication";
 import TeacherMyClass from "./pages/Teacher/Class/TeacherMyClass";
 import TeacherScheduleView from "./pages/Teacher/TeacherScheduleView";
+import ParentLeavePage from "./pages/Parents/ParentLeavePage";
+import TeacherStudentLeavePage from "./pages/Teacher/LeaveManagement/TeacherStudentLeavePage";
+
 import PublicRoute from "./components/layout/PublicRoute";
 
 function ErrorFallback({ error }: { error: Error }) {
@@ -119,6 +122,7 @@ function App() {
           <Route path="/teacher/leave-management" element={<LeaveManagement />} />
           <Route path="/teacher/schedule" element={<TeacherScheduleView />} />
           <Route path="/teacher/classes" element={<TeacherMyClass />} />
+          <Route path="/teacher/student-leave" element={<TeacherStudentLeavePage />} />
         </Route>
 
         {/* --------------------PARENT ROUTES ------------------- */}
@@ -128,6 +132,7 @@ function App() {
           <Route path="/parent/attendacelist" element={<ParentAttendance />} />
           <Route path="/parent/exams" element={<ParentExamResults />} />
           <Route path="/parent/profile" element={<ParentProfile />} />
+          <Route path="/parent/leave" element={<ParentLeavePage />} />
         </Route>
 
       </Routes>

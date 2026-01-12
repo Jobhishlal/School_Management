@@ -322,4 +322,31 @@ Teacherrouter.get('/student/:studentId/performance',
   (req, res) => teacherClassStatsController.getStudentPerformance(req, res)
 );
 
+// Student Leave Dependencies
+import { MongoStudentLeaveRepository } from "../../infrastructure/repositories/StudentLeave/MongoStudentLeaveRepository";
+import { ApplyStudentLeaveUseCase } from "../../applications/useCases/StudentLeave/ApplyStudentLeaveUseCase";
+import { GetStudentLeaveHistoryUseCase } from "../../applications/useCases/StudentLeave/GetStudentLeaveHistoryUseCase";
+import { GetClassStudentLeavesUseCase } from "../../applications/useCases/StudentLeave/GetClassStudentLeavesUseCase";
+import { ProcessStudentLeaveUseCase } from "../../applications/useCases/StudentLeave/ProcessStudentLeaveUseCase";
+import { StudentLeaveController } from "../http/controllers/StudentLeave/StudentLeaveController";
+import { MongoParentSignUp } from "../../infrastructure/repositories/MongoSignupParents";
+
+const studentLeaveRepo = new MongoStudentLeaveRepository();
+const parentAuthRepo = new MongoParentSignUp();
+const applyLeaveUC = new ApplyStudentLeaveUseCase(studentLeaveRepo);
+const getHistoryUC = new GetStudentLeaveHistoryUseCase(studentLeaveRepo);
+const getClassLeavesUC = new GetClassStudentLeavesUseCase(studentLeaveRepo);
+const processLeaveUC = new ProcessStudentLeaveUseCase(studentLeaveRepo, parentAuthRepo);
+const studentLeaveController = new StudentLeaveController(applyLeaveUC, getHistoryUC, getClassLeavesUC, processLeaveUC);
+
+Teacherrouter.get('/leave/class/:classId',
+  authMiddleware,
+  (req, res) => studentLeaveController.getClassLeaves(req, res)
+);
+
+Teacherrouter.patch('/leave/:id/status',
+  authMiddleware,
+  (req, res) => studentLeaveController.updateLeaveStatus(req as AuthRequest, res)
+);
+
 export default Teacherrouter;

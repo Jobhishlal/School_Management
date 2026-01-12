@@ -2,7 +2,6 @@ import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMark
 import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
 import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
 import { IGetStudentPerformanceUseCase } from "../../../domain/UseCaseInterface/Teacher/IGetStudentPerformanceUseCase";
-
 import { StudentPerformanceDTO } from "../../dto/StudentPerformanceDTO";
 
 export class GetStudentPerformanceUseCase implements IGetStudentPerformanceUseCase {
@@ -15,11 +14,13 @@ export class GetStudentPerformanceUseCase implements IGetStudentPerformanceUseCa
     async execute(studentId: string): Promise<StudentPerformanceDTO> {
 
         let attendancePercentage = 0;
+
         try {
             const attendanceDashboard = await this._attendanceRepo.getStudentOwnAttendanceDashboard(studentId);
             if (attendanceDashboard) {
                 attendancePercentage = attendanceDashboard.summary.percentage;
             }
+
         } catch (error) {
             console.error("Error fetching attendance stats", error);
         }

@@ -798,10 +798,32 @@ export const getStudentsByExam = async (examId: string) => {
 };
 
 export const getTeacherSchedule = async (day?: string) => {
-  const query = day ? `?day=${day}` : "";
-  const res = await api.get(`/teacher/schedule${query}`);
-  return res.data.data;
+  const params = day ? { day } : {};
+  const res = await api.get("/teacher/schedule", { params });
+  return res.data;
 };
+
+// Student Leave API
+export const applyStudentLeave = async (data: CreateLeaveDTO) => {
+  const res = await api.post("/parents/leave/apply", data);
+  return res.data;
+};
+
+export const getStudentLeaveHistory = async (studentId: string) => {
+  const res = await api.get(`/parents/leave/student/${studentId}`);
+  return res.data;
+};
+
+export const getClassStudentLeaves = async (classId: string) => {
+  const res = await api.get(`/teacher/leave/class/${classId}`);
+  return res.data;
+};
+
+export const updateStudentLeaveStatus = async (leaveId: string, status: "APPROVED" | "REJECTED", message?: string) => {
+  const res = await api.patch(`/teacher/leave/${leaveId}/status`, { status, message });
+  return res.data;
+};
+
 
 
 export const FindClassBaseFindExam = async (classId: string) => {

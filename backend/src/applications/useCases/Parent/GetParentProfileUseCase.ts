@@ -36,13 +36,14 @@ export class GetParentProfileUseCase implements IGetParentProfileUseCase {
             },
             student: {
                 id: student._id.toString(),
+                _id: student._id.toString(),
                 fullName: student.fullName,
                 studentId: student.studentId ?? "N/A",
                 dob: student.dateOfBirth ?? null,
                 gender: student.gender ?? "N/A",
                 photo: student.photos?.[0]?.url ?? "",
                 classDetails: cls
-                    ? { className: cls.className, division: cls.division }
+                    ? { _id: cls._id.toString(), className: cls.className, division: cls.division }
                     : undefined,
             },
             address: address

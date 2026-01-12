@@ -10,12 +10,14 @@ export interface ParentProfileDTO {
     };
     student: {
         id: string;
+        _id?: string; // Add this
         fullName: string;
         studentId: string;
         dob: Date;
         gender: string;
         photo?: string;
         classDetails?: {
+            _id?: string; // Add this
             className: string;
             division: string;
             rollNumber?: string;
