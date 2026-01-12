@@ -4,7 +4,9 @@ export class LeaveManagementEntity {
   constructor(
     public readonly id: string,
 
-    public readonly teacherId: string,
+    public readonly teacherId: string | undefined,
+    public readonly subAdminId: string | undefined,
+    public readonly applicantRole: "TEACHER" | "SUB_ADMIN",
 
     public leaveType: "CASUAL" | "SICK" | "PAID" | "UNPAID" | "EXTRA",
 
@@ -22,6 +24,7 @@ export class LeaveManagementEntity {
     public actionAt?: Date,
     public adminRemark?: string,
     public warningMessage?: string,
-    public teacherName?: string
+    public teacherName?: string,
+    public subAdminName?: string
   ) { }
 }

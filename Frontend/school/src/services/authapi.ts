@@ -9,7 +9,6 @@ import type { CreateAnnouncementDTO } from "../types/CreateAnnouncementDTO";
 import type { TakeAttendancePayload } from "../types/AttendanceType";
 import type { CreateExamDTO } from "../types/ExamCreateDTO";
 import type { UpdateExamDTO } from "../types/UpdateExam";
-import { da } from "zod/v4/locales";
 import type { ExamEntity } from "../types/ExamEntity";
 import type { CreateExamMarkRequestDTO } from "../types/CreateExamMarkDto";
 import type { CreateLeaveDTO } from "../types/LeaveRequest/CreateLeaveRequest";
@@ -798,6 +797,12 @@ export const getStudentsByExam = async (examId: string) => {
   return res.data.data
 };
 
+export const getTeacherSchedule = async (day?: string) => {
+  const query = day ? `?day=${day}` : "";
+  const res = await api.get(`/teacher/schedule${query}`);
+  return res.data.data;
+};
+
 
 export const FindClassBaseFindExam = async (classId: string) => {
   console.log("reached here")
@@ -847,15 +852,25 @@ export const assignStudentToDivision = async (payload: {
   return res.data;
 };
 
-export const validateAssignment = async (data: any) => {
-  const res = await api.post("/teacher/assignment/validate", data);
+export const CreateLeaveRequestSubAdmin = async (data: CreateLeaveDTO) => {
+  const res = await api.post("/teacher/leave/sub-admin/request", data);
   return res.data;
 };
+
+export const GetSubAdminLeavesRequest = async () => {
+  const res = await api.get('/teacher/leave/sub-admin/history')
+  return res.data.leaves
+}
 
 export const deleteAnnouncement = async (id: string, config = {}) => {
   return await api.delete(`/admin/delete-announcement/${id}`, config);
 };
 
+
+export const validateAssignment = async (data: any) => {
+  const res = await api.post("/teacher/assignment/validate", data);
+  return res.data;
+};
 
 export const getAssignmentSubmissions = async (assignmentId: string) => {
   try {
@@ -945,7 +960,7 @@ export const LeaveRequest = async (leavedata: CreateLeaveDTO) => {
       },
     }
   );
-   console.log("i am reached heree",response)
+  console.log("i am reached heree", response)
 
   return response.data;
 }
@@ -977,6 +992,14 @@ export const UpdateLeaveStatus = async (
     status,
     adminRemark,
   }, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return res.data;
+};
+
+export const getAdminProfile = async () => {
+  const token = localStorage.getItem("token");
+  const res = await api.get("/admin/adminprofile", {
     headers: { Authorization: `Bearer ${token}` }
   });
   return res.data;

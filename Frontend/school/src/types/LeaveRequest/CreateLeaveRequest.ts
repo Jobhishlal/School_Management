@@ -7,8 +7,11 @@ export interface CreateLeaveDTO {
 
 export interface LeaveRequestEntity {
   id: string;
-  teacherId: string;
+  teacherId?: string;
+  subAdminId?: string;
+  applicantRole?: "TEACHER" | "SUB_ADMIN";
   teacherName?: string;
+  subAdminName?: string;
   leaveType: "CASUAL" | "SICK" | "PAID" | "UNPAID" | "EXTRA";
   startDate: string;
   endDate: string;

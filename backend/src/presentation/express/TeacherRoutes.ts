@@ -11,7 +11,11 @@ import { ValidateAssignment } from "../../applications/useCases/Assignment/Valid
 import { GetAssignmentSubmissions } from "../../applications/useCases/Assignment/GetAssignmentSubmissions";
 
 
+
 import { AttendanceMongoRepository } from "../../infrastructure/repositories/Attendance/AttendanceMongoRepo";
+import { MongoTimeTableCreate } from "../../infrastructure/repositories/MongoTimeTableCreation";
+import { TeacherDaybydayschedule } from "../../applications/useCases/Teacher/TeacherDayBydaySchedule";
+import { TeacherDailyScheduleView } from "../http/controllers/Teacher/TeacherDayBydaySchedule";
 import { AttendanceCreateUseCase } from "../../applications/useCases/Attendance/AttendanceCreateUseCase";
 import { AttendanceController } from "../http/controllers/AttendanceController/AttendanceController";
 import { AuthRequest } from "../../infrastructure/types/AuthRequest";
@@ -148,6 +152,10 @@ Teacherrouter.post('/exammark/resolve-concern',
   (req, res) => exammarkcontroller.resolveConcern(req as AuthRequest, res)
 )
 const examfindclassbase = new ExamFindClassBase(examrepo)
+
+const timetableRepo = new MongoTimeTableCreate();
+const teacherScheduleUseCase = new TeacherDaybydayschedule(timetableRepo);
+const teacherScheduleController = new TeacherDailyScheduleView(teacherScheduleUseCase);
 
 
 const exammanagementcontroller = new ExamManagementController(
@@ -290,5 +298,10 @@ Teacherrouter.put('/exammark/update',
   authMiddleware,
   (req, res) => exammarkcontroller.updateExamMark(req as AuthRequest, res)
 )
+
+Teacherrouter.get('/schedule',
+  authMiddleware,
+  (req, res) => teacherScheduleController.TeacherViewSchedule(req as AuthRequest, res)
+);
 
 export default Teacherrouter;

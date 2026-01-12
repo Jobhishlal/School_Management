@@ -16,6 +16,8 @@ export class LeaveManagementMongoRepo implements InterfaceLeaveManagement {
     async create(leave: LeaveManagementEntity): Promise<LeaveManagementEntity> {
         const doc = await LeaveManagementModel.create({
             teacherId: leave.teacherId,
+            subAdminId: leave.subAdminId,
+            applicantRole: leave.applicantRole,
             leaveType: leave.leaveType,
             startDate: leave.startDate,
             endDate: leave.endDate,
@@ -31,6 +33,7 @@ export class LeaveManagementMongoRepo implements InterfaceLeaveManagement {
         return toLeaveManagementEntity(doc)
     }
     async findOverlappingLeave(teacherId: string, startDate: Date, endDate: Date): Promise<LeaveManagementEntity | null> {
+        // TODO: Update to support SubAdmin overlap check if needed
         const doc = await LeaveManagementModel.findOne({
             teacherId: new Types.ObjectId(teacherId),
             status: { $in: ["PENDING", "APPROVED"] },
@@ -59,8 +62,16 @@ export class LeaveManagementMongoRepo implements InterfaceLeaveManagement {
         return docs.map(toLeaveManagementEntity);
     }
 
+    async getLeavesBySubAdminId(subAdminId: string): Promise<LeaveManagementEntity[]> {
+        const docs = await LeaveManagementModel.find({ subAdminId: new Types.ObjectId(subAdminId) }).sort({ createdAt: -1 });
+        return docs.map(toLeaveManagementEntity);
+    }
+
     async getAllLeaves(): Promise<LeaveManagementEntity[]> {
-        const docs = await LeaveManagementModel.find().populate("teacherId").sort({ createdAt: -1 });
+        const docs = await LeaveManagementModel.find()
+            .populate("teacherId")
+            .populate("subAdminId")
+            .sort({ createdAt: -1 });
 
 
         return docs.map(toLeaveManagementEntity);

@@ -15,6 +15,7 @@ export interface InterfaceLeaveManagement {
     year: number
   ): Promise<number>;
   getLeavesByTeacherId(teacherId: string): Promise<LeaveManagementEntity[]>;
+  getLeavesBySubAdminId(subAdminId: string): Promise<LeaveManagementEntity[]>;
   getAllLeaves(): Promise<LeaveManagementEntity[]>;
   updateStatus(
     leaveId: string,

@@ -80,6 +80,8 @@ export class CreateLeaveUseCase implements ICreateLeaveusecase {
     const leaveEntity = new LeaveManagementEntity(
       "",
       teacherId,
+      undefined, // subAdminId
+      "TEACHER", // applicantRole
       data.leaveType,
       startDate,
       endDate,
@@ -91,7 +93,7 @@ export class CreateLeaveUseCase implements ICreateLeaveusecase {
       undefined,
       undefined,
       warningMessage
-    ); 
+    );
 
     return await this.create.create(leaveEntity);
   }

@@ -4,10 +4,21 @@ import type { LeaveRequestEntity } from "../../../types/LeaveRequest/CreateLeave
 import { showToast } from "../../../utils/toast";
 import { useTheme } from "../../../components/layout/ThemeContext";
 import { Modal } from "../../../components/common/Modal";
+import { Pagination } from "../../../components/common/Pagination"; // Import Pagination
 
 export const AdminLeaveRequest: React.FC = () => {
     const { isDark } = useTheme();
     const [leaves, setLeaves] = useState<LeaveRequestEntity[]>([]);
+
+   
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
+
+
+    const totalPages = Math.ceil(leaves.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const currentLeaves = leaves.slice(startIndex, startIndex + itemsPerPage);
+
     const [loading, setLoading] = useState(false);
     const [selectedLeave, setSelectedLeave] = useState<LeaveRequestEntity | null>(null);
 
@@ -30,7 +41,7 @@ export const AdminLeaveRequest: React.FC = () => {
     }, []);
 
     const handleAction = async (leaveId: string, status: "APPROVED" | "REJECTED", e?: React.MouseEvent) => {
-        if (e) e.stopPropagation(); 
+        if (e) e.stopPropagation();
 
         let remark = "";
         if (status === "REJECTED") {
@@ -46,9 +57,9 @@ export const AdminLeaveRequest: React.FC = () => {
         try {
             await UpdateLeaveStatus(leaveId, status, remark);
             showToast(`Leave ${status.toLowerCase()} successfully`, "success");
-            fetchLeaves(); // Refresh list
+            fetchLeaves();
             if (selectedLeave?.id === leaveId) {
-                setSelectedLeave(null); // Close modal if action taken from there
+                setSelectedLeave(null);
             }
         } catch (error: any) {
             showToast(error?.response?.data?.message || "Action failed", "error");
@@ -95,14 +106,26 @@ export const AdminLeaveRequest: React.FC = () => {
                                 <tr>
                                     <td colSpan={7} className={`text-center py-4 ${isDark ? "text-gray-400" : "text-gray-500"}`}>Loading...</td>
                                 </tr>
-                            ) : leaves.map((leave) => (
+                            ) : currentLeaves.map((leave) => (
                                 <tr
                                     key={leave.id}
                                     onClick={() => openModal(leave)}
                                     className={`cursor-pointer transition-colors ${isDark ? "hover:bg-[#161b22]" : "hover:bg-gray-50"}`}
                                 >
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className={`text-sm font-medium ${isDark ? "text-gray-200" : "text-gray-900"}`}>{leave.teacherName || leave.teacherId}</div>
+                                        <div className={`text-sm font-medium ${isDark ? "text-gray-200" : "text-gray-900"}`}>
+                                            {leave.applicantRole === "SUB_ADMIN" ? (
+                                                <span className="flex items-center gap-2">
+                                                    {leave.subAdminName || "SubAdmin"}
+                                                    <span className="px-1.5 py-0.5 text-[10px] rounded bg-purple-100 text-purple-800 font-bold border border-purple-200">SA</span>
+                                                </span>
+                                            ) : (
+                                                <span className="flex items-center gap-2">
+                                                    {leave.teacherName || leave.teacherId}
+                                                    <span className="px-1.5 py-0.5 text-[10px] rounded bg-blue-100 text-blue-800 font-bold border border-blue-200">T</span>
+                                                </span>
+                                            )}
+                                        </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${leave.leaveType === 'SICK' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
@@ -160,9 +183,17 @@ export const AdminLeaveRequest: React.FC = () => {
                         </tbody>
                     </table>
                 </div>
+
+             
+                <div className={`p-4 border-t ${isDark ? "border-gray-700" : "border-gray-200"}`}>
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                    />
+                </div>
             </div>
 
-            {/* Leave Details Modal */}
             <Modal
                 isOpen={!!selectedLeave}
                 onClose={closeModal}
@@ -172,8 +203,13 @@ export const AdminLeaveRequest: React.FC = () => {
                     <div className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className={`block text-xs font-semibold uppercase tracking-wider mb-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>Teacher</label>
-                                <p className={`text-base font-medium ${isDark ? "text-gray-200" : "text-gray-900"}`}>{selectedLeave.teacherName || "N/A"}</p>
+                                <label className={`block text-xs font-semibold uppercase tracking-wider mb-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>Applicant</label>
+                                <p className={`text-base font-medium ${isDark ? "text-gray-200" : "text-gray-900"}`}>
+                                    {selectedLeave.applicantRole === "SUB_ADMIN" ? selectedLeave.subAdminName : (selectedLeave.teacherName || selectedLeave.teacherId)}
+                                    <span className={`ml-2 text-xs font-normal ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                                        ({selectedLeave.applicantRole === "SUB_ADMIN" ? "SubAdmin" : "Teacher"})
+                                    </span>
+                                </p>
                             </div>
                             <div>
                                 <label className={`block text-xs font-semibold uppercase tracking-wider mb-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>Leave Type</label>

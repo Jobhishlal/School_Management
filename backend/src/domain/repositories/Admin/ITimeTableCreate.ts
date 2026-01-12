@@ -1,7 +1,7 @@
 import { TimetableEntity } from "../../entities/TimeTableEntity";
 import { CreateTimetableDTO } from "../../../applications/dto/CreateTImeTableDTO";
 import { Students } from "../../entities/Students";
-
+import { TeacherDailyScheduleDTO } from "../../../applications/dto/TeacherDailyScheduleDTO";
 
 export interface ITimeTableRepository{
     create(timetable:TimetableEntity):Promise<TimetableEntity>;
@@ -12,5 +12,7 @@ export interface ITimeTableRepository{
     delete(id:string):Promise<void>
     viewtimetable(classId: string): Promise<TimetableEntity | null>;
     getStudentTimeTable(studentId: string): Promise<TimetableEntity | null>
+    getTeacherDailySchedule( teacherId: string,day?: string): Promise<TeacherDailyScheduleDTO[]>
+
 
 }

@@ -46,8 +46,9 @@ export class MongoSubAdminRepo implements SubAdminRepository {
       doc.dateOfBirth,
       doc.gender,
       doc.documents,
-      doc.address ? doc.address.toString() : undefined, 
-      doc.photo
+      doc.address ? doc.address.toString() : undefined,
+      doc.photo,
+      doc.leaveBalance
     );
   }
 
@@ -71,14 +72,15 @@ export class MongoSubAdminRepo implements SubAdminRepository {
       doc.documents,
       doc.address
         ? {
-            _id: doc.address._id.toString(),
-            street: doc.address.street,
-            city: doc.address.city,
-            state: doc.address.state,
-            pincode: doc.address.pincode,
-          }
+          _id: doc.address._id.toString(),
+          street: doc.address.street,
+          city: doc.address.city,
+          state: doc.address.state,
+          pincode: doc.address.pincode,
+        }
         : undefined,
-      doc.photo
+      doc.photo,
+      doc.leaveBalance
     );
   }
 
@@ -102,14 +104,15 @@ export class MongoSubAdminRepo implements SubAdminRepository {
       doc.documents,
       doc.address
         ? {
-            _id: doc.address._id.toString(),
-            street: doc.address.street,
-            city: doc.address.city,
-            state: doc.address.state,
-            pincode: doc.address.pincode,
-          }
+          _id: doc.address._id.toString(),
+          street: doc.address.street,
+          city: doc.address.city,
+          state: doc.address.state,
+          pincode: doc.address.pincode,
+        }
         : undefined,
-      doc.photo
+      doc.photo,
+      doc.leaveBalance
     );
   }
 
@@ -132,14 +135,15 @@ export class MongoSubAdminRepo implements SubAdminRepository {
         doc.documents,
         doc.address
           ? {
-              _id: doc.address._id.toString(),
-              street: doc.address.street,
-              city: doc.address.city,
-              state: doc.address.state,
-              pincode: doc.address.pincode,
-            }
+            _id: doc.address._id.toString(),
+            street: doc.address.street,
+            city: doc.address.city,
+            state: doc.address.state,
+            pincode: doc.address.pincode,
+          }
           : undefined,
-        doc.photo
+        doc.photo,
+        doc.leaveBalance
       )
     );
   }
@@ -164,88 +168,91 @@ export class MongoSubAdminRepo implements SubAdminRepository {
       doc.documents,
       doc.address
         ? {
-            _id: doc.address._id.toString(),
-            street: doc.address.street,
-            city: doc.address.city,
-            state: doc.address.state,
-            pincode: doc.address.pincode,
-          }
-        : undefined,
-      doc.photo
-    );
-  }
-
- async update(id: string, updates: Partial<SubAdminEntities>): Promise<SubAdminEntities | null> {
-  if (updates.password) {
-    const salt = await bcrypt.genSalt(10);
-    updates.password = await bcrypt.hash(updates.password, salt);
-  }
-
-  const doc = await SubAdminModel.findByIdAndUpdate(
-    id,
-    {
-      ...updates,
-      address: updates.address ? updates.address : undefined,
-      documents: updates.documents ?? undefined,
-      photo: updates.photo ?? undefined,
-    },
-    { new: true }
-  ).populate<{ address: AddressDocument }>("address");
-
-  if (!doc) return null;
-
-  return new SubAdminEntities(
-    doc._id.toString(),
-    doc.name,
-    doc.email,
-    doc.phone,
-    doc.role as AdminRole,
-    doc.password,
-    doc.createdAt,
-    doc.updatedAt,
-    doc.blocked,
-    doc.major_role,
-    doc.dateOfBirth,
-    doc.gender,
-    doc.documents,
-    doc.address
-      ? {
           _id: doc.address._id.toString(),
           street: doc.address.street,
           city: doc.address.city,
           state: doc.address.state,
           pincode: doc.address.pincode,
         }
-      : undefined,
-    doc.photo
-  );
-}
-async updatePassword(id: string, hashedPassword: string): Promise<SubAdminEntities | null> {
-  const doc = await SubAdminModel.findByIdAndUpdate(
-    id,
-    { password: hashedPassword },
-    { new: true }
-  );
+        : undefined,
+      doc.photo,
+      doc.leaveBalance
+    );
+  }
 
-  if (!doc) return null;
+  async update(id: string, updates: Partial<SubAdminEntities>): Promise<SubAdminEntities | null> {
+    if (updates.password) {
+      const salt = await bcrypt.genSalt(10);
+      updates.password = await bcrypt.hash(updates.password, salt);
+    }
 
-  return new SubAdminEntities(
-    doc._id.toString(),
-    doc.name,
-    doc.email,
-    doc.phone,
-    doc.role as AdminRole,
-    doc.password,
-    doc.createdAt,
-    doc.updatedAt,
-    doc.blocked,
-    doc.major_role,
-    doc.dateOfBirth,
-    doc.gender,
-    doc.documents,
-    doc.address ? doc.address.toString() : undefined,
-    doc.photo
-  );
-}
+    const doc = await SubAdminModel.findByIdAndUpdate(
+      id,
+      {
+        ...updates,
+        address: updates.address ? updates.address : undefined,
+        documents: updates.documents ?? undefined,
+        photo: updates.photo ?? undefined,
+      },
+      { new: true }
+    ).populate<{ address: AddressDocument }>("address");
+
+    if (!doc) return null;
+
+    return new SubAdminEntities(
+      doc._id.toString(),
+      doc.name,
+      doc.email,
+      doc.phone,
+      doc.role as AdminRole,
+      doc.password,
+      doc.createdAt,
+      doc.updatedAt,
+      doc.blocked,
+      doc.major_role,
+      doc.dateOfBirth,
+      doc.gender,
+      doc.documents,
+      doc.address
+        ? {
+          _id: doc.address._id.toString(),
+          street: doc.address.street,
+          city: doc.address.city,
+          state: doc.address.state,
+          pincode: doc.address.pincode,
+        }
+        : undefined,
+      doc.photo,
+      doc.leaveBalance
+    );
+  }
+  async updatePassword(id: string, hashedPassword: string): Promise<SubAdminEntities | null> {
+    const doc = await SubAdminModel.findByIdAndUpdate(
+      id,
+      { password: hashedPassword },
+      { new: true }
+    );
+
+    if (!doc) return null;
+
+    return new SubAdminEntities(
+      doc._id.toString(),
+      doc.name,
+      doc.email,
+      doc.phone,
+      doc.role as AdminRole,
+      doc.password,
+      doc.createdAt,
+      doc.updatedAt,
+      doc.blocked,
+      doc.major_role,
+      doc.dateOfBirth,
+      doc.gender,
+      doc.documents,
+      doc.address ? doc.address.toString() : undefined,
+      doc.photo,
+      doc.leaveBalance
+    );
+  }
 
 }

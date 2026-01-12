@@ -7,9 +7,18 @@ export const toLeaveManagementEntity = (
 ): LeaveManagementEntity => {
   const teacherIdAny = doc.teacherId as any;
 
+  const subAdminIdAny = doc.subAdminId as any;
+  const subAdminIdStr = (subAdminIdAny && typeof subAdminIdAny === 'object' && '_id' in subAdminIdAny)
+    ? subAdminIdAny._id.toString()
+    : subAdminIdAny ? subAdminIdAny.toString() : undefined;
+
+  const subAdminName = (subAdminIdAny && typeof subAdminIdAny === 'object' && 'name' in subAdminIdAny)
+    ? subAdminIdAny.name
+    : undefined;
+
   const teacherIdStr = (teacherIdAny && typeof teacherIdAny === 'object' && '_id' in teacherIdAny)
     ? teacherIdAny._id.toString()
-    : teacherIdAny.toString();
+    : teacherIdAny ? teacherIdAny.toString() : undefined;
 
   const teacherName = (teacherIdAny && typeof teacherIdAny === 'object' && 'name' in teacherIdAny)
     ? teacherIdAny.name
@@ -19,6 +28,8 @@ export const toLeaveManagementEntity = (
     (doc._id || doc.id).toString(),
 
     teacherIdStr,
+    subAdminIdStr,
+    doc.applicantRole,
 
     doc.leaveType,
 
@@ -36,6 +47,7 @@ export const toLeaveManagementEntity = (
     doc.actionAt,
     doc.adminRemark,
     doc.warningMessage,
-    teacherName
+    teacherName,
+    subAdminName
   );
 };

@@ -1,7 +1,9 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface InterLeaveManagement extends Document {
-  teacherId: Types.ObjectId;
+  teacherId?: Types.ObjectId;
+  subAdminId?: Types.ObjectId;
+  applicantRole: "TEACHER" | "SUB_ADMIN";
 
   leaveType: "CASUAL" | "SICK" | "PAID" | "UNPAID" | "EXTRA";
 
@@ -30,8 +32,18 @@ const LeaveManagementSchema = new Schema<InterLeaveManagement>(
     teacherId: {
       type: Schema.Types.ObjectId,
       ref: "Teacher",
-
       index: true,
+    },
+    subAdminId: {
+      type: Schema.Types.ObjectId,
+      ref: "SubAdmin",
+      index: true,
+    },
+    applicantRole: {
+      type: String,
+      enum: ["TEACHER", "SUB_ADMIN"],
+      default: "TEACHER",
+      required: true
     },
 
 

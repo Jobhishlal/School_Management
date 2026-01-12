@@ -24,8 +24,9 @@ export class SubAdminEntities {
     public dateOfBirth: Date,
     public gender: string,
     public documents: any[],
-   
+
     public address?: string | AddressValue,
-    public photo?: any[]
-  ) {}
+    public photo?: any[],
+    public leaveBalance?: { sickLeave: number; casualLeave: number; }
+  ) { }
 }

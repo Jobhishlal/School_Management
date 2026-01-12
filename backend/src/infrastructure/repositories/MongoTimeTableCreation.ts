@@ -8,6 +8,7 @@ import { StudentModel } from "../database/models/StudentModel";
 import { validateTimetable } from "../../applications/validators/Timetable/TimetableValidator";
 
 import mongoose from "mongoose";
+import { TeacherDailyScheduleDTO } from "../../applications/dto/TeacherDailyScheduleDTO";
 
 
 export class MongoTimeTableCreate implements ITimeTableRepository {
@@ -285,6 +286,138 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
 
 
 
+  async getTeacherDailySchedule(teacherId: string, day?: string): Promise<TeacherDailyScheduleDTO[]> {
+    const Matchstage: any = {
+      'days.periods.teacherId': new mongoose.Types.ObjectId(teacherId)
+    }
+    if (day) {
+      Matchstage['days.day'] = day
+    }
+
+
+    const activeClasses = await TimetableModel.aggregate([
+
+      { $match: Matchstage },
+
+      { $unwind: '$days' },
+
+      { $unwind: '$days.periods' },
+
+
+      {
+        $match: {
+          'days.periods.teacherId': new mongoose.Types.ObjectId(teacherId),
+          ...(day && { 'days.day': day })
+        }
+      },
+
+      {
+        $lookup: {
+          from: 'classes',
+          localField: 'classId',
+          foreignField: '_id',
+          as: 'class'
+        }
+      },
+
+      { $unwind: '$class' },
+      {
+        $project: {
+          _id: 0,
+          day: "$days.day",
+          className: "$class.className",
+          division: "$division",
+          startTime: "$days.periods.startTime",
+          endTime: "$days.periods.endTime",
+          subject: "$days.periods.subject"
+        }
+      },
+
+      { $sort: { startTime: 1 } }
+    ]);
+
+    // Fetch a reference timetable to determine the day structure (periods/breaks)
+    // We try to find one associated with the teacher, or fallback to any timetable (assuming generic bell schedule)
+    const reference = await TimetableModel.findOne({
+      'days.periods.teacherId': new mongoose.Types.ObjectId(teacherId)
+    }).lean() || await TimetableModel.findOne().lean();
+
+    if (!reference) {
+      // Fallback if no timetable exists at all
+      return activeClasses.map(c => ({ ...c, type: 'class' }));
+    }
+
+    const finalSchedule: TeacherDailyScheduleDTO[] = [];
+    const daysToProcess = day ? [day] : ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+    for (const currentDay of daysToProcess) {
+      // 1. Get all active classes for this day
+      const dayClasses = activeClasses.filter(c => c.day === currentDay);
+
+      // 2. Add all active classes to final schedule
+      dayClasses.forEach(c => {
+        finalSchedule.push({ ...c, type: 'class' });
+      });
+
+      // 3. Find reference structure for this day
+      const dayRef = reference.days.find(d => d.day === currentDay);
+      if (dayRef) {
+        // Add Breaks
+        if (dayRef.breaks) {
+          dayRef.breaks.forEach((brk: any) => {
+            finalSchedule.push({
+              day: currentDay,
+              startTime: brk.startTime,
+              endTime: brk.endTime,
+              subject: brk.name || "Break",
+              type: 'break'
+            });
+          });
+        }
+
+        // Add Rest Periods (only if no class exists at that time)
+        if (dayRef.periods) {
+          dayRef.periods.forEach((refPeriod: any) => {
+            // Check if we already have a class (or break) at this time
+            const hasClass = finalSchedule.some(s =>
+              s.day === currentDay &&
+              s.startTime === refPeriod.startTime &&
+              s.type === 'class'
+            );
+
+            // Also check for overlapping breaks just in case, though breaks usually don't overlap periods
+            // If no class, it's a rest
+            if (!hasClass) {
+              // Check if we already added a rest/break at this exact time to avoid duplicates
+              const exists = finalSchedule.some(s =>
+                s.day === currentDay &&
+                s.startTime === refPeriod.startTime
+              );
+
+              if (!exists) {
+                finalSchedule.push({
+                  day: currentDay,
+                  startTime: refPeriod.startTime,
+                  endTime: refPeriod.endTime,
+                  subject: "Rest Period",
+                  type: 'rest'
+                });
+              }
+            }
+          });
+        }
+      }
+    }
+
+    // Sort by Day (Monday first...) then Time
+    const dayOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+    return finalSchedule.sort((a, b) => {
+      const dayDiff = dayOrder.indexOf(a.day) - dayOrder.indexOf(b.day);
+      if (dayDiff !== 0) return dayDiff;
+      return a.startTime.localeCompare(b.startTime);
+    });
+  }
 
 
 

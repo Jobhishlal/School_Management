@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FormLayout } from "../../../components/Form/FormLayout";
 import { TextInput } from "../../../components/Form/TextInput";
 import { SelectInput } from "../../../components/Form/SelectInput";
+import { Pagination } from "../../../components/common/Pagination"; // Import Pagination
 import { LeaveRequest, GetTeacherLeaves, GetTeachertimetableList } from "../../../services/authapi";
 import { showToast } from "../../../utils/toast";
 import type { LeaveRequestEntity } from "../../../types/LeaveRequest/CreateLeaveRequest";
@@ -27,6 +28,16 @@ export const LeaveManagement: React.FC = () => {
   });
 
   const [leaves, setLeaves] = useState<LeaveRequestEntity[]>([]);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  // Calculate pagination values
+  const totalPages = Math.ceil(leaves.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentLeaves = leaves.slice(startIndex, startIndex + itemsPerPage);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [teacherInfo, setTeacherInfo] = useState<any>(null);
@@ -80,13 +91,13 @@ export const LeaveManagement: React.FC = () => {
         reason: "",
       });
       setIsModalOpen(false);
-      fetchData(); 
+      fetchData();
     } catch (error: any) {
       showToast(
         error?.response?.data?.message || "Something went wrong",
         "error"
       );
-      console.log("error messages",error)
+      console.log("error messages", error)
     } finally {
       setIsSubmitting(false);
     }
@@ -101,7 +112,7 @@ export const LeaveManagement: React.FC = () => {
   const sickLeaveTaken = sickLeaveTotal - sickLeaveBalance;
   const casualLeaveTaken = casualLeaveTotal - casualLeaveBalance;
 
-  
+
   const leaveOptions: string[] = ["PAID", "UNPAID"];
 
   if (sickLeaveBalance > 0) {
@@ -128,8 +139,8 @@ export const LeaveManagement: React.FC = () => {
         <button
           onClick={() => setIsModalOpen(true)}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors shadow-sm ${isFullyExhausted
-              ? "bg-red-600 hover:bg-red-700 text-white"
-              : "bg-blue-600 hover:bg-blue-700 text-white"
+            ? "bg-red-600 hover:bg-red-700 text-white"
+            : "bg-blue-600 hover:bg-blue-700 text-white"
             }`}
         >
           <Plus size={20} />
@@ -182,7 +193,7 @@ export const LeaveManagement: React.FC = () => {
             label="Leave Type"
             value={leaveData.leaveType}
             options={leaveOptions}
-          
+
             isDark={isDark}
             onChange={(val) =>
               setLeaveData((prev) => ({ ...prev, leaveType: val as LeaveType }))
@@ -191,7 +202,7 @@ export const LeaveManagement: React.FC = () => {
           <TextInput
             label="Start Date"
             type="date"
-          
+
             value={leaveData.startDate}
             isDark={isDark}
             onChange={(val) =>
@@ -201,7 +212,7 @@ export const LeaveManagement: React.FC = () => {
           <TextInput
             label="End Date"
             type="date"
-          
+
             value={leaveData.endDate}
             isDark={isDark}
             onChange={(val) =>
@@ -211,7 +222,7 @@ export const LeaveManagement: React.FC = () => {
           <TextInput
             label="Reason"
             placeholder="Enter reason for leave"
-          
+
             value={leaveData.reason}
             isDark={isDark}
             onChange={(val) =>
@@ -239,7 +250,7 @@ export const LeaveManagement: React.FC = () => {
               </tr>
             </thead>
             <tbody className={`divide-y ${isDark ? "divide-gray-700" : "divide-gray-200"}`}>
-              {leaves.map((leave) => (
+              {currentLeaves.map((leave) => (
                 <tr key={leave.id} className={`transition-colors ${isDark ? "hover:bg-[#161b22]" : "hover:bg-gray-50"}`}>
                   <td className={`py-3 px-4 ${isDark ? "text-gray-300" : "text-gray-800"}`}>{leave.leaveType}</td>
                   <td className={`py-3 px-4 ${isDark ? "text-gray-300" : "text-gray-800"}`}>{new Date(leave.startDate).toLocaleDateString()}</td>
@@ -264,6 +275,14 @@ export const LeaveManagement: React.FC = () => {
               )}
             </tbody>
           </table>
+        </div>
+        {/* Pagination */}
+        <div className={`p-4 border-t ${isDark ? "border-gray-700" : "border-gray-200"}`}>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         </div>
       </div>
     </div>

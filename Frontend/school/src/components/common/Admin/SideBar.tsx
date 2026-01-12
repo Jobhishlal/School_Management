@@ -120,6 +120,9 @@ export default function SchoolNavbar({ }: Props) {
       links: [
         { icon: MessageCircle, text: "Communication", path: "/communication" },
         { icon: FileText, text: "Leave Request", path: "/leave-management" },
+        ...(userRole === "sub_admin"
+          ? [{ icon: FileText, text: "My Leave", path: "/subadmin-leave-application" }]
+          : []),
         { icon: Calendar, text: "Time Table", path: "/timetable-management" },
       ],
     },
@@ -138,10 +141,10 @@ export default function SchoolNavbar({ }: Props) {
 
   // ------------------ LOGOUT FUNCTION ------------------
   const handleLogout = () => {
-  
+
     localStorage.removeItem("adminAccessToken");
 
- 
+
 
     if (localStorage.getItem("role") === "super_admin" || localStorage.getItem("role") === "sub_admin") {
       localStorage.removeItem("role");

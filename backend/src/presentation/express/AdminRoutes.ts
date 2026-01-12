@@ -151,9 +151,6 @@ const announcementController = new AnnouncementController(
 )
 
 
-/////
-
-
 
 
 
@@ -681,18 +678,24 @@ import { CreateLeaveUseCase } from "../../applications/useCases/LeavemanagementU
 import { GetTeacherLeavesUseCase } from "../../applications/useCases/LeavemanagementUseCase.ts/GetTeacherLeavesUseCase";
 import { GetAllLeavesUseCase } from "../../applications/useCases/LeavemanagementUseCase.ts/GetAllLeavesUseCase";
 import { UpdateLeaveStatusUseCase } from "../../applications/useCases/LeavemanagementUseCase.ts/UpdateLeaveStatusUseCase";
+import { SubAdminLeaveCreateUseCase } from "../../applications/useCases/LeavemanagementUseCase.ts/SubAdminLeaveCreateUseCase";
+import { GetSubAdminLeavesUseCase } from "../../applications/useCases/LeavemanagementUseCase.ts/GetSubAdminLeavesUseCase";
 
 const leaverepo = new LeaveManagementMongoRepo();
 const createleave = new CreateLeaveUseCase(leaverepo, value);
 const getTeacherLeaves = new GetTeacherLeavesUseCase(leaverepo);
 const getAllLeaves = new GetAllLeavesUseCase(leaverepo);
-const updateLeaveStatus = new UpdateLeaveStatusUseCase(leaverepo, value, instituterepo);
+const updateLeaveStatus = new UpdateLeaveStatusUseCase(leaverepo, value, instituterepo, data);
+const subAdminLeaveCreate = new SubAdminLeaveCreateUseCase(leaverepo, data);
+const getSubAdminLeaves = new GetSubAdminLeavesUseCase(leaverepo);
 
 const leavemanagecontroller = new LeaveManagementController(
   createleave,
   getTeacherLeaves,
   getAllLeaves,
-  updateLeaveStatus
+  updateLeaveStatus,
+  subAdminLeaveCreate,
+  getSubAdminLeaves
 );
 
 Adminrouter.get('/leave/all-requests',

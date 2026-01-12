@@ -7,6 +7,9 @@ import { IGetTeacherUseCase } from "../../../../domain/UseCaseInterface/LeaveMan
 import { IGetAllLeavesUseCase } from "../../../../domain/UseCaseInterface/LeaveManagement/IGetAllLeavesUseCase";
 import { IUpdateLeaveStatusUseCase } from "../../../../domain/UseCaseInterface/LeaveManagement/IUpdateLeaveStatusUseCase";
 import { LeaveError } from "../../../../domain/enums/LeaveError";
+import { ICreateSubAdminLeaveUseCase } from "../../../../applications/useCases/LeavemanagementUseCase.ts/SubAdminLeaveCreateUseCase";
+import { IGetSubAdminLeavesUseCase } from "../../../../applications/useCases/LeavemanagementUseCase.ts/GetSubAdminLeavesUseCase";
+
 
 
 export class LeaveManagementController {
@@ -14,8 +17,10 @@ export class LeaveManagementController {
     private readonly _leavecreate: ICreateLeaveusecase,
     private readonly _getTeacherLeaves: IGetTeacherUseCase,
     private readonly _getAllLeaves: IGetAllLeavesUseCase,
-    private readonly _updateLeaveStatus: IUpdateLeaveStatusUseCase
-  ) { }
+    private readonly _updateLeaveStatus: IUpdateLeaveStatusUseCase,
+    private readonly _subAdminLeaveCreate: ICreateSubAdminLeaveUseCase,
+    private readonly _getSubAdminLeaves: IGetSubAdminLeavesUseCase
+  ) {}
 
   async LeaveCreate(req: AuthRequest, res: Response): Promise<void> {
     try {
@@ -50,10 +55,41 @@ export class LeaveManagementController {
         });
         return;
       }
+      console.error("Leave creation error:", error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: "Internal server error",
         error: error.message
       });
+    }
+  }
+
+  async subAdminLeaveCreate(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const subAdminId = req.user?.id;
+
+      if (!subAdminId) {
+        res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized access" });
+        return;
+      }
+
+      const data: CreateLeaveDTO = req.body;
+
+
+      const leave = await this._subAdminLeaveCreate.execute(subAdminId, data);
+
+      res.status(StatusCodes.CREATED).json({
+        message: "Leave request submitted successfully",
+        leave
+      });
+
+    } catch (error: any) {
+      console.log(error)
+      if (Object.values(LeaveError).includes(error.message)) {
+        res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+        return;
+      }
+      console.log(error,"error")
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
     }
   }
 
@@ -65,6 +101,20 @@ export class LeaveManagementController {
         return;
       }
       const leaves = await this._getTeacherLeaves.execute(teacherId);
+      res.status(StatusCodes.OK).json({ leaves });
+    } catch (error) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+    }
+  }
+
+  async getSubAdminLeaves(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const subAdminId = req.user?.id;
+      if (!subAdminId) {
+        res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized access" });
+        return;
+      }
+      const leaves = await this._getSubAdminLeaves.execute(subAdminId);
       res.status(StatusCodes.OK).json({ leaves });
     } catch (error) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
