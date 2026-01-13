@@ -14,7 +14,7 @@ export interface IAssignmentRepository {
   findByIdEntity(id: string): Promise<AssignmentEntity | null>;
   findTeacherSubjects(teacherId: string): Promise<string[]>;
   findTimetable(classId: string, teacherId: string, subject: string): Promise<boolean>;
-  getTeacherTimeTableinfo(teacherId: string): Promise<{ timetable: TeacherTimetableInfo[], leaveBalance: { sickLeave: number, casualLeave: number } }>;
+  getTeacherTimeTableinfo(teacherId: string): Promise<{ timetable: TeacherTimetableInfo[], leaveBalance: { sickLeave: number, casualLeave: number }, teacherProfile: { name: string, image?: string } }>;
   updateAssignmentDTO(id: string, update: Partial<AssignmentDTO>): Promise<AssignmentEntity | null>;
   getAssignmentsByTeacher(teacherId: string): Promise<AssignmentEntity[]>
   getAssignmetEachStudent(studentId: string): Promise<AssignmentEntity[]>

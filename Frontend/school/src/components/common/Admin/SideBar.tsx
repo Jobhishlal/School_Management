@@ -22,6 +22,7 @@ import {
   Bell,
   ChevronDown,
   User,
+  Video,
 } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../layout/ThemeContext";
@@ -124,6 +125,7 @@ export default function SchoolNavbar({ }: Props) {
           ? [{ icon: FileText, text: "My Leave", path: "/subadmin-leave-application" }]
           : []),
         { icon: Calendar, text: "Time Table", path: "/timetable-management" },
+        { icon: Video, text: "Video Conference", path: "/create-meeting" },
       ],
     },
   ];

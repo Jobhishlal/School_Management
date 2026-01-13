@@ -505,10 +505,7 @@ export const createAssignment = async (data: CreateAssignmentDTO, files: File[])
 
 
 export const GetTeachertimetableList = async () => {
-  const token = localStorage.getItem("token");
-  const res = await api.get("/teacher/teacher-info", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const res = await api.get("/teacher/teacher-info");
   return res.data.data;
 }
 
@@ -1048,5 +1045,21 @@ export const getAdminProfile = async () => {
   const res = await api.get("/admin/adminprofile", {
     headers: { Authorization: `Bearer ${token}` }
   });
+  return res.data;
+};
+
+
+export const createMeeting = async (data: any) => {
+  const res = await api.post('/meeting/create', data);
+  return res.data;
+};
+
+export const getScheduledMeetings = async () => {
+  const res = await api.get('/meeting/scheduled');
+  return res.data;
+};
+
+export const validateJoinMeeting = async (link: string) => {
+  const res = await api.post('/meeting/validate-join', { link });
   return res.data;
 };

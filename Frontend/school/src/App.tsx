@@ -59,6 +59,8 @@ import TeacherMyClass from "./pages/Teacher/Class/TeacherMyClass";
 import TeacherScheduleView from "./pages/Teacher/TeacherScheduleView";
 import ParentLeavePage from "./pages/Parents/ParentLeavePage";
 import TeacherStudentLeavePage from "./pages/Teacher/LeaveManagement/TeacherStudentLeavePage";
+import CreateMeeting from "./pages/admin/VideoConference/CreateMeeting";
+import VideoMeeting from "./pages/common/VideoMeeting";
 
 import PublicRoute from "./components/layout/PublicRoute";
 
@@ -98,6 +100,8 @@ function App() {
           <Route path='/Announcement' element={<PrivateRoute><CreateAnnouncement /></PrivateRoute>} />
           <Route path='/leave-management' element={<PrivateRoute><AdminLeaveRequest /></PrivateRoute>} />
           <Route path='/subadmin-leave-application' element={<PrivateRoute><SubAdminLeaveApplication /></PrivateRoute>} />
+          <Route path='/create-meeting' element={<PrivateRoute><CreateMeeting /></PrivateRoute>} />
+          <Route path='/meeting/:meetingLink' element={<PrivateRoute><VideoMeeting /></PrivateRoute>} />
         </Route>
 
         {/* ---------------- STUDENT ROUTES ---------------- */}

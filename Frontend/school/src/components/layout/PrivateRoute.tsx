@@ -18,6 +18,8 @@ export default function PrivateRoute({ children }: { children: JSX.Element }) {
     path.startsWith("/expense-management") ||
     path.startsWith("/instituteprofile") ||
     path.startsWith("/Announcement") ||
+    path.startsWith("/instituteprofile") ||
+    path.startsWith("/Announcement") ||
     path.startsWith("/leave-management")
   ) {
     const token = localStorage.getItem("adminAccessToken");
@@ -34,6 +36,13 @@ export default function PrivateRoute({ children }: { children: JSX.Element }) {
   } else if (path.startsWith("/parent")) {
     const token = localStorage.getItem("parentAccessToken");
     if (token) isAuthenticated = true;
+  } else if (path.startsWith("/meeting")) {
+    const token = localStorage.getItem('adminAccessToken') ||
+      localStorage.getItem('teacherAccessToken') ||
+      localStorage.getItem('studentAccessToken') ||
+      localStorage.getItem('parentAccessToken') ||
+      localStorage.getItem('accessToken');
+    if (token) isAuthenticated = true;
   } else {
     const token = localStorage.getItem("accessToken");
     if (token) isAuthenticated = true;
@@ -44,9 +53,9 @@ export default function PrivateRoute({ children }: { children: JSX.Element }) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  
+
   if (path === "/login") {
-    const role = localStorage.getItem("role"); 
+    const role = localStorage.getItem("role");
     switch (role) {
       case "students":
         return <Navigate to="/student-dashboard" replace />;

@@ -90,7 +90,7 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
 
 
 
-  async getTeacherTimeTableinfo(teacherId: string): Promise<{ timetable: TeacherTimetableInfo[], leaveBalance: { sickLeave: number, casualLeave: number } }> {
+  async getTeacherTimeTableinfo(teacherId: string): Promise<{ timetable: TeacherTimetableInfo[], leaveBalance: { sickLeave: number, casualLeave: number }, teacherProfile: { name: string, image?: string } }> {
 
     const timetable = await TimetableModel.find({ "days.periods.teacherId": teacherId })
 
@@ -142,7 +142,11 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
         divisions: val.divisions,
         subjects: Array.from(val.subjects),
       })),
-      leaveBalance
+      leaveBalance,
+      teacherProfile: {
+        name: teacher?.name || "Teacher",
+        image: teacher?.documents?.[0]?.url || ""
+      }
     };
   }
 
@@ -341,7 +345,7 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
       submission.badge = data.badge;
       submission.status = data.status || 'Graded';
     } else {
-     
+
       assignment.assignmentSubmitFile.push({
         studentId: new mongoose.Types.ObjectId(data.studentId),
         url: "",
