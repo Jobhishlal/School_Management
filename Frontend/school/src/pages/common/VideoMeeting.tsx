@@ -58,8 +58,15 @@ const VideoMeeting: React.FC = () => {
 
     // Refs for optimization
     const streamRef = useRef<MediaStream | null>(null);
+    const userProfileRef = useRef<{ name: string; image?: string } | null>(null);
 
     useEffect(() => {
+        userProfileRef.current = userProfile;
+    }, [userProfile]);
+
+    useEffect(() => {
+        let currentRole = userRole;
+
         // Retrieve the correct token based on user role
         const token = localStorage.getItem('adminAccessToken') ||
             localStorage.getItem('teacherAccessToken') ||
@@ -67,11 +74,12 @@ const VideoMeeting: React.FC = () => {
             localStorage.getItem('parentAccessToken') ||
             localStorage.getItem('accessToken');
 
-        if (token) {
+        if (token && !currentRole) {
             try {
                 const decoded: any = jwtDecode(token);
                 setUserId(decoded.id || decoded.sub); // Adjust based on your token structure
-                setUserRole(decoded.role);
+                currentRole = decoded.role;
+                setUserRole(currentRole);
             } catch (e) {
                 console.error("Invalid token", e);
             }
@@ -96,23 +104,24 @@ const VideoMeeting: React.FC = () => {
             }
         };
 
-        const fetchUserProfile = async () => {
-            if (!userRole) {
+        const fetchUserProfile = async (roleToUse: string) => {
+            if (!roleToUse) {
                 setProfileLoaded(true);
                 return;
             }
 
             try {
                 let data;
-                if (userRole === 'student') {
+                const roleLower = roleToUse.toLowerCase();
+                if (roleLower === 'student') {
                     const res = await StudentProfile();
                     data = res.data?.data;
-                } else if (userRole === 'admin' || userRole === 'sub_admin') {
+                } else if (roleLower === 'admin' || roleLower === 'sub_admin') {
                     const res = await Getadminprofilemanagement();
-                    // Admin data is nested in res.data or res
+                    // Admin data might be in res.profile, res.data.profile, res.data, or res
                     const adminData = res.data || res;
-                    data = adminData.profile || adminData;
-                } else if (userRole === 'teacher') {
+                    data = adminData.profile || adminData.data || adminData;
+                } else if (roleLower === 'teacher') {
                     // Teacher info now includes teacherProfile from backend update
                     const res = await GetTeachertimetableList();
                     data = res;
@@ -123,20 +132,22 @@ const VideoMeeting: React.FC = () => {
                     let name = 'User';
                     let image = null;
 
-                    if (userRole === 'teacher') {
-                        name = data.teacherProfile?.name || 'Teacher';
+                    if (roleLower === 'teacher') {
+                        name = data.teacherProfile?.name || data.name || 'Teacher';
                         image = data.teacherProfile?.image || null;
-                    } else if (userRole === 'admin' || userRole === 'sub_admin') {
-                        name = data.name || 'Admin';
-                        image = data.photo?.[0]?.url || null;
+                    } else if (roleLower === 'admin' || roleLower === 'sub_admin') {
+                        name = data.name || data.username || (roleLower.includes('admin') ? 'Admin' : 'User');
+                        image = data.photo?.[0]?.url || data.image || null;
                     } else {
                         // Student
                         name = data.fullName || data.name || 'Student';
-                        // Check for photos array (StudentModel typically has photos)
                         image = data.photos?.[0] || data.profileImage || null;
                     }
 
                     setUserProfile({ name, image });
+                } else {
+                    // Fallback if data is null (API success but no data)
+                    setUserProfile({ name: roleLower === 'admin' ? 'Admin' : 'User', image: undefined });
                 }
 
                 if (data) {
@@ -145,19 +156,32 @@ const VideoMeeting: React.FC = () => {
                 }
             } catch (err) {
                 console.error("Error fetching user profile:", err);
+                // Fallback on error: Try to get name from token if available
+                let fallbackName = roleToUse || 'User';
+                try {
+                    const token = localStorage.getItem('adminAccessToken') || localStorage.getItem('teacherAccessToken') || localStorage.getItem('accessToken');
+                    if (token) {
+                        const decoded: any = jwtDecode(token);
+                        // Common claims for name: name, username, email, sub
+                        fallbackName = decoded.name || decoded.username || decoded.email || decoded.sub || roleToUse;
+                        console.log("Extracted fallback name from token:", fallbackName);
+                    }
+                } catch (e) {
+                    console.log("Token extraction failed", e);
+                }
+
+                // Ensure name is never empty string or null
+                if (!fallbackName) fallbackName = 'Unknown User';
+
+                setUserProfile({ name: fallbackName, image: undefined });
             } finally {
                 setProfileLoaded(true);
             }
         };
 
         checkPermission();
-        if (userRole) {
-            fetchUserProfile();
-        } else {
-            // If userRole is not set yet, we might wait? 
-            // Effect runs when userRole changes, so it will trigger.
-        }
-    }, [meetingLink, userId, userRole]);
+        fetchUserProfile(currentRole); // Pass the role directly
+    }, [meetingLink]); // Only re-run if meetingLink changes (or mount)
 
     useEffect(() => {
         if (!meeting || error || !profileLoaded) return;
@@ -176,15 +200,23 @@ const VideoMeeting: React.FC = () => {
 
                 const roomId = meeting.link; // Ensure this is the unique identifier
 
+                console.log("EMIT join-meeting with userData:", userProfile);
+
+                const safeUserData = userProfile || { name: userRole || 'Participant', image: undefined };
+                console.log("EMIT join-meeting with userData:", safeUserData);
+
                 socketRef.current.emit('join-meeting', {
                     meetingId: roomId,
                     userId,
                     role: userRole,
-                    userData: userProfile // Send profile data
+                    userData: safeUserData
                 });
 
                 socketRef.current.on('user-connected', ({ userId: newUserId, socketId, role, userData }) => {
                     console.log('User connected:', newUserId, userData);
+
+                    // Ignore self-connection (ghost from another tab/session)
+                    if (newUserId === userId) return;
 
                     // Deduplication: Remove existing peer with the same userId (e.g., stale connection)
                     // Note: We access peersRef.current to get the latest state
@@ -266,11 +298,12 @@ const VideoMeeting: React.FC = () => {
             cleanup();
         };
 
-    }, [meeting, error, profileLoaded]);
+    }, [meeting, error, profileLoaded, userProfile]);
 
     const cleanup = () => {
         if (socketRef.current) {
             socketRef.current.disconnect();
+            socketRef.current = null;
         }
         if (streamRef.current) {
             streamRef.current.getTracks().forEach(track => track.stop());
@@ -286,10 +319,14 @@ const VideoMeeting: React.FC = () => {
         });
 
         peer.on('signal', signal => {
+            // Use Ref to ensure we send the LATEST profile data, avoiding stale closures
+            const latestProfile = userProfileRef.current || { name: userRole || 'Participant', image: undefined };
+            console.log("SENDING SIGNAL (Initiator) with profile:", latestProfile);
+
             socketRef.current?.emit('signal', {
                 to: userToSignal,
                 signal,
-                userPayload: { userId, role: userRole }
+                userPayload: { userId, role: userRole, userData: latestProfile }
             });
         });
 
@@ -312,10 +349,14 @@ const VideoMeeting: React.FC = () => {
         });
 
         peer.on('signal', signal => {
+            // Use Ref to ensure we send the LATEST profile data, avoiding stale closures
+            const latestProfile = userProfileRef.current || { name: userRole || 'Participant', image: undefined };
+            console.log("SENDING SIGNAL (Receiver) with profile:", latestProfile);
+
             socketRef.current?.emit('signal', {
                 to: callerID,
                 signal,
-                userPayload: { userId, role: userRole }
+                userPayload: { userId, role: userRole, userData: latestProfile }
             });
         });
 
@@ -404,6 +445,7 @@ const VideoMeeting: React.FC = () => {
 
 const VideoCard: React.FC<{ peer: SimplePeer.Instance; userId?: string; role?: string; userData?: { name: string; image?: string } }> = ({ peer, userId, role, userData }) => {
     const ref = useRef<HTMLVideoElement>(null);
+    const [imgError, setImgError] = useState(false);
 
     useEffect(() => {
         peer.on("stream", stream => {
@@ -413,12 +455,33 @@ const VideoCard: React.FC<{ peer: SimplePeer.Instance; userId?: string; role?: s
         });
     }, [peer]);
 
+    useEffect(() => {
+        setImgError(false); // Reset error when userData changes
+    }, [userData?.image]);
+
+    const getInitials = (name: string) => {
+        return name?.charAt(0)?.toUpperCase() || '?';
+    };
+
     return (
         <div className="relative w-full max-w-md aspect-video bg-black rounded-lg overflow-hidden shadow-md border border-gray-700">
             <video ref={ref} autoPlay playsInline className="w-full h-full object-cover" />
             <div className="absolute bottom-4 left-4 text-white bg-black/50 px-2 py-1 rounded flex items-center gap-2">
-                {userData?.image && <img src={userData.image} alt={userData.name} className="w-6 h-6 rounded-full object-cover" />}
-                {userData?.name ? `${userData.name} (${role})` : (userId ? `${userId} (${role})` : 'Participant')}
+                {userData?.image && !imgError ? (
+                    <img
+                        src={userData.image}
+                        alt={userData.name}
+                        className="w-8 h-8 rounded-full object-cover"
+                        onError={() => setImgError(true)}
+                    />
+                ) : (
+                    <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold">
+                        {getInitials(userData?.name || userId || '')}
+                    </div>
+                )}
+                <span className="text-sm font-medium">
+                    {userData?.name ? `${userData.name} (${role})` : (userId ? `${userId} (${role})` : 'Participant')}
+                </span>
             </div>
         </div>
     );

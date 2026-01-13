@@ -62,7 +62,7 @@ export class MeetingController {
             const user = (req as any).user;
 
             if (!user) {
-                res.status(401).json({ success: false, message: 'Unauthorized' });
+                res.status(StatusCodes.UNAUTHORIZED).json({ success: false, message: 'Unauthorized' });
                 return;
             }
 
@@ -74,9 +74,9 @@ export class MeetingController {
             const result = await this.meetingUseCase.validateJoin(link, user.id, userRole, userClassId);
 
             if (result.authorized) {
-                res.status(200).json({ success: true, data: result.meeting });
+                res.status(StatusCodes.OK).json({ success: true, data: result.meeting });
             } else {
-                res.status(403).json({ success: false, message: result.message });
+                res.status(StatusCodes.FORBIDDEN).json({ success: false, message: result.message });
             }
         } catch (error) {
             next(error);
