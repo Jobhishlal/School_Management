@@ -446,13 +446,68 @@ const VideoMeeting: React.FC = () => {
 const VideoCard: React.FC<{ peer: SimplePeer.Instance; userId?: string; role?: string; userData?: { name: string; image?: string } }> = ({ peer, userId, role, userData }) => {
     const ref = useRef<HTMLVideoElement>(null);
     const [imgError, setImgError] = useState(false);
+    const [isSpeaking, setIsSpeaking] = useState(false);
+    const analyserRef = useRef<AnalyserNode | null>(null);
+    const audioContextRef = useRef<AudioContext | null>(null);
+    const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
 
     useEffect(() => {
-        peer.on("stream", stream => {
+        const handleStream = (stream: MediaStream) => {
             if (ref.current) {
                 ref.current.srcObject = stream;
             }
-        });
+
+            // Audio Analysis Setup
+            if (!audioContextRef.current) {
+                audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+            }
+
+            if (audioContextRef.current && stream.getAudioTracks().length > 0) {
+                // Close previous context/source if they exist to avoid leaks/errors on re-render
+                if (sourceRef.current) {
+                    // sourceRef.current.disconnect(); // Sometimes causes issues if context is closed
+                }
+
+                try {
+                    analyserRef.current = audioContextRef.current.createAnalyser();
+                    analyserRef.current.fftSize = 512;
+                    sourceRef.current = audioContextRef.current.createMediaStreamSource(stream);
+                    sourceRef.current.connect(analyserRef.current);
+
+                    const bufferLength = analyserRef.current.frequencyBinCount;
+                    const dataArray = new Uint8Array(bufferLength);
+
+                    const checkAudio = () => {
+                        if (!analyserRef.current) return;
+                        analyserRef.current.getByteFrequencyData(dataArray);
+
+                        let sum = 0;
+                        for (let i = 0; i < bufferLength; i++) {
+                            sum += dataArray[i];
+                        }
+                        const average = sum / bufferLength;
+
+                        // Threshold for "speaking" - adjust as needed
+                        setIsSpeaking(average > 10);
+
+                        requestAnimationFrame(checkAudio);
+                    };
+                    checkAudio();
+                } catch (e) {
+                    console.error("Audio analysis setup failed", e);
+                }
+            }
+        };
+
+        peer.on("stream", handleStream);
+
+        // Cleanup
+        return () => {
+            if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+                audioContextRef.current.close();
+                audioContextRef.current = null;
+            }
+        }
     }, [peer]);
 
     useEffect(() => {
@@ -464,8 +519,16 @@ const VideoCard: React.FC<{ peer: SimplePeer.Instance; userId?: string; role?: s
     };
 
     return (
-        <div className="relative w-full max-w-md aspect-video bg-black rounded-lg overflow-hidden shadow-md border border-gray-700">
+        <div className={`relative w-full max-w-md aspect-video bg-black rounded-lg overflow-hidden shadow-md border transition-all duration-200 ${isSpeaking ? 'border-green-500 border-4 shadow-green-500/50' : 'border-gray-700'}`}>
             <video ref={ref} autoPlay playsInline className="w-full h-full object-cover" />
+
+            {/* Speaking Indicator Icon */}
+            {isSpeaking && (
+                <div className="absolute top-4 right-4 bg-green-600 p-2 rounded-full animate-pulse z-10">
+                    <Mic className="text-white w-4 h-4" />
+                </div>
+            )}
+
             <div className="absolute bottom-4 left-4 text-white bg-black/50 px-2 py-1 rounded flex items-center gap-2">
                 {userData?.image && !imgError ? (
                     <img
