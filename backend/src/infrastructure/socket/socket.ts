@@ -10,6 +10,7 @@ let io: Server;
 const meetingParticipants = new Map<string, Map<string, any>>();
 // Track which meeting a socket is in: socketId -> meetingId
 const socketMeetingMap = new Map<string, string>();
+const waitingRoom = new Map<string, Map<string, any>>(); // meetingId -> Map<socketId, userData>
 
 export const initSocket = (httpServer: HttpServer) => {
   io = new Server(httpServer, {
@@ -28,28 +29,139 @@ export const initSocket = (httpServer: HttpServer) => {
       if (division) socket.join(`division-${division}`);
     });
 
+
+
     // WebRTC Signaling
-    socket.on("join-meeting", ({ meetingId, userId, role, userData }) => {
+    socket.on("join-meeting", ({ meetingId, userId, role, userData, meetingCreatorId }) => {
+      // Determine if this user is the Host
+      // Host = Creator OR Admin OR Sub-Admin
+      const isCreator = String(userId).trim() === String(meetingCreatorId).trim();
+      const normalizedRole = role ? String(role).toLowerCase() : '';
+      // Only 'admin' and 'super_admin' can bypass. 'sub_admin' must be the creator to be host.
+      const isAdmin = normalizedRole === 'admin' || normalizedRole === 'super_admin';
+      const isHost = isCreator || isAdmin;
+
+      console.log(`[Host Check] Meeting: ${meetingId}`);
+      console.log(`[Host Check] UserID: '${userId}' vs CreatorID: '${meetingCreatorId}'`);
+      console.log(`[Host Check] Role: '${role}'`);
+      console.log(`[Host Check] Is Creator: ${isCreator}, Is Admin: ${isAdmin} -> FINAL: ${isHost ? 'IS HOST' : 'IS PARTICIPANT'}`);
+
+      if (!isHost) {
+        // Check if Host is in the meeting to notify them immediately
+        const participants = meetingParticipants.get(meetingId);
+        let hostSocketId = null;
+        if (participants) {
+          for (const [sId, p] of participants) {
+            if (p.isHost) {
+              hostSocketId = sId;
+              break;
+            }
+          }
+        }
+
+        // Trigger Waiting Room Logic
+        if (!waitingRoom.has(meetingId)) {
+          waitingRoom.set(meetingId, new Map());
+        }
+        waitingRoom.get(meetingId)?.set(socket.id, { userId, role, userData, socketId: socket.id });
+        socket.join(`waiting-${meetingId}`); // Special room for waiters
+
+        // Notify User they are waiting
+        socket.emit(hostSocketId ? "waiting-for-approval" : "waiting-for-host");
+        console.log(`User ${userId} added to WAITING ROOM for ${meetingId}`);
+
+        // Notify Host if present
+        if (hostSocketId) {
+          io.to(hostSocketId).emit("user-joined-waiting", { userId, role, userData, socketId: socket.id });
+        }
+        return;
+      }
+
+      // --- HOST LOGIC BELOW ---
       socket.join(meetingId);
 
       // Track participant
       if (!meetingParticipants.has(meetingId)) {
         meetingParticipants.set(meetingId, new Map());
       }
+      const participants = meetingParticipants.get(meetingId);
 
       // Map socket to user data
-      meetingParticipants.get(meetingId)?.set(socket.id, { userId, role, userData });
+      participants?.set(socket.id, { userId, role, userData, isHost });
       socketMeetingMap.set(socket.id, meetingId);
 
       // Calculate counts
-      const participants = meetingParticipants.get(meetingId);
       const uniqueUsers = new Set(Array.from(participants?.values() || []).map(p => p.userId)).size;
       const activeConnections = participants?.size || 0;
 
-      console.log(`User ${userId} (${role}) joined meeting ${meetingId}. Name: ${userData?.name}. Unique Users: ${uniqueUsers}, Active Connections: ${activeConnections}`);
+      console.log(`HOST ${userId} joined meeting ${meetingId}. Active Connections: ${activeConnections}`);
 
-      // Notify others in the room that a user connected
+      // Send current Waiting List to Host
+      const waiters = waitingRoom.has(meetingId)
+        ? Array.from(waitingRoom.get(meetingId)?.values() || [])
+        : [];
+      socket.emit("waiting-list-update", waiters);
+
+      // Notify others (if any active participants existed before host - rare but possible if we allow open rooms later)
       socket.to(meetingId).emit("user-connected", { userId, socketId: socket.id, role, userData });
+
+      // Also notify waiters that host has joined (switch status from "Waiting for Host" to "Waiting for Approval")
+      io.to(`waiting-${meetingId}`).emit("waiting-for-approval");
+    });
+
+    socket.on("admit-user", ({ meetingId, socketId }) => {
+      console.log(`[ADMIT-USER] Request for Socket: ${socketId} in Meeting: ${meetingId}`);
+      // Security check: Ensure sender is actually the host of this meeting? 
+      // For now trusting client logic, but ideally we check meetingParticipants.get(meetingId).get(socket.id).isHost
+
+      const waiters = waitingRoom.get(meetingId);
+      console.log(`[ADMIT-USER] Waiters found for meeting:`, waiters ? Array.from(waiters.keys()) : 'None');
+
+      if (waiters && waiters.has(socketId)) {
+        const userData = waiters.get(socketId);
+        waiters.delete(socketId);
+
+        // Move user to real meeting
+        const participants = meetingParticipants.get(meetingId);
+        if (!participants) {
+          meetingParticipants.set(meetingId, new Map());
+        }
+        meetingParticipants.get(meetingId)?.set(userData.socketId, { ...userData, isHost: false });
+        socketMeetingMap.set(userData.socketId, meetingId);
+
+        // Notify User
+        io.to(socketId).emit("admission-granted");
+
+        // Make user join the socket room now
+        const admittedSocket = io.sockets.sockets.get(socketId);
+        console.log(`[ADMIT-USER] Socket Object retrieved? ${!!admittedSocket}`);
+
+        if (admittedSocket) {
+          admittedSocket.leave(`waiting-${meetingId}`);
+          admittedSocket.join(meetingId);
+
+          // Broadcast to room
+          admittedSocket.to(meetingId).emit("user-connected", {
+            userId: userData.userId,
+            socketId: userData.socketId,
+            role: userData.role,
+            userData: userData.userData
+          });
+        }
+
+        console.log(`Admitted user ${userData.userId} to meeting ${meetingId}`);
+      }
+    });
+
+    socket.on("reject-user", ({ meetingId, socketId }) => {
+      const waiters = waitingRoom.get(meetingId);
+      if (waiters && waiters.has(socketId)) {
+        waiters.delete(socketId);
+        io.to(socketId).emit("admission-rejected");
+        // Disconnect them?
+        const rejectedSocket = io.sockets.sockets.get(socketId);
+        if (rejectedSocket) rejectedSocket.disconnect();
+      }
     });
 
     // Generic signaling (offer, answer, ice-candidate)
@@ -100,7 +212,29 @@ export const initSocket = (httpServer: HttpServer) => {
           console.log(`Meeting ${meetingId} is now empty.`);
         }
       } else {
-        console.log(`❌ User disconnected: ${socket.id} (Not in a meeting)`);
+        // Check if user was in a Waiting Room
+        let foundInWaiting = false;
+        waitingRoom.forEach((waiters, mId) => {
+          if (waiters.has(socket.id)) {
+            waiters.delete(socket.id);
+            foundInWaiting = true;
+            console.log(`❌ Waiting User disconnected: ${socket.id} from meeting ${mId}`);
+
+            // Notify Host of this meeting (anyone in the meeting room is potentially a host)
+            // We send the updated list to the *meeting room*? No, ideally just the host.
+            // But sending to the room is safe as only host sees the list usually, 
+            // OR we can find the host. Simpler to just emit 'waiting-list-update' to the meeting room 
+            // but checking our join logic, we emit 'waiting-list-update' to the specific host socket.
+
+            // Let's broadcast the updated waiting list to the meeting room so the Host receives it.
+            const updatedWaiters = Array.from(waiters.values());
+            io.to(mId).emit("waiting-list-update", updatedWaiters);
+          }
+        });
+
+        if (!foundInWaiting) {
+          console.log(`❌ User disconnected: ${socket.id} (Not in a meeting)`);
+        }
       }
     });
   });

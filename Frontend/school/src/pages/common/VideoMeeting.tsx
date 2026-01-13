@@ -28,8 +28,11 @@ interface PeerData {
     userData?: {
         name: string;
         image?: string;
-    }
+    },
+    stream?: MediaStream; // Add stream property
 }
+
+
 
 const VideoMeeting: React.FC = () => {
     const { meetingLink } = useParams<{ meetingLink: string }>();
@@ -51,6 +54,9 @@ const VideoMeeting: React.FC = () => {
     // Profile Data
     const [userProfile, setUserProfile] = useState<{ name: string; image?: string } | null>(null);
     const [profileLoaded, setProfileLoaded] = useState(false);
+    const [isWaiting, setIsWaiting] = useState(false);
+    const [waitingMessage, setWaitingMessage] = useState("Waiting for the Host");
+    const [waitingList, setWaitingList] = useState<any[]>([]);
 
     const socketRef = useRef<Socket | null>(null);
     const userVideo = useRef<HTMLVideoElement>(null);
@@ -184,32 +190,96 @@ const VideoMeeting: React.FC = () => {
     }, [meetingLink]); // Only re-run if meetingLink changes (or mount)
 
     useEffect(() => {
-        if (!meeting || error || !profileLoaded) return;
+        // Guard clause: Don't attempt to join if meeting details aren't loaded yet
+        if (!meeting) {
+            console.log("Meeting details not loaded yet. Skipping join attempt.");
+            return;
+        }
+        if (error || !profileLoaded) return;
 
+
+        userProfileRef.current = userProfile;
+
+        let currentStream: MediaStream; // Declare currentStream here
 
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-            .then(currentStream => {
-                setStream(currentStream);
-                streamRef.current = currentStream;
+            .then((validStream) => {
+                setStream(validStream);
+                streamRef.current = validStream;
+                currentStream = validStream; // Assign to currentStream
                 if (userVideo.current) {
-                    userVideo.current.srcObject = currentStream;
+                    userVideo.current.srcObject = validStream;
                 }
 
-
-                socketRef.current = io("http://localhost:5000", { withCredentials: true });
-
-                const roomId = meeting.link; // Ensure this is the unique identifier
-
-                console.log("EMIT join-meeting with userData:", userProfile);
+                // Initialize Socket
+                socketRef.current = io('http://localhost:5000', { // Use env var in real app
+                    withCredentials: true
+                });
 
                 const safeUserData = userProfile || { name: userRole || 'Participant', image: undefined };
                 console.log("EMIT join-meeting with userData:", safeUserData);
+                console.log("Meeting Details for Join:", meeting); // Debug log
 
-                socketRef.current.emit('join-meeting', {
-                    meetingId: roomId,
-                    userId,
-                    role: userRole,
-                    userData: safeUserData
+                // Define join function for re-use
+                const attemptJoin = () => {
+                    if (!socketRef.current) return;
+
+                    const creatorId = meeting.createdBy; // Explicit access
+                    console.log("Emitting join with Creator ID:", creatorId);
+
+                    socketRef.current.emit('join-meeting', {
+                        meetingId: meeting.link, // Use link or _id depending on backend expectations
+                        userId,
+                        role: userRole,
+                        userData: safeUserData,
+                        meetingCreatorId: creatorId
+                    });
+                };
+
+                socketRef.current.on('connect', () => {
+                    console.log("Socket Connected");
+                    attemptJoin();
+                });
+
+                socketRef.current.on('waiting-for-host', () => {
+                    console.log("Host not present. Waiting...");
+                    setIsWaiting(true);
+                    setWaitingList([]); // Clear any lobby data
+                    setWaitingMessage("Waiting for the Host to Start the Meeting");
+                });
+
+                socketRef.current.on('waiting-for-approval', () => {
+                    console.log("Host present. Waiting for approval...");
+                    setIsWaiting(true);
+                    setWaitingList([]); // Clear any lobby data
+                    setWaitingMessage("Waiting for Host to let you in...");
+                });
+
+                socketRef.current.on('admission-granted', () => {
+                    console.log("Admission Granted!");
+                    setIsWaiting(false);
+                    // The socket is already moved to the room on backend. 
+                    // We just need to ensure UI updates. 
+                    // The user-connected events will start flowing now.
+                });
+
+                socketRef.current.on('waiting-list-update', (waiters: any[]) => {
+                    console.log("Waiting list updated:", waiters);
+                    setWaitingList(waiters);
+                });
+
+                socketRef.current.on('user-joined-waiting', (user: any) => {
+                    setWaitingList(prev => {
+                        if (prev.find(u => u.socketId === user.socketId)) return prev;
+                        return [...prev, user];
+                    });
+                    showToast(`${user.userData?.name || 'Someone'} is waiting in the lobby`, 'info');
+                });
+
+                socketRef.current.on('host-joined', () => {
+                    // If I was waiting for host, now I wait for approval (unless admitted usually)
+                    // But backend logic says: if host joins, waiters get 'waiting-for-approval' emitted 
+                    // via broadcast to 'waiting-room'
                 });
 
                 socketRef.current.on('user-connected', ({ userId: newUserId, socketId, role, userData }) => {
@@ -398,14 +468,59 @@ const VideoMeeting: React.FC = () => {
     if (loading) return <div className="flex justify-center items-center h-screen">Loading Meeting...</div>;
     if (error) return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;
 
+    const admitUser = (socketId: string) => {
+        if (!meeting) return;
+        socketRef.current?.emit('admit-user', { meetingId: meeting.link, socketId });
+        setWaitingList(prev => prev.filter(u => u.socketId !== socketId));
+    };
+
     return (
         <div className={`h-screen flex flex-col ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'}`}>
             {/* Header */}
-            <div className="p-4 shadow-md flex justify-between items-center bg-opacity-90 z-10">
+            <div className="p-4 shadow-md flex justify-between items-center bg-opacity-90 z-10 relative">
                 <div>
                     <h1 className="text-xl font-bold">{meeting?.title}</h1>
                     <span className="text-sm opacity-75">{meeting?.type.toUpperCase()} Meeting</span>
                 </div>
+                {waitingMessage && (
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 text-center z-50">
+                        <h2 className="text-2xl font-bold mb-2">{waitingMessage}</h2>
+                        <p className="opacity-75">You are in the lobby.</p>
+                        <p className="opacity-75 text-sm mt-2">The host will let you in shortly.</p>
+                    </div>
+                )}
+
+                {/* Lobby Button for Host */}
+                {!isWaiting && waitingList.length > 0 && (
+                    <div className="absolute top-20 right-4 z-50 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 w-80">
+                        <h3 className="font-bold mb-3 flex items-center justify-between">
+                            Lobby ({waitingList.length})
+                            <span className="text-xs text-blue-500 cursor-pointer">View All</span>
+                        </h3>
+                        <div className="flex flex-col gap-2 max-h-60 overflow-y-auto">
+                            {waitingList.map((user) => (
+                                <div key={user.socketId} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-2 rounded">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-xs font-bold">
+                                            {user.userData?.name?.charAt(0) || '?'}
+                                        </div>
+                                        <div className="text-sm overflow-hidden text-ellipsis w-24 whitespace-nowrap">
+                                            <p className="font-medium">{user.userData?.name || 'Guest'}</p>
+                                            <p className="text-xs opacity-75">{user.role}</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => admitUser(user.socketId)}
+                                        className="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1.5 rounded transition-colors"
+                                    >
+                                        Admit
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 <div className="flex gap-2">
                     <button className="bg-red-600 p-2 rounded-full text-white" onClick={endMeeting}>
                         <PhoneOff size={24} />
@@ -425,7 +540,7 @@ const VideoMeeting: React.FC = () => {
 
                 {/* Peers Video */}
                 {peers.map((peerData) => (
-                    <VideoCard key={peerData.peerId} peer={peerData.peer} userId={peerData.userId} role={peerData.role} userData={peerData.userData} />
+                    <VideoCard key={peerData.peerId} peer={peerData.peer} userId={peerData.userId} role={peerData.role} userData={peerData.userData} stream={peerData.stream} />
                 ))}
             </div>
 
@@ -443,7 +558,7 @@ const VideoMeeting: React.FC = () => {
     );
 };
 
-const VideoCard: React.FC<{ peer: SimplePeer.Instance; userId?: string; role?: string; userData?: { name: string; image?: string } }> = ({ peer, userId, role, userData }) => {
+const VideoCard: React.FC<{ peer: SimplePeer.Instance; userId?: string; role?: string; userData?: { name: string; image?: string }, stream?: MediaStream }> = ({ peer, userId, role, userData, stream }) => {
     const ref = useRef<HTMLVideoElement>(null);
     const [imgError, setImgError] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
@@ -452,26 +567,30 @@ const VideoCard: React.FC<{ peer: SimplePeer.Instance; userId?: string; role?: s
     const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
 
     useEffect(() => {
-        const handleStream = (stream: MediaStream) => {
+        const handleStream = (currentStream: MediaStream) => {
             if (ref.current) {
-                ref.current.srcObject = stream;
+                ref.current.srcObject = currentStream;
             }
 
-            // Audio Analysis Setup
-            if (!audioContextRef.current) {
-                audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-            }
-
-            if (audioContextRef.current && stream.getAudioTracks().length > 0) {
-                // Close previous context/source if they exist to avoid leaks/errors on re-render
-                if (sourceRef.current) {
-                    // sourceRef.current.disconnect(); // Sometimes causes issues if context is closed
+            // Audio Analysis Logic
+            try {
+                if (!audioContextRef.current) {
+                    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
                 }
 
-                try {
+                if (audioContextRef.current.state === 'suspended') {
+                    audioContextRef.current.resume();
+                }
+
+                if (currentStream.getAudioTracks().length > 0) {
+                    // Cleanup previous source
+                    if (sourceRef.current) {
+                        // sourceRef.current.disconnect(); 
+                    }
+
                     analyserRef.current = audioContextRef.current.createAnalyser();
                     analyserRef.current.fftSize = 512;
-                    sourceRef.current = audioContextRef.current.createMediaStreamSource(stream);
+                    sourceRef.current = audioContextRef.current.createMediaStreamSource(currentStream);
                     sourceRef.current.connect(analyserRef.current);
 
                     const bufferLength = analyserRef.current.frequencyBinCount;
@@ -486,32 +605,35 @@ const VideoCard: React.FC<{ peer: SimplePeer.Instance; userId?: string; role?: s
                             sum += dataArray[i];
                         }
                         const average = sum / bufferLength;
-
-                        // Threshold for "speaking" - adjust as needed
                         setIsSpeaking(average > 10);
-
                         requestAnimationFrame(checkAudio);
                     };
                     checkAudio();
-                } catch (e) {
-                    console.error("Audio analysis setup failed", e);
                 }
+            } catch (e) {
+                console.error("Audio analysis error:", e);
             }
         };
 
+        // If stream prop is provided, use it immediately
+        if (stream) {
+            handleStream(stream);
+        }
+
+        // Always listen for the event as backup
         peer.on("stream", handleStream);
 
-        // Cleanup
         return () => {
             if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
                 audioContextRef.current.close();
                 audioContextRef.current = null;
             }
+            peer.removeListener("stream", handleStream);
         }
-    }, [peer]);
+    }, [peer, stream]);
 
     useEffect(() => {
-        setImgError(false); // Reset error when userData changes
+        setImgError(false);
     }, [userData?.image]);
 
     const getInitials = (name: string) => {
@@ -522,7 +644,6 @@ const VideoCard: React.FC<{ peer: SimplePeer.Instance; userId?: string; role?: s
         <div className={`relative w-full max-w-md aspect-video bg-black rounded-lg overflow-hidden shadow-md border transition-all duration-200 ${isSpeaking ? 'border-green-500 border-4 shadow-green-500/50' : 'border-gray-700'}`}>
             <video ref={ref} autoPlay playsInline className="w-full h-full object-cover" />
 
-            {/* Speaking Indicator Icon */}
             {isSpeaking && (
                 <div className="absolute top-4 right-4 bg-green-600 p-2 rounded-full animate-pulse z-10">
                     <Mic className="text-white w-4 h-4" />
@@ -549,5 +670,4 @@ const VideoCard: React.FC<{ peer: SimplePeer.Instance; userId?: string; role?: s
         </div>
     );
 };
-
 export default VideoMeeting;
