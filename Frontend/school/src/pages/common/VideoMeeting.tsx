@@ -28,11 +28,8 @@ interface PeerData {
     userData?: {
         name: string;
         image?: string;
-    },
-    stream?: MediaStream; // Add stream property
+    }
 }
-
-
 
 const VideoMeeting: React.FC = () => {
     const { meetingLink } = useParams<{ meetingLink: string }>();
@@ -190,68 +187,44 @@ const VideoMeeting: React.FC = () => {
     }, [meetingLink]); // Only re-run if meetingLink changes (or mount)
 
     useEffect(() => {
-        // Guard clause: Don't attempt to join if meeting details aren't loaded yet
-        if (!meeting) {
-            console.log("Meeting details not loaded yet. Skipping join attempt.");
-            return;
-        }
-        if (error || !profileLoaded) return;
+        if (!meeting || error || !profileLoaded) return;
 
-
-        userProfileRef.current = userProfile;
-
-        let currentStream: MediaStream; // Declare currentStream here
 
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-            .then((validStream) => {
-                setStream(validStream);
-                streamRef.current = validStream;
-                currentStream = validStream; // Assign to currentStream
+            .then(currentStream => {
+                setStream(currentStream);
+                streamRef.current = currentStream;
                 if (userVideo.current) {
-                    userVideo.current.srcObject = validStream;
+                    userVideo.current.srcObject = currentStream;
                 }
 
-                // Initialize Socket
-                socketRef.current = io('http://localhost:5000', { // Use env var in real app
-                    withCredentials: true
-                });
+
+                socketRef.current = io("http://localhost:5000", { withCredentials: true });
+
+                const roomId = meeting.link; // Ensure this is the unique identifier
+
+                console.log("EMIT join-meeting with userData:", userProfile);
 
                 const safeUserData = userProfile || { name: userRole || 'Participant', image: undefined };
                 console.log("EMIT join-meeting with userData:", safeUserData);
-                console.log("Meeting Details for Join:", meeting); // Debug log
 
-                // Define join function for re-use
-                const attemptJoin = () => {
-                    if (!socketRef.current) return;
-
-                    const creatorId = meeting.createdBy; // Explicit access
-                    console.log("Emitting join with Creator ID:", creatorId);
-
-                    socketRef.current.emit('join-meeting', {
-                        meetingId: meeting.link, // Use link or _id depending on backend expectations
-                        userId,
-                        role: userRole,
-                        userData: safeUserData,
-                        meetingCreatorId: creatorId
-                    });
-                };
-
-                socketRef.current.on('connect', () => {
-                    console.log("Socket Connected");
-                    attemptJoin();
+                socketRef.current.emit('join-meeting', {
+                    meetingId: roomId,
+                    userId,
+                    role: userRole,
+                    userData: safeUserData,
+                    meetingCreatorId: meeting?.createdBy
                 });
 
                 socketRef.current.on('waiting-for-host', () => {
                     console.log("Host not present. Waiting...");
                     setIsWaiting(true);
-                    setWaitingList([]); // Clear any lobby data
                     setWaitingMessage("Waiting for the Host to Start the Meeting");
                 });
 
                 socketRef.current.on('waiting-for-approval', () => {
                     console.log("Host present. Waiting for approval...");
                     setIsWaiting(true);
-                    setWaitingList([]); // Clear any lobby data
                     setWaitingMessage("Waiting for Host to let you in...");
                 });
 
@@ -273,7 +246,7 @@ const VideoMeeting: React.FC = () => {
                         if (prev.find(u => u.socketId === user.socketId)) return prev;
                         return [...prev, user];
                     });
-                    showToast(`${user.userData?.name || 'Someone'} is waiting in the lobby`, 'info');
+                    // showToast(`${user.userData?.name || 'Someone'} is waiting in the lobby`, 'info');
                 });
 
                 socketRef.current.on('host-joined', () => {
@@ -345,9 +318,9 @@ const VideoMeeting: React.FC = () => {
                 });
 
                 socketRef.current.on('meeting-ended', () => {
-                    showToast('Meeting has ended', 'info');
+                    showToast('Meeting has ended by Host', 'info');
                     cleanup();
-                    navigate('/student-dashboard');
+                    handleAuthRedirect(userRole);
                 });
 
             })
@@ -389,7 +362,6 @@ const VideoMeeting: React.FC = () => {
         });
 
         peer.on('signal', signal => {
-            // Use Ref to ensure we send the LATEST profile data, avoiding stale closures
             const latestProfile = userProfileRef.current || { name: userRole || 'Participant', image: undefined };
             console.log("SENDING SIGNAL (Initiator) with profile:", latestProfile);
 
@@ -457,12 +429,31 @@ const VideoMeeting: React.FC = () => {
         }
     }
 
-    const endMeeting = () => {
-        if (socketRef.current) {
-            socketRef.current.emit('end-meeting', { meetingId: meeting?.link });
+    const handleAuthRedirect = (role: string) => {
+        const r = role?.toLowerCase();
+        if (r === 'admin' || r === 'super_admin') {
+            navigate('/create-meeting');
+        } else if (r === 'teacher') {
+            navigate('/teacher/dashboard');
+        } else {
+            navigate('/student-dashboard'); // Default for students/parents
         }
+    };
+
+    const endMeeting = () => {
+        const isHost = userId === meeting?.createdBy;
+        if (isHost && socketRef.current) {
+            if (window.confirm("Are you sure you want to end the meeting for everyone?")) {
+                socketRef.current.emit('end-meeting', { meetingId: meeting?.link });
+            } else {
+                return; // Cancelled
+            }
+        }
+
+        // For guests (or host confirming end), cleanup and leave
+        showToast('You have left the meeting', 'info');
         cleanup();
-        navigate(-1);
+        handleAuthRedirect(userRole);
     }
 
     if (loading) return <div className="flex justify-center items-center h-screen">Loading Meeting...</div>;
@@ -474,91 +465,142 @@ const VideoMeeting: React.FC = () => {
         setWaitingList(prev => prev.filter(u => u.socketId !== socketId));
     };
 
-    return (
-        <div className={`h-screen flex flex-col ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'}`}>
-            {/* Header */}
-            <div className="p-4 shadow-md flex justify-between items-center bg-opacity-90 z-10 relative">
-                <div>
-                    <h1 className="text-xl font-bold">{meeting?.title}</h1>
-                    <span className="text-sm opacity-75">{meeting?.type.toUpperCase()} Meeting</span>
-                </div>
-                {waitingMessage && (
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 text-center z-50">
-                        <h2 className="text-2xl font-bold mb-2">{waitingMessage}</h2>
-                        <p className="opacity-75">You are in the lobby.</p>
-                        <p className="opacity-75 text-sm mt-2">The host will let you in shortly.</p>
-                    </div>
-                )}
+    const isHost = userId === meeting?.createdBy;
 
-                {/* Lobby Button for Host */}
-                {!isWaiting && waitingList.length > 0 && (
-                    <div className="absolute top-20 right-4 z-50 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 w-80">
-                        <h3 className="font-bold mb-3 flex items-center justify-between">
-                            Lobby ({waitingList.length})
-                            <span className="text-xs text-blue-500 cursor-pointer">View All</span>
-                        </h3>
-                        <div className="flex flex-col gap-2 max-h-60 overflow-y-auto">
-                            {waitingList.map((user) => (
-                                <div key={user.socketId} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-2 rounded">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-xs font-bold">
-                                            {user.userData?.name?.charAt(0) || '?'}
+    return (
+        <div className={`h-screen flex flex-col font-sans selection:bg-blue-500/20 ${isDark ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
+            {/* Header */}
+            <header className={`px-6 py-4 flex items-center justify-between border-b backdrop-blur-md sticky top-0 z-50 ${isDark ? 'bg-gray-900/80 border-gray-800' : 'bg-white/80 border-gray-200'}`}>
+                <div className="flex items-center gap-4">
+                    <div className={`p-2.5 rounded-xl ${isDark ? 'bg-gray-800' : 'bg-white shadow-sm border border-gray-100'}`}>
+                        <Video size={20} className="text-blue-500" />
+                    </div>
+                    <div>
+                        <h1 className="font-bold text-lg leading-tight tracking-tight">{meeting?.title || 'Video Meeting'}</h1>
+                        <div className="flex items-center gap-2 mt-0.5">
+                            <span className={`w-2 h-2 rounded-full ${peers.length > 0 ? 'bg-green-500' : 'bg-amber-500'}`} />
+                            <p className="text-xs opacity-60 font-medium tracking-wide">{meeting?.type?.toUpperCase()} • {peers.length + 1} {peers.length + 1 === 1 ? 'Participant' : 'Participants'}</p>
+                        </div>
+                    </div>
+                </div>
+
+                {waitingList.length > 0 && (
+                    <div className="relative group">
+                        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-sm font-medium transition-all shadow-lg shadow-blue-600/20 active:scale-95">
+                            <span>Lobby</span>
+                            <span className="bg-white text-blue-600 px-1.5 py-0.5 rounded-full text-xs font-bold leading-none min-w-[20px] text-center">{waitingList.length}</span>
+                        </button>
+
+                        {/* Dropdown for Waiting List */}
+                        <div className={`absolute top-full right-0 mt-2 w-80 rounded-2xl shadow-2xl border p-3 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all transform origin-top-right scale-95 group-hover:scale-100 ${isDark ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'}`}>
+                            <div className="flex justify-between items-center mb-3 px-1">
+                                <h3 className="text-xs font-bold uppercase text-gray-500 tracking-wider">Waiting Room</h3>
+                                <span className="text-[10px] bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full text-gray-500 font-medium">{waitingList.length} pending</span>
+                            </div>
+                            <div className="space-y-1 max-h-[300px] overflow-y-auto">
+                                {waitingList.map((user) => (
+                                    <div key={user.socketId} className={`flex items-center justify-between p-2.5 rounded-xl border ${isDark ? 'bg-gray-800/50 border-gray-700 hover:bg-gray-800' : 'bg-gray-50 border-gray-100 hover:bg-white hover:shadow-md'} transition-all`}>
+                                        <div className="flex items-center gap-3 overflow-hidden">
+                                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-100 to-amber-100 text-orange-600 flex items-center justify-center text-xs font-bold shrink-0 border border-orange-200">
+                                                {user.userData?.name?.charAt(0) || '?'}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <p className="text-sm font-semibold truncate leading-tight">{user.userData?.name || 'Guest'}</p>
+                                                <p className="text-[10px] text-gray-500 capitalize">{user.role}</p>
+                                            </div>
                                         </div>
-                                        <div className="text-sm overflow-hidden text-ellipsis w-24 whitespace-nowrap">
-                                            <p className="font-medium">{user.userData?.name || 'Guest'}</p>
-                                            <p className="text-xs opacity-75">{user.role}</p>
-                                        </div>
+                                        <button
+                                            onClick={() => admitUser(user.socketId)}
+                                            className="text-xs bg-gray-900 text-white dark:bg-white dark:text-gray-900 hover:opacity-90 px-3 py-1.5 rounded-lg font-semibold transition-opacity"
+                                        >
+                                            Admit
+                                        </button>
                                     </div>
-                                    <button
-                                        onClick={() => admitUser(user.socketId)}
-                                        className="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1.5 rounded transition-colors"
-                                    >
-                                        Admit
-                                    </button>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     </div>
                 )}
+            </header>
 
-                <div className="flex gap-2">
-                    <button className="bg-red-600 p-2 rounded-full text-white" onClick={endMeeting}>
-                        <PhoneOff size={24} />
+            {/* Main Stage Grid */}
+            <main className="flex-1 overflow-hidden p-4 md:p-6 flex items-center justify-center">
+                <div className={`grid gap-4 w-full max-w-[1920px] mx-auto transition-all duration-500 ease-in-out ${(peers.length + 1) <= 1 ? 'h-full grid-cols-1' :
+                    (peers.length + 1) === 2 ? 'h-[60vh] md:h-full grid-cols-1 md:grid-cols-2 auto-rows-fr' :
+                        (peers.length + 1) <= 4 ? 'h-full grid-cols-2 auto-rows-fr' :
+                            (peers.length + 1) <= 6 ? 'h-full grid-cols-2 lg:grid-cols-3 auto-rows-fr' :
+                                (peers.length + 1) <= 9 ? 'h-full grid-cols-3 auto-rows-fr' :
+                                    'h-full grid-cols-3 lg:grid-cols-4 auto-rows-min'
+                    }`}>
+                    {/* My Video Card */}
+                    <div className="relative w-full h-full min-h-[200px] rounded-2xl overflow-hidden shadow-lg ring-1 ring-black/5 dark:ring-white/5 group bg-black">
+                        <video ref={userVideo} muted autoPlay playsInline className="w-full h-full object-cover transform scale-x-[-1]" /> {/* Mirror local video */}
+
+                        {/* Overlay Gradient */}
+                        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
+
+                        {/* Status Badge */}
+                        <div className={`absolute bottom-4 left-4 flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-md border shadow-lg ${isDark ? 'bg-gray-900/60 border-gray-700 text-white' : 'bg-white/60 border-white/20 text-black'}`}>
+                            <div className="w-2 h-2 rounded-full bg-blue-500" />
+                            <span className="text-xs font-semibold tracking-wide">You ({isHost ? 'Host' : 'Guest'})</span>
+                            {isMuted && <div className="pl-2 border-l border-current/20"><MicOff size={10} className="text-red-500" /></div>}
+                        </div>
+                    </div>
+
+                    {/* Peer Video Cards */}
+                    {peers.map((peerData) => (
+                        <div key={peerData.peerId} className="w-full h-full min-h-[200px]">
+                            <VideoCard
+                                peer={peerData.peer}
+                                userId={peerData.userId}
+                                role={peerData.role}
+                                userData={peerData.userData}
+                                isDark={isDark}
+                            />
+                        </div>
+                    ))}
+                </div>
+            </main>
+
+            {/* Floating Control Bar */}
+            <footer className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+                <div className={`flex items-center gap-2 p-2 rounded-2xl border shadow-2xl backdrop-blur-xl ${isDark ? 'bg-gray-900/80 border-gray-700/50' : 'bg-white/80 border-gray-200/50'}`}>
+                    <button
+                        onClick={toggleMute}
+                        className={`p-4 rounded-xl transition-all duration-200 group relative ${isMuted ? 'bg-red-500 text-white hover:bg-red-600' : (isDark ? 'hover:bg-gray-800 text-gray-200' : 'hover:bg-gray-100 text-gray-700')}`}
+                    >
+                        {isMuted ? <MicOff size={20} /> : <Mic size={20} />}
+                        <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                            {isMuted ? 'Unmute' : 'Mute'}
+                        </span>
+                    </button>
+
+                    <button
+                        onClick={toggleVideo}
+                        className={`p-4 rounded-xl transition-all duration-200 group relative ${isVideoOff ? 'bg-red-500 text-white hover:bg-red-600' : (isDark ? 'hover:bg-gray-800 text-gray-200' : 'hover:bg-gray-100 text-gray-700')}`}
+                    >
+                        {isVideoOff ? <VideoOff size={20} /> : <Video size={20} />}
+                        <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                            {isVideoOff ? 'Turn Camera On' : 'Turn Camera Off'}
+                        </span>
+                    </button>
+
+                    <div className={`w-px h-8 mx-1 ${isDark ? 'bg-gray-700' : 'bg-gray-300'}`} />
+
+                    <button
+                        onClick={endMeeting}
+                        className={`px-6 py-4 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg active:scale-95 ml-1 ${isHost ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-600/20' : 'bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}`}
+                    >
+                        <PhoneOff size={20} />
+                        <span className="hidden sm:inline">{isHost ? 'End Meeting' : 'Leave'}</span>
                     </button>
                 </div>
-            </div>
-
-            {/* Main Video Area */}
-            <div className="flex-1 overflow-y-auto p-4 flex flex-wrap justify-center gap-4">
-                {/* My Video */}
-                <div className="relative w-full max-w-3xl aspect-video bg-black rounded-lg overflow-hidden shadow-lg border border-gray-700">
-                    <video ref={userVideo} muted autoPlay playsInline className="w-full h-full object-cover" />
-                    <div className="absolute bottom-4 left-4 text-white bg-black/50 px-2 py-1 rounded">
-                        {userProfile?.name || 'You'} {isMuted && '(Muted)'}
-                    </div>
-                </div>
-
-                {/* Peers Video */}
-                {peers.map((peerData) => (
-                    <VideoCard key={peerData.peerId} peer={peerData.peer} userId={peerData.userId} role={peerData.role} userData={peerData.userData} stream={peerData.stream} />
-                ))}
-            </div>
-
-            {/* Controls */}
-            <div className="p-4 flex justify-center gap-6 bg-opacity-90 shadow-inner">
-                <button onClick={toggleMute} className={`p-4 rounded-full ${isMuted ? 'bg-red-500' : 'bg-gray-700 text-white'}`}>
-                    {isMuted ? <MicOff /> : <Mic />}
-                </button>
-                <button onClick={toggleVideo} className={`p-4 rounded-full ${isVideoOff ? 'bg-red-500' : 'bg-gray-700 text-white'}`}>
-                    {isVideoOff ? <VideoOff /> : <Video />}
-                </button>
-                {/* Chat or Participant list toggles can go here */}
-            </div>
+            </footer>
         </div>
     );
 };
 
-const VideoCard: React.FC<{ peer: SimplePeer.Instance; userId?: string; role?: string; userData?: { name: string; image?: string }, stream?: MediaStream }> = ({ peer, userId, role, userData, stream }) => {
+const VideoCard: React.FC<{ peer: SimplePeer.Instance; userId?: string; role?: string; userData?: { name: string; image?: string }, isDark?: boolean }> = ({ peer, userId, role, userData, isDark }) => {
     const ref = useRef<HTMLVideoElement>(null);
     const [imgError, setImgError] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
@@ -567,107 +609,91 @@ const VideoCard: React.FC<{ peer: SimplePeer.Instance; userId?: string; role?: s
     const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
 
     useEffect(() => {
-        const handleStream = (currentStream: MediaStream) => {
-            if (ref.current) {
-                ref.current.srcObject = currentStream;
-            }
+        const handleStream = (stream: MediaStream) => {
+            if (ref.current) ref.current.srcObject = stream;
 
-            // Audio Analysis Logic
             try {
+                // Initialize AudioContext only once user interaction policies allow (usually fine in effect for established stream)
+                const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
                 if (!audioContextRef.current) {
-                    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+                    audioContextRef.current = new AudioContextClass();
                 }
 
                 if (audioContextRef.current.state === 'suspended') {
                     audioContextRef.current.resume();
                 }
 
-                if (currentStream.getAudioTracks().length > 0) {
-                    // Cleanup previous source
+                if (stream.getAudioTracks().length > 0) {
                     if (sourceRef.current) {
-                        // sourceRef.current.disconnect(); 
+                        try { sourceRef.current.disconnect(); } catch (e) { /**/ }
                     }
 
                     analyserRef.current = audioContextRef.current.createAnalyser();
-                    analyserRef.current.fftSize = 512;
-                    sourceRef.current = audioContextRef.current.createMediaStreamSource(currentStream);
+                    analyserRef.current.fftSize = 256; // Smaller FFT is enough for volume
+                    sourceRef.current = audioContextRef.current.createMediaStreamSource(stream);
                     sourceRef.current.connect(analyserRef.current);
 
-                    const bufferLength = analyserRef.current.frequencyBinCount;
-                    const dataArray = new Uint8Array(bufferLength);
-
+                    const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
                     const checkAudio = () => {
                         if (!analyserRef.current) return;
                         analyserRef.current.getByteFrequencyData(dataArray);
-
-                        let sum = 0;
-                        for (let i = 0; i < bufferLength; i++) {
-                            sum += dataArray[i];
-                        }
-                        const average = sum / bufferLength;
-                        setIsSpeaking(average > 10);
+                        const volume = dataArray.reduce((src, a) => src + a, 0) / dataArray.length;
+                        setIsSpeaking(volume > 15); // Threshold
                         requestAnimationFrame(checkAudio);
                     };
                     checkAudio();
                 }
             } catch (e) {
-                console.error("Audio analysis error:", e);
+                console.error("Audio setup error", e);
             }
         };
 
-        // If stream prop is provided, use it immediately
-        if (stream) {
-            handleStream(stream);
+        if ((peer as any)._remoteStreams && (peer as any)._remoteStreams.length > 0) {
+            handleStream((peer as any)._remoteStreams[0]);
         }
-
-        // Always listen for the event as backup
         peer.on("stream", handleStream);
 
         return () => {
             if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
-                audioContextRef.current.close();
-                audioContextRef.current = null;
+                audioContextRef.current.close().catch(() => { });
             }
-            peer.removeListener("stream", handleStream);
         }
-    }, [peer, stream]);
+    }, [peer]);
 
-    useEffect(() => {
-        setImgError(false);
-    }, [userData?.image]);
-
-    const getInitials = (name: string) => {
-        return name?.charAt(0)?.toUpperCase() || '?';
-    };
+    useEffect(() => { setImgError(false); }, [userData?.image]);
 
     return (
-        <div className={`relative w-full max-w-md aspect-video bg-black rounded-lg overflow-hidden shadow-md border transition-all duration-200 ${isSpeaking ? 'border-green-500 border-4 shadow-green-500/50' : 'border-gray-700'}`}>
+        <div className={`relative w-full h-full rounded-2xl overflow-hidden shadow-lg ring-1 transition-all duration-300 group ${isSpeaking ? 'ring-2 ring-green-500' : 'ring-black/5 dark:ring-white/5'} bg-black`}>
             <video ref={ref} autoPlay playsInline className="w-full h-full object-cover" />
 
+            {/* Speaking Indicator - Pulse Background */}
+            {isSpeaking && <div className="absolute inset-0 border-4 border-green-500/50 rounded-2xl pointer-events-none animate-pulse" />}
+
+            {/* Overlay Gradient */}
+            <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
+
+            {/* Mic Indicator */}
             {isSpeaking && (
-                <div className="absolute top-4 right-4 bg-green-600 p-2 rounded-full animate-pulse z-10">
-                    <Mic className="text-white w-4 h-4" />
+                <div className="absolute top-4 right-4 p-2 bg-green-500 rounded-full animate-bounce shadow-lg shadow-green-500/40 z-10">
+                    <Mic size={14} className="text-white" />
                 </div>
             )}
 
-            <div className="absolute bottom-4 left-4 text-white bg-black/50 px-2 py-1 rounded flex items-center gap-2">
+            {/* Name Tag */}
+            <div className={`absolute bottom-4 left-4 flex items-center gap-3 px-3 py-1.5 rounded-full backdrop-blur-md border shadow-lg max-w-[85%] ${isDark ? 'bg-gray-900/60 border-gray-700 text-white' : 'bg-white/60 border-white/20 text-black'}`}>
                 {userData?.image && !imgError ? (
-                    <img
-                        src={userData.image}
-                        alt={userData.name}
-                        className="w-8 h-8 rounded-full object-cover"
-                        onError={() => setImgError(true)}
-                    />
+                    <img src={userData.image} alt={userData.name} className="w-6 h-6 rounded-full object-cover border border-white/20" onError={() => setImgError(true)} />
                 ) : (
-                    <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold">
-                        {getInitials(userData?.name || userId || '')}
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white shadow-inner shrink-0 ${role === 'admin' ? 'bg-purple-600' : 'bg-blue-600'}`}>
+                        {userData?.name?.charAt(0) || '?'}
                     </div>
                 )}
-                <span className="text-sm font-medium">
-                    {userData?.name ? `${userData.name} (${role})` : (userId ? `${userId} (${role})` : 'Participant')}
-                </span>
+                <div className="flex flex-col overflow-hidden">
+                    <span className="text-xs font-semibold truncate leading-none">{userData?.name || 'Participant'}</span>
+                </div>
             </div>
         </div>
     );
 };
+
 export default VideoMeeting;
