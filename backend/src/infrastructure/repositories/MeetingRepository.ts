@@ -46,7 +46,13 @@ export class MeetingRepository {
 
     async getScheduledMeetings(filters?: any): Promise<IMeetingDocument[]> {
         try {
-            const query: any = { status: { $ne: 'ended' } };
+            // Filter meetings that haven't ended AND started within the last 2 hours (or in future)
+            // This prevents hiding active meetings immediately after start time, but hides old ones.
+            const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+            const query: any = {
+                status: { $ne: 'ended' },
+                startTime: { $gte: twoHoursAgo }
+            };
 
             if (filters) {
                 if (filters.role === 'teacher') {

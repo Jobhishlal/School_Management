@@ -60,9 +60,19 @@ export const initSocket = (httpServer: HttpServer) => {
         }
 
         // Trigger Waiting Room Logic
+        // Deduplicate: Remove any existing connection for this userId in the waiting room
         if (!waitingRoom.has(meetingId)) {
           waitingRoom.set(meetingId, new Map());
         }
+        const roomWaiters = waitingRoom.get(meetingId);
+        if (roomWaiters) {
+          for (const [sId, waiter] of roomWaiters.entries()) {
+            if (String(waiter.userId) === String(userId)) {
+              roomWaiters.delete(sId);
+            }
+          }
+        }
+
         waitingRoom.get(meetingId)?.set(socket.id, { userId, role, userData, socketId: socket.id });
         socket.join(`waiting-${meetingId}`); // Special room for waiters
 
@@ -174,6 +184,16 @@ export const initSocket = (httpServer: HttpServer) => {
       });
     });
 
+    socket.on("chat-message", (data) => {
+      // data: { meetingId, message, senderId, senderName, timestamp }
+      io.to(data.meetingId).emit("chat-message", data);
+    });
+
+    socket.on("send-reaction", (data) => {
+      // data: { meetingId, userId, emoji }
+      io.to(data.meetingId).emit("reaction-received", data);
+    });
+
     socket.on("end-meeting", ({ meetingId }) => {
       io.to(meetingId).emit("meeting-ended");
       // Optionally make everyone leave
@@ -203,6 +223,25 @@ export const initSocket = (httpServer: HttpServer) => {
         const activeConnections = participants?.size || 0;
 
         console.log(`❌ User disconnected: ${socket.id} (User: ${userId}) from meeting ${meetingId}. Unique Users: ${uniqueUsers}, Connections: ${activeConnections}`);
+
+        // Check if the disconnected user was the HOST
+        if (participantData?.isHost) {
+          console.log(`🚨 HOST disconnected: ${socket.id} (User: ${userId}). Ending meeting ${meetingId} for everyone.`);
+
+          // Broadcast 'meeting-ended' to all participants
+          io.to(meetingId).emit("meeting-ended");
+
+          // Make everyone leave
+          io.in(meetingId).socketsLeave(meetingId);
+
+          // Cleanup meeting map
+          if (meetingParticipants.has(meetingId)) {
+            const parts = meetingParticipants.get(meetingId);
+            parts?.forEach((_, sId) => socketMeetingMap.delete(sId));
+            meetingParticipants.delete(meetingId);
+          }
+          return; // Exit as meeting is destroyed
+        }
 
         // Notify other users to remove the video
         socket.to(meetingId).emit("user-disconnected", socket.id);

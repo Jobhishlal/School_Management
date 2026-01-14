@@ -27,6 +27,7 @@ const CreateMeeting: React.FC = () => {
     useEffect(() => {
         const fetchClasses = async () => {
             try {
+                const res = await classdivisonaccess();
                 // classdivisonaccess returns full Axios response based on authapi inspection
                 if (res.data.success) {
                     // Flatten classes/divisions

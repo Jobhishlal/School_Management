@@ -5,7 +5,7 @@ export interface Meeting {
     title: string;
     description?: string;
     link: string;
-    type: 'staff' | 'parent' | 'class';
+    type: 'staff' | 'parent' | 'class' | 'PTA' | 'pta';
     classId?: string | ObjectId; // Optional, only for 'class' type
     className?: string; // Optional, for display purposes
     createdBy: string | ObjectId;

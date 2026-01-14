@@ -6,8 +6,14 @@ import { useTheme } from '../../components/layout/ThemeContext';
 import { validateJoinMeeting, Getadminprofilemanagement, GetTeachertimetableList } from '../../services/authapi';
 import { StudentProfile } from '../../services/Student/StudentApi';
 import { showToast } from '../../utils/toast';
-import { Mic, MicOff, Video, VideoOff, PhoneOff } from 'lucide-react';
+import { MicOff, Mic } from 'lucide-react';
 import { jwtDecode } from "jwt-decode";
+import MeetingHeader from '../../components/video-meeting/MeetingHeader';
+import MeetingControls from '../../components/video-meeting/MeetingControls';
+import MeetingChat from '../../components/video-meeting/MeetingChat';
+import VideoCard from '../../components/video-meeting/VideoCard';
+import { useAudioLevel } from '../../hooks/useAudioLevel';
+import { Modal } from '../../components/common/Modal';
 
 
 interface MeetingDetails {
@@ -31,6 +37,15 @@ interface PeerData {
     }
 }
 
+interface ChatMessage {
+    id: string;
+    senderId: string;
+    senderName: string;
+    message: string;
+    timestamp: string;
+    isSelf: boolean;
+}
+
 const VideoMeeting: React.FC = () => {
     const { meetingLink } = useParams<{ meetingLink: string }>();
     const navigate = useNavigate();
@@ -52,8 +67,24 @@ const VideoMeeting: React.FC = () => {
     const [userProfile, setUserProfile] = useState<{ name: string; image?: string } | null>(null);
     const [profileLoaded, setProfileLoaded] = useState(false);
     const [isWaiting, setIsWaiting] = useState(false);
-    const [waitingMessage, setWaitingMessage] = useState("Waiting for the Host");
     const [waitingList, setWaitingList] = useState<any[]>([]);
+
+    // Chat State
+    const [showChat, setShowChat] = useState(false);
+    const [messages, setMessages] = useState<ChatMessage[]>([]);
+    const [newMessage, setNewMessage] = useState("");
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    // Reactions State
+    const [reactions, setReactions] = useState<{ [userId: string]: string }>({});
+    const reactionTimeouts = useRef<{ [userId: string]: NodeJS.Timeout }>({});
+
+    const [showEndMeetingModal, setShowEndMeetingModal] = useState(false);
+
+    // Grid State
+    const [pinnedUserId, setPinnedUserId] = useState<string | null>(null);
+    const [lastSpokeAt, setLastSpokeAt] = useState<{ [userId: string]: number }>({});
+    const [showParticipantsList, setShowParticipantsList] = useState(false);
 
     const socketRef = useRef<Socket | null>(null);
     const userVideo = useRef<HTMLVideoElement>(null);
@@ -62,6 +93,16 @@ const VideoMeeting: React.FC = () => {
     // Refs for optimization
     const streamRef = useRef<MediaStream | null>(null);
     const userProfileRef = useRef<{ name: string; image?: string } | null>(null);
+    // Refs for state accessible inside socket listeners
+    const showChatRef = useRef(showChat);
+    const messageIdsRef = useRef(new Set<string>());
+
+    // Audio Level Hook (Must be called unconditionally)
+    const isSpeakingSelf = useAudioLevel(stream);
+
+    useEffect(() => {
+        showChatRef.current = showChat;
+    }, [showChat]);
 
     useEffect(() => {
         userProfileRef.current = userProfile;
@@ -70,7 +111,7 @@ const VideoMeeting: React.FC = () => {
     useEffect(() => {
         let currentRole = userRole;
 
-        // Retrieve the correct token based on user role
+
         const token = localStorage.getItem('adminAccessToken') ||
             localStorage.getItem('teacherAccessToken') ||
             localStorage.getItem('studentAccessToken') ||
@@ -80,7 +121,7 @@ const VideoMeeting: React.FC = () => {
         if (token && !currentRole) {
             try {
                 const decoded: any = jwtDecode(token);
-                setUserId(decoded.id || decoded.sub); // Adjust based on your token structure
+                setUserId(decoded.id || decoded.sub);
                 currentRole = decoded.role;
                 setUserRole(currentRole);
             } catch (e) {
@@ -94,8 +135,8 @@ const VideoMeeting: React.FC = () => {
                 const res = await validateJoinMeeting(meetingLink!);
                 console.log("Result", res)
                 if (res.success) {
-                    setMeeting(res.data); // Assuming res.data contains meeting details
-                    // isAdmin logic removed as state was unused
+                    setMeeting(res.data);
+
                 } else {
                     console.log("why this show undeinfed", res.message)
                     setError(res.message || 'Unauthorized');
@@ -121,11 +162,11 @@ const VideoMeeting: React.FC = () => {
                     data = res.data?.data;
                 } else if (roleLower === 'admin' || roleLower === 'sub_admin') {
                     const res = await Getadminprofilemanagement();
-                    // Admin data might be in res.profile, res.data.profile, res.data, or res
+
                     const adminData = res.data || res;
                     data = adminData.profile || adminData.data || adminData;
                 } else if (roleLower === 'teacher') {
-                    // Teacher info now includes teacherProfile from backend update
+
                     const res = await GetTeachertimetableList();
                     data = res;
                 }
@@ -142,14 +183,14 @@ const VideoMeeting: React.FC = () => {
                         name = data.name || data.username || (roleLower.includes('admin') ? 'Admin' : 'User');
                         image = data.photo?.[0]?.url || data.image || null;
                     } else {
-                        // Student
+
                         name = data.fullName || data.name || 'Student';
                         image = data.photos?.[0] || data.profileImage || null;
                     }
 
                     setUserProfile({ name, image });
                 } else {
-                    // Fallback if data is null (API success but no data)
+
                     setUserProfile({ name: roleLower === 'admin' ? 'Admin' : 'User', image: undefined });
                 }
 
@@ -159,13 +200,13 @@ const VideoMeeting: React.FC = () => {
                 }
             } catch (err) {
                 console.error("Error fetching user profile:", err);
-                // Fallback on error: Try to get name from token if available
+
                 let fallbackName = roleToUse || 'User';
                 try {
                     const token = localStorage.getItem('adminAccessToken') || localStorage.getItem('teacherAccessToken') || localStorage.getItem('accessToken');
                     if (token) {
                         const decoded: any = jwtDecode(token);
-                        // Common claims for name: name, username, email, sub
+
                         fallbackName = decoded.name || decoded.username || decoded.email || decoded.sub || roleToUse;
                         console.log("Extracted fallback name from token:", fallbackName);
                     }
@@ -173,7 +214,7 @@ const VideoMeeting: React.FC = () => {
                     console.log("Token extraction failed", e);
                 }
 
-                // Ensure name is never empty string or null
+
                 if (!fallbackName) fallbackName = 'Unknown User';
 
                 setUserProfile({ name: fallbackName, image: undefined });
@@ -183,8 +224,8 @@ const VideoMeeting: React.FC = () => {
         };
 
         checkPermission();
-        fetchUserProfile(currentRole); // Pass the role directly
-    }, [meetingLink]); // Only re-run if meetingLink changes (or mount)
+        fetchUserProfile(currentRole);
+    }, [meetingLink]);
 
     useEffect(() => {
         if (!meeting || error || !profileLoaded) return;
@@ -201,7 +242,7 @@ const VideoMeeting: React.FC = () => {
 
                 socketRef.current = io("http://localhost:5000", { withCredentials: true });
 
-                const roomId = meeting.link; // Ensure this is the unique identifier
+                const roomId = meeting.link;
 
                 console.log("EMIT join-meeting with userData:", userProfile);
 
@@ -219,21 +260,17 @@ const VideoMeeting: React.FC = () => {
                 socketRef.current.on('waiting-for-host', () => {
                     console.log("Host not present. Waiting...");
                     setIsWaiting(true);
-                    setWaitingMessage("Waiting for the Host to Start the Meeting");
                 });
 
                 socketRef.current.on('waiting-for-approval', () => {
                     console.log("Host present. Waiting for approval...");
                     setIsWaiting(true);
-                    setWaitingMessage("Waiting for Host to let you in...");
                 });
 
                 socketRef.current.on('admission-granted', () => {
                     console.log("Admission Granted!");
                     setIsWaiting(false);
-                    // The socket is already moved to the room on backend. 
-                    // We just need to ensure UI updates. 
-                    // The user-connected events will start flowing now.
+
                 });
 
                 socketRef.current.on('waiting-list-update', (waiters: any[]) => {
@@ -246,17 +283,18 @@ const VideoMeeting: React.FC = () => {
                         if (prev.find(u => u.socketId === user.socketId)) return prev;
                         return [...prev, user];
                     });
-                    // showToast(`${user.userData?.name || 'Someone'} is waiting in the lobby`, 'info');
+
                 });
 
                 socketRef.current.on('host-joined', () => {
-                    // If I was waiting for host, now I wait for approval (unless admitted usually)
-                    // But backend logic says: if host joins, waiters get 'waiting-for-approval' emitted 
-                    // via broadcast to 'waiting-room'
+
                 });
 
                 socketRef.current.on('user-connected', ({ userId: newUserId, socketId, role, userData }) => {
                     console.log('User connected:', newUserId, userData);
+                    if (newUserId !== userId) {
+                        showToast(`${userData?.name || 'A user'} joined the meeting`, 'success', 3000, `join-${newUserId}`);
+                    }
 
                     // Ignore self-connection (ghost from another tab/session)
                     if (newUserId === userId) return;
@@ -317,6 +355,58 @@ const VideoMeeting: React.FC = () => {
                     setPeers(peers);
                 });
 
+                socketRef.current.on('chat-message', (data: any) => {
+                    // Check global deduplication ref first
+                    if (data.id && messageIdsRef.current.has(data.id)) {
+                        console.warn("Duplicate message blocked by Ref check:", data.id);
+                        return;
+                    }
+
+                    if (data.id) {
+                        messageIdsRef.current.add(data.id);
+                    }
+
+                    console.log("Processing new message:", data.id);
+
+                    setMessages(prev => {
+                        // Double check in state just in case (though Ref should catch it)
+                        if (prev.some(msg => msg.id === data.id)) return prev;
+
+                        return [...prev, {
+                            id: data.id || `fallback-${Date.now()}-${Math.random()}`,
+                            senderId: data.senderId,
+                            senderName: data.senderName,
+                            message: data.message,
+                            timestamp: data.timestamp,
+                            isSelf: data.senderId === userId
+                        }];
+                    });
+
+                    // Use ref to check if chat is open to avoid stale closure
+                    if (!showChatRef.current) {
+                        setUnreadCount(prev => prev + 1);
+                    }
+                });
+
+                socketRef.current.on('reaction-received', (data: { userId: string, emoji: string }) => {
+                    setReactions(prev => ({ ...prev, [data.userId]: data.emoji }));
+
+                    // Clear existing timeout for this user
+                    if (reactionTimeouts.current[data.userId]) {
+                        clearTimeout(reactionTimeouts.current[data.userId]);
+                    }
+
+                    // Set new timeout to remove emoji
+                    reactionTimeouts.current[data.userId] = setTimeout(() => {
+                        setReactions(prev => {
+                            const newReactions = { ...prev };
+                            delete newReactions[data.userId];
+                            return newReactions;
+                        });
+                        delete reactionTimeouts.current[data.userId];
+                    }, 3000);
+                });
+
                 socketRef.current.on('meeting-ended', () => {
                     showToast('Meeting has ended by Host', 'info');
                     cleanup();
@@ -358,7 +448,7 @@ const VideoMeeting: React.FC = () => {
         const peer = new SimplePeer({
             initiator: true,
             trickle: false,
-            stream: stream, // Always send my stream (whether mute/video off is handled by track enabled/disabled)
+            stream: stream,
         });
 
         peer.on('signal', signal => {
@@ -391,7 +481,7 @@ const VideoMeeting: React.FC = () => {
         });
 
         peer.on('signal', signal => {
-            // Use Ref to ensure we send the LATEST profile data, avoiding stale closures
+
             const latestProfile = userProfileRef.current || { name: userRole || 'Participant', image: undefined };
             console.log("SENDING SIGNAL (Receiver) with profile:", latestProfile);
 
@@ -442,22 +532,99 @@ const VideoMeeting: React.FC = () => {
 
     const endMeeting = () => {
         const isHost = userId === meeting?.createdBy;
-        if (isHost && socketRef.current) {
-            if (window.confirm("Are you sure you want to end the meeting for everyone?")) {
-                socketRef.current.emit('end-meeting', { meetingId: meeting?.link });
-            } else {
-                return; // Cancelled
-            }
+        if (isHost) {
+            setShowEndMeetingModal(true);
+        } else {
+            handleLeaveMeeting();
         }
+    }
 
-        // For guests (or host confirming end), cleanup and leave
+    const handleLeaveMeeting = () => {
         showToast('You have left the meeting', 'info');
         cleanup();
         handleAuthRedirect(userRole);
-    }
+    };
 
+    const confirmEndMeeting = () => {
+        if (socketRef.current) {
+            socketRef.current.emit('end-meeting', { meetingId: meeting?.link });
+        }
+        setShowEndMeetingModal(false);
+        handleLeaveMeeting();
+    };
+
+
+    // --- Dynamic Sorting Logic ---
+    const handleActivity = (speakerId: string) => {
+        setLastSpokeAt(prev => ({
+            ...prev,
+            [speakerId]: Date.now()
+        }));
+    };
+
+    // Update self activity
+    useEffect(() => {
+        if (isSpeakingSelf) {
+            handleActivity(userId);
+        }
+    }, [isSpeakingSelf, userId]);
+
+    const sortedPeers = React.useMemo(() => {
+        return [...peers].sort((a, b) => {
+            const timeA = lastSpokeAt[a.userId || ''] || 0;
+            const timeB = lastSpokeAt[b.userId || ''] || 0;
+            return timeB - timeA;
+        });
+    }, [peers, lastSpokeAt]);
+
+    const visiblePeers = React.useMemo(() => {
+        let displayList = [...sortedPeers];
+
+        if (pinnedUserId) {
+            const pinnedPeerIndex = displayList.findIndex(p => p.userId === pinnedUserId);
+            if (pinnedPeerIndex > -1) {
+                const [pinned] = displayList.splice(pinnedPeerIndex, 1);
+                displayList.unshift(pinned);
+            }
+        }
+
+        return displayList;
+    }, [sortedPeers, pinnedUserId]);
+
+    const MAX_GRID_ITEMS = 8;
+    const peersToShow = visiblePeers.slice(0, MAX_GRID_ITEMS - 1);
+    const overflowCount = Math.max(0, visiblePeers.length - (MAX_GRID_ITEMS - 1));
     if (loading) return <div className="flex justify-center items-center h-screen">Loading Meeting...</div>;
     if (error) return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;
+
+    const sendMessage = (e?: React.FormEvent) => {
+        e?.preventDefault();
+        if (!newMessage.trim() || !socketRef.current) return;
+
+        // Use crypto.randomUUID if available, else fallback to timestamp + random
+        const msgId = typeof crypto !== 'undefined' && crypto.randomUUID
+            ? crypto.randomUUID()
+            : `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+        console.log("Sending chat message:", { msgId, message: newMessage });
+
+        const msgData = {
+            id: msgId,
+            meetingId: meeting?.link,
+            message: newMessage,
+            senderId: userId,
+            senderName: userProfile?.name || 'User',
+            timestamp: new Date().toISOString()
+        };
+
+        socketRef.current.emit('chat-message', msgData);
+        setNewMessage("");
+    };
+
+    const toggleChat = () => {
+        setShowChat(!showChat);
+        if (!showChat) setUnreadCount(0);
+    };
 
     const admitUser = (socketId: string) => {
         if (!meeting) return;
@@ -465,81 +632,92 @@ const VideoMeeting: React.FC = () => {
         setWaitingList(prev => prev.filter(u => u.socketId !== socketId));
     };
 
+    const sendReaction = (emoji: string) => {
+        if (!socketRef.current || !meeting) return;
+
+        // Optimistic update for self
+        setReactions(prev => ({ ...prev, [userId]: emoji }));
+        if (reactionTimeouts.current[userId]) clearTimeout(reactionTimeouts.current[userId]);
+        reactionTimeouts.current[userId] = setTimeout(() => {
+            setReactions(prev => {
+                const newReactions = { ...prev };
+                delete newReactions[userId];
+                return newReactions;
+            });
+            delete reactionTimeouts.current[userId];
+        }, 3000);
+
+        socketRef.current.emit('send-reaction', {
+            meetingId: meeting.link,
+            userId,
+            emoji
+        });
+    };
+
     const isHost = userId === meeting?.createdBy;
 
+
+
+
+
+
+
+
     return (
-        <div className={`h-screen flex flex-col font-sans selection:bg-blue-500/20 ${isDark ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
-            {/* Header */}
-            <header className={`px-6 py-4 flex items-center justify-between border-b backdrop-blur-md sticky top-0 z-50 ${isDark ? 'bg-gray-900/80 border-gray-800' : 'bg-white/80 border-gray-200'}`}>
-                <div className="flex items-center gap-4">
-                    <div className={`p-2.5 rounded-xl ${isDark ? 'bg-gray-800' : 'bg-white shadow-sm border border-gray-100'}`}>
-                        <Video size={20} className="text-blue-500" />
-                    </div>
-                    <div>
-                        <h1 className="font-bold text-lg leading-tight tracking-tight">{meeting?.title || 'Video Meeting'}</h1>
-                        <div className="flex items-center gap-2 mt-0.5">
-                            <span className={`w-2 h-2 rounded-full ${peers.length > 0 ? 'bg-green-500' : 'bg-amber-500'}`} />
-                            <p className="text-xs opacity-60 font-medium tracking-wide">{meeting?.type?.toUpperCase()} • {peers.length + 1} {peers.length + 1 === 1 ? 'Participant' : 'Participants'}</p>
-                        </div>
-                    </div>
-                </div>
-
-                {waitingList.length > 0 && (
-                    <div className="relative group">
-                        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-sm font-medium transition-all shadow-lg shadow-blue-600/20 active:scale-95">
-                            <span>Lobby</span>
-                            <span className="bg-white text-blue-600 px-1.5 py-0.5 rounded-full text-xs font-bold leading-none min-w-[20px] text-center">{waitingList.length}</span>
-                        </button>
-
-                        {/* Dropdown for Waiting List */}
-                        <div className={`absolute top-full right-0 mt-2 w-80 rounded-2xl shadow-2xl border p-3 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all transform origin-top-right scale-95 group-hover:scale-100 ${isDark ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'}`}>
-                            <div className="flex justify-between items-center mb-3 px-1">
-                                <h3 className="text-xs font-bold uppercase text-gray-500 tracking-wider">Waiting Room</h3>
-                                <span className="text-[10px] bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full text-gray-500 font-medium">{waitingList.length} pending</span>
-                            </div>
-                            <div className="space-y-1 max-h-[300px] overflow-y-auto">
-                                {waitingList.map((user) => (
-                                    <div key={user.socketId} className={`flex items-center justify-between p-2.5 rounded-xl border ${isDark ? 'bg-gray-800/50 border-gray-700 hover:bg-gray-800' : 'bg-gray-50 border-gray-100 hover:bg-white hover:shadow-md'} transition-all`}>
-                                        <div className="flex items-center gap-3 overflow-hidden">
-                                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-100 to-amber-100 text-orange-600 flex items-center justify-center text-xs font-bold shrink-0 border border-orange-200">
-                                                {user.userData?.name?.charAt(0) || '?'}
-                                            </div>
-                                            <div className="min-w-0">
-                                                <p className="text-sm font-semibold truncate leading-tight">{user.userData?.name || 'Guest'}</p>
-                                                <p className="text-[10px] text-gray-500 capitalize">{user.role}</p>
-                                            </div>
-                                        </div>
-                                        <button
-                                            onClick={() => admitUser(user.socketId)}
-                                            className="text-xs bg-gray-900 text-white dark:bg-white dark:text-gray-900 hover:opacity-90 px-3 py-1.5 rounded-lg font-semibold transition-opacity"
-                                        >
-                                            Admit
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </header>
+        <div className={`min-h-screen flex flex-col font-sans selection:bg-blue-500/20 ${isDark ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
+            <MeetingHeader
+                meeting={meeting}
+                peers={peers}
+                waitingList={waitingList}
+                admitUser={admitUser}
+                isDark={isDark}
+            />
 
             {/* Main Stage Grid */}
-            <main className="flex-1 overflow-hidden p-4 md:p-6 flex items-center justify-center">
-                <div className={`grid gap-4 w-full max-w-[1920px] mx-auto transition-all duration-500 ease-in-out ${(peers.length + 1) <= 1 ? 'h-full grid-cols-1' :
-                    (peers.length + 1) === 2 ? 'h-[60vh] md:h-full grid-cols-1 md:grid-cols-2 auto-rows-fr' :
-                        (peers.length + 1) <= 4 ? 'h-full grid-cols-2 auto-rows-fr' :
-                            (peers.length + 1) <= 6 ? 'h-full grid-cols-2 lg:grid-cols-3 auto-rows-fr' :
-                                (peers.length + 1) <= 9 ? 'h-full grid-cols-3 auto-rows-fr' :
-                                    'h-full grid-cols-3 lg:grid-cols-4 auto-rows-min'
+            <main className="flex-1 p-4 md:p-6 flex items-center justify-center relative">
+
+                <div className={`grid gap-3 w-full mx-auto transition-all duration-500 ease-in-out place-content-center 
+                    ${pinnedUserId
+                        ? 'grid-cols-1 md:grid-cols-4 grid-rows-4 h-[calc(100vh-160px)]' // Pinned Layout
+                        : (peersToShow.length + 1) <= 1 ? 'grid-cols-1 max-w-2xl' :
+                            (peersToShow.length + 1) === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl' :
+                                (peersToShow.length + 1) <= 4 ? 'grid-cols-2 max-w-5xl' :
+                                    (peersToShow.length + 1) <= 6 ? 'grid-cols-2 lg:grid-cols-3 max-w-6xl' :
+                                        (peersToShow.length + 1) <= 9 ? 'grid-cols-3 max-w-7xl' :
+                                            'grid-cols-3 lg:grid-cols-4 max-w-[1920px] auto-rows-min'
                     }`}>
-                    {/* My Video Card */}
-                    <div className="relative w-full h-full min-h-[200px] rounded-2xl overflow-hidden shadow-lg ring-1 ring-black/5 dark:ring-white/5 group bg-black">
-                        <video ref={userVideo} muted autoPlay playsInline className="w-full h-full object-cover transform scale-x-[-1]" /> {/* Mirror local video */}
 
-                        {/* Overlay Gradient */}
+                    {/* Self Video Wrapper */}
+                    <div className={`relative w-full h-full min-h-[160px] rounded-2xl overflow-hidden shadow-lg transition-all duration-300 group 
+                        ${pinnedUserId === userId ? 'md:col-span-3 md:row-span-4' : ''}
+                        ${!pinnedUserId && 'hover:scale-[1.02]'}
+                        ${isSpeakingSelf ? 'ring-4 ring-green-500 shadow-green-500/50' : 'ring-1 ring-black/5 dark:ring-white/5'} bg-black`}
+                        onClick={() => setPinnedUserId(pinnedUserId === userId ? null : userId)}
+                    >
+                        <video ref={userVideo} muted autoPlay playsInline className="w-full h-full object-cover transform scale-x-[-1]" />
+
+                        {/* Pin Indicator */}
+                        <div className="absolute top-4 left-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button className="p-1.5 bg-black/50 text-white rounded-full hover:bg-black/70">
+                                {/* Pin Icon */}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>
+                            </button>
+                        </div>
+
+                        {/* Speaking Indicator */}
+                        {isSpeakingSelf && <div className="absolute inset-0 border-4 border-green-500/50 rounded-2xl pointer-events-none animate-pulse" />}
+                        {reactions[userId] && (
+                            <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none animate-bounce">
+                                <span className="text-6xl drop-shadow-2xl filter animate-ping absolute opacity-50">{reactions[userId]}</span>
+                                <span className="text-6xl drop-shadow-2xl relative">{reactions[userId]}</span>
+                            </div>
+                        )}
                         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
-
-                        {/* Status Badge */}
+                        {isSpeakingSelf && (
+                            <div className="absolute top-4 right-4 p-2 bg-green-500 rounded-full animate-bounce shadow-lg shadow-green-500/40 z-10">
+                                <Mic size={14} className="text-white" />
+                            </div>
+                        )}
                         <div className={`absolute bottom-4 left-4 flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-md border shadow-lg ${isDark ? 'bg-gray-900/60 border-gray-700 text-white' : 'bg-white/60 border-white/20 text-black'}`}>
                             <div className="w-2 h-2 rounded-full bg-blue-500" />
                             <span className="text-xs font-semibold tracking-wide">You ({isHost ? 'Host' : 'Guest'})</span>
@@ -548,152 +726,91 @@ const VideoMeeting: React.FC = () => {
                     </div>
 
                     {/* Peer Video Cards */}
-                    {peers.map((peerData) => (
-                        <div key={peerData.peerId} className="w-full h-full min-h-[200px]">
+                    {peersToShow.map((peerData) => (
+                        <div key={peerData.peerId}
+                            className={`w-full h-full min-h-[160px] cursor-pointer
+                                ${pinnedUserId === peerData.userId ? 'md:col-span-3 md:row-span-4 order-first' : ''}
+                             `}
+                            onClick={() => setPinnedUserId(pinnedUserId === peerData.userId ? null : peerData.userId || null)}
+                        >
                             <VideoCard
                                 peer={peerData.peer}
                                 userId={peerData.userId}
                                 role={peerData.role}
                                 userData={peerData.userData}
                                 isDark={isDark}
+                                reaction={reactions[peerData.userId || '']}
+                                onActivity={handleActivity}
                             />
                         </div>
                     ))}
+
+                    {/* Overflow Indicator */}
+                    {overflowCount > 0 && (
+                        <div className="w-full h-full min-h-[160px] flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700">
+                            <div className="text-center">
+                                <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center mx-auto mb-2 text-lg font-bold">
+                                    +{overflowCount}
+                                </div>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">Other Participants</span>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </main>
 
-            {/* Floating Control Bar */}
-            <footer className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
-                <div className={`flex items-center gap-2 p-2 rounded-2xl border shadow-2xl backdrop-blur-xl ${isDark ? 'bg-gray-900/80 border-gray-700/50' : 'bg-white/80 border-gray-200/50'}`}>
-                    <button
-                        onClick={toggleMute}
-                        className={`p-4 rounded-xl transition-all duration-200 group relative ${isMuted ? 'bg-red-500 text-white hover:bg-red-600' : (isDark ? 'hover:bg-gray-800 text-gray-200' : 'hover:bg-gray-100 text-gray-700')}`}
-                    >
-                        {isMuted ? <MicOff size={20} /> : <Mic size={20} />}
-                        <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                            {isMuted ? 'Unmute' : 'Mute'}
-                        </span>
-                    </button>
+            <MeetingChat
+                showChat={showChat}
+                toggleChat={toggleChat}
+                messages={messages}
+                newMessage={newMessage}
+                setNewMessage={setNewMessage}
+                sendMessage={sendMessage}
+                isDark={isDark}
+            />
 
-                    <button
-                        onClick={toggleVideo}
-                        className={`p-4 rounded-xl transition-all duration-200 group relative ${isVideoOff ? 'bg-red-500 text-white hover:bg-red-600' : (isDark ? 'hover:bg-gray-800 text-gray-200' : 'hover:bg-gray-100 text-gray-700')}`}
-                    >
-                        {isVideoOff ? <VideoOff size={20} /> : <Video size={20} />}
-                        <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                            {isVideoOff ? 'Turn Camera On' : 'Turn Camera Off'}
-                        </span>
-                    </button>
-
-                    <div className={`w-px h-8 mx-1 ${isDark ? 'bg-gray-700' : 'bg-gray-300'}`} />
-
-                    <button
-                        onClick={endMeeting}
-                        className={`px-6 py-4 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg active:scale-95 ml-1 ${isHost ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-600/20' : 'bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'}`}
-                    >
-                        <PhoneOff size={20} />
-                        <span className="hidden sm:inline">{isHost ? 'End Meeting' : 'Leave'}</span>
-                    </button>
-                </div>
-            </footer>
-        </div>
-    );
-};
-
-const VideoCard: React.FC<{ peer: SimplePeer.Instance; userId?: string; role?: string; userData?: { name: string; image?: string }, isDark?: boolean }> = ({ peer, userId, role, userData, isDark }) => {
-    const ref = useRef<HTMLVideoElement>(null);
-    const [imgError, setImgError] = useState(false);
-    const [isSpeaking, setIsSpeaking] = useState(false);
-    const analyserRef = useRef<AnalyserNode | null>(null);
-    const audioContextRef = useRef<AudioContext | null>(null);
-    const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
-
-    useEffect(() => {
-        const handleStream = (stream: MediaStream) => {
-            if (ref.current) ref.current.srcObject = stream;
-
-            try {
-                // Initialize AudioContext only once user interaction policies allow (usually fine in effect for established stream)
-                const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-                if (!audioContextRef.current) {
-                    audioContextRef.current = new AudioContextClass();
-                }
-
-                if (audioContextRef.current.state === 'suspended') {
-                    audioContextRef.current.resume();
-                }
-
-                if (stream.getAudioTracks().length > 0) {
-                    if (sourceRef.current) {
-                        try { sourceRef.current.disconnect(); } catch (e) { /**/ }
-                    }
-
-                    analyserRef.current = audioContextRef.current.createAnalyser();
-                    analyserRef.current.fftSize = 256; // Smaller FFT is enough for volume
-                    sourceRef.current = audioContextRef.current.createMediaStreamSource(stream);
-                    sourceRef.current.connect(analyserRef.current);
-
-                    const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
-                    const checkAudio = () => {
-                        if (!analyserRef.current) return;
-                        analyserRef.current.getByteFrequencyData(dataArray);
-                        const volume = dataArray.reduce((src, a) => src + a, 0) / dataArray.length;
-                        setIsSpeaking(volume > 15); // Threshold
-                        requestAnimationFrame(checkAudio);
-                    };
-                    checkAudio();
-                }
-            } catch (e) {
-                console.error("Audio setup error", e);
-            }
-        };
-
-        if ((peer as any)._remoteStreams && (peer as any)._remoteStreams.length > 0) {
-            handleStream((peer as any)._remoteStreams[0]);
-        }
-        peer.on("stream", handleStream);
-
-        return () => {
-            if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
-                audioContextRef.current.close().catch(() => { });
-            }
-        }
-    }, [peer]);
-
-    useEffect(() => { setImgError(false); }, [userData?.image]);
-
-    return (
-        <div className={`relative w-full h-full rounded-2xl overflow-hidden shadow-lg ring-1 transition-all duration-300 group ${isSpeaking ? 'ring-2 ring-green-500' : 'ring-black/5 dark:ring-white/5'} bg-black`}>
-            <video ref={ref} autoPlay playsInline className="w-full h-full object-cover" />
-
-            {/* Speaking Indicator - Pulse Background */}
-            {isSpeaking && <div className="absolute inset-0 border-4 border-green-500/50 rounded-2xl pointer-events-none animate-pulse" />}
-
-            {/* Overlay Gradient */}
-            <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
-
-            {/* Mic Indicator */}
-            {isSpeaking && (
-                <div className="absolute top-4 right-4 p-2 bg-green-500 rounded-full animate-bounce shadow-lg shadow-green-500/40 z-10">
-                    <Mic size={14} className="text-white" />
-                </div>
-            )}
-
-            {/* Name Tag */}
-            <div className={`absolute bottom-4 left-4 flex items-center gap-3 px-3 py-1.5 rounded-full backdrop-blur-md border shadow-lg max-w-[85%] ${isDark ? 'bg-gray-900/60 border-gray-700 text-white' : 'bg-white/60 border-white/20 text-black'}`}>
-                {userData?.image && !imgError ? (
-                    <img src={userData.image} alt={userData.name} className="w-6 h-6 rounded-full object-cover border border-white/20" onError={() => setImgError(true)} />
-                ) : (
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white shadow-inner shrink-0 ${role === 'admin' ? 'bg-purple-600' : 'bg-blue-600'}`}>
-                        {userData?.name?.charAt(0) || '?'}
+            <MeetingControls
+                toggleMute={toggleMute}
+                isMuted={isMuted}
+                toggleVideo={toggleVideo}
+                isVideoOff={isVideoOff}
+                endMeeting={endMeeting}
+                isHost={isHost}
+                toggleChat={toggleChat}
+                showChat={showChat}
+                unreadCount={unreadCount}
+                isDark={isDark}
+                onReaction={sendReaction}
+            />
+            {/* End Meeting Confirmation Modal */}
+            <Modal
+                isOpen={showEndMeetingModal}
+                onClose={() => setShowEndMeetingModal(false)}
+                title="End Meeting"
+            >
+                <div className="space-y-4">
+                    <p className={`text-base ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                        Are you sure you want to end the meeting for everyone?
+                    </p>
+                    <div className="flex justify-end gap-3 pt-4">
+                        <button
+                            onClick={() => setShowEndMeetingModal(false)}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isDark ? 'bg-gray-800 hover:bg-gray-700 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={confirmEndMeeting}
+                            className="px-4 py-2 rounded-lg text-sm font-medium bg-red-600 hover:bg-red-700 text-white transition-colors"
+                        >
+                            End Meeting
+                        </button>
                     </div>
-                )}
-                <div className="flex flex-col overflow-hidden">
-                    <span className="text-xs font-semibold truncate leading-none">{userData?.name || 'Participant'}</span>
                 </div>
-            </div>
+            </Modal>
         </div>
     );
 };
 
 export default VideoMeeting;
+
