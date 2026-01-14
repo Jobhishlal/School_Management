@@ -16,6 +16,14 @@ export class MeetingUseCase implements IMeetingUseCase {
         if (!meetingData.link) {
             meetingData.link = Math.random().toString(36).substring(2, 12);
         }
+
+        const startTime = new Date(meetingData.startTime);
+        const now = new Date();
+
+        if (startTime < now) {
+            throw new Error('Meeting cannot be scheduled in the past');
+        }
+
         return await this.meetingRepository.createMeeting(meetingData);
     }
 

@@ -133,7 +133,7 @@ const ParentLeavePage: React.FC = () => {
         <div className={`min-h-screen ${pageBg} p-6 transition-colors duration-200`}>
             <div className="max-w-7xl mx-auto space-y-6">
 
-                {/* Header */}
+             
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h1 className={`text-2xl font-bold ${textPrimary}`}>Student Leave Management</h1>
@@ -148,7 +148,7 @@ const ParentLeavePage: React.FC = () => {
                     </button>
                 </div>
 
-                {/* Leave History List */}
+               
                 <div className={`${cardBg} rounded-xl shadow-sm border ${borderColor} overflow-hidden`}>
                     <div className={`p-6 border-b ${borderColor}`}>
                         <h2 className={`text-lg font-semibold ${textPrimary}`}>Leave History</h2>
@@ -197,7 +197,7 @@ const ParentLeavePage: React.FC = () => {
 
             </div>
 
-            {/* Apply Leave Modal */}
+         
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
                     <div className={`${cardBg} w-full max-w-lg rounded-2xl shadow-xl border ${borderColor} p-6`}>
@@ -230,7 +230,7 @@ const ParentLeavePage: React.FC = () => {
                                         value={startDate}
                                         onChange={(e) => setStartDate(e.target.value)}
                                         className={`w-full p-2 rounded-lg border ${borderColor} ${cardBg} ${textPrimary} focus:ring-2 focus:ring-indigo-500 outline-none`}
-                                        required
+                                        
                                     />
                                 </div>
                                 <div>
@@ -240,7 +240,7 @@ const ParentLeavePage: React.FC = () => {
                                         value={endDate}
                                         onChange={(e) => setEndDate(e.target.value)}
                                         className={`w-full p-2 rounded-lg border ${borderColor} ${cardBg} ${textPrimary} focus:ring-2 focus:ring-indigo-500 outline-none`}
-                                        required
+                                        
                                     />
                                 </div>
                             </div>
@@ -253,7 +253,7 @@ const ParentLeavePage: React.FC = () => {
                                     rows={3}
                                     className={`w-full p-2 rounded-lg border ${borderColor} ${cardBg} ${textPrimary} focus:ring-2 focus:ring-indigo-500 outline-none`}
                                     placeholder="Please allow leave for..."
-                                    required
+                                    
                                 />
                             </div>
 

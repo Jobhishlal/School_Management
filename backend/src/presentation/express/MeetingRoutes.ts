@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { MeetingController } from './controllers/MeetingController';
+import { MeetingController } from '../http/controllers/media/MeetingController';
 import { authMiddleware } from '../../infrastructure/middleware/AuthMiddleWare';
 import { MeetingRepository } from '../../infrastructure/repositories/MeetingRepository';
 import { MongoStudentRepo } from '../../infrastructure/repositories/MongoStudentRepo';

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { IMeetingUseCase } from '../../../domain/UseCaseInterface/IMeetingUseCase';
-import { StatusCodes } from '../../../shared/constants/statusCodes';
+import { IMeetingUseCase } from '../../../../domain/UseCaseInterface/IMeetingUseCase';
+import { StatusCodes } from '../../../../shared/constants/statusCodes';
 
 export class MeetingController {
     private meetingUseCase: IMeetingUseCase;
@@ -23,9 +23,13 @@ export class MeetingController {
 
             console.log("meeting data", newMeeting)
             res.status(StatusCodes.CREATED).json({ success: true, data: newMeeting });
-        } catch (error) {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-                .json({ message: 'internal server error', success: false })
+        } catch (error: any) {
+            if (error.message === 'Meeting cannot be scheduled in the past') {
+                res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: error.message });
+            } else {
+                res.status(StatusCodes.INTERNAL_SERVER_ERROR)
+                    .json({ message: 'internal server error', success: false });
+            }
         }
     }
 
@@ -63,7 +67,7 @@ export class MeetingController {
             let userRole = user.role || 'parent';
             let userClassId = user.studentClassId || user.classId;
 
-      
+
             const result = await this.meetingUseCase.validateJoin(
                 link,
                 user.id,

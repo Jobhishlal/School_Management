@@ -47,9 +47,27 @@ export class ParentRepository implements IParentFeeInterface {
         (p) => p.studentFeeId?.toString() === fee._id.toString()
       );
 
+      const status = payment ? payment.status : "PENDING";
+
+      // Calculate total amount from feeItems
+      let amount = (fee as any).feeItems.reduce((acc: number, item: any) => acc + (item.amount || 0), 0);
+
+      let hasPenalty = false;
+      let penaltyMessage = "";
+
+      // Use expiryDate instead of endDate
+      if (status === "PENDING" && new Date() > new Date((fee as any).expiryDate)) {
+        amount += 200;
+        hasPenalty = true;
+        penaltyMessage = "You didn't complete this payment before deadline, you have penalty 200 rs";
+      }
+
       return {
         ...fee,
-        status: payment ? payment.status : "PENDING",
+        status: status,
+        amount: amount,
+        hasPenalty: hasPenalty,
+        penaltyMessage: penaltyMessage,
         paymentId: payment?._id || null,
         paymentDate: payment?.createdAt || null,
         transactionId: payment?.razorpayPaymentId || null,

@@ -635,7 +635,7 @@ const VideoMeeting: React.FC = () => {
     const sendReaction = (emoji: string) => {
         if (!socketRef.current || !meeting) return;
 
-        // Optimistic update for self
+        
         setReactions(prev => ({ ...prev, [userId]: emoji }));
         if (reactionTimeouts.current[userId]) clearTimeout(reactionTimeouts.current[userId]);
         reactionTimeouts.current[userId] = setTimeout(() => {

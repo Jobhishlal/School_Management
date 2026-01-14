@@ -188,7 +188,7 @@ export default function FinanceParentList() {
         return;
       }
 
-      const amount = item?.feeItems?.[0]?.amount;
+      const amount = item?.amount;
       if (!amount) {
         showToast("Invalid amount", "error");
         return;
@@ -460,9 +460,15 @@ export default function FinanceParentList() {
                                 )}
                               </td>
                               <td className={`py-4 px-4 ${textPrimary}`}>{onlyDate(item.startDate)}</td>
-                              <td className={`py-4 px-4 ${textPrimary}`}>{onlyDate(item.expiryDate)}</td>
+                              <td className={`py-4 px-4 ${textPrimary} group relative cursor-help`}>
+                                {onlyDate(item.expiryDate)}
+                                <div className="absolute hidden group-hover:block bg-black text-white text-xs p-2 rounded z-10 w-48 bottom-full mb-2 left-1/2 -translate-x-1/2 text-center shadow-lg">
+                                  Penalty of ₹200 applies after this date
+                                  <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-black"></div>
+                                </div>
+                              </td>
                               <td className={`py-4 px-4 ${textPrimary} font-semibold`}>
-                                ₹{(item.feeItems?.[0]?.amount || 0).toLocaleString()}
+                                ₹{(item.amount || 0).toLocaleString()}
                               </td>
                               <td className="py-4 px-4">
                                 <div className="flex items-center gap-2">
@@ -475,7 +481,7 @@ export default function FinanceParentList() {
                                 </div>
                               </td>
                               <td className="py-4 px-4">
-                                {item.status === "PAID" ? (
+                                {statusInfo.label === "PAID" ? (
                                   <button
                                     onClick={() => handleViewInvoice(item)}
                                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2 ${buttonPrimary}`}
@@ -485,26 +491,41 @@ export default function FinanceParentList() {
                                     </svg>
                                     Invoice
                                   </button>
-                                ) : isExpired(item.expiryDate) ? (
-                                  <div>
-                                    <button
-                                      onClick={() => setSelectedFee(item)}
-                                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 bg-red-600 hover:bg-red-700 text-white`}
-                                    >
-                                      Contact Teacher
-                                    </button>
-                                  </div>
                                 ) : (
-                                  <button
-                                    onClick={() => handlePayment(item)}
-                                    disabled={processingPayment}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2 disabled:opacity-50 ${buttonSuccess}`}
-                                  >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                    </svg>
-                                    Pay Now
-                                  </button>
+                                  <>
+                                    {isExpired(item.expiryDate) && !item.hasPenalty ? (
+                                      <button
+                                        onClick={() => setSelectedFee(item)}
+                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 bg-red-600 hover:bg-red-700 text-white`}
+                                      >
+                                        Contact Teacher
+                                      </button>
+                                    ) : (
+                                      <div className="flex flex-col gap-1 group relative">
+                                        {item.hasPenalty && (
+                                          <span className="text-xs text-red-500 font-medium">
+                                            +₹200 Penalty Applied
+                                          </span>
+                                        )}
+                                        <button
+                                          onClick={() => handlePayment(item)}
+                                          disabled={processingPayment}
+                                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2 disabled:opacity-50 ${item.hasPenalty ? "bg-red-600 hover:bg-red-700 text-white" : buttonSuccess}`}
+                                        >
+                                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                          </svg>
+                                          {item.hasPenalty ? "Pay with Penalty" : "Pay Now"}
+                                        </button>
+                                        {item.hasPenalty && item.penaltyMessage && (
+                                          <div className="absolute hidden group-hover:block bg-black text-white text-xs p-2 rounded z-10 w-48 bottom-full mb-2 left-1/2 -translate-x-1/2">
+                                            {item.penaltyMessage}
+                                            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-black"></div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+                                  </>
                                 )}
                               </td>
                             </tr>

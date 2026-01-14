@@ -16,6 +16,42 @@ export class StudentLeaveController {
 
     async applyLeave(req: AuthRequest, res: Response) {
         try {
+            const { reason, startDate, endDate, leaveType } = req.body;
+
+            if (!reason) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Reason is required" });
+            }
+            if (!startDate) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Start date is required" });
+            }
+            if (!endDate) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "End date is required" });
+            }
+            if (!leaveType) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Leave type is required" });
+            }
+
+            // Reason Validation
+            if (reason.trim().length < 4) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Reason must be at least 4 characters long" });
+            }
+            if (/^\d+$/.test(reason.trim())) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Reason cannot be purely numeric" });
+            }
+
+            // Leave Type Validation (should not be purely numeric)
+            if (/^\d+$/.test(leaveType.trim())) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Leave type cannot be purely numeric" });
+            }
+
+            const start = new Date(startDate);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Reset time to compare dates only
+
+            if (start < today) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Leave cannot be applied for a past date" });
+            }
+
             const parentId = req.user?.id || req.body.parentId;
 
             const data = {
@@ -28,6 +64,11 @@ export class StudentLeaveController {
             return res.status(StatusCodes.CREATED).json({ success: true, data: result });
         } catch (error: any) {
             console.error("Error applying for student leave:", error);
+            if (error.name === 'ValidationError') {
+                // Mongoose validation error
+                const messages = Object.values(error.errors).map((val: any) => val.message);
+                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.join(', ') });
+            }
             return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: error.message });
         }
     }
@@ -61,9 +102,9 @@ export class StudentLeaveController {
     async updateLeaveStatus(req: AuthRequest, res: Response) {
         try {
             const { id } = req.params;
-            console.log("id",id)
+            console.log("id", id)
             const { status, message } = req.body;
-            console.log("status message",status,message)
+            console.log("status message", status, message)
             const teacherId = req.user?.id;
 
             if (!teacherId) {
@@ -71,7 +112,7 @@ export class StudentLeaveController {
             }
 
             const result = await this.processLeaveUseCase.execute(id, status, teacherId, message);
-            console.log("result",result)
+            console.log("result", result)
 
             if (!result) {
                 return res.status(StatusCodes.NOT_FOUND).json({ success: false, message: "Leave not found" });
