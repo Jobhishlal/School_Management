@@ -4,6 +4,7 @@ import { Users, Search } from 'lucide-react';
 import { StudentPerformanceModal } from '../../../components/common/Teacher/StudentPerformanceModal';
 import { Pagination } from '../../../components/common/Pagination';
 import { useTheme } from '../../../components/layout/ThemeContext';
+import { useDebounce } from '../../../hooks/useDebounce';
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     BarChart, Bar
@@ -47,26 +48,23 @@ const TeacherMyClass: React.FC = () => {
 
     // Search & Pagination State
     const [searchTerm, setSearchTerm] = useState('');
+    const debouncedSearchTerm = useDebounce(searchTerm, 500);
     const [currentPage, setCurrentPage] = useState(1);
     const studentsPerPage = 5;
 
-    // Theme Variables matching other pages
     const pageBg = isDark ? "bg-[#121A21]" : "bg-slate-50";
     const cardBg = isDark ? "bg-slate-800/50" : "bg-white";
     const borderColor = isDark ? "border-slate-700" : "border-slate-200";
 
     useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            fetchClassData();
-        }, 500); // Debounce search
-        return () => clearTimeout(timeoutId);
-    }, [searchTerm, currentPage]);
+        fetchClassData();
+    }, [debouncedSearchTerm, currentPage]);
 
     const fetchClassData = async () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await authapi.getTeacherClass(searchTerm, currentPage, studentsPerPage);
+            const response = await authapi.getTeacherClass(debouncedSearchTerm, currentPage, studentsPerPage);
             if (response.success) {
                 setClassData(response.data);
             } else {
