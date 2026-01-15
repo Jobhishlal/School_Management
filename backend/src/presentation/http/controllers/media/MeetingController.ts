@@ -34,7 +34,9 @@ export class MeetingController {
             console.log("meeting data", newMeeting)
             res.status(StatusCodes.CREATED).json({ success: true, data: newMeeting });
         } catch (error: any) {
-            if (error.message === 'Meeting cannot be scheduled in the past') {
+            if (error.message === 'Meeting cannot be scheduled in the past' ||
+                error.message === 'Title must contain only alphabets and spaces' ||
+                error.message === 'Description must contain only alphabets and spaces') {
                 res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: error.message });
             } else {
                 res.status(StatusCodes.INTERNAL_SERVER_ERROR)

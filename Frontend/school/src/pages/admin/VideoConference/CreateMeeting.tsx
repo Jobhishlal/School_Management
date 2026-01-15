@@ -95,7 +95,14 @@ const CreateMeeting: React.FC = () => {
                         <div>
                             <label className="block text-sm font-medium mb-1">Title</label>
                             <input
-                                {...register('title', { required: 'Title is required' })}
+                                {...register('title', {
+                                    required: 'Title is required',
+                                    pattern: {
+                                        value: /^[a-zA-Z\s]+$/,
+                                        message: 'Title must contain only alphabets and spaces'
+                                    },
+                                    validate: (value) => !!value.trim() || 'Title cannot be empty'
+                                })}
                                 className={`w-full p-2 rounded border ${isDark ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
                             />
                             {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
@@ -104,9 +111,16 @@ const CreateMeeting: React.FC = () => {
                         <div>
                             <label className="block text-sm font-medium mb-1">Description</label>
                             <textarea
-                                {...register('description')}
+                                {...register('description', {
+                                    pattern: {
+                                        value: /^[a-zA-Z\s]+$/,
+                                        message: 'Description must contain only alphabets and spaces'
+                                    },
+                                    validate: (value) => !value || !!value.trim() || 'Description cannot be empty spaces'
+                                })}
                                 className={`w-full p-2 rounded border ${isDark ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
                             />
+                            {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
                         </div>
 
                         <div>

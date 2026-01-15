@@ -10,6 +10,17 @@ export class CreateMeetingUseCase implements ICreateMeetingUseCase {
             meetingData.link = Math.random().toString(36).substring(2, 12);
         }
 
+        const titleRegex = /^[a-zA-Z\s]+$/;
+        if (!titleRegex.test(meetingData.title) || !meetingData.title.trim()) {
+            throw new Error('Title must contain only alphabets and spaces');
+        }
+
+        if (meetingData.description) {
+            if (!titleRegex.test(meetingData.description) || !meetingData.description.trim()) {
+                throw new Error('Description must contain only alphabets and spaces');
+            }
+        }
+
         const startTime = new Date(meetingData.startTime);
         const now = new Date();
 
