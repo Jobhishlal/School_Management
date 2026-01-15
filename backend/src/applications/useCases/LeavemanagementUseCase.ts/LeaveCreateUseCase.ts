@@ -80,8 +80,8 @@ export class CreateLeaveUseCase implements ICreateLeaveusecase {
     const leaveEntity = new LeaveManagementEntity(
       "",
       teacherId,
-      undefined, // subAdminId
-      "TEACHER", // applicantRole
+      undefined, 
+      "TEACHER", 
       data.leaveType,
       startDate,
       endDate,

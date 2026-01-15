@@ -1,7 +1,9 @@
 import { MeetingModel, IMeetingDocument } from "../database/mongoDB/models/MeetingModel";
 import { Meeting } from "../../domain/entities/Meeting";
 
-export class MeetingRepository {
+import { IMeetingRepository } from "../../domain/repositories/IMeetingRepository";
+
+export class MeetingRepository implements IMeetingRepository {
 
     async createMeeting(meetingData: Meeting): Promise<IMeetingDocument> {
         try {
@@ -46,8 +48,7 @@ export class MeetingRepository {
 
     async getScheduledMeetings(filters?: any): Promise<IMeetingDocument[]> {
         try {
-            // Filter meetings that haven't ended AND started within the last 2 hours (or in future)
-            // This prevents hiding active meetings immediately after start time, but hides old ones.
+
             const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
             const query: any = {
                 status: { $ne: 'ended' },
@@ -55,11 +56,19 @@ export class MeetingRepository {
             };
 
             if (filters) {
-                if (filters.role === 'teacher') {
-                    // Teachers see 'staff' meetings
+                const role = filters.role;
+
+                if (role === 'teacher') {
+
+                    query.$or = [
+                        { type: 'staff' },
+                        { type: 'class' }
+                    ];
+
                     query.type = 'staff';
-                } else if (filters.role === 'parent') {
-                    // Parents see 'parent' meetings OR 'class' meetings for their class
+
+                } else if (role === 'parent') {
+
                     if (filters.classId) {
                         query.$or = [
                             { type: 'parent' },
@@ -68,16 +77,23 @@ export class MeetingRepository {
                     } else {
                         query.type = 'parent';
                     }
-                } else if (filters.role === 'student') {
-                    // Students see 'class' meetings for their class
+                } else if (role === 'student' || role === 'students') {
+
                     if (filters.classId) {
                         query.type = 'class';
                         query.classId = filters.classId;
                     } else {
-                        return []; // No class ID, no meetings
+                        return [];
                     }
+                } else if (['admin', 'super_admin', 'sub_admin'].includes(role)) {
+
+                } else {
+
+                    return [];
                 }
-                // Admin sees all (no extra filter needed)
+            } else {
+
+                return [];
             }
 
             return await MeetingModel.find(query).sort({ startTime: 1 });

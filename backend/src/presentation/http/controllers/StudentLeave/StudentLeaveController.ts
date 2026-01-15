@@ -5,6 +5,7 @@ import { IGetClassStudentLeavesUseCase } from "../../../../domain/UseCaseInterfa
 import { IProcessStudentLeaveUseCase } from "../../../../domain/UseCaseInterface/StudentLeave/IProcessStudentLeaveUseCase";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
+import { ValidateLeaveCreate } from "../../../../applications/validators/LeaveValidation/LeaveCreateValidation";
 
 export class StudentLeaveController {
     constructor(
@@ -31,25 +32,10 @@ export class StudentLeaveController {
                 return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Leave type is required" });
             }
 
-            // Reason Validation
-            if (reason.trim().length < 4) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Reason must be at least 4 characters long" });
-            }
-            if (/^\d+$/.test(reason.trim())) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Reason cannot be purely numeric" });
-            }
-
-            // Leave Type Validation (should not be purely numeric)
-            if (/^\d+$/.test(leaveType.trim())) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Leave type cannot be purely numeric" });
-            }
-
-            const start = new Date(startDate);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0); // Reset time to compare dates only
-
-            if (start < today) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Leave cannot be applied for a past date" });
+            try {
+                ValidateLeaveCreate(req.body);
+            } catch (error: any) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: error.message });
             }
 
             const parentId = req.user?.id || req.body.parentId;

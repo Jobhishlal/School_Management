@@ -33,7 +33,7 @@ cron.schedule("0 0 1 * *", async () => {
         pending: item.amount,
         frequency: "MONTHLY",
         isOptional: item.isOptional,
-        period: `${new Date().getFullYear()}-${new Date().getMonth() + 1}` // November-2025
+        period: `${new Date().getFullYear()}-${new Date().getMonth() + 1}` 
       }));
 
       await StudentFeeModel.create({

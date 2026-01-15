@@ -90,10 +90,10 @@ const VideoMeeting: React.FC = () => {
     const userVideo = useRef<HTMLVideoElement>(null);
     const peersRef = useRef<PeerData[]>([]);
 
-    // Refs for optimization
+   
     const streamRef = useRef<MediaStream | null>(null);
     const userProfileRef = useRef<{ name: string; image?: string } | null>(null);
-    // Refs for state accessible inside socket listeners
+  
     const showChatRef = useRef(showChat);
     const messageIdsRef = useRef(new Set<string>());
 
@@ -138,7 +138,7 @@ const VideoMeeting: React.FC = () => {
                     setMeeting(res.data);
 
                 } else {
-                    console.log("why this show undeinfed", res.message)
+                   
                     setError(res.message || 'Unauthorized');
                 }
             } catch (err: any) {
@@ -201,7 +201,7 @@ const VideoMeeting: React.FC = () => {
             } catch (err) {
                 console.error("Error fetching user profile:", err);
 
-                let fallbackName = roleToUse || 'User';
+                let fallbackName = roleToUse || 'User';    
                 try {
                     const token = localStorage.getItem('adminAccessToken') || localStorage.getItem('teacherAccessToken') || localStorage.getItem('accessToken');
                     if (token) {
@@ -296,18 +296,16 @@ const VideoMeeting: React.FC = () => {
                         showToast(`${userData?.name || 'A user'} joined the meeting`, 'success', 3000, `join-${newUserId}`);
                     }
 
-                    // Ignore self-connection (ghost from another tab/session)
                     if (newUserId === userId) return;
 
-                    // Deduplication: Remove existing peer with the same userId (e.g., stale connection)
-                    // Note: We access peersRef.current to get the latest state
+                  
                     const existingPeerIndex = peersRef.current.findIndex(p => p.userId === newUserId);
                     if (existingPeerIndex !== -1) {
                         console.warn("Replacing existing peer for user:", newUserId);
                         peersRef.current[existingPeerIndex].peer.destroy();
                         peersRef.current.splice(existingPeerIndex, 1);
 
-                        // Update state to remove old peer immediately (optional, but good for UI consistency)
+                     
                         setPeers(prev => prev.filter(p => p.userId !== newUserId));
                     }
 
@@ -327,7 +325,7 @@ const VideoMeeting: React.FC = () => {
                     if (item) {
                         item.peer.signal(signal);
                     } else {
-                        // Incoming call (likely from Admin if I am Viewer)
+                        
                         const peer = addPeer(signal, from, currentStream);
                         peersRef.current.push({
                             peerId: from,
@@ -356,7 +354,7 @@ const VideoMeeting: React.FC = () => {
                 });
 
                 socketRef.current.on('chat-message', (data: any) => {
-                    // Check global deduplication ref first
+                 
                     if (data.id && messageIdsRef.current.has(data.id)) {
                         console.warn("Duplicate message blocked by Ref check:", data.id);
                         return;
@@ -369,7 +367,7 @@ const VideoMeeting: React.FC = () => {
                     console.log("Processing new message:", data.id);
 
                     setMessages(prev => {
-                        // Double check in state just in case (though Ref should catch it)
+                       
                         if (prev.some(msg => msg.id === data.id)) return prev;
 
                         return [...prev, {

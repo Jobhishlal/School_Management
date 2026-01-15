@@ -1,6 +1,9 @@
 import { CreateLeaveDTO } from "../../dto/LeaveManagement/CreateLeaveManagementDTO";
 import { LeaveError } from "../../../domain/enums/LeaveError";
 
+const REASON_REGEX = /^[a-zA-Z\s.,]+$/;
+
+
 export function ValidateLeaveCreate(data: CreateLeaveDTO) {
     if (
         !data.leaveType ||
@@ -27,8 +30,19 @@ export function ValidateLeaveCreate(data: CreateLeaveDTO) {
         throw new Error(LeaveError.INVALID_DATE_RANGE);
     }
 
+    // Check for past date (compare with Today at 00:00:00)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (startDate < today) {
+        throw new Error(LeaveError.PAST_DATE);
+    }
+
     if (!data.reason.trim()) {
         throw new Error(LeaveError.REASON_REQUIRED);
+    }
+
+    if (!REASON_REGEX.test(data.reason)) {
+        throw new Error(LeaveError.INVALID_REASON_FORMAT);
     }
 
     return true;

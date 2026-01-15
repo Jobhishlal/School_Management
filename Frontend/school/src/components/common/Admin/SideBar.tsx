@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../layout/ThemeContext";
+import { getInstituteProfile } from "../../../services/authapi";
 
 type Props = {};
 
@@ -33,6 +34,28 @@ export default function SchoolNavbar({ }: Props) {
   const { isDark, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [instituteDetails, setInstituteDetails] = useState({
+    name: 'BRAINNIX',
+    logo: ''
+  });
+
+  React.useEffect(() => {
+    const fetchInstituteDetails = async () => {
+      try {
+        const res = await getInstituteProfile();
+        if (res?.institute?.length > 0) {
+          const inst = res.institute[0];
+          setInstituteDetails({
+            name: inst.instituteName || 'BRAINNIX',
+            logo: inst.logo?.[0]?.url || ''
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch institute details", error);
+      }
+    };
+    fetchInstituteDetails();
+  }, []);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
@@ -174,10 +197,14 @@ export default function SchoolNavbar({ }: Props) {
           </button>
           <div className="flex items-center space-x-2">
             <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
-              <School className="text-white" size={24} />
+              {instituteDetails.logo ? (
+                <img src={instituteDetails.logo} alt="Logo" className="w-6 h-6 object-cover rounded" />
+              ) : (
+                <School className="text-white" size={24} />
+              )}
             </div>
             <div className="flex flex-col">
-              <span className="text-lg font-bold tracking-tight">BRAINNIX</span>
+              <span className="text-lg font-bold tracking-tight">{instituteDetails.name}</span>
               <span className={`text-xs ${textSecondary} font-medium`}>School Management</span>
             </div>
           </div>
@@ -206,11 +233,15 @@ export default function SchoolNavbar({ }: Props) {
             <div className={`flex items-center space-x-3 p-4 rounded-2xl`}>
               <div className="relative">
                 <div className="p-3">
-                  <School className="text-white" size={24} />
+                  {instituteDetails.logo ? (
+                    <img src={instituteDetails.logo} alt="Logo" className="w-8 h-8 object-cover rounded" />
+                  ) : (
+                    <School className="text-white" size={24} />
+                  )}
                 </div>
               </div>
               <div className="flex flex-col">
-                <span className={`font-bold text-lg tracking-tight ${textPrimary}`}>SCHOOL MANAGEMENT</span>
+                <span className={`font-bold text-lg tracking-tight ${textPrimary}`}>{instituteDetails.name}</span>
               </div>
             </div>
           </div>

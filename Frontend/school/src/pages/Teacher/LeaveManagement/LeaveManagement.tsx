@@ -205,6 +205,7 @@ export const LeaveManagement: React.FC = () => {
 
             value={leaveData.startDate}
             isDark={isDark}
+            min={new Date().toISOString().split('T')[0]}
             onChange={(val) =>
               setLeaveData((prev) => ({ ...prev, startDate: val }))
             }
@@ -215,6 +216,7 @@ export const LeaveManagement: React.FC = () => {
 
             value={leaveData.endDate}
             isDark={isDark}
+            min={leaveData.startDate || new Date().toISOString().split('T')[0]}
             onChange={(val) =>
               setLeaveData((prev) => ({ ...prev, endDate: val }))
             }
@@ -225,9 +227,13 @@ export const LeaveManagement: React.FC = () => {
 
             value={leaveData.reason}
             isDark={isDark}
-            onChange={(val) =>
-              setLeaveData((prev) => ({ ...prev, reason: val }))
-            }
+            onChange={(val) => {
+              if (/^[a-zA-Z\s.,]*$/.test(val)) {
+                setLeaveData((prev) => ({ ...prev, reason: val }));
+              } else {
+                showToast("Only alphabets, dots, and commas are allowed", "error");
+              }
+            }}
           />
         </FormLayout>
       </Modal>

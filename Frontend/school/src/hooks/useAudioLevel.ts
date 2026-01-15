@@ -39,11 +39,10 @@ export const useAudioLevel = (stream: MediaStream | null) => {
                     if (!analyserRef.current) return;
                     analyserRef.current.getByteFrequencyData(dataArray);
 
-                    // improved monitoring logic
+                
                     const volume = dataArray.reduce((src, a) => src + a, 0) / dataArray.length;
 
-                    // Threshold of 15 seems to work well for general speech detection
-                    // We can also add a small delay to turn off to avoid flickering
+       
                     setIsSpeaking(volume > 15);
 
                     animationFrameRef.current = requestAnimationFrame(checkAudio);
@@ -61,11 +60,7 @@ export const useAudioLevel = (stream: MediaStream | null) => {
             if (animationFrameRef.current) {
                 cancelAnimationFrame(animationFrameRef.current);
             }
-            // Ideally we don't close the context if we want to reuse it, but for clean up per component:
-            // if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
-            //     audioContextRef.current.close().catch(() => { });
-            // }
-            // Actually, keep context alive or managing it globally is better, but per hook is safer for cleanup
+       
             if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
                 audioContextRef.current.close().catch(() => { });
                 audioContextRef.current = null;

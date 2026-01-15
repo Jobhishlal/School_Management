@@ -33,7 +33,7 @@ export class LeaveManagementMongoRepo implements InterfaceLeaveManagement {
         return toLeaveManagementEntity(doc)
     }
     async findOverlappingLeave(teacherId: string, startDate: Date, endDate: Date): Promise<LeaveManagementEntity | null> {
-        // TODO: Update to support SubAdmin overlap check if needed
+
         const doc = await LeaveManagementModel.findOne({
             teacherId: new Types.ObjectId(teacherId),
             status: { $in: ["PENDING", "APPROVED"] },

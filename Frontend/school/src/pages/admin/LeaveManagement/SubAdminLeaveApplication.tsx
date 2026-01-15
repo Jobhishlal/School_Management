@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FormLayout } from "../../../components/Form/FormLayout";
 import { TextInput } from "../../../components/Form/TextInput";
 import { SelectInput } from "../../../components/Form/SelectInput";
-import { Pagination } from "../../../components/common/Pagination"; 
+import { Pagination } from "../../../components/common/Pagination";
 import { CreateLeaveRequestSubAdmin, GetSubAdminLeavesRequest, getAdminProfile } from "../../../services/authapi";
 import { showToast } from "../../../utils/toast";
 import type { LeaveRequestEntity } from "../../../types/LeaveRequest/CreateLeaveRequest";
@@ -33,7 +33,7 @@ export const SubAdminLeaveApplication: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
 
-   
+
     const totalPages = Math.ceil(leaves.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentLeaves = leaves.slice(startIndex, startIndex + itemsPerPage);
@@ -50,11 +50,11 @@ export const SubAdminLeaveApplication: React.FC = () => {
             ]);
             setLeaves(leavesData || []);
 
-         
+
             if (profileData && profileData.profile && profileData.profile.leaveBalance) {
                 setLeaveBalance(profileData.profile.leaveBalance);
             } else if (profileData && profileData.data && profileData.data.leaveBalance) {
-              
+
                 setLeaveBalance(profileData.data.leaveBalance);
             } else if (profileData && profileData.leaveBalance) {
                 setLeaveBalance(profileData.leaveBalance);
@@ -184,6 +184,7 @@ export const SubAdminLeaveApplication: React.FC = () => {
 
                         value={leaveData.startDate}
                         isDark={isDark}
+                        min={new Date().toISOString().split('T')[0]}
                         onChange={(val) =>
                             setLeaveData((prev) => ({ ...prev, startDate: val }))
                         }
@@ -194,6 +195,7 @@ export const SubAdminLeaveApplication: React.FC = () => {
 
                         value={leaveData.endDate}
                         isDark={isDark}
+                        min={leaveData.startDate || new Date().toISOString().split('T')[0]}
                         onChange={(val) =>
                             setLeaveData((prev) => ({ ...prev, endDate: val }))
                         }
@@ -204,9 +206,13 @@ export const SubAdminLeaveApplication: React.FC = () => {
 
                         value={leaveData.reason}
                         isDark={isDark}
-                        onChange={(val) =>
-                            setLeaveData((prev) => ({ ...prev, reason: val }))
-                        }
+                        onChange={(val) => {
+                            if (/^[a-zA-Z\s.,]*$/.test(val)) {
+                                setLeaveData((prev) => ({ ...prev, reason: val }));
+                            } else {
+                                showToast("Only alphabets, dots, and commas are allowed", "error");
+                            }
+                        }}
                     />
                 </FormLayout>
             </Modal>

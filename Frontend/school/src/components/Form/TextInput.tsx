@@ -9,6 +9,7 @@ interface TextInputProps {
   type?: string;
   className?: string;
   isDark?: boolean;
+  min?: string;
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
@@ -20,6 +21,7 @@ export const TextInput: React.FC<TextInputProps> = ({
   type = "text",
   className = "",
   isDark = false,
+  min,
 }) => (
   <div className="flex flex-col gap-2">
     <label
@@ -33,9 +35,10 @@ export const TextInput: React.FC<TextInputProps> = ({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       required={required}
+      min={min}
       className={`w-full px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm
-        ${isDark 
-          ? "bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400" 
+        ${isDark
+          ? "bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400"
           : "bg-gray-50 border-gray-300 text-gray-800 placeholder-gray-500"
         } 
         ${className}`}

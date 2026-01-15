@@ -9,6 +9,7 @@ import { IUpdateLeaveStatusUseCase } from "../../../../domain/UseCaseInterface/L
 import { LeaveError } from "../../../../domain/enums/LeaveError";
 import { ICreateSubAdminLeaveUseCase } from "../../../../applications/useCases/LeavemanagementUseCase.ts/SubAdminLeaveCreateUseCase";
 import { IGetSubAdminLeavesUseCase } from "../../../../applications/useCases/LeavemanagementUseCase.ts/GetSubAdminLeavesUseCase";
+import { ValidateLeaveCreate } from "../../../../applications/validators/LeaveValidation/LeaveCreateValidation";
 
 
 
@@ -20,7 +21,7 @@ export class LeaveManagementController {
     private readonly _updateLeaveStatus: IUpdateLeaveStatusUseCase,
     private readonly _subAdminLeaveCreate: ICreateSubAdminLeaveUseCase,
     private readonly _getSubAdminLeaves: IGetSubAdminLeavesUseCase
-  ) {}
+  ) { }
 
   async LeaveCreate(req: AuthRequest, res: Response): Promise<void> {
     try {
@@ -74,6 +75,13 @@ export class LeaveManagementController {
 
       const data: CreateLeaveDTO = req.body;
 
+      try {
+        ValidateLeaveCreate(data);
+      } catch (error: any) {
+        res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+        return;
+      }
+
 
       const leave = await this._subAdminLeaveCreate.execute(subAdminId, data);
 
@@ -88,7 +96,7 @@ export class LeaveManagementController {
         res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
         return;
       }
-      console.log(error,"error")
+      console.log(error, "error")
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
     }
   }
@@ -138,6 +146,11 @@ export class LeaveManagementController {
 
       if (!adminId) {
         res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized access" });
+        return;
+      }
+
+      if (adminRemark && !/^[a-zA-Z\s.,]+$/.test(adminRemark)) {
+        res.status(StatusCodes.BAD_REQUEST).json({ message: "Remark must contain only alphabets, dots, and commas" });
         return;
       }
 

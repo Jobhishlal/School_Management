@@ -1,12 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
-import { IMeetingUseCase } from '../../../../domain/UseCaseInterface/IMeetingUseCase';
+import { ICreateMeetingUseCase } from '../../../../domain/UseCaseInterface/Meeting/ICreateMeetingUseCase';
+import { IGetScheduledMeetingsUseCase } from '../../../../domain/UseCaseInterface/Meeting/IGetScheduledMeetingsUseCase';
+import { IValidateMeetingJoinUseCase } from '../../../../domain/UseCaseInterface/Meeting/IValidateMeetingJoinUseCase';
 import { StatusCodes } from '../../../../shared/constants/statusCodes';
 
 export class MeetingController {
-    private meetingUseCase: IMeetingUseCase;
+    private createMeetingUseCase: ICreateMeetingUseCase;
+    private getScheduledMeetingsUseCase: IGetScheduledMeetingsUseCase;
+    private validateMeetingJoinUseCase: IValidateMeetingJoinUseCase;
 
-    constructor(meetingUseCase: IMeetingUseCase) {
-        this.meetingUseCase = meetingUseCase;
+    constructor(
+        createMeetingUseCase: ICreateMeetingUseCase,
+        getScheduledMeetingsUseCase: IGetScheduledMeetingsUseCase,
+        validateMeetingJoinUseCase: IValidateMeetingJoinUseCase
+    ) {
+        this.createMeetingUseCase = createMeetingUseCase;
+        this.getScheduledMeetingsUseCase = getScheduledMeetingsUseCase;
+        this.validateMeetingJoinUseCase = validateMeetingJoinUseCase;
     }
 
     createMeeting = async (req: Request, res: Response, next: NextFunction) => {
@@ -19,7 +29,7 @@ export class MeetingController {
                 meetingData.createdBy = user.id;
             }
 
-            const newMeeting = await this.meetingUseCase.createMeeting(meetingData);
+            const newMeeting = await this.createMeetingUseCase.execute(meetingData);
 
             console.log("meeting data", newMeeting)
             res.status(StatusCodes.CREATED).json({ success: true, data: newMeeting });
@@ -40,11 +50,11 @@ export class MeetingController {
             let classId = undefined;
 
             if (user) {
-                role = user.role;
+                role = (user.role || 'admin').toLowerCase();
                 classId = user.studentClassId || user.classId;
             }
 
-            const meetings = await this.meetingUseCase.getScheduledMeetings(role, classId);
+            const meetings = await this.getScheduledMeetingsUseCase.execute(role, classId);
             res.status(200).json({ success: true, data: meetings });
         } catch (error) {
             console.log("error", error)
@@ -68,7 +78,7 @@ export class MeetingController {
             let userClassId = user.studentClassId || user.classId;
 
 
-            const result = await this.meetingUseCase.validateJoin(
+            const result = await this.validateMeetingJoinUseCase.execute(
                 link,
                 user.id,
                 userRole,

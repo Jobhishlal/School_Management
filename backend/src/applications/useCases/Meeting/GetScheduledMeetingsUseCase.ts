@@ -1,0 +1,11 @@
+import { IMeetingRepository } from "../../../domain/repositories/IMeetingRepository";
+import { IGetScheduledMeetingsUseCase } from "../../../domain/UseCaseInterface/Meeting/IGetScheduledMeetingsUseCase";
+import { Meeting } from "../../../domain/entities/Meeting";
+
+export class GetScheduledMeetingsUseCase implements IGetScheduledMeetingsUseCase {
+    constructor(private readonly meetingRepository: IMeetingRepository) { }
+
+    async execute(role?: string, classId?: string): Promise<Meeting[]> {
+        return await this.meetingRepository.getScheduledMeetings({ role, classId });
+    }
+}

@@ -10,7 +10,7 @@ export const AdminLeaveRequest: React.FC = () => {
     const { isDark } = useTheme();
     const [leaves, setLeaves] = useState<LeaveRequestEntity[]>([]);
 
-   
+
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
 
@@ -21,6 +21,8 @@ export const AdminLeaveRequest: React.FC = () => {
 
     const [loading, setLoading] = useState(false);
     const [selectedLeave, setSelectedLeave] = useState<LeaveRequestEntity | null>(null);
+    const [actionModal, setActionModal] = useState<{ isOpen: boolean; type: "APPROVED" | "REJECTED" | null; leaveId: string | null }>({ isOpen: false, type: null, leaveId: null });
+    const [remark, setRemark] = useState("");
 
 
     const fetchLeaves = async () => {
@@ -40,30 +42,41 @@ export const AdminLeaveRequest: React.FC = () => {
         fetchLeaves();
     }, []);
 
-    const handleAction = async (leaveId: string, status: "APPROVED" | "REJECTED", e?: React.MouseEvent) => {
+    const handleAction = (leaveId: string, status: "APPROVED" | "REJECTED", e?: React.MouseEvent) => {
         if (e) e.stopPropagation();
+        setActionModal({ isOpen: true, type: status, leaveId });
+        setRemark("");
+    };
 
-        let remark = "";
-        if (status === "REJECTED") {
-            const input = prompt("Enter remark for rejection:");
-            if (input === null) return;
-            remark = input;
-        } else {
+    const confirmAction = async () => {
+        if (!actionModal.leaveId || !actionModal.type) return;
 
-            const input = prompt("Enter remark (optional):");
-            if (input !== null) remark = input;
+        if (!remark.trim()) {
+            showToast("Remark is required", "error");
+            return;
+        }
+
+        if (!/^[a-zA-Z\s.,]+$/.test(remark)) {
+            showToast("Remark must contain only alphabets, dots, and commas", "error");
+            return;
         }
 
         try {
-            await UpdateLeaveStatus(leaveId, status, remark);
-            showToast(`Leave ${status.toLowerCase()} successfully`, "success");
+            await UpdateLeaveStatus(actionModal.leaveId, actionModal.type, remark);
+            showToast(`Leave ${actionModal.type.toLowerCase()} successfully`, "success");
             fetchLeaves();
-            if (selectedLeave?.id === leaveId) {
+            if (selectedLeave?.id === actionModal.leaveId) {
                 setSelectedLeave(null);
             }
+            closeActionModal();
         } catch (error: any) {
             showToast(error?.response?.data?.message || "Action failed", "error");
         }
+    };
+
+    const closeActionModal = () => {
+        setActionModal({ isOpen: false, type: null, leaveId: null });
+        setRemark("");
     };
 
     const openModal = (leave: LeaveRequestEntity) => {
@@ -184,7 +197,7 @@ export const AdminLeaveRequest: React.FC = () => {
                     </table>
                 </div>
 
-             
+
                 <div className={`p-4 border-t ${isDark ? "border-gray-700" : "border-gray-200"}`}>
                     <Pagination
                         currentPage={currentPage}
@@ -280,6 +293,44 @@ export const AdminLeaveRequest: React.FC = () => {
                         )}
                     </div>
                 )}
+            </Modal>
+            <Modal
+                isOpen={actionModal.isOpen}
+                onClose={closeActionModal}
+                title={`Confirm ${actionModal.type === 'APPROVED' ? 'Approval' : 'Rejection'}`}
+            >
+                <div className="space-y-4">
+                    <p className={`text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                        Please enter a remark for this action.
+                    </p>
+                    <div>
+                        <label className={`block text-xs font-semibold uppercase tracking-wider mb-1 ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                            Remark <span className="text-red-500">*</span>
+                        </label>
+                        <textarea
+                            value={remark}
+                            onChange={(e) => setRemark(e.target.value)}
+                            rows={3}
+                            className={`w-full p-3 rounded-lg border ${isDark ? "bg-[#161b22] border-gray-700 text-white" : "bg-white border-gray-300 text-gray-900"} focus:ring-2 focus:ring-indigo-500 outline-none transition-colors`}
+                            placeholder="Enter your remark here..."
+                        />
+                        <p className="text-xs text-gray-400 mt-1">Allowed characters: Alphabets, dots, commas.</p>
+                    </div>
+                    <div className="flex justify-end gap-3 pt-2">
+                        <button
+                            onClick={closeActionModal}
+                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${isDark ? "text-gray-300 hover:bg-gray-800" : "text-gray-600 hover:bg-gray-100"}`}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={confirmAction}
+                            className={`px-4 py-2 text-sm font-medium text-white rounded-lg shadow-sm transition-colors ${actionModal.type === 'APPROVED' ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"}`}
+                        >
+                            Confirm {actionModal.type === 'APPROVED' ? 'Approval' : 'Rejection'}
+                        </button>
+                    </div>
+                </div>
             </Modal>
         </div>
     );

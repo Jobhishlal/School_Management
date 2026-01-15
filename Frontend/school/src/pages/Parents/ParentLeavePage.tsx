@@ -133,7 +133,7 @@ const ParentLeavePage: React.FC = () => {
         <div className={`min-h-screen ${pageBg} p-6 transition-colors duration-200`}>
             <div className="max-w-7xl mx-auto space-y-6">
 
-             
+
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h1 className={`text-2xl font-bold ${textPrimary}`}>Student Leave Management</h1>
@@ -148,7 +148,7 @@ const ParentLeavePage: React.FC = () => {
                     </button>
                 </div>
 
-               
+
                 <div className={`${cardBg} rounded-xl shadow-sm border ${borderColor} overflow-hidden`}>
                     <div className={`p-6 border-b ${borderColor}`}>
                         <h2 className={`text-lg font-semibold ${textPrimary}`}>Leave History</h2>
@@ -197,7 +197,7 @@ const ParentLeavePage: React.FC = () => {
 
             </div>
 
-         
+
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
                     <div className={`${cardBg} w-full max-w-lg rounded-2xl shadow-xl border ${borderColor} p-6`}>
@@ -229,8 +229,9 @@ const ParentLeavePage: React.FC = () => {
                                         type="date"
                                         value={startDate}
                                         onChange={(e) => setStartDate(e.target.value)}
+                                        min={new Date().toISOString().split('T')[0]}
                                         className={`w-full p-2 rounded-lg border ${borderColor} ${cardBg} ${textPrimary} focus:ring-2 focus:ring-indigo-500 outline-none`}
-                                        
+
                                     />
                                 </div>
                                 <div>
@@ -239,8 +240,9 @@ const ParentLeavePage: React.FC = () => {
                                         type="date"
                                         value={endDate}
                                         onChange={(e) => setEndDate(e.target.value)}
+                                        min={startDate || new Date().toISOString().split('T')[0]}
                                         className={`w-full p-2 rounded-lg border ${borderColor} ${cardBg} ${textPrimary} focus:ring-2 focus:ring-indigo-500 outline-none`}
-                                        
+
                                     />
                                 </div>
                             </div>
@@ -249,11 +251,18 @@ const ParentLeavePage: React.FC = () => {
                                 <label className={`block text-sm font-medium ${textSecondary} mb-1`}>Reason</label>
                                 <textarea
                                     value={reason}
-                                    onChange={(e) => setReason(e.target.value)}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        if (/^[a-zA-Z\s.,]*$/.test(val)) {
+                                            setReason(val);
+                                        } else {
+                                            toast.error("Only alphabets, dots, and commas are allowed");
+                                        }
+                                    }}
                                     rows={3}
                                     className={`w-full p-2 rounded-lg border ${borderColor} ${cardBg} ${textPrimary} focus:ring-2 focus:ring-indigo-500 outline-none`}
                                     placeholder="Please allow leave for..."
-                                    
+
                                 />
                             </div>
 

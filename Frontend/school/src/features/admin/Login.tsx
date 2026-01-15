@@ -242,7 +242,7 @@ export default function MainAdminLogincheck() {
             </div>
           )}
 
-          {/* Divider */}
+      
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-600"></div>
@@ -252,7 +252,7 @@ export default function MainAdminLogincheck() {
             </div>
           </div>
 
-          {/* Google Login */}
+     
           <button
             type="button"
             onClick={handleGoogleLogin}
@@ -274,6 +274,14 @@ export default function MainAdminLogincheck() {
                 : "Send OTP"}
           </button>
         </form>
+        {loginType === "parent" && (
+          <p className="text-gray-300 mt-4 text-center text-sm">
+            Create New Account?{" "}
+            <a href="/signup" className="text-blue-400 hover:underline font-medium">
+              signup
+            </a>
+          </p>
+        )}
       </div>
     </div>
   );

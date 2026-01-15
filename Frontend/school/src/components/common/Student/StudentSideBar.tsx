@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../layout/ThemeContext";
+import { getInstituteProfile } from "../../../services/authapi";
 
 type Props = { children?: React.ReactNode };
 
@@ -34,6 +35,10 @@ export default function StudentSidebar({ children }: Props) {
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [instituteDetails, setInstituteDetails] = useState({
+    name: 'Student Portal',
+    logo: ''
+  });
 
   // Fetch announcements on mount and calculate unread count
   React.useEffect(() => {
@@ -67,6 +72,24 @@ export default function StudentSidebar({ children }: Props) {
     fetchAnnouncements();
     // Poll every 60 seconds to keep updated
     const interval = setInterval(fetchAnnouncements, 60000);
+
+    // Fetch Institute Profile
+    const fetchInstituteDetails = async () => {
+      try {
+        const res = await getInstituteProfile();
+        if (res?.institute?.length > 0) {
+          const inst = res.institute[0];
+          setInstituteDetails({
+            name: inst.instituteName || 'Student Portal',
+            logo: inst.logo?.[0]?.url || ''
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch institute details", error);
+      }
+    };
+    fetchInstituteDetails();
+
     return () => clearInterval(interval);
   }, []);
 
@@ -162,15 +185,15 @@ export default function StudentSidebar({ children }: Props) {
           <div className="p-6">
             <div className={`flex items-center space-x-3 p-4 rounded-2xl`}>
               <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
-                <School className="text-white" size={24} />
+                {instituteDetails.logo ? (
+                  <img src={instituteDetails.logo} alt="Logo" className="w-8 h-8 object-cover rounded" />
+                ) : (
+                  <School className="text-white" size={24} />
+                )}
               </div>
               <div className="flex flex-col">
-                <span className={`font-bold text-lg tracking-tight ${textPrimary}`}>
-                  Student Portal
-                </span>
-                <span className={`text-xs ${textSecondary} font-medium`}>
-                  School Management
-                </span>
+                <span className={`font-bold text-lg tracking-tight ${textPrimary}`}>{instituteDetails.name}</span>
+                <span className={`text-xs ${textSecondary} font-medium`}>School Management</span>
               </div>
             </div>
           </div>

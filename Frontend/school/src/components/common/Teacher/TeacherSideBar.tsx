@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../layout/ThemeContext";
+import { getInstituteProfile } from "../../../services/authapi";
 
 interface TeacherSidebarProps {
   children?: ReactNode;
@@ -38,8 +39,28 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
+  const [instituteDetails, setInstituteDetails] = useState({
+    name: 'Teacher Portal',
+    logo: ''
+  });
+
   React.useEffect(() => {
     localStorage.setItem("role", "teacher");
+    const fetchInstituteDetails = async () => {
+      try {
+        const res = await getInstituteProfile();
+        if (res?.institute?.length > 0) {
+          const inst = res.institute[0];
+          setInstituteDetails({
+            name: inst.instituteName || 'Teacher Portal',
+            logo: inst.logo?.[0]?.url || ''
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch institute details", error);
+      }
+    };
+    fetchInstituteDetails();
   }, []);
 
   const menuItems = [
@@ -118,17 +139,17 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
         >
           {/* Logo Section */}
           <div className="p-6">
-            <div className="flex items-center space-x-3 p-4 rounded-2xl">
+            <div className={`flex items-center space-x-3 p-4 rounded-2xl`}>
               <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
-                <School className="text-white" size={24} />
+                {instituteDetails.logo ? (
+                  <img src={instituteDetails.logo} alt="Logo" className="w-8 h-8 object-cover rounded" />
+                ) : (
+                  <School className="text-white" size={24} />
+                )}
               </div>
               <div className="flex flex-col">
-                <span className={`font-bold text-lg tracking-tight ${textPrimary}`}>
-                  Teacher Portal
-                </span>
-                <span className={`text-xs ${textSecondary} font-medium`}>
-                  School Management
-                </span>
+                <span className={`font-bold text-lg tracking-tight ${textPrimary}`}>{instituteDetails.name}</span>
+                <span className={`text-xs ${textSecondary} font-medium`}>School Management</span>
               </div>
             </div>
           </div>
