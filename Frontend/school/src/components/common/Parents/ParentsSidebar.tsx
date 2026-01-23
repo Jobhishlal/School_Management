@@ -66,13 +66,12 @@ const ParentSidebar: React.FC<ParentSidebarProps> = ({ children }) => {
     { icon: Calendar, text: "Student Attendance Report", path: "/parent/attendacelist" },
     { icon: FileText, text: "Student Exams Results", path: "/parent/exams" },
     { icon: DollarSign, text: "Student Fees Details", path: "/parent/financelist" },
-    { icon: ClipboardList, text: "Assignment Submit", path: "/parent/assignments" },
+   
     { icon: Bell, text: "Leave Request", path: "/parent/leave" },
     { icon: Video, text: "Meet", path: "/parent/meet" },
     { icon: User, text: "Profile", path: "/parent/profile" },
     { icon: MessageCircle, text: "Complaint Ticket", path: "/parent/complaints" },
-    { icon: Clock, text: "Time Table", path: "/parent/timetable" },
-    { icon: Brain, text: "AI Study Helper", path: "/parent/ai-study-helper" },
+   
   ];
 
   // Theme-based styles

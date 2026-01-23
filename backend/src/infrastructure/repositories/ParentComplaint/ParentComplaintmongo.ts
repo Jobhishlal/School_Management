@@ -27,10 +27,17 @@ export class MongoParentComplaints implements IParentComplaintsRepositroy {
 
     }
 
-    async findByParentId(parentId: string): Promise<ParentComplaints[]> {
-        const complaints = await ParentComplaintsSchema.find({ parentId: new Types.ObjectId(parentId) }).sort({ createdAt: -1 });
+    async findByParentId(parentId: string, page: number, limit: number): Promise<{ complaints: ParentComplaints[], total: number }> {
+        const skip = (page - 1) * limit;
 
-        return complaints.map(c => new ParentComplaints(
+        const total = await ParentComplaintsSchema.countDocuments({ parentId: new Types.ObjectId(parentId) });
+
+        const complaints = await ParentComplaintsSchema.find({ parentId: new Types.ObjectId(parentId) })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const mappedComplaints = complaints.map(c => new ParentComplaints(
             c.parentId.toString(),
             c.concernTitle,
             c.description,
@@ -38,6 +45,8 @@ export class MongoParentComplaints implements IParentComplaintsRepositroy {
             c.ticketStatus as any,
             c.id
         ));
+
+        return { complaints: mappedComplaints, total };
     }
 
     async update(id: string, data: Partial<ParentComplaints>): Promise<ParentComplaints | null> {

@@ -1,15 +1,16 @@
 import { Request, Response } from "express";
-import { CreateParentComplaintUseCase } from "../../../../applications/useCases/Parent/CreateParentComplaintUseCase";
-import { GetParentComplaintsUseCase } from "../../../../applications/useCases/Parent/GetParentComplaintsUseCase";
-import { UpdateParentComplaintUseCase } from "../../../../applications/useCases/Parent/UpdateParentComplaintUseCase";
+import { ICreateParentComplaintUseCase } from "../../../../applications/useCases/Parent/ICreateParentComplaintUseCase";
+import { IGetParentComplaintsUseCase } from "../../../../applications/useCases/Parent/IGetParentComplaintsUseCase";
+import { IUpdateParentComplaintUseCase } from "../../../../applications/useCases/Parent/IUpdateParentComplaintUseCase";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
+import { ValidateComplaint } from "../../../../applications/validators/ParentComplaint/ComplaintValidation";
 
 export class ParentComplaintController {
     constructor(
-        private createParentComplaintUseCase: CreateParentComplaintUseCase,
-        private getParentComplaintsUseCase: GetParentComplaintsUseCase,
-        private updateParentComplaintUseCase: UpdateParentComplaintUseCase
+        private createParentComplaintUseCase: ICreateParentComplaintUseCase,
+        private getParentComplaintsUseCase: IGetParentComplaintsUseCase,
+        private updateParentComplaintUseCase: IUpdateParentComplaintUseCase
     ) { }
 
     async createComplaint(req: Request, res: Response): Promise<void> {
@@ -23,8 +24,10 @@ export class ParentComplaintController {
                 return;
             }
 
-            if (!concernTitle || !description) {
-                res.status(StatusCodes.BAD_REQUEST).json({ message: "All fields are required" });
+            try {
+                ValidateComplaint({ concernTitle, description });
+            } catch (error: any) {
+                res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
                 return;
             }
 
@@ -45,14 +48,16 @@ export class ParentComplaintController {
         try {
             const authReq = req as AuthRequest;
             const parentId = authReq.user?.id;
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 5;
 
             if (!parentId) {
                 res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
                 return;
             }
 
-            const complaints = await this.getParentComplaintsUseCase.execute(parentId);
-            res.status(StatusCodes.OK).json({ complaints });
+            const result = await this.getParentComplaintsUseCase.execute(parentId, page, limit);
+            res.status(StatusCodes.OK).json(result);
         } catch (error) {
             console.error("Error fetching complaints:", error);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
@@ -71,7 +76,12 @@ export class ParentComplaintController {
                 return;
             }
 
-        
+            try {
+                ValidateComplaint({ concernTitle, description });
+            } catch (error: any) {
+                res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+                return;
+            }
 
             const updatedComplaint = await this.updateParentComplaintUseCase.execute(id, {
                 concernTitle,

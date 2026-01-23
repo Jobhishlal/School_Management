@@ -5,7 +5,7 @@ import { IGetParentComplaintsUseCase } from "./IGetParentComplaintsUseCase";
 export class GetParentComplaintsUseCase implements IGetParentComplaintsUseCase {
     constructor(private parentComplaintRepo: IParentComplaintsRepositroy) { }
 
-    async execute(parentId: string): Promise<ParentComplaints[]> {
-        return await this.parentComplaintRepo.findByParentId(parentId);
+    async execute(parentId: string, page: number, limit: number): Promise<{ complaints: ParentComplaints[], total: number }> {
+        return await this.parentComplaintRepo.findByParentId(parentId, page, limit);
     }
 }
