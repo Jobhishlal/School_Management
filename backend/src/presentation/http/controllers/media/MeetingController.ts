@@ -57,7 +57,7 @@ export class MeetingController {
             }
 
             const meetings = await this.getScheduledMeetingsUseCase.execute(role, classId);
-            res.status(200).json({ success: true, data: meetings });
+            res.status(StatusCodes.OK).json({ success: true, data: meetings });
         } catch (error) {
             console.log("error", error)
 

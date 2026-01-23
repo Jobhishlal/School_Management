@@ -61,6 +61,7 @@ import ParentLeavePage from "./pages/Parents/ParentLeavePage";
 import TeacherStudentLeavePage from "./pages/Teacher/LeaveManagement/TeacherStudentLeavePage";
 import CreateMeeting from "./pages/admin/VideoConference/CreateMeeting";
 import VideoMeeting from "./pages/common/VideoMeeting";
+import ParentComplaints from "./pages/Parents/ParentComplaints";
 
 import PublicRoute from "./components/layout/PublicRoute";
 
@@ -129,6 +130,8 @@ function App() {
           <Route path="/teacher/student-leave" element={<TeacherStudentLeavePage />} />
         </Route>
 
+
+
         {/* --------------------PARENT ROUTES ------------------- */}
         <Route element={<ThemeProvider><PrivateRoute><ParentLayout /></PrivateRoute></ThemeProvider>}>
           <Route path="/parent/dashboard" element={<ParentDashboard />} />
@@ -137,6 +140,7 @@ function App() {
           <Route path="/parent/exams" element={<ParentExamResults />} />
           <Route path="/parent/profile" element={<ParentProfile />} />
           <Route path="/parent/leave" element={<ParentLeavePage />} />
+          <Route path="/parent/complaints" element={<ParentComplaints />} />
         </Route>
 
       </Routes>

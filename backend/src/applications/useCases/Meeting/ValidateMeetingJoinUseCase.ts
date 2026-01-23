@@ -42,7 +42,7 @@ export class ValidateMeetingJoinUseCase implements IValidateMeetingJoinUseCase {
             return { authorized: false, message: 'Meeting has ended' };
         }
 
-        // Allow super_admin and sub_admin as valid admins
+     
         if (role === 'admin' || role === 'super_admin' || role === 'sub_admin') {
             console.log('User is admin/super_admin/sub_admin - Authorized');
             return { authorized: true, meeting };

@@ -21,6 +21,8 @@ const meetingController = new MeetingController(
     validateMeetingJoinUseCase
 );
 
+
+
 MeetingRouter.use(authMiddleware);
 
 MeetingRouter.post('/create', meetingController.createMeeting);

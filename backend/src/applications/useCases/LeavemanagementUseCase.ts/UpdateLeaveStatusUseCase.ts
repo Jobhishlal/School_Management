@@ -117,10 +117,7 @@ export class UpdateLeaveStatusUseCase implements IUpdateLeaveStatusUseCase {
 
                         console.log("New Balance:", subAdmin.leaveBalance);
 
-                        // SubAdminRepo update method might need to expose leaveBalance update
-                        // The existing update method takes Partial<SubAdminEntities>, so it should work.
-                        // But we need to ensure leaveBalance is part of the update payload structure supported by repository.
-                        // SubAdminEntities has leaveBalance now.
+                     
 
                         const updateResult = await this.subAdminRepo.update(subAdmin._id, {
                             leaveBalance: subAdmin.leaveBalance

@@ -12,7 +12,7 @@ import { GetParentPaymentHistory } from "../../applications/useCases/Payment/Get
 import { GetPaymentHistory } from "../../applications/useCases/Payment/GetPaymentHistory";
 import { DownLoadInvoice } from "../../applications/useCases/Payment/InvoiceSetUP";
 import { ParentAttendanceListController } from "../http/controllers/ParentController.ts/ParentAttendanceListController";
-import { ParentAttendanceListUseCase } from "../../applications/useCases/Attendance/AttendanceListParentUseCase"; 4
+import { ParentAttendanceListUseCase } from "../../applications/useCases/Attendance/AttendanceListParentUseCase";
 import { AttendanceMongoRepository } from "../../infrastructure/repositories/Attendance/AttendanceMongoRepo";
 import { authMiddleware } from "../../infrastructure/middleware/AuthMiddleWare";
 import { AuthRequest } from "../../infrastructure/types/AuthRequest";
@@ -28,6 +28,11 @@ import { GetClassStudentLeavesUseCase } from "../../applications/useCases/Studen
 import { ProcessStudentLeaveUseCase } from "../../applications/useCases/StudentLeave/ProcessStudentLeaveUseCase";
 import { StudentLeaveController } from "../http/controllers/StudentLeave/StudentLeaveController";
 import { MongoParentSignUp } from "../../infrastructure/repositories/MongoSignupParents";
+import { ParentComplaintController } from "../http/controllers/ParentController.ts/ParentComplaintController";
+import { CreateParentComplaintUseCase } from "../../applications/useCases/Parent/CreateParentComplaintUseCase";
+import { MongoParentComplaints } from "../../infrastructure/repositories/ParentComplaint/ParentComplaintmongo";
+import { GetParentComplaintsUseCase } from "../../applications/useCases/Parent/GetParentComplaintsUseCase";
+import { UpdateParentComplaintUseCase } from "../../applications/useCases/Parent/UpdateParentComplaintUseCase";
 
 
 const ParentRouter = Router()
@@ -66,7 +71,12 @@ const getClassLeavesUC = new GetClassStudentLeavesUseCase(studentLeaveRepo);
 const processLeaveUC = new ProcessStudentLeaveUseCase(studentLeaveRepo, parentAuthRepo);
 const studentLeaveController = new StudentLeaveController(applyLeaveUC, getHistoryUC, getClassLeavesUC, processLeaveUC);
 
-
+// Parent Complaint Dependencies
+const parentComplaintRepo = new MongoParentComplaints();
+const createParentComplaintUseCase = new CreateParentComplaintUseCase(parentComplaintRepo);
+const getParentComplaintsUseCase = new GetParentComplaintsUseCase(parentComplaintRepo);
+const updateParentComplaintUseCase = new UpdateParentComplaintUseCase(parentComplaintRepo);
+const parentComplaintController = new ParentComplaintController(createParentComplaintUseCase, getParentComplaintsUseCase, updateParentComplaintUseCase);
 
 
 
@@ -109,9 +119,21 @@ ParentRouter.get("/leave/student/:studentId",
     (req, res) => studentLeaveController.getStudentLeaves(req, res)
 )
 
+// Parent Complaint Routes
+ParentRouter.post("/complaint/create",
+    authMiddleware,
+    (req, res) => parentComplaintController.createComplaint(req, res)
+)
 
+ParentRouter.get("/complaints/my",
+    authMiddleware,
+    (req, res) => parentComplaintController.getComplaints(req, res)
+)
 
-
+ParentRouter.put("/complaint/update/:id",
+    authMiddleware,
+    (req, res) => parentComplaintController.updateComplaint(req, res)
+)
 
 
 export default ParentRouter

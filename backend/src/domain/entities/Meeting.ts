@@ -6,8 +6,8 @@ export interface Meeting {
     description?: string;
     link: string;
     type: 'staff' | 'parent' | 'class' | 'PTA' | 'pta';
-    classId?: string | ObjectId; // Optional, only for 'class' type
-    className?: string; // Optional, for display purposes
+    classId?: string | ObjectId; 
+    className?: string;
     createdBy: string | ObjectId;
     startTime: Date;
     status: 'scheduled' | 'live' | 'ended';

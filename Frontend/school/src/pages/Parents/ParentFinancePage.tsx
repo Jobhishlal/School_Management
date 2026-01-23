@@ -144,6 +144,17 @@ export default function FinanceParentList() {
 
   const getStatusInfo = (item: any) => {
     if (item.status === "PAID") {
+      if (item.hasPenalty) {
+        return {
+          label: "PAID WITH PENALTY",
+          color: "bg-orange-900 text-orange-300",
+          icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          )
+        };
+      }
       return {
         label: "PAID",
         color: "bg-green-900 text-green-300",
@@ -481,7 +492,7 @@ export default function FinanceParentList() {
                                 </div>
                               </td>
                               <td className="py-4 px-4">
-                                {statusInfo.label === "PAID" ? (
+                                {item.status === "PAID" ? (
                                   <button
                                     onClick={() => handleViewInvoice(item)}
                                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2 ${buttonPrimary}`}

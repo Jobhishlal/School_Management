@@ -14,9 +14,9 @@ export class AnnouncementUseCase implements IAnnoucementUseCase {
      async execute(data: CreateAnnouncementDTO): Promise<Announcement> {
          ValidateAnnouncementCreate(data)
        const announcement = new Announcement(
-  undefined,            
-  data.title,            
-  data.content,         
+       undefined,            
+       data.title,            
+      data.content,         
   data.scope,            
   data.classes ?? [],    
   data.division ?? null, 
