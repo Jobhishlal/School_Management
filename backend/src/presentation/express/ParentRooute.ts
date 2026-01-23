@@ -136,4 +136,27 @@ ParentRouter.put("/complaint/update/:id",
 )
 
 
+// Dashboard Stats Dependencies
+// Dashboard Stats Dependencies
+import { GetParentDashboardStatsUseCase } from "../../applications/useCases/Parent/GetParentDashboardStatsUseCase";
+import { ParentDashboardController } from "../http/controllers/ParentController.ts/ParentDashboardController";
+import { MongoStudentRepo } from "../../infrastructure/repositories/MongoStudentRepo";
+import { ExamMarkMongoRepository } from "../../infrastructure/repositories/ExamRepo/ExamMarkMongoRepo";
+const studentRepo = new MongoStudentRepo();
+const examRepo = new ExamMarkMongoRepository();
+
+const getParentDashboardStatsUseCase = new GetParentDashboardStatsUseCase(
+    studentRepo,
+    attendancerepo,
+    examRepo,
+    parentAuthRepo
+);
+
+const parentDashboardController = new ParentDashboardController(getParentDashboardStatsUseCase);
+
+ParentRouter.get("/dashboard/stats",
+    authMiddleware,
+    (req, res) => parentDashboardController.getDashboardStats(req, res)
+);
+
 export default ParentRouter
