@@ -1,5 +1,5 @@
-import { IAIService } from "../../domain/repositories/AI/IAIService";
-import { IYouTubeService, IYouTubeVideo } from "../../domain/repositories/AI/IYouTubeService";
+import { IAIService } from "../../../domain/repositories/AI/IAIService";
+import { IYouTubeService, IYouTubeVideo } from "../../../domain/repositories/AI/IYouTubeService";
 
 interface AIResponse {
     answer: string;
@@ -17,12 +17,20 @@ export class AskAIDoubtUseCase {
             throw new Error("Question is required");
         }
 
-        // Run both requests in parallel for better performance
-        const [answer, videos] = await Promise.all([
-            this.aiService.getAnswer(question),
-            this.youtubeService.searchVideos(question)
-        ]);
+        console.log(`AskAIDoubtUseCase: Processing question: "${question}"`);
 
-        return { answer, videos };
+        // Run both requests in parallel for better performance
+        try {
+            const [answer, videos] = await Promise.all([
+                this.aiService.getAnswer(question),
+                this.youtubeService.searchVideos(question)
+            ]);
+
+            console.log("AskAIDoubtUseCase: Completed. Videos found:", videos.length);
+            return { answer, videos };
+        } catch (error) {
+            console.error("AskAIDoubtUseCase: Error during execution", error);
+            throw error;
+        }
     }
 }

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Youtube, Loader2 } from 'lucide-react';
-import { useTheme } from '../../components/layout/ThemeContext';
-import { askAIDoubt } from '../../services/studentAIService';
+import { useTheme } from '../../../components/layout/ThemeContext';
+import { askAIDoubt } from '../../../services/studentAIService';
 import { toast } from 'react-toastify';
 
 interface Video {

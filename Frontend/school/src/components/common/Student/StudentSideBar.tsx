@@ -18,6 +18,7 @@ import {
   Menu,
   LogOut,
   School,
+  Bot
 } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../layout/ThemeContext";
@@ -120,7 +121,7 @@ export default function StudentSidebar({ children }: Props) {
     { icon: CreditCard, text: "Fees", path: "/student/fees" },
     { icon: MessageCircle, text: "Notices / Messages", path: "/student/notices" },
     { icon: Users, text: "Meet", path: "/student/meet" },
-    { icon: GraduationCap, text: "AI Study Helper", path: "/student/ai-helper" },
+    { icon: GraduationCap, text: "AI Study Helper", path:'/student/ai-assistant' },
   ];
 
 

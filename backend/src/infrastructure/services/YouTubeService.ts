@@ -6,10 +6,14 @@ export class YouTubeService implements IYouTubeService {
     private baseUrl = "https://www.googleapis.com/youtube/v3/search";
 
     constructor() {
+        if (!process.env.YOUTUBE_API_KEY) {
+            console.warn("YOUTUBE_API_KEY is not set. Video results will be empty.");
+        }
         this.apiKey = process.env.YOUTUBE_API_KEY || "";
     }
 
     async searchVideos(query: string): Promise<IYouTubeVideo[]> {
+        console.log(`YouTubeService: Searching for "${query}"`);
         try {
             const response = await axios.get(this.baseUrl, {
                 params: {
