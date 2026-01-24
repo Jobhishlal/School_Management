@@ -148,6 +148,7 @@ export default function SchoolNavbar({ }: Props) {
           ? [{ icon: FileText, text: "My Leave", path: "/subadmin-leave-application" }]
           : []),
         { icon: Calendar, text: "Time Table", path: "/timetable-management" },
+        { icon: AlertCircle, text: "Complaints", path: "/complaints" },
         { icon: Video, text: "Video Conference", path: "/create-meeting" },
       ],
     },

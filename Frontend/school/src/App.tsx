@@ -63,6 +63,8 @@ import CreateMeeting from "./pages/admin/VideoConference/CreateMeeting";
 import VideoMeeting from "./pages/common/VideoMeeting";
 import ParentComplaints from "./pages/Parents/ParentComplaints";
 import { MeetingList } from "./pages/common/MeetingList";
+import ComplaintList from "./pages/admin/Complaint/ComplaintList";
+import StudentAIAssistant from "./pages/Student/AIAssistant/StudentAIAssistant";
 
 import PublicRoute from "./components/layout/PublicRoute";
 
@@ -104,6 +106,7 @@ function App() {
           <Route path='/subadmin-leave-application' element={<PrivateRoute><SubAdminLeaveApplication /></PrivateRoute>} />
           <Route path='/create-meeting' element={<PrivateRoute><CreateMeeting /></PrivateRoute>} />
           <Route path='/meeting/:meetingLink' element={<PrivateRoute><VideoMeeting /></PrivateRoute>} />
+          <Route path='/complaints' element={<PrivateRoute><ComplaintList /></PrivateRoute>} />
         </Route>
 
         {/* ---------------- STUDENT ROUTES ---------------- */}
@@ -115,6 +118,7 @@ function App() {
           <Route path='/student/exam-list' element={<StudentExamResultsPage />} />
           <Route path='/student/attendance-view' element={<StudentAttendanceView />} />
           <Route path='/student/notices' element={<StudentAnnouncementView />} />
+          <Route path='/student/ai-assistant' element={<StudentAIAssistant />} />
         </Route>
 
         {/* ---------------- TEACHER ROUTES ---------------- */}

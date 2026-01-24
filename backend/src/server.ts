@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import { connectDB } from "./infrastructure/config/mongo";
 import adminRoutes from "./presentation/express/AdminRoutes";
+import adminComplaintRoutes from "./presentation/express/AdminComplaintRoutes";
 import AuthRouter from './presentation/express/AuthRoutes';
 import passport from "./infrastructure/security/googleStrategy";
 import MainRouter from './presentation/express/MainAdminRoute';
@@ -11,6 +12,7 @@ import Teacherrouter from './presentation/express/TeacherRoutes';
 import ParentRouter from './presentation/express/ParentRooute';
 import Leaverouter from './presentation/express/LeaveRoutes';
 import MeetingRouter from './presentation/express/MeetingRoutes';
+import studentAIRouter from './presentation/express/StudentAIRoutes';
 import cors from 'cors'
 import { startFeeExpiryCron } from './infrastructure/cron/FeeExpiryCron';
 import http from 'http';
@@ -34,6 +36,8 @@ app.use('/teacher', Teacherrouter);
 app.use('/teacher', Leaverouter);
 app.use('/parents', ParentRouter);
 app.use('/meeting', MeetingRouter);
+app.use('/student/ai', studentAIRouter);
+app.use('/admin', adminComplaintRoutes);
 
 
 export const httpServer = http.createServer(app);

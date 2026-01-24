@@ -7,7 +7,9 @@ export class ParentComplaints {
         public description: string,
         public concernDate: Date = new Date(),
         public ticketStatus: TicketStatus = 'Pending',
-        public id?: string
+        public id?: string,
+        public adminFeedback?: string,
+        public studentName?: string
     ) { }
 
     markAsSolved() {

@@ -22,7 +22,8 @@ export class MongoParentComplaints implements IParentComplaintsRepositroy {
             complaints.description,
             complaints.concernDate,
             complaints.ticketStatus as any,
-            complaints.id
+            complaints.id,
+            complaints.adminFeedback
         );
 
     }
@@ -43,7 +44,8 @@ export class MongoParentComplaints implements IParentComplaintsRepositroy {
             c.description,
             c.concernDate,
             c.ticketStatus as any,
-            c.id
+            c.id,
+            c.adminFeedback
         ));
 
         return { complaints: mappedComplaints, total };
@@ -55,7 +57,8 @@ export class MongoParentComplaints implements IParentComplaintsRepositroy {
             {
                 concernTitle: data.concernTitle,
                 description: data.description,
-                // Add other fields if needed, but usually title and description are editable by parent
+                ticketStatus: data.ticketStatus,
+                adminFeedback: data.adminFeedback
             },
             { new: true }
         );
@@ -68,7 +71,43 @@ export class MongoParentComplaints implements IParentComplaintsRepositroy {
             updated.description,
             updated.concernDate,
             updated.ticketStatus as any,
-            updated.id
+            updated.id,
+            updated.adminFeedback
         );
+    }
+
+
+    async findAll(page: number, limit: number): Promise<{ complaints: ParentComplaints[], total: number }> {
+        const skip = (page - 1) * limit;
+        const total = await ParentComplaintsSchema.countDocuments();
+
+        const complaints = await ParentComplaintsSchema.find()
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .populate({
+                path: 'parentId',
+                populate: {
+                    path: 'student',
+                    model: 'Students',
+                    select: 'fullName'
+                }
+            });
+
+        const mappedComplaints = complaints.map((c: any) => {
+            const studentName = c.parentId?.student?.fullName || "Unknown";
+            return new ParentComplaints(
+                c.parentId?._id?.toString() || c.parentId?.toString(), // Handle both populated and unpopulated cases safely
+                c.concernTitle,
+                c.description,
+                c.concernDate,
+                c.ticketStatus as any,
+                c.id,
+                c.adminFeedback,
+                studentName
+            );
+        });
+
+        return { complaints: mappedComplaints, total };
     }
 }

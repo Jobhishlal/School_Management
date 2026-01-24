@@ -7,6 +7,7 @@ export interface IParentsComplaints extends Document {
   concernDate: Date;
   description: string;
   ticketStatus: 'Pending' | 'Solved';
+  adminFeedback?: string;
 }
 
 const ParentComplaints = new Schema<IParentsComplaints>(
@@ -24,6 +25,7 @@ const ParentComplaints = new Schema<IParentsComplaints>(
       enum: ["Pending", "Solved"],
       default: "Pending",
     },
+    adminFeedback: { type: String, default: "" },
   },
   {
     timestamps: true,

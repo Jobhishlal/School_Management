@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { GetParentDashboardStatsUseCase } from "../../../../applications/useCases/Parent/GetParentDashboardStatsUseCase";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
-import logger from "../../../../shared/constants/Logger";
+
 
 export class ParentDashboardController {
     constructor(private getParentDashboardStatsUseCase: GetParentDashboardStatsUseCase) { }
@@ -18,8 +18,7 @@ export class ParentDashboardController {
             }
 
             const stats = await this.getParentDashboardStatsUseCase.execute(parentId);
-            logger.info(stats)
-            console.log(stats.examStats)
+           
             res.status(StatusCodes.OK).json(stats);
         } catch (error: any) {
             console.error("Error fetching dashboard stats:", error);

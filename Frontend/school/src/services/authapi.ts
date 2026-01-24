@@ -1063,3 +1063,9 @@ export const validateJoinMeeting = async (link: string) => {
   const res = await api.post('/meeting/validate-join', { link });
   return res.data;
 };
+
+
+export const resolveComplaint = async(status:String)=>{
+  const res = await api.put('/admin/:id/resolve',status)
+  return res.data
+}
