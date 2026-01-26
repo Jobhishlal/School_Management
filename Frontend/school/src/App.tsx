@@ -68,6 +68,7 @@ import StudentAIAssistant from "./pages/Student/AIAssistant/StudentAIAssistant";
 
 import PublicRoute from "./components/layout/PublicRoute";
 
+
 function ErrorFallback({ error }: { error: Error }) {
   return <div role="alert">Something went wrong: {error.message}</div>;
 }
@@ -119,6 +120,7 @@ function App() {
           <Route path='/student/attendance-view' element={<StudentAttendanceView />} />
           <Route path='/student/notices' element={<StudentAnnouncementView />} />
           <Route path='/student/ai-assistant' element={<StudentAIAssistant />} />
+           <Route path="/student/meet" element={<MeetingList />} />
         </Route>
 
         {/* ---------------- TEACHER ROUTES ---------------- */}

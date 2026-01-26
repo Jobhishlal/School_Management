@@ -1,3 +1,3 @@
 export interface IAIService {
-    getAnswer(question: string): Promise<string>;
+    getAnswer(question: string): Promise<{ correctedQuestion: string, answer: string }>;
 }

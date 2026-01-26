@@ -43,7 +43,9 @@ api.interceptors.response.use(
     res => res,
     async err => {
         const orginal = err.config;
+        console.log(`API Error: ${orginal.url} Status: ${err.response?.status}`);
         if (err.response?.status === 401 && !orginal._retry) {
+            console.log("API: 401 detected, attempting refresh...");
             orginal._retry = true;
 
             try {
@@ -51,12 +53,37 @@ api.interceptors.response.use(
                     withCredentials: true
                 })
                 const { accessToken } = resp.data;
-                localStorage.setItem("accessToken", accessToken)
+                console.log("API: Refresh successful");
+
+                // Update generic token
+                localStorage.setItem("accessToken", accessToken);
+
+                // Update specific tokens if they exist to ensure subsequent requests use the new token
+                if (localStorage.getItem("studentAccessToken")) {
+                    localStorage.setItem("studentAccessToken", accessToken);
+                }
+                if (localStorage.getItem("teacherAccessToken")) {
+                    localStorage.setItem("teacherAccessToken", accessToken);
+                }
+                if (localStorage.getItem("adminAccessToken")) {
+                    localStorage.setItem("adminAccessToken", accessToken);
+                }
+                if (localStorage.getItem("parentAccessToken")) {
+                    localStorage.setItem("parentAccessToken", accessToken);
+                }
+
                 orginal.headers.Authorization = `Bearer ${accessToken}`;
                 return api(orginal)
-            } catch {
-                localStorage.removeItem("accessToken")
-                window.location.href = '/signup'
+            } catch (refreshErr) {
+                console.error("API: Refresh failed", refreshErr);
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("studentAccessToken");
+                localStorage.removeItem("teacherAccessToken");
+                localStorage.removeItem("adminAccessToken");
+                localStorage.removeItem("parentAccessToken");
+
+                window.location.href = '/login';
+                return Promise.reject(refreshErr);
             }
         }
         return Promise.reject(err)

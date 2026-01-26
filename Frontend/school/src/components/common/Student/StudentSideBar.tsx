@@ -121,7 +121,7 @@ export default function StudentSidebar({ children }: Props) {
     { icon: CreditCard, text: "Fees", path: "/student/fees" },
     { icon: MessageCircle, text: "Notices / Messages", path: "/student/notices" },
     { icon: Users, text: "Meet", path: "/student/meet" },
-    { icon: GraduationCap, text: "AI Study Helper", path:'/student/ai-assistant' },
+    { icon: Bot, text: "AI Study Helper", path:"/student/ai-assistant" },
   ];
 
 
@@ -308,28 +308,6 @@ export default function StudentSidebar({ children }: Props) {
                 </button>
 
 
-                {showProfileDropdown && (
-                  <div
-                    className={`absolute right-0 top-full mt-2 w-48 ${cardBg} backdrop-blur-xl border ${headerBorder} rounded-xl shadow-xl z-50 py-2`}
-                  >
-                    <Link to="/student/profile">
-                      <User size={16} className={textSecondary} />
-                      <span className={`text-sm ${textPrimary}`}>Profile</span>
-                    </Link>
-
-
-
-
-
-                    <button
-                      onClick={handleLogout}
-                      className={`w-full flex items-center space-x-3 px-4 py-3 ${hoverBg} transition-colors duration-200 text-red-500 hover:text-red-600`}
-                    >
-                      <LogOut size={16} />
-                      <span className="text-sm">Logout</span>
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
           </div>

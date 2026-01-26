@@ -15,7 +15,7 @@ export class GeminiAIService implements IAIService {
     this.model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
   }
 
-  async getAnswer(question: string): Promise<string> {
+  async getAnswer(question: string): Promise<{ correctedQuestion: string, answer: string }> {
     console.log("GeminiAIService: Getting answer for question using SDK (gemini-2.5-flash)...");
 
     if (!process.env.GEMINI_API_KEY) {
@@ -28,26 +28,43 @@ export class GeminiAIService implements IAIService {
 
     try {
       const prompt = `
-Explain the following topic for a beginner student.
+You are an intelligent study assistant for students.
+Perform two tasks:
+1. Correct any spelling mistakes in the user's question.
+2. Answer the corrected question simply for a beginner.
 
-Question:
-${question}
+Question: "${question}"
 
-Give:
-- Simple definition
-- Example
-- Real-world analogy
+Respond ONLY in valid JSON format:
+{
+  "correctedQuestion": "The corrected question text",
+  "answer": "The formatted answer content with: \n\n## Definition\nA simple definition.\n\n## Example\nAn example.\n\n## Analogy\nA real-world analogy."
+}
             `;
 
       const result = await this.model.generateContent(prompt);
       const response = await result.response;
-      const text = response.text();
+      let text = response.text();
 
-      console.log("GeminiAIService: Answer generated, length:", text.length);
-      return text;
+      // Cleanup if model returns markdown ticks around json
+      text = text.replace(/^```json/, '').replace(/^```/, '').replace(/```$/, '').trim();
+
+      console.log("GeminiAIService: Raw response length:", text.length);
+
+      const jsonResponse = JSON.parse(text);
+
+      return {
+        correctedQuestion: jsonResponse.correctedQuestion || question,
+        answer: jsonResponse.answer || text
+      };
     } catch (error) {
       console.error("Gemini SDK Error:", error);
-      throw new Error("Failed to generate AI response");
+      // Fallback if JSON parsing fails or other error
+      return {
+        correctedQuestion: question,
+        answer: "I'm sorry, I couldn't process that properly. Please try asking again."
+      };
     }
   }
 }
+
