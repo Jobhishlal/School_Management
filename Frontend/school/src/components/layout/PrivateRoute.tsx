@@ -30,7 +30,7 @@ export default function PrivateRoute({ children }: { children: JSX.Element }) {
   } else if (path.startsWith("/teacher")) {
     const token = localStorage.getItem("teacherAccessToken");
     if (token) isAuthenticated = true;
-  } else if (path.startsWith("/student") || path.startsWith("/student-dashboard")) {
+  } else if (path.startsWith("/student")) {
     const token = localStorage.getItem("studentAccessToken");
     if (token) isAuthenticated = true;
   } else if (path.startsWith("/parent")) {
@@ -58,7 +58,7 @@ export default function PrivateRoute({ children }: { children: JSX.Element }) {
     const role = localStorage.getItem("role");
     switch (role) {
       case "students":
-        return <Navigate to="/student-dashboard" replace />;
+        return <Navigate to="/student/dashboard" replace />;
       case "parent":
         return <Navigate to="/parent/dashboard" replace />;
       default:

@@ -24,7 +24,7 @@ export default function MainAdminLogincheck() {
     if (token && role) {
       switch (role) {
         case "students":
-          navigate("/student-dashboard", { replace: true });
+          navigate("/student/dashboard", { replace: true });
           break;
         case "parent":
           navigate("/parent/dashboard", { replace: true });
@@ -91,7 +91,7 @@ export default function MainAdminLogincheck() {
 
         switch (role) {
           case "students":
-            navigate("/student-dashboard", { replace: true });
+            navigate("/student/dashboard", { replace: true });
             break;
           case "parent":
             navigate("/parent/dashboard", { replace: true });
@@ -242,7 +242,7 @@ export default function MainAdminLogincheck() {
             </div>
           )}
 
-      
+
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-600"></div>
@@ -252,7 +252,7 @@ export default function MainAdminLogincheck() {
             </div>
           </div>
 
-     
+
           <button
             type="button"
             onClick={handleGoogleLogin}

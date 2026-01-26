@@ -131,6 +131,8 @@ import { AttendanceMongoRepository } from "../../infrastructure/repositories/Att
 import { StudentAttendanceDashboardUseCase } from "../../applications/useCases/Students/StudentAttendanceDashboardUseCase";
 import { StudentDateBaseAttendanceSearchUseCase } from "../../applications/useCases/Students/StudentDateBaseAttendanceSearchUseCase";
 import { StudentAttendanceController } from "../http/controllers/Student/StudentAttendanceController";
+import { StudentDashboardController } from "../http/controllers/Student/StudentDashboardController";
+import { GetStudentDashboardUseCase } from "../../applications/useCases/StudentDashboard/GetStudentDashboardUseCase";
 
 const attRep = new AttendanceMongoRepository();
 const stAttDash = new StudentAttendanceDashboardUseCase(attRep);
@@ -147,5 +149,23 @@ Studentrouter.get('/attendance/filter',
   (req, res) => stAttController.findAttendanceByDateRange(req as AuthRequest, res)
 );
 
+
+
+// Student Dashboard
+const getStudentDashboardUseCase = new GetStudentDashboardUseCase(
+  timetablemongo,
+  attRep,
+  assignmentrepo,
+  mongorepo,
+  announcementrepo,
+  studentmongo
+);
+
+const studentDashboardController = new StudentDashboardController(getStudentDashboardUseCase);
+
+Studentrouter.get('/dashboard',
+  authMiddleware,
+  (req, res) => studentDashboardController.getDashboard(req as AuthRequest, res)
+);
 
 export default Studentrouter;

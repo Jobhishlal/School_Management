@@ -112,7 +112,7 @@ function App() {
 
         {/* ---------------- STUDENT ROUTES ---------------- */}
         <Route element={<ThemeProvider><PrivateRoute><StudentLayout /></PrivateRoute></ThemeProvider>}>
-          <Route path="/student-dashboard" element={<StudentDashboard />} />
+          <Route path="/student/dashboard" element={<StudentDashboard />} />
           <Route path="/student/profile" element={<StudentProfilePage />} />
           <Route path='/student/timetable-view' element={<StudentTimeTableView />} />
           <Route path='/student/assignment' element={<StudentAssignmentList />} />
@@ -120,7 +120,7 @@ function App() {
           <Route path='/student/attendance-view' element={<StudentAttendanceView />} />
           <Route path='/student/notices' element={<StudentAnnouncementView />} />
           <Route path='/student/ai-assistant' element={<StudentAIAssistant />} />
-           <Route path="/student/meet" element={<MeetingList />} />
+          <Route path="/student/meet" element={<MeetingList />} />
         </Route>
 
         {/* ---------------- TEACHER ROUTES ---------------- */}

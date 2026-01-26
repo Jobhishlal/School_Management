@@ -8,7 +8,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 
   if (path.startsWith("/teacher")) {
     if (localStorage.getItem("teacherAccessToken")) isAuthenticated = true;
-  } else if (path.startsWith("/student") || path.startsWith("/student-dashboard")) {
+  } else if (path.startsWith("/student")) {
     if (localStorage.getItem("studentAccessToken")) isAuthenticated = true;
   } else if (path.startsWith("/parent")) {
     if (localStorage.getItem("parentAccessToken")) isAuthenticated = true;

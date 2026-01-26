@@ -9,7 +9,6 @@ import {
   FileText,
   MessageCircle,
   Users,
-  GraduationCap,
   BookOpen,
   CreditCard,
   Bell,
@@ -24,9 +23,9 @@ import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../layout/ThemeContext";
 import { getInstituteProfile } from "../../../services/authapi";
 
-type Props = { children?: React.ReactNode };
+type Props = {};
 
-export default function StudentSidebar({ children }: Props) {
+export default function StudentSidebar({ }: Props) {
   const { isDark, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
@@ -112,16 +111,16 @@ export default function StudentSidebar({ children }: Props) {
   }, []);
 
   const menuItems = [
-    { icon: LayoutDashboard, text: "Dashboard", path: "/student-dashboard" },
+    { icon: LayoutDashboard, text: "Dashboard", path: "/student/dashboard" },
     { icon: User, text: "Profile", path: "/student/profile" },
     { icon: Calendar, text: "Attendance", path: "/student/attendance-view" },
     { icon: FileText, text: "Assignments", path: "/student/assignment" },
     { icon: Calendar, text: "Time Table", path: "/student/timetable-view" },
     { icon: BookOpen, text: "Exams & Results", path: '/student/exam-list' },
-    { icon: CreditCard, text: "Fees", path: "/student/fees" },
+    { icon: CreditCard, text: "Communicate", path: "/student/communicate" },
     { icon: MessageCircle, text: "Notices / Messages", path: "/student/notices" },
     { icon: Users, text: "Meet", path: "/student/meet" },
-    { icon: Bot, text: "AI Study Helper", path:"/student/ai-assistant" },
+    { icon: Bot, text: "AI Study Helper", path: "/student/ai-assistant" },
   ];
 
 
