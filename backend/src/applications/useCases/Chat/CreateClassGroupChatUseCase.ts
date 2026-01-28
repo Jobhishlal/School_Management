@@ -1,30 +1,34 @@
 import { IChatRepository } from "../../../domain/repositories/Chat/IChatRepository";
-import { ClassModel } from "../../../infrastructure/database/models/ClassModel";
-import { StudentModel } from "../../../infrastructure/database/models/StudentModel";
-import { TeacherModel } from "../../../infrastructure/database/models/Teachers";
-
-export interface ICreateClassGroupChatUseCase {
-    execute(classId: string, creatorId: string, customName?: string): Promise<any>;
-}
+import { ICreateClassGroupChatUseCase } from "../../../domain/interfaces/useCases/Chat/ICreateClassGroupChatUseCase";
+import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
+import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
+import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";
+import { Conversation } from "../../../domain/entities/Conversation";
 
 export class CreateClassGroupChatUseCase implements ICreateClassGroupChatUseCase {
-    constructor(private chatRepo: IChatRepository) { }
+    constructor(
+        private chatRepo: IChatRepository,
+        private classRepo: IClassRepository,
+        private studentRepo: StudentDetails,
+        private teacherRepo: ITeacherCreate
+    ) { }
 
-    async execute(classId: string, creatorId: string, customName?: string): Promise<any> {
+    async execute(classId: string, creatorId: string, customName?: string): Promise<Conversation> {
 
-        const classData = await ClassModel.findById(classId);
+        const classData = await this.classRepo.findById(classId);
         if (!classData) {
             throw new Error("Class not found");
         }
 
-        const students = await StudentModel.find({ classId: classId });
+        const students = await this.studentRepo.findByClassId(classId);
 
+        const allTeachers = await this.teacherRepo.findAll();
 
-        const allTeachers = await TeacherModel.find({ blocked: false });
+        const activeTeachers = allTeachers.filter(t => !t.blocked);
 
-        const relevantTeachers = allTeachers.filter(teacher => {
+        const relevantTeachers = activeTeachers.filter(teacher => {
 
-            if (classData.classTeacher && teacher._id.toString() === classData.classTeacher.toString()) {
+            if (classData.classTeacher && teacher.id === classData.classTeacher) {
                 return true;
             }
 
@@ -32,7 +36,7 @@ export class CreateClassGroupChatUseCase implements ICreateClassGroupChatUseCase
                 return false;
             }
 
-            const teacherSubjectNames = teacher.subjects.map(s => s.name);
+            const teacherSubjectNames = (teacher.subjects || []).map(s => s.name);
             const hasCommonSubject = teacherSubjectNames.some(subjectName =>
                 classData.subjects?.includes(subjectName) ?? false
             );
@@ -44,15 +48,15 @@ export class CreateClassGroupChatUseCase implements ICreateClassGroupChatUseCase
 
         students.forEach(student => {
             participants.push({
-                participantId: student._id.toString(),
+                participantId: student.id, 
                 participantModel: 'Students'
             });
         });
 
-        // Add Relevant Teachers
+
         relevantTeachers.forEach(teacher => {
             participants.push({
-                participantId: teacher._id.toString(),
+                participantId: teacher.id,
                 participantModel: 'Teacher'
             });
         });

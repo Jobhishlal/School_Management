@@ -64,9 +64,9 @@ export const initSocket = (httpServer: HttpServer) => {
 
         // 2. Update conversation
         if (receiverModel === 'Conversation') {
-          await chatRepo.updateConversationLastMessage(receiverId, savedMessage._id as string);
+          await chatRepo.updateConversationLastMessage(receiverId, savedMessage.id as string);
         } else {
-          await chatRepo.createOrUpdateConversation(senderId, senderModel, receiverId, receiverModel, savedMessage._id as string);
+          await chatRepo.createOrUpdateConversation(senderId, senderModel, receiverId, receiverModel, savedMessage.id as string);
         }
 
         // 3. Emit to receiver(s)
@@ -75,9 +75,7 @@ export const initSocket = (httpServer: HttpServer) => {
           const conversation = await chatRepo.findConversationById(receiverId);
           if (conversation && conversation.participants) {
             conversation.participants.forEach(participant => {
-              const participantId = (participant.participantId as any)._id
-                ? (participant.participantId as any)._id.toString()
-                : participant.participantId.toString();
+              const participantId = participant.participantId; // Entity guarantees string
 
               io.to(participantId).emit('receive_private_message', savedMessage);
               io.to(participantId).emit('receive_message', savedMessage);

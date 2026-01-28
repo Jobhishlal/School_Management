@@ -90,21 +90,23 @@ export default function TeacherChatSidebar({ conversations, selectedUser, onSele
                         {/* Existing Chats */}
                         {conversations.filter(conv => {
                             const other = getOtherParticipant(conv);
-                            return other && other.name.toLowerCase().includes(searchQuery.toLowerCase());
+                            const name = other?.name || (other as any)?.fullName || '';
+                            return name.toLowerCase().includes(searchQuery.toLowerCase());
                         }).length > 0 && (
                                 <div className="mb-4">
                                     <p className={`text-xs px-2 mb-2 font-semibold uppercase ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Existing Chats</p>
                                     {conversations
                                         .filter(conv => {
                                             const other = getOtherParticipant(conv);
-                                            return other && other.name.toLowerCase().includes(searchQuery.toLowerCase());
+                                            const name = other?.name || (other as any)?.fullName || '';
+                                            return name.toLowerCase().includes(searchQuery.toLowerCase());
                                         })
-                                        .map(conv => {
+                                        .map((conv, index) => {
                                             const otherUser = getOtherParticipant(conv);
                                             if (!otherUser) return null;
                                             return (
                                                 <div
-                                                    key={conv._id}
+                                                    key={conv._id || index}
                                                     onClick={() => { onSelectUser(otherUser); setSearchQuery(''); }}
                                                     className={`p-3 mx-2 my-1 rounded-xl cursor-pointer transition-colors flex items-center gap-3 ${selectedUser?._id === otherUser._id
                                                         ? (isDark ? 'bg-blue-600/20 text-blue-100' : 'bg-blue-50 text-blue-700')
@@ -167,13 +169,13 @@ export default function TeacherChatSidebar({ conversations, selectedUser, onSele
                             )}
                     </div>
                 ) : (
-                    conversations.map(conv => {
+                    conversations.map((conv, index) => {
                         const otherUser = getOtherParticipant(conv);
                         if (!otherUser) return null;
 
                         return (
                             <div
-                                key={conv._id}
+                                key={conv._id || index}
                                 onClick={() => onSelectUser(otherUser)}
                                 className={`p-3 mx-2 my-1 rounded-xl cursor-pointer transition-colors flex items-center gap-3 ${selectedUser?._id === otherUser._id
                                     ? (isDark ? 'bg-blue-600/20 text-blue-100' : 'bg-blue-50 text-blue-700')

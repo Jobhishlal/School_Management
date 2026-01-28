@@ -1,14 +1,14 @@
 import { IChatRepository } from "../../../domain/repositories/Chat/IChatRepository";
-import { IMessage } from "../../../infrastructure/database/mongoDB/models/MessageModel";
-
-export interface IEditMessageUseCase {
-    execute(messageId: string, userId: string, newContent: string): Promise<IMessage>;
-}
-
+import { Message } from "../../../domain/entities/Message";
+import { IChatSocketService } from "../../../domain/interfaces/services/IChatSocketService";
+import { IEditMessageUseCase } from "../../../domain/interfaces/useCases/Chat/IEditMessageUseCase";
 export class EditMessageUseCase implements IEditMessageUseCase {
-    constructor(private chatRepo: IChatRepository) { }
+    constructor(
+        private chatRepo: IChatRepository,
+        private chatSocketService: IChatSocketService
+    ) { }
 
-    async execute(messageId: string, userId: string, newContent: string): Promise<IMessage> {
+    async execute(messageId: string, userId: string, newContent: string): Promise<Message> {
         const message = await this.chatRepo.findMessageById(messageId);
 
         if (!message) {
@@ -19,7 +19,7 @@ export class EditMessageUseCase implements IEditMessageUseCase {
             throw new Error("Unauthorized: You can only edit your own messages");
         }
 
-        const timeDiff = (Date.now() - new Date(message.timestamp).getTime()) / 1000 / 60; 
+        const timeDiff = (Date.now() - new Date(message.timestamp).getTime()) / 1000 / 60;
 
         if (timeDiff > 5) {
             throw new Error("Edit time limit exceeded (5 minutes)");
@@ -29,6 +29,21 @@ export class EditMessageUseCase implements IEditMessageUseCase {
         if (!updatedMessage) {
             throw new Error("Failed to update message");
         }
+
+        let participants: string[] = [];
+        if (updatedMessage.receiverModel === 'Conversation') {
+            const conversation = await this.chatRepo.findConversationById(updatedMessage.receiverId.toString());
+            if (conversation && conversation.participants) {
+                participants = conversation.participants.map(p => p.participantId);
+            }
+        }
+
+        this.chatSocketService.emitMessageUpdate(
+            updatedMessage.receiverId.toString(),
+            updatedMessage,
+            updatedMessage.receiverModel === 'Conversation',
+            participants
+        );
 
         return updatedMessage;
     }

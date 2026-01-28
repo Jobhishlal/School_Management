@@ -1,13 +1,15 @@
 import { IChatRepository } from "../../../domain/repositories/Chat/IChatRepository";
-
-export interface IMarkMessagesReadUseCase {
-    execute(senderId: string, receiverId: string): Promise<void>;
-}
+import { IMarkMessagesReadUseCase } from "../../../domain/interfaces/useCases/Chat/IMarkMessagesReadUseCase";
+import { IChatSocketService } from "../../../domain/interfaces/services/IChatSocketService";
 
 export class MarkMessagesReadUseCase implements IMarkMessagesReadUseCase {
-    constructor(private chatRepo: IChatRepository) { }
+    constructor(
+        private chatRepo: IChatRepository,
+        private chatSocketService: IChatSocketService
+    ) { }
 
     async execute(senderId: string, receiverId: string): Promise<void> {
         await this.chatRepo.markMessagesAsRead(senderId, receiverId);
+        this.chatSocketService.emitMessagesRead(receiverId, senderId);
     }
 }

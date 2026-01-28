@@ -1,14 +1,11 @@
 import { IChatRepository } from "../../../domain/repositories/Chat/IChatRepository";
-import { IMessage } from "../../../infrastructure/database/mongoDB/models/MessageModel";
-
-export interface IGetMessagesUseCase {
-    execute(senderId: string, receiverId: string): Promise<IMessage[]>;
-}
+import { Message } from "../../../domain/entities/Message";
+import { IGetMessagesUseCase } from "../../../domain/interfaces/useCases/Chat/IGetMessagesUseCase";
 
 export class GetMessagesUseCase implements IGetMessagesUseCase {
     constructor(private chatRepo: IChatRepository) { }
 
-    async execute(senderId: string, receiverId: string): Promise<IMessage[]> {
+    async execute(senderId: string, receiverId: string): Promise<Message[]> {
         // Check if receiverId is a group/conversation
         const conversation = await this.chatRepo.findConversationById(receiverId);
 

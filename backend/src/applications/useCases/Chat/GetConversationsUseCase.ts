@@ -1,14 +1,11 @@
 import { IChatRepository } from "../../../domain/repositories/Chat/IChatRepository";
-import { IConversation } from "../../../infrastructure/database/mongoDB/models/ConversationModel";
-
-export interface IGetConversationsUseCase {
-    execute(userId: string): Promise<any[]>;
-}
+import { Conversation } from "../../../domain/entities/Conversation";
+import { IGetConversationsUseCase } from "../../../domain/interfaces/useCases/Chat/IGetConversationsUseCase";
 
 export class GetConversationsUseCase implements IGetConversationsUseCase {
     constructor(private chatRepo: IChatRepository) { }
 
-    async execute(userId: string): Promise<any[]> {
+    async execute(userId: string): Promise<Conversation[]> {
         return await this.chatRepo.getConversations(userId);
     }
 }

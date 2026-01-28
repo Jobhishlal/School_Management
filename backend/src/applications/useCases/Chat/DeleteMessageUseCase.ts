@@ -1,14 +1,15 @@
 import { IChatRepository } from "../../../domain/repositories/Chat/IChatRepository";
-import { IMessage } from "../../../infrastructure/database/mongoDB/models/MessageModel";
-
-export interface IDeleteMessageUseCase {
-    execute(messageId: string, userId: string): Promise<IMessage>;
-}
+import { Message } from "../../../domain/entities/Message";
+import { IChatSocketService } from "../../../domain/interfaces/services/IChatSocketService";
+import { IDeleteMessageUseCase } from "../../../domain/interfaces/useCases/Chat/IDeleteMessageUseCase";
 
 export class DeleteMessageUseCase implements IDeleteMessageUseCase {
-    constructor(private chatRepo: IChatRepository) { }
+    constructor(
+        private chatRepo: IChatRepository,
+        private chatSocketService: IChatSocketService
+    ) { }
 
-    async execute(messageId: string, userId: string): Promise<IMessage> {
+    async execute(messageId: string, userId: string): Promise<Message> {
         const message = await this.chatRepo.findMessageById(messageId);
 
         if (!message) {
@@ -23,6 +24,22 @@ export class DeleteMessageUseCase implements IDeleteMessageUseCase {
         if (!deletedMessage) {
             throw new Error("Failed to delete message");
         }
+
+        let participants: string[] = [];
+        if (deletedMessage.receiverModel === 'Conversation') {
+            const conversation = await this.chatRepo.findConversationById(deletedMessage.receiverId.toString());
+            if (conversation && conversation.participants) {
+                participants = conversation.participants.map(p => p.participantId);
+            }
+        }
+
+        this.chatSocketService.emitMessageDeleteWithSender(
+            deletedMessage.senderId.toString(),
+            deletedMessage.receiverId.toString(),
+            messageId,
+            deletedMessage.receiverModel === 'Conversation',
+            participants
+        );
 
         return deletedMessage;
     }

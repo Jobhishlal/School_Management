@@ -1,31 +1,32 @@
 import { IChatRepository } from "../../../domain/repositories/Chat/IChatRepository";
 import { MessageModel, IMessage } from "../../database/mongoDB/models/MessageModel";
 import { ConversationModel, IConversation } from "../../database/mongoDB/models/ConversationModel";
-// Ensure models are registered for population
 import { StudentModel } from "../../database/models/StudentModel";
 import { TeacherModel } from "../../database/models/Teachers";
+import { Message } from "../../../domain/entities/Message";
+import { Conversation } from "../../../domain/entities/Conversation";
+import { ChatPersistenceMapper } from "../../mappers/ChatPersistenceMapper";
 
 export class ChatRepositoryMongo implements IChatRepository {
 
-    async saveMessage(messageData: Partial<IMessage>): Promise<IMessage> {
+    async saveMessage(messageData: Partial<IMessage>): Promise<Message> {
         const message = new MessageModel(messageData);
-        return await message.save();
+        const savedMessage = await message.save();
+        return ChatPersistenceMapper.toDomainMessage(savedMessage);
     }
 
-    async getMessages(senderId: string, receiverId: string): Promise<IMessage[]> {
-        return await MessageModel.find({
+    async getMessages(senderId: string, receiverId: string): Promise<Message[]> {
+        const messages = await MessageModel.find({
             $or: [
                 { senderId, receiverId },
                 { senderId: receiverId, receiverId: senderId }
             ]
         }).sort({ timestamp: 1 });
+        return messages.map(msg => ChatPersistenceMapper.toDomainMessage(msg));
     }
 
     async createOrUpdateConversation(senderId: string, senderModel: string, receiverId: string, receiverModel: string, lastMessageId: string): Promise<void> {
-        // Find if conversation exists between these two
-        // We need to match precise participants
-        // Find if conversation exists between these two
-        // We need to match precise participants AND ensure it is NOT a group chat
+
         let conversation = await ConversationModel.findOne({
             $and: [
                 { participants: { $elemMatch: { participantId: senderId, participantModel: senderModel } } },
@@ -37,7 +38,7 @@ export class ChatRepositoryMongo implements IChatRepository {
         if (conversation) {
             conversation.lastMessage = lastMessageId as any;
             conversation.updatedAt = new Date();
-            // Self-healing: Ensure participants are correct (e.g. if model name was wrong in DB)
+
             conversation.participants = [
                 { participantId: senderId, participantModel: senderModel },
                 { participantId: receiverId, participantModel: receiverModel }
@@ -54,7 +55,7 @@ export class ChatRepositoryMongo implements IChatRepository {
         }
     }
 
-    async getConversations(userId: string): Promise<IConversation[]> {
+    async getConversations(userId: string): Promise<Conversation[]> {
         const conversations = await ConversationModel.find({
             "participants.participantId": userId
         })
@@ -62,7 +63,7 @@ export class ChatRepositoryMongo implements IChatRepository {
             .sort({ updatedAt: -1 })
             .lean();
 
-        // Manual Population and Unread Count Calculation
+
         const populatedConversations = await Promise.all(conversations.map(async (conv) => {
             const populatedParticipants = await Promise.all(conv.participants.map(async (p) => {
                 const model = p.participantModel?.toLowerCase();
@@ -108,20 +109,14 @@ export class ChatRepositoryMongo implements IChatRepository {
 
             let unreadCount = 0;
             if (conv.isGroup) {
-                // For groups, count messages sent to the group that are unread
-                // Note: This is a shared read status (limitation of current model)
-                // Checking if the current user is NOT the sender is important but senderId is on message
-                // simplified: count unread messages in this group where sender != userId
+
                 unreadCount = await MessageModel.countDocuments({
                     receiverId: conv._id,
                     senderId: { $ne: userId },
                     read: false
                 });
             } else if (otherParticipant) {
-                // For 1-on-1, count messages sent BY the other person TO me that are unread
-                // We need the ID of the other participant. 
-                // Note: populatedParticipants has objects, conv.participants has OIDs if not populated?
-                // conv was .lean(), so it has OIDs.
+
                 const otherId = otherParticipant.participantId;
                 unreadCount = await MessageModel.countDocuments({
                     senderId: otherId,
@@ -137,7 +132,7 @@ export class ChatRepositoryMongo implements IChatRepository {
             };
         }));
 
-        return populatedConversations as any[];
+        return populatedConversations.map(conv => ChatPersistenceMapper.toDomainConversation(conv));
     }
 
     async markMessagesAsRead(senderId: string, receiverId: string): Promise<void> {
@@ -164,31 +159,39 @@ export class ChatRepositoryMongo implements IChatRepository {
         });
     }
 
-    async findConversationById(conversationId: string): Promise<IConversation | null> {
-        return await ConversationModel.findById(conversationId);
+    async findConversationById(conversationId: string): Promise<Conversation | null> {
+        const conversation = await ConversationModel.findById(conversationId).populate('lastMessage');
+        // Note: Participants need to be populated logic if we want full details, 
+        // but typically findById in your flow might just need basic data or the participants structure.
+        // Your current mapper handles both populated and unpopulated gracefully.
+        return conversation ? ChatPersistenceMapper.toDomainConversation(conversation) : null;
     }
 
-    async getGroupMessages(groupId: string): Promise<IMessage[]> {
-        return await MessageModel.find({ receiverId: groupId }).sort({ timestamp: 1 });
+    async getGroupMessages(groupId: string): Promise<Message[]> {
+        const messages = await MessageModel.find({ receiverId: groupId }).sort({ timestamp: 1 });
+        return messages.map(msg => ChatPersistenceMapper.toDomainMessage(msg));
     }
 
-    async updateMessage(messageId: string, content: string): Promise<IMessage | null> {
-        return await MessageModel.findByIdAndUpdate(
+    async updateMessage(messageId: string, content: string): Promise<Message | null> {
+        const msg = await MessageModel.findByIdAndUpdate(
             messageId,
             { content, isEdited: true },
             { new: true }
         );
+        return msg ? ChatPersistenceMapper.toDomainMessage(msg) : null;
     }
 
-    async markMessageAsDeleted(messageId: string): Promise<IMessage | null> {
-        return await MessageModel.findByIdAndUpdate(
+    async markMessageAsDeleted(messageId: string): Promise<Message | null> {
+        const msg = await MessageModel.findByIdAndUpdate(
             messageId,
             { isDeleted: true },
             { new: true }
         );
+        return msg ? ChatPersistenceMapper.toDomainMessage(msg) : null;
     }
 
-    async findMessageById(messageId: string): Promise<IMessage | null> {
-        return await MessageModel.findById(messageId);
+    async findMessageById(messageId: string): Promise<Message | null> {
+        const msg = await MessageModel.findById(messageId);
+        return msg ? ChatPersistenceMapper.toDomainMessage(msg) : null;
     }
 }
