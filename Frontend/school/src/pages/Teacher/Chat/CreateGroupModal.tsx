@@ -18,6 +18,7 @@ interface CreateGroupModalProps {
 export default function CreateGroupModal({ isOpen, onClose, onSuccess, isDark }: CreateGroupModalProps) {
     const [classes, setClasses] = useState<ClassOptions[]>([]);
     const [selectedClassId, setSelectedClassId] = useState('');
+    const [customGroupName, setCustomGroupName] = useState('');
     const [loading, setLoading] = useState(false);
     const [creating, setCreating] = useState(false);
 
@@ -30,9 +31,9 @@ export default function CreateGroupModal({ isOpen, onClose, onSuccess, isDark }:
     const loadClasses = async () => {
         try {
             setLoading(true);
-            
+
             const response = await api.get('/teacher/get-all-classes');
-        
+
             const data = response.data.data || response.data;
 
             const options = Array.isArray(data) ? data.map((c: any) => ({
@@ -54,9 +55,13 @@ export default function CreateGroupModal({ isOpen, onClose, onSuccess, isDark }:
 
         try {
             setCreating(true);
-            await api.post('/chat/group/create', { classId: selectedClassId });
+            await api.post('/chat/group/create', {
+                classId: selectedClassId,
+                customName: customGroupName
+            });
             onSuccess();
             onClose();
+            setCustomGroupName(''); // Reset
         } catch (error) {
             console.error("Failed to create group", error);
             alert("Failed to create group");
@@ -91,7 +96,7 @@ export default function CreateGroupModal({ isOpen, onClose, onSuccess, isDark }:
                             <select
                                 value={selectedClassId}
                                 onChange={(e) => setSelectedClassId(e.target.value)}
-                                className={`w-full p-3 rounded-xl outline-none border transition ${isDark
+                                className={`w-full p-3 rounded-xl outline-none border transition mb-4 ${isDark
                                     ? 'bg-slate-700 border-slate-600 focus:border-blue-500 text-white'
                                     : 'bg-slate-50 border-slate-200 focus:border-blue-500 text-slate-900'
                                     }`}
@@ -104,6 +109,22 @@ export default function CreateGroupModal({ isOpen, onClose, onSuccess, isDark }:
                                 ))}
                             </select>
                         )}
+                    </div>
+
+                    <div>
+                        <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                            Group Name (Optional)
+                        </label>
+                        <input
+                            type="text"
+                            value={customGroupName}
+                            onChange={(e) => setCustomGroupName(e.target.value)}
+                            placeholder="Enter custom group name..."
+                            className={`w-full p-3 rounded-xl outline-none border transition ${isDark
+                                ? 'bg-slate-700 border-slate-600 focus:border-blue-500 text-white placeholder-slate-500'
+                                : 'bg-slate-50 border-slate-200 focus:border-blue-500 text-slate-900'
+                                }`}
+                        />
                     </div>
 
                     <div className="flex justify-end gap-3 mt-6">

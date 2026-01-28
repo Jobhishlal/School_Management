@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { type ChatUser, type Conversation } from '../../../services/ChatService';
-import { Search } from 'lucide-react';
+import { Search, MessageSquarePlus } from 'lucide-react';
+import TeacherListModal from './TeacherListModal';
 
 interface ChatSidebarProps {
     conversations: Conversation[];
@@ -11,10 +13,21 @@ interface ChatSidebarProps {
 }
 
 export default function ChatSidebar({ conversations, selectedUser, onSelectUser, isDark, onlineUsers, currentUserId }: ChatSidebarProps) {
+    const [showTeacherListModal, setShowTeacherListModal] = useState(false);
+
     return (
         <div className={`w-80 border-r flex flex-col ${isDark ? 'border-slate-700 bg-slate-800/30' : 'border-slate-200 bg-slate-50/50'}`}>
             <div className="p-4 border-b border-transparent">
-                <h2 className={`font-bold text-lg mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Messages</h2>
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>Messages</h2>
+                    <button
+                        onClick={() => setShowTeacherListModal(true)}
+                        className="p-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+                        title="New Message"
+                    >
+                        <MessageSquarePlus size={20} />
+                    </button>
+                </div>
                 <div className={`relative flex items-center ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                     <Search size={18} className="absolute left-3" />
                     <input
@@ -47,7 +60,7 @@ export default function ChatSidebar({ conversations, selectedUser, onSelectUser,
                                 participants: conv.participants
                             };
                         } else {
-                            const participant = conv.participants.find(p => p.participantId._id !== currentUserId);
+                            const participant = conv.participants.find(p => p.participantId && String((p.participantId as any)._id || p.participantId) !== String(currentUserId));
                             otherUser = participant?.participantId;
                         }
 
@@ -64,8 +77,8 @@ export default function ChatSidebar({ conversations, selectedUser, onSelectUser,
                             >
                                 <div className="relative">
                                     <img
-                                        src={otherUser!.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(otherUser!.name)}&background=random`}
-                                        alt={otherUser!.name}
+                                        src={otherUser!.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(otherUser!.name || (otherUser as any).fullName)}&background=random`}
+                                        alt={otherUser!.name || (otherUser as any).fullName}
                                         className="w-10 h-10 rounded-full object-cover"
                                     />
                                     {!conv.isGroup && (
@@ -74,7 +87,7 @@ export default function ChatSidebar({ conversations, selectedUser, onSelectUser,
                                     )}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <h4 className="font-semibold text-sm truncate">{otherUser!.name}</h4>
+                                    <h4 className="font-semibold text-sm truncate">{otherUser!.name || (otherUser as any).fullName}</h4>
                                     <p className={`text-xs truncate ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
                                         {conv.lastMessage?.content || 'Click to chat'}
                                     </p>
@@ -84,6 +97,18 @@ export default function ChatSidebar({ conversations, selectedUser, onSelectUser,
                     })
                 )}
             </div>
+
+            <TeacherListModal
+                isOpen={showTeacherListModal}
+                onClose={() => setShowTeacherListModal(false)}
+                onSelectTeacher={onSelectUser}
+                isDark={isDark}
+                existingChatUserIds={new Set(conversations.map(c => {
+                    if (c.isGroup) return null;
+                    const p = c.participants.find(p => p.participantId && String((p.participantId as any)._id || p.participantId) !== String(currentUserId));
+                    return p?.participantId ? String((p.participantId as any)._id || p.participantId) : null;
+                }).filter(Boolean) as string[])}
+            />
         </div>
     );
 }

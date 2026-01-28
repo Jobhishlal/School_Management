@@ -1,6 +1,7 @@
-import React from 'react';
+import { useState } from 'react';
 import { type Conversation, type ChatUser } from '../../../services/ChatService';
-import { Search } from 'lucide-react';
+import { Search, MessageSquarePlus } from 'lucide-react';
+import NewChatModal from './NewChatModal';
 
 interface TeacherChatSidebarProps {
     conversations: Conversation[];
@@ -12,19 +13,22 @@ interface TeacherChatSidebarProps {
 }
 
 export default function TeacherChatSidebar({ conversations, selectedUser, onSelectUser, isDark, currentUserId, onCreateGroup }: TeacherChatSidebarProps) {
+    const [showNewChatModal, setShowNewChatModal] = useState(false);
+
     const getOtherParticipant = (conv: Conversation): ChatUser | undefined => {
         if (conv.isGroup) {
             return {
                 _id: conv._id,
                 name: conv.groupName || 'Group Chat',
                 email: '',
-                profileImage: '', // Could be group icon
+                profileImage: '',
                 role: 'group',
                 isGroup: true,
                 participants: conv.participants
             };
         }
-        const participant = conv.participants.find(p => p.participantId._id !== currentUserId);
+        console.log("teacher data",getOtherParticipant)
+        const participant = conv.participants.find(p => p.participantId && String((p.participantId as any)._id || p.participantId) !== String(currentUserId));
         return participant?.participantId;
     };
 
@@ -33,13 +37,22 @@ export default function TeacherChatSidebar({ conversations, selectedUser, onSele
             <div className="p-4 border-b border-transparent">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>Messages</h2>
-                    <button
-                        onClick={onCreateGroup}
-                        className="p-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
-                        title="Create Class Group"
-                    >
-                        <span className="text-xl leading-none">+</span>
-                    </button>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => setShowNewChatModal(true)}
+                            className="p-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+                            title="New Message"
+                        >
+                            <MessageSquarePlus size={20} />
+                        </button>
+                        <button
+                            onClick={onCreateGroup}
+                            className="p-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition" // Changed color to distinguish
+                            title="Create Class Group"
+                        >
+                            <span className="text-xl leading-none">+</span>
+                        </button>
+                    </div>
                 </div>
                 <div className={`relative flex items-center ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                     <Search size={18} className="absolute left-3" />
@@ -70,13 +83,13 @@ export default function TeacherChatSidebar({ conversations, selectedUser, onSele
                         >
                             <div className="relative">
                                 <img
-                                    src={otherUser.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(otherUser.name)}&background=random`}
-                                    alt={otherUser.name}
+                                    src={otherUser.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(otherUser.name || (otherUser as any).fullName)}&background=random`}
+                                    alt={otherUser.name || (otherUser as any).fullName}
                                     className="w-10 h-10 rounded-full object-cover"
                                 />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <h4 className="font-semibold text-sm truncate">{otherUser.name}</h4>
+                                <h4 className="font-semibold text-sm truncate">{otherUser.name || (otherUser as any).fullName}</h4>
                                 <p className={`text-xs truncate ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
                                     {conv.lastMessage?.content || 'No messages yet'}
                                 </p>
@@ -85,6 +98,18 @@ export default function TeacherChatSidebar({ conversations, selectedUser, onSele
                     );
                 })}
             </div>
+
+            <NewChatModal
+                isOpen={showNewChatModal}
+                onClose={() => setShowNewChatModal(false)}
+                onSelectStudent={onSelectUser}
+                isDark={isDark}
+                existingChatUserIds={new Set(conversations.map(c => {
+                    if (c.isGroup) return null;
+                    const p = c.participants.find(p => p.participantId && String((p.participantId as any)._id || p.participantId) !== String(currentUserId));
+                    return p?.participantId ? String((p.participantId as any)._id || p.participantId) : null;
+                }).filter(Boolean) as string[])}
+            />
         </div>
     );
 }

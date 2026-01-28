@@ -7,6 +7,7 @@ import { IGetConversationsUseCase } from "../../../../applications/useCases/Chat
 import { IGetMessagesUseCase } from "../../../../applications/useCases/Chat/GetMessagesUseCase";
 import { IMarkMessagesReadUseCase } from "../../../../applications/useCases/Chat/MarkMessagesReadUseCase";
 import { MongoTeacher } from "../../../../infrastructure/repositories/MongoTeacherRepo";
+import { IEditMessageUseCase } from "../../../../applications/useCases/Chat/EditMessageUseCase";
 import { ICreateClassGroupChatUseCase } from "../../../../applications/useCases/Chat/CreateClassGroupChatUseCase";
 import { IChatRepository } from "../../../../domain/repositories/Chat/IChatRepository";
 
@@ -18,7 +19,8 @@ export class ChatController {
         private markMessagesReadUseCase: IMarkMessagesReadUseCase,
         private teacherRepo: MongoTeacher,
         private createClassGroupChatUseCase: ICreateClassGroupChatUseCase,
-        private chatRepo: IChatRepository
+        private chatRepo: IChatRepository,
+        private editMessageUseCase: IEditMessageUseCase
     ) { }
 
     // Get list of teachers for student to chat with (Legacy/Specific functionality)
@@ -70,7 +72,7 @@ export class ChatController {
                 if (receiverModel === 'Conversation') {
                     const conversation = await this.chatRepo.findConversationById(receiverId);
                     if (conversation && conversation.participants) {
-                        conversation.participants.forEach(participant => {
+                        conversation.participants.forEach((participant: any) => {
                             // Cast to any because sometimes mongoose refs behave differently, but usually safe as string or ObjectId
                             const participantId = (participant.participantId as any)._id
                                 ? (participant.participantId as any)._id.toString()
@@ -86,6 +88,9 @@ export class ChatController {
                 } else {
                     io.to(receiverId).emit('receive_message', message);
                     io.to(receiverId).emit('receive_private_message', message);
+
+                    // Emit to sender as well to ensure their sidebar updates (new conversation created)
+                    io.to(senderId).emit('receive_private_message', message);
                 }
             } catch (e) {
                 console.error("Socket emit failed", e);
@@ -180,7 +185,7 @@ export class ChatController {
         try {
             const authReq = req as AuthRequest;
             const creatorId = authReq.user?.id;
-            const { classId } = req.body;
+            const { classId, customName } = req.body;
 
             if (!creatorId) {
                 return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
@@ -190,12 +195,58 @@ export class ChatController {
                 return res.status(StatusCodes.BAD_REQUEST).json({ message: "Class ID is required" });
             }
 
-            const conversation = await this.createClassGroupChatUseCase.execute(classId, creatorId);
+            const conversation = await this.createClassGroupChatUseCase.execute(classId, creatorId, customName);
 
             res.status(StatusCodes.OK).json({ success: true, data: conversation });
         } catch (error) {
             console.error("Error creating class group:", error);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to create class group" });
+        }
+    }
+
+    editMessage = async (req: Request, res: Response) => {
+        try {
+            const authReq = req as AuthRequest;
+            const userId = authReq.user?.id;
+            const { messageId, content } = req.body;
+
+            if (!userId) {
+                return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
+            }
+
+            const updatedMessage = await this.editMessageUseCase.execute(messageId, userId, content);
+
+            try {
+                const io = getIO();
+
+                if (updatedMessage.receiverModel === 'Conversation') {
+
+                    const convId = updatedMessage.receiverId.toString();
+                    const conversation = await this.chatRepo.findConversationById(convId);
+                    if (conversation && conversation.participants) {
+                        conversation.participants.forEach((p: any) => {
+                            const pId = (p.participantId as any)._id
+                                ? (p.participantId as any)._id.toString()
+                                : p.participantId.toString();
+                            io.to(pId).emit('message_updated', updatedMessage);
+                        });
+                    }
+
+                } else {
+                    io.to(updatedMessage.receiverId.toString()).emit('message_updated', updatedMessage);
+                    io.to(updatedMessage.senderId.toString()).emit('message_updated', updatedMessage);
+                }
+            } catch (e) {
+                console.error("Socket emit failed", e);
+            }
+
+            res.status(StatusCodes.OK).json({ success: true, data: updatedMessage });
+        } catch (error: any) {
+            console.error("Error editing message:", error);
+            if (error.message.includes("Time limit")) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: error.message });
+            }
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to edit message" });
         }
     }
 }

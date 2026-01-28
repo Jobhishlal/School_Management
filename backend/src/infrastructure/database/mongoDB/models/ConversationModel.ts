@@ -15,7 +15,7 @@ export interface IConversation extends Document {
 const ConversationSchema: Schema = new Schema({
     participants: [{
         _id: false,
-        participantId: { type: Schema.Types.ObjectId, required: true, refPath: 'participants.participantModel' },
+        participantId: { type: Schema.Types.ObjectId, required: true, refPath: 'participantModel' },
         participantModel: { type: String, required: true, enum: ['Students', 'Teacher'] }
     }],
     lastMessage: { type: Schema.Types.ObjectId, ref: 'Message' },

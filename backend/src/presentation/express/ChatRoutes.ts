@@ -8,6 +8,7 @@ import { GetConversationsUseCase } from "../../applications/useCases/Chat/GetCon
 import { GetMessagesUseCase } from "../../applications/useCases/Chat/GetMessagesUseCase";
 import { MarkMessagesReadUseCase } from "../../applications/useCases/Chat/MarkMessagesReadUseCase";
 import { CreateClassGroupChatUseCase } from "../../applications/useCases/Chat/CreateClassGroupChatUseCase";
+import { EditMessageUseCase } from "../../applications/useCases/Chat/EditMessageUseCase";
 
 const router = express.Router();
 
@@ -19,6 +20,7 @@ const getConversationsUseCase = new GetConversationsUseCase(chatRepo);
 const getMessagesUseCase = new GetMessagesUseCase(chatRepo);
 const markMessagesReadUseCase = new MarkMessagesReadUseCase(chatRepo);
 const createClassGroupChatUseCase = new CreateClassGroupChatUseCase(chatRepo);
+const editMessageUseCase = new EditMessageUseCase(chatRepo);
 
 const chatController = new ChatController(
     sendMessageUseCase,
@@ -27,7 +29,8 @@ const chatController = new ChatController(
     markMessagesReadUseCase,
     teacherRepo,
     createClassGroupChatUseCase,
-    chatRepo
+    chatRepo,
+    editMessageUseCase
 );
 
 // Prefix: /api/chat
@@ -37,6 +40,7 @@ router.get('/conversations', authMiddleware, chatController.getConversations);
 router.get('/history/:otherUserId', authMiddleware, chatController.getChatHistory);
 router.post('/send', authMiddleware, chatController.sendMessage);
 router.put('/read', authMiddleware, chatController.markAsRead);
+router.put('/edit', authMiddleware, chatController.editMessage);
 
 import { upload } from "../../infrastructure/middleware/fileUploadService";
 

@@ -11,4 +11,6 @@ export interface IChatRepository {
     updateConversationLastMessage(conversationId: string, messageId: string): Promise<void>;
     findConversationById(conversationId: string): Promise<IConversation | null>;
     getGroupMessages(groupId: string): Promise<IMessage[]>;
+    updateMessage(messageId: string, content: string): Promise<IMessage | null>;
+    findMessageById(messageId: string): Promise<IMessage | null>;
 }

@@ -9,9 +9,8 @@ export interface IMessage extends Document {
     timestamp: Date;
     read: boolean;
     type: 'text' | 'image' | 'file';
+    isEdited?: boolean;
 }
-
-
 
 const MessageSchema: Schema = new Schema({
     senderId: { type: Schema.Types.ObjectId, required: true, refPath: 'senderModel' },
@@ -21,7 +20,8 @@ const MessageSchema: Schema = new Schema({
     content: { type: String, required: true },
     timestamp: { type: Date, default: Date.now },
     read: { type: Boolean, default: false },
-    type: { type: String, enum: ['text', 'image', 'file'], default: 'text' }
+    type: { type: String, enum: ['text', 'image', 'file'], default: 'text' },
+    isEdited: { type: Boolean, default: false }
 });
 
 export const MessageModel = mongoose.model<IMessage>('Message', MessageSchema);

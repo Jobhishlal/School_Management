@@ -4,13 +4,13 @@ import { StudentModel } from "../../../infrastructure/database/models/StudentMod
 import { TeacherModel } from "../../../infrastructure/database/models/Teachers";
 
 export interface ICreateClassGroupChatUseCase {
-    execute(classId: string, creatorId: string): Promise<any>;
+    execute(classId: string, creatorId: string, customName?: string): Promise<any>;
 }
 
 export class CreateClassGroupChatUseCase implements ICreateClassGroupChatUseCase {
     constructor(private chatRepo: IChatRepository) { }
 
-    async execute(classId: string, creatorId: string): Promise<any> {
+    async execute(classId: string, creatorId: string, customName?: string): Promise<any> {
 
         const classData = await ClassModel.findById(classId);
         if (!classData) {
@@ -58,7 +58,7 @@ export class CreateClassGroupChatUseCase implements ICreateClassGroupChatUseCase
         });
 
 
-        const groupName = `Class ${classData.className} - ${classData.division}`;
+        const groupName = customName || `Class ${classData.className} - ${classData.division}`;
 
         return await this.chatRepo.createGroupConversation(groupName, participants, classId);
     }

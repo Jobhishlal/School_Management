@@ -65,7 +65,7 @@ export default function ChatLayout() {
             setConversations(prev => {
                 const existingIdx = prev.findIndex(c => c._id === (message.receiverModel === 'Conversation' ? message.receiverId : message.senderId));
                 if (existingIdx === -1) {
-                
+                    fetchConversations();
                     return prev;
                 }
 
@@ -79,21 +79,39 @@ export default function ChatLayout() {
 
         newSocket.on('receive_private_message', (message: any) => {
             setConversations(prev => {
-               
-                const otherId = message.senderId === userId ? message.receiverId : message.senderId;
+                const isGroupMsg = message.receiverModel === 'Conversation';
+                const otherUserId = message.senderId === (userId || currentUserId) ? message.receiverId : message.senderId;
 
-                const targetId = message.receiverModel === 'Conversation' ? message.receiverId : otherId;
+                let existingIdx = -1;
 
-                const existingIdx = prev.findIndex(c => c._id === targetId);
+                if (isGroupMsg) {
+                    existingIdx = prev.findIndex(c => c._id === message.receiverId);
+                } else {
+                    // For 1-on-1, Conversation ID != User ID. Must match by Participants.
+                    existingIdx = prev.findIndex(c =>
+                        !c.isGroup &&
+                        c.participants.some(p => {
+                            const pId = (p.participantId as any)._id || p.participantId;
+                            return String(pId) === String(otherUserId);
+                        })
+                    );
+                }
 
                 if (existingIdx !== -1) {
-                    const updatedConv = { ...prev[existingIdx], lastMessage: message };
+                    const updatedConv = {
+                        ...prev[existingIdx],
+                        lastMessage: message,
+                        updatedAt: new Date().toISOString()
+                    };
                     const newConvs = [...prev];
                     newConvs.splice(existingIdx, 1);
                     newConvs.unshift(updatedConv);
                     return newConvs;
+                } else {
+                    // If not found (new conversation), fetching is the safest way to get the full conversation object with populated participants
+                    fetchConversations();
+                    return prev;
                 }
-                return prev;
             });
         });
 
@@ -104,15 +122,39 @@ export default function ChatLayout() {
         }
     }, []);
 
+    const fetchConversations = async () => {
+        try {
+            const data = await getConversations();
+            const rawConversations = Array.isArray(data) ? data : [];
+
+            // Deduplicate conversations (Frontend Side Clean-up)
+            const uniqueMap = new Map();
+            rawConversations.forEach(c => {
+                let key;
+                if (c.isGroup) {
+                    key = c._id;
+                } else {
+                    // For private chat, key is the Other User ID
+                    const other = c.participants.find((p: any) => {
+                        // Robust ID access
+                        const pId = (p.participantId && (p.participantId._id || p.participantId)) || '';
+                        return String(pId) !== String(currentUserId);
+                    });
+                    key = other ? (other.participantId._id || other.participantId) : c._id;
+                }
+
+                if (!uniqueMap.has(key)) {
+                    uniqueMap.set(key, c);
+                }
+            });
+
+            setConversations(Array.from(uniqueMap.values()));
+        } catch (error) {
+            console.error("Failed to load conversations", error);
+        }
+    };
+
     useEffect(() => {
-        const fetchConversations = async () => {
-            try {
-                const data = await getConversations();
-                setConversations(Array.isArray(data) ? data : []);
-            } catch (error) {
-                console.error("Failed to load conversations", error);
-            }
-        };
         fetchConversations();
     }, []);
 

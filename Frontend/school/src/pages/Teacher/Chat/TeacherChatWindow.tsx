@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { getChatHistory, markMessagesRead, type ChatUser, type ChatMessage } from '../../../services/ChatService';
-import { Send, Paperclip, Check, CheckCheck } from 'lucide-react';
+import { Send, Paperclip, MoreVertical, Check, CheckCheck } from 'lucide-react';
 import { Socket } from 'socket.io-client';
 import api from '../../../services/api';
 import { jwtDecode } from 'jwt-decode';
@@ -9,7 +9,7 @@ interface TeacherChatWindowProps {
     user: ChatUser;
     isDark: boolean;
     socket: Socket | null;
-    startNew?: boolean; // If true, we might not have a conversation yet
+    startNew?: boolean;
 }
 
 export default function TeacherChatWindow({ user, isDark, socket }: TeacherChatWindowProps) {
@@ -18,15 +18,15 @@ export default function TeacherChatWindow({ user, isDark, socket }: TeacherChatW
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const [currentUserId, setCurrentUserId] = useState<string>('');
 
+    // Edit state
+    const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+    const [editContent, setEditContent] = useState('');
 
-    // Import moved to top
-    // Get current teacher ID
     useEffect(() => {
         const token = localStorage.getItem('teacherAccessToken') || localStorage.getItem('accessToken');
         if (token) {
             try {
                 const decoded: any = jwtDecode(token);
-                // Adjust based on your token payload structure (usually id or _id or userId)
                 setCurrentUserId(decoded.id || decoded.userId || decoded._id);
             } catch (e) {
                 console.error("Token decode failed", e);
@@ -57,12 +57,20 @@ export default function TeacherChatWindow({ user, isDark, socket }: TeacherChatW
         if (!socket) return;
 
         const handleReceiveMessage = (message: ChatMessage) => {
-            if (message.senderId === user._id || message.receiverId === user._id) {
-                setMessages(prev => [...prev, message]);
+            // Robust check for sender (handle object or string)
+            const msgSenderId = typeof message.senderId === 'object' ? (message.senderId as any)._id : message.senderId;
+
+            // Prevent duplication: If I sent this message, it's already added by handleSendMessage
+            if (String(msgSenderId) === String(currentUserId)) {
+                return;
+            }
+
+            if (message.senderId === user._id || message.receiverId === user._id || (user.isGroup && message.receiverId === user._id)) {
+                setMessages(prev => {
+                    if (prev.some(m => m._id === message._id)) return prev;
+                    return [...prev, message];
+                });
                 scrollToBottom();
-                if (message.senderId === user._id) {
-                    markMessagesRead(user._id);
-                }
             }
         };
 
@@ -76,18 +84,53 @@ export default function TeacherChatWindow({ user, isDark, socket }: TeacherChatW
             }
         };
 
+        const handleMessageUpdated = (updatedMessage: ChatMessage) => {
+            setMessages(prev => prev.map(msg =>
+                msg._id === updatedMessage._id ? updatedMessage : msg
+            ));
+        };
+
         socket.on('receive_message', handleReceiveMessage);
         socket.on('messages_read', handleMessagesRead);
+        socket.on('message_updated', handleMessageUpdated);
 
         return () => {
             socket.off('receive_message', handleReceiveMessage);
             socket.off('messages_read', handleMessagesRead);
+            socket.off('message_updated', handleMessageUpdated);
         };
     }, [socket, user._id, currentUserId]);
+
+    // Edit Handlers
+    const handleEditClick = (msg: ChatMessage) => {
+        setEditingMessageId(msg._id);
+        setNewMessage(msg.content);
+        // Focus input
+        const input = document.querySelector('input[type="text"]') as HTMLInputElement;
+        if (input) input.focus();
+    };
+
+    const handleCancelEdit = () => {
+        setEditingMessageId(null);
+        setNewMessage('');
+    };
 
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newMessage.trim()) return;
+
+        if (editingMessageId) {
+            // Handle Edit
+            try {
+                await api.put('/chat/edit', { messageId: editingMessageId, content: newMessage });
+                setEditingMessageId(null);
+                setNewMessage('');
+            } catch (error: any) {
+                console.error("Failed to edit message", error);
+                alert(error.response?.data?.message || "Failed to edit");
+            }
+            return;
+        }
 
         try {
             const payload = {
@@ -111,8 +154,6 @@ export default function TeacherChatWindow({ user, isDark, socket }: TeacherChatW
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [uploading, setUploading] = useState(false);
 
-    // ... (existing helper functions)
-
     const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -128,12 +169,11 @@ export default function TeacherChatWindow({ user, isDark, socket }: TeacherChatW
 
             const { url, type } = response.data.data;
 
-            // Send message with file URL
             const payload = {
                 receiverId: user._id,
                 receiverRole: user.isGroup ? 'Conversation' : 'student',
-                content: url, // For media, content is the URL
-                type: type // 'image' or 'file'
+                content: url,
+                type: type
             };
 
             const sendResponse = await api.post('/chat/send', payload);
@@ -162,7 +202,6 @@ export default function TeacherChatWindow({ user, isDark, socket }: TeacherChatW
                 </div>
             );
         }
-        // Fallback for text or file (could add specific file icon logic later)
         if (msg.type === 'file') {
             return (
                 <a href={msg.content} target="_blank" rel="noreferrer" className="flex items-center gap-2 underline text-blue-500">
@@ -171,22 +210,26 @@ export default function TeacherChatWindow({ user, isDark, socket }: TeacherChatW
                 </a>
             );
         }
-        return <p className="text-sm break-words">{msg.content}</p>;
+        return (
+            <div className="group relative">
+                <p className="text-sm break-words">{msg.content}</p>
+                {(msg as any).isEdited && <span className="text-[10px] opacity-60 italic ml-1">(edited)</span>}
+            </div>
+        );
     };
 
     return (
         <div className="flex-1 flex flex-col h-full">
-            {/* Header ... */}
+            {/* Header */}
             <div className={`p-4 border-b flex items-center justify-between ${isDark ? 'border-slate-700 bg-slate-800/50' : 'border-slate-200 bg-white'}`}>
-                {/* ... existing header code ... */}
                 <div className="flex items-center gap-3">
                     <img
-                        src={user.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`}
-                        alt={user.name}
+                        src={user.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || (user as any).fullName)}&background=random`}
+                        alt={user.name || (user as any).fullName}
                         className="w-10 h-10 rounded-full"
                     />
                     <div>
-                        <h3 className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{user.name}</h3>
+                        <h3 className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{user.name || (user as any).fullName}</h3>
                         <div className="flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-green-500"></span>
                             <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Online</span>
@@ -198,30 +241,26 @@ export default function TeacherChatWindow({ user, isDark, socket }: TeacherChatW
             {/* Messages */}
             <div className={`flex-1 overflow-y-auto p-4 space-y-4 ${isDark ? 'bg-[#0f151a]' : 'bg-slate-50'}`}>
                 {messages.map((msg, idx) => {
-                    // Robust comparison for isMe
                     const senderIdStr = typeof msg.senderId === 'object' ? (msg.senderId as any)._id : msg.senderId;
                     const isMe = String(senderIdStr) === String(currentUserId);
 
-                    // Helper to get sender details for group chat
                     const getSenderDetails = (senderId: string) => {
                         if (!user.isGroup || !user.participants) return null;
-
-                        // Try finding precise match first
                         const p = user.participants.find(p => {
-                            // Handle if p.participantId is populated object OR just string ID
                             const pId = (p.participantId as any)._id || p.participantId;
-                            // Compare as strings to be safe
                             return String(pId) === String(senderId);
                         });
-
                         return p?.participantId;
                     };
 
                     const senderDetails = !isMe && user.isGroup ? getSenderDetails(senderIdStr) : null;
                     const showHeader = !isMe && user.isGroup && senderDetails;
 
+                    // Editable check
+                    const isEditable = isMe && msg.type === 'text' && (Date.now() - new Date(msg.timestamp).getTime() < 5 * 60 * 1000);
+
                     return (
-                        <div key={idx} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                        <div key={idx} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} group/msg`}>
                             {showHeader && (
                                 <span className={`text-xs mb-1 ml-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                                     {senderDetails?.name || (senderDetails as any)?.fullName || 'User'}
@@ -230,12 +269,12 @@ export default function TeacherChatWindow({ user, isDark, socket }: TeacherChatW
                             <div className={`flex gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'} max-w-[80%]`}>
                                 {showHeader && (
                                     <img
-                                        src={senderDetails?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(senderDetails?.name || 'User')}&background=random`}
-                                        alt={senderDetails?.name}
+                                        src={senderDetails?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(senderDetails?.name || (senderDetails as any)?.fullName || 'User')}&background=random`}
+                                        alt={senderDetails?.name || (senderDetails as any)?.fullName}
                                         className="w-6 h-6 rounded-full mt-1"
                                     />
                                 )}
-                                <div className={`rounded-2xl p-3 shadow-sm ${isMe
+                                <div className={`relative rounded-2xl p-3 shadow-sm ${isMe
                                     ? 'bg-blue-600 text-white rounded-br-none'
                                     : (isDark ? 'bg-slate-700 text-slate-200 rounded-bl-none' : 'bg-white text-slate-800 rounded-bl-none border border-slate-100')
                                     }`}>
@@ -248,6 +287,15 @@ export default function TeacherChatWindow({ user, isDark, socket }: TeacherChatW
                                             </span>
                                         )}
                                     </span>
+                                    {isEditable && editingMessageId !== msg._id && (
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); handleEditClick(msg); }}
+                                            className="absolute -top-2 -left-2 bg-slate-100 text-slate-600 p-1 rounded-full opacity-0 group-hover/msg:opacity-100 transition shadow-sm hover:bg-white"
+                                            title="Edit Message"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -255,6 +303,14 @@ export default function TeacherChatWindow({ user, isDark, socket }: TeacherChatW
                 })}
                 <div ref={messagesEndRef} />
             </div>
+
+            {/* Editing Banner */}
+            {editingMessageId && (
+                <div className={`px-4 py-2 text-sm flex justify-between items-center ${isDark ? 'bg-slate-800 text-slate-300 border-t border-slate-700' : 'bg-slate-100 text-slate-600 border-t border-slate-200'}`}>
+                    <span>Editing message...</span>
+                    <button onClick={handleCancelEdit} className="text-blue-500 hover:underline">Cancel</button>
+                </div>
+            )}
 
             {/* Input */}
             <div className={`p-4 border-t ${isDark ? 'border-slate-700 bg-slate-800/30' : 'border-slate-200 bg-white'}`}>
@@ -278,7 +334,7 @@ export default function TeacherChatWindow({ user, isDark, socket }: TeacherChatW
                         type="text"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder="Type your message..."
+                        placeholder={editingMessageId ? "Edit your message..." : "Type your message..."}
                         className={`flex-1 p-3 rounded-xl outline-none ${isDark
                             ? 'bg-slate-700/50 text-white placeholder-slate-500 focus:bg-slate-700'
                             : 'bg-slate-100 text-slate-900 placeholder-slate-500 focus:bg-white border focus:border-blue-400'
@@ -292,7 +348,7 @@ export default function TeacherChatWindow({ user, isDark, socket }: TeacherChatW
                             : (isDark ? 'bg-slate-700 text-slate-500 cursor-not-allowed' : 'bg-slate-200 text-slate-400 cursor-not-allowed')
                             }`}
                     >
-                        <Send size={20} />
+                        {editingMessageId ? <Check size={20} /> : <Send size={20} />}
                     </button>
                 </form>
             </div>
