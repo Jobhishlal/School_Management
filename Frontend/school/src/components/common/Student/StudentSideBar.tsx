@@ -40,12 +40,12 @@ export default function StudentSidebar({ }: Props) {
     logo: ''
   });
 
-  // Fetch announcements on mount and calculate unread count
+
   React.useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
         setLoading(true);
-        const { AnnouncementFetch } = await import("../../../services/authapi"); // Dynamic import to avoid circular dependency if any
+        const { AnnouncementFetch } = await import("../../../services/authapi");
         const res = await AnnouncementFetch();
 
         let fetchedData: any[] = [];
@@ -70,10 +70,10 @@ export default function StudentSidebar({ }: Props) {
     };
 
     fetchAnnouncements();
-    // Poll every 60 seconds to keep updated
+
     const interval = setInterval(fetchAnnouncements, 60000);
 
-    // Fetch Institute Profile
+
     const fetchInstituteDetails = async () => {
       try {
         const res = await getInstituteProfile();
@@ -117,8 +117,8 @@ export default function StudentSidebar({ }: Props) {
     { icon: FileText, text: "Assignments", path: "/student/assignment" },
     { icon: Calendar, text: "Time Table", path: "/student/timetable-view" },
     { icon: BookOpen, text: "Exams & Results", path: '/student/exam-list' },
-    { icon: CreditCard, text: "Communicate", path: "/student/communicate" },
-    { icon: MessageCircle, text: "Notices / Messages", path: "/student/notices" },
+    { icon: CreditCard, text: "Fees", path: "/student/fees" },
+    { icon: MessageCircle, text: "Chat with Teachers", path: "/student/chat" },
     { icon: Users, text: "Meet", path: "/student/meet" },
     { icon: Bot, text: "AI Study Helper", path: "/student/ai-assistant" },
   ];

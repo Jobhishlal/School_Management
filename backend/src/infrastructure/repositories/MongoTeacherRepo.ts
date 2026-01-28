@@ -89,7 +89,7 @@ export class MongoTeacher implements ITeacherCreate {
 
     )
   }
-  async finByAll(): Promise<Teeacher[]> {
+  async findAll(): Promise<Teeacher[]> { // Corrected name
     const teachers = await TeacherModel.find();
 
     return teachers.map((teacher) => {

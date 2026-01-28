@@ -4,10 +4,16 @@ import { Server as HttpServer } from "http";
 let io: Server;
 
 
+import { ChatRepositoryMongo } from '../repositories/Chat/ChatRepositoryMongo';
+
+const chatRepo = new ChatRepositoryMongo();
 const meetingParticipants = new Map<string, Map<string, any>>();
-// Track which meeting a socket is in: socketId -> meetingId
+
 const socketMeetingMap = new Map<string, string>();
-const waitingRoom = new Map<string, Map<string, any>>(); // meetingId -> Map<socketId, userData>
+const waitingRoom = new Map<string, Map<string, any>>();
+
+const onlineUsers = new Map<string, Set<string>>();
+const chatSocketMap = new Map<string, string>();
 
 export const initSocket = (httpServer: HttpServer) => {
   io = new Server(httpServer, {
@@ -20,20 +26,100 @@ export const initSocket = (httpServer: HttpServer) => {
   io.on("connection", (socket) => {
     console.log("🔌 User connected:", socket.id);
 
-    // Existing logic
     socket.on("join", ({ classId, division }) => {
       if (classId) socket.join(`class-${classId}`);
       if (division) socket.join(`division-${division}`);
     });
 
+    // --- Chat Logic ---
+    socket.on('join_chat', (userId: string) => {
+      socket.join(userId);
+      console.log(`User ${userId} joined their personal chat room`);
 
 
- 
+      if (!onlineUsers.has(userId)) {
+        onlineUsers.set(userId, new Set());
+        io.emit('user_online', userId);
+      }
+      onlineUsers.get(userId)!.add(socket.id);
+      chatSocketMap.set(socket.id, userId);
+
+
+      socket.emit('online_users', Array.from(onlineUsers.keys()));
+    });
+
+    socket.on('send_private_message', async (data: { senderId: string, receiverId: string, content: string, senderModel?: string, receiverModel?: string, type?: 'text' | 'image' | 'file' }) => {
+      const { senderId, receiverId, content, senderModel = 'Students', receiverModel = 'Teacher', type = 'text' } = data;
+      try {
+        // 1. Save message
+        const savedMessage = await chatRepo.saveMessage({
+          senderId: senderId as any,
+          senderModel: senderModel as any,
+          receiverId: receiverId as any,
+          receiverModel: receiverModel as any,
+          content,
+          read: false,
+          type: type
+        });
+
+        // 2. Update conversation
+        if (receiverModel === 'Conversation') {
+          await chatRepo.updateConversationLastMessage(receiverId, savedMessage._id as string);
+        } else {
+          await chatRepo.createOrUpdateConversation(senderId, senderModel, receiverId, receiverModel, savedMessage._id as string);
+        }
+
+        // 3. Emit to receiver(s)
+        if (receiverModel === 'Conversation') {
+          // If group, fetch participants and emit to each
+          const conversation = await chatRepo.findConversationById(receiverId);
+          if (conversation && conversation.participants) {
+            conversation.participants.forEach(participant => {
+              const participantId = (participant.participantId as any)._id
+                ? (participant.participantId as any)._id.toString()
+                : participant.participantId.toString();
+
+              io.to(participantId).emit('receive_private_message', savedMessage);
+              io.to(participantId).emit('receive_message', savedMessage);
+            });
+          }
+        } else {
+          // Single user message
+          io.to(receiverId).emit('receive_private_message', savedMessage);
+          io.to(receiverId).emit('receive_message', savedMessage);
+        }
+
+        // 4. Emit to sender confirmation (for multi-device sync)
+        io.to(senderId).emit('message_sent_confirmation', savedMessage);
+
+      } catch (error) {
+        console.error("Error handling private message:", error);
+      }
+    });
+
+    socket.on('typing_start', (data: { to: string }) => {
+      const senderId = chatSocketMap.get(socket.id);
+      if (senderId) {
+        io.to(data.to).emit('typing_started', { from: senderId });
+      }
+    });
+
+    socket.on('typing_stop', (data: { to: string }) => {
+      const senderId = chatSocketMap.get(socket.id);
+      if (senderId) {
+        io.to(data.to).emit('typing_stopped', { from: senderId });
+      }
+    });
+    // --- End Chat Logic ---
+
+
+
+
     socket.on("join-meeting", ({ meetingId, userId, role, userData, meetingCreatorId }) => {
-     
+
       const isCreator = String(userId).trim() === String(meetingCreatorId).trim();
       const normalizedRole = role ? String(role).toLowerCase() : '';
-      
+
       const isAdmin = normalizedRole === 'admin' || normalizedRole === 'super_admin';
       const isHost = isCreator || isAdmin;
 
@@ -43,7 +129,7 @@ export const initSocket = (httpServer: HttpServer) => {
       console.log(`[Host Check] Is Creator: ${isCreator}, Is Admin: ${isAdmin} -> FINAL: ${isHost ? 'IS HOST' : 'IS PARTICIPANT'}`);
 
       if (!isHost) {
-  
+
         const participants = meetingParticipants.get(meetingId);
         let hostSocketId = null;
         if (participants) {
@@ -55,7 +141,7 @@ export const initSocket = (httpServer: HttpServer) => {
           }
         }
 
-        
+
         if (!waitingRoom.has(meetingId)) {
           waitingRoom.set(meetingId, new Map());
         }
@@ -71,7 +157,7 @@ export const initSocket = (httpServer: HttpServer) => {
         waitingRoom.get(meetingId)?.set(socket.id, { userId, role, userData, socketId: socket.id });
         socket.join(`waiting-${meetingId}`); // Special room for waiters
 
-    
+
         socket.emit(hostSocketId ? "waiting-for-approval" : "waiting-for-host");
         console.log(`User ${userId} added to WAITING ROOM for ${meetingId}`);
 
@@ -81,20 +167,20 @@ export const initSocket = (httpServer: HttpServer) => {
         return;
       }
 
-      // --- HOST LOGIC BELOW ---
+
       socket.join(meetingId);
 
-      
+
       if (!meetingParticipants.has(meetingId)) {
         meetingParticipants.set(meetingId, new Map());
       }
       const participants = meetingParticipants.get(meetingId);
 
-      
+
       participants?.set(socket.id, { userId, role, userData, isHost });
       socketMeetingMap.set(socket.id, meetingId);
 
- 
+
       const uniqueUsers = new Set(Array.from(participants?.values() || []).map(p => p.userId)).size;
       const activeConnections = participants?.size || 0;
 
@@ -105,7 +191,7 @@ export const initSocket = (httpServer: HttpServer) => {
         : [];
       socket.emit("waiting-list-update", waiters);
 
-   
+
       socket.to(meetingId).emit("user-connected", { userId, socketId: socket.id, role, userData });
 
       io.to(`waiting-${meetingId}`).emit("waiting-for-approval");
@@ -113,7 +199,7 @@ export const initSocket = (httpServer: HttpServer) => {
 
     socket.on("admit-user", ({ meetingId, socketId }) => {
       console.log(`[ADMIT-USER] Request for Socket: ${socketId} in Meeting: ${meetingId}`);
-    
+
 
       const waiters = waitingRoom.get(meetingId);
       console.log(`[ADMIT-USER] Waiters found for meeting:`, waiters ? Array.from(waiters.keys()) : 'None');
@@ -122,7 +208,6 @@ export const initSocket = (httpServer: HttpServer) => {
         const userData = waiters.get(socketId);
         waiters.delete(socketId);
 
-        // Move user to real meeting
         const participants = meetingParticipants.get(meetingId);
         if (!participants) {
           meetingParticipants.set(meetingId, new Map());
@@ -130,10 +215,9 @@ export const initSocket = (httpServer: HttpServer) => {
         meetingParticipants.get(meetingId)?.set(userData.socketId, { ...userData, isHost: false });
         socketMeetingMap.set(userData.socketId, meetingId);
 
-        // Notify User
         io.to(socketId).emit("admission-granted");
 
-        // Make user join the socket room now
+
         const admittedSocket = io.sockets.sockets.get(socketId);
         console.log(`[ADMIT-USER] Socket Object retrieved? ${!!admittedSocket}`);
 
@@ -190,7 +274,7 @@ export const initSocket = (httpServer: HttpServer) => {
 
       io.in(meetingId).socketsLeave(meetingId);
 
-    
+
       if (meetingParticipants.has(meetingId)) {
         const participants = meetingParticipants.get(meetingId);
         participants?.forEach((_, socketId) => socketMeetingMap.delete(socketId));
@@ -199,6 +283,20 @@ export const initSocket = (httpServer: HttpServer) => {
     });
 
     socket.on("disconnect", () => {
+      // Chat Cleanup
+      const chatUserId = chatSocketMap.get(socket.id);
+      if (chatUserId) {
+        chatSocketMap.delete(socket.id);
+        const userSockets = onlineUsers.get(chatUserId);
+        if (userSockets) {
+          userSockets.delete(socket.id);
+          if (userSockets.size === 0) {
+            onlineUsers.delete(chatUserId);
+            io.emit('user_offline', chatUserId);
+          }
+        }
+      }
+
       const meetingId = socketMeetingMap.get(socket.id);
 
       if (meetingId && meetingParticipants.has(meetingId)) {
@@ -209,20 +307,20 @@ export const initSocket = (httpServer: HttpServer) => {
         participants?.delete(socket.id);
         socketMeetingMap.delete(socket.id);
 
-   
+
         const uniqueUsers = new Set(Array.from(participants?.values() || []).map(p => p.userId)).size;
         const activeConnections = participants?.size || 0;
 
         console.log(`❌ User disconnected: ${socket.id} (User: ${userId}) from meeting ${meetingId}. Unique Users: ${uniqueUsers}, Connections: ${activeConnections}`);
 
-    
+
         if (participantData?.isHost) {
           console.log(`🚨 HOST disconnected: ${socket.id} (User: ${userId}). Ending meeting ${meetingId} for everyone.`);
 
-       
+
           io.to(meetingId).emit("meeting-ended");
 
-         
+
           io.in(meetingId).socketsLeave(meetingId);
 
 
@@ -231,7 +329,7 @@ export const initSocket = (httpServer: HttpServer) => {
             parts?.forEach((_, sId) => socketMeetingMap.delete(sId));
             meetingParticipants.delete(meetingId);
           }
-          return; 
+          return;
         }
 
         // Notify other users to remove the video
@@ -249,7 +347,7 @@ export const initSocket = (httpServer: HttpServer) => {
             foundInWaiting = true;
             console.log(`❌ Waiting User disconnected: ${socket.id} from meeting ${mId}`);
 
-  
+
             const updatedWaiters = Array.from(waiters.values());
             io.to(mId).emit("waiting-list-update", updatedWaiters);
           }

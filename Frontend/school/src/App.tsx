@@ -65,6 +65,8 @@ import ParentComplaints from "./pages/Parents/ParentComplaints";
 import { MeetingList } from "./pages/common/MeetingList";
 import ComplaintList from "./pages/admin/Complaint/ComplaintList";
 import StudentAIAssistant from "./pages/Student/AIAssistant/StudentAIAssistant";
+import ChatLayout from "./pages/Student/Chat/ChatLayout";
+import TeacherChat from "./pages/Teacher/Chat/TeacherChat";
 
 import PublicRoute from "./components/layout/PublicRoute";
 
@@ -119,6 +121,7 @@ function App() {
           <Route path='/student/exam-list' element={<StudentExamResultsPage />} />
           <Route path='/student/attendance-view' element={<StudentAttendanceView />} />
           <Route path='/student/notices' element={<StudentAnnouncementView />} />
+          <Route path="/student/chat" element={<ChatLayout />} />
           <Route path='/student/ai-assistant' element={<StudentAIAssistant />} />
           <Route path="/student/meet" element={<MeetingList />} />
         </Route>
@@ -135,6 +138,7 @@ function App() {
           <Route path="/teacher/schedule" element={<TeacherScheduleView />} />
           <Route path="/teacher/classes" element={<TeacherMyClass />} />
           <Route path="/teacher/student-leave" element={<TeacherStudentLeavePage />} />
+          <Route path="/teacher/chat" element={<TeacherChat />} />
         </Route>
 
 

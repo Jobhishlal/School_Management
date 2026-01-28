@@ -37,7 +37,10 @@ app.use('/teacher', Leaverouter);
 app.use('/parents', ParentRouter);
 app.use('/meeting', MeetingRouter);
 app.use('/student/ai', studentAIRouter);
+import ChatRouter from './presentation/express/ChatRoutes';
+
 app.use('/admin', adminComplaintRoutes);
+app.use('/chat', ChatRouter);
 
 
 export const httpServer = http.createServer(app);

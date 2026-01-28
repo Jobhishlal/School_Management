@@ -92,7 +92,7 @@ export class TeacherCreateUseCase implements TeacherCreateUseCase {
   }
 
   async getall(): Promise<TeacherResponseDTO[]> {
-    const teachers = await this.teacherRepo.finByAll();
+    const teachers = await this.teacherRepo.findAll();
     return teachers.map(saved => ({
       id: saved.id,
       _id: saved.id,
