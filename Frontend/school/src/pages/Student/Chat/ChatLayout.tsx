@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTheme } from '../../../components/layout/ThemeContext';
 import { getConversations, type Conversation, type ChatUser } from '../../../services/ChatService';
 import ChatSidebar from './ChatSidebar';
@@ -13,6 +13,30 @@ export default function ChatLayout() {
     const [socket, setSocket] = useState<Socket | null>(null);
     const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
     const [currentUserId, setCurrentUserId] = useState<string>('');
+    const selectedUserRef = useRef<ChatUser | null>(null);
+
+    useEffect(() => {
+        selectedUserRef.current = selectedUser;
+        // When user selects a chat, clear its unread count locally
+        if (selectedUser) {
+            setConversations(prev => prev.map(c => {
+                let isMatch = false;
+                if (c.isGroup && selectedUser.isGroup && c._id === selectedUser._id) isMatch = true;
+                if (!c.isGroup && !selectedUser.isGroup) {
+                    // Check participant
+                    isMatch = c.participants.some(p => {
+                        const pId = (p.participantId as any)._id || p.participantId;
+                        return String(pId) === String(selectedUser._id);
+                    });
+                }
+
+                if (isMatch) {
+                    return { ...c, unreadCount: 0 };
+                }
+                return c;
+            }));
+        }
+    }, [selectedUser]);
 
     // Initialize Socket
     useEffect(() => {
@@ -87,7 +111,6 @@ export default function ChatLayout() {
                 if (isGroupMsg) {
                     existingIdx = prev.findIndex(c => c._id === message.receiverId);
                 } else {
-                    // For 1-on-1, Conversation ID != User ID. Must match by Participants.
                     existingIdx = prev.findIndex(c =>
                         !c.isGroup &&
                         c.participants.some(p => {
@@ -97,18 +120,29 @@ export default function ChatLayout() {
                     );
                 }
 
+                const isCurrentChat = isGroupMsg
+                    ? selectedUserRef.current?._id === message.receiverId
+                    : selectedUserRef.current?._id === otherUserId;
+
+                // If it's my own message, don't increment unread
+                // If it's incoming message:
+                //   - If I am viewing this chat (isCurrentChat), unread = 0 (or keep existing 0)
+                //   - If I am NOT viewing this chat, increment unread
+                const shouldIncrement = message.senderId !== (userId || currentUserId) && !isCurrentChat;
+
                 if (existingIdx !== -1) {
+                    const currentUnread = prev[existingIdx].unreadCount || 0;
                     const updatedConv = {
                         ...prev[existingIdx],
                         lastMessage: message,
-                        updatedAt: new Date().toISOString()
+                        updatedAt: new Date().toISOString(),
+                        unreadCount: shouldIncrement ? currentUnread + 1 : currentUnread
                     };
                     const newConvs = [...prev];
                     newConvs.splice(existingIdx, 1);
                     newConvs.unshift(updatedConv);
                     return newConvs;
                 } else {
-                    // If not found (new conversation), fetching is the safest way to get the full conversation object with populated participants
                     fetchConversations();
                     return prev;
                 }
@@ -148,7 +182,9 @@ export default function ChatLayout() {
                 }
             });
 
-            setConversations(Array.from(uniqueMap.values()));
+            setConversations(Array.from(uniqueMap.values()).sort((a: any, b: any) => {
+                return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+            }));
         } catch (error) {
             console.error("Failed to load conversations", error);
         }
@@ -169,11 +205,13 @@ export default function ChatLayout() {
                 currentUserId={currentUserId}
             />
             {selectedUser ? (
-                <ChatWindow
-                    teacher={selectedUser}
-                    isDark={isDark}
-                    socket={socket}
-                />
+                <div className="flex-1 min-w-0">
+                    <ChatWindow
+                        teacher={selectedUser}
+                        isDark={isDark}
+                        socket={socket}
+                    />
+                </div>
             ) : (
                 <div className={`flex-1 flex items-center justify-center ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
                     <div className="text-center">

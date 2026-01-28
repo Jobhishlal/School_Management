@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { getChatHistory, markMessagesRead, type ChatUser, type ChatMessage } from '../../../services/ChatService';
-import { Send, Paperclip, MoreVertical, Check, CheckCheck } from 'lucide-react';
+import { Send, Paperclip, MoreVertical, Check, CheckCheck, Trash2 } from 'lucide-react';
 import { Socket } from 'socket.io-client';
 import api from '../../../services/api';
 import { jwtDecode } from 'jwt-decode';
+
 
 interface TeacherChatWindowProps {
     user: ChatUser;
@@ -90,14 +91,22 @@ export default function TeacherChatWindow({ user, isDark, socket }: TeacherChatW
             ));
         };
 
+        const handleMessageDeleted = (data: { messageId: string, isDeleted: boolean }) => {
+            setMessages(prev => prev.map(msg =>
+                msg._id === data.messageId ? { ...msg, isDeleted: true, content: 'This message was deleted' } : msg
+            ));
+        };
+
         socket.on('receive_message', handleReceiveMessage);
         socket.on('messages_read', handleMessagesRead);
         socket.on('message_updated', handleMessageUpdated);
+        socket.on('message_deleted', handleMessageDeleted);
 
         return () => {
             socket.off('receive_message', handleReceiveMessage);
             socket.off('messages_read', handleMessagesRead);
             socket.off('message_updated', handleMessageUpdated);
+            socket.off('message_deleted', handleMessageDeleted);
         };
     }, [socket, user._id, currentUserId]);
 
@@ -108,6 +117,15 @@ export default function TeacherChatWindow({ user, isDark, socket }: TeacherChatW
         // Focus input
         const input = document.querySelector('input[type="text"]') as HTMLInputElement;
         if (input) input.focus();
+    };
+
+    const handleDeleteClick = async (msgId: string) => {
+        try {
+            await api.put('/chat/delete', { messageId: msgId });
+        } catch (error: any) {
+            console.error("Failed to delete message", error);
+            alert("Failed to delete");
+        }
     };
 
     const handleCancelEdit = () => {
@@ -190,6 +208,9 @@ export default function TeacherChatWindow({ user, isDark, socket }: TeacherChatW
     };
 
     const renderMessageContent = (msg: ChatMessage) => {
+        if ((msg as any).isDeleted) {
+            return <p className="text-sm italic opacity-50 text-slate-500">This message was deleted</p>;
+        }
         if (msg.type === 'image') {
             return (
                 <div className="cursor-pointer" onClick={() => window.open(msg.content, '_blank')}>
@@ -287,14 +308,23 @@ export default function TeacherChatWindow({ user, isDark, socket }: TeacherChatW
                                             </span>
                                         )}
                                     </span>
-                                    {isEditable && editingMessageId !== msg._id && (
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); handleEditClick(msg); }}
-                                            className="absolute -top-2 -left-2 bg-slate-100 text-slate-600 p-1 rounded-full opacity-0 group-hover/msg:opacity-100 transition shadow-sm hover:bg-white"
-                                            title="Edit Message"
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
-                                        </button>
+                                    {isEditable && editingMessageId !== msg._id && !(msg as any).isDeleted && (
+                                        <div className="absolute -top-2 -left-8 flex gap-1 bg-white dark:bg-slate-800 rounded-full shadow-sm opacity-0 group-hover/msg:opacity-100 transition p-1 z-10 w-auto">
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleEditClick(msg); }}
+                                                className="text-slate-500 hover:text-blue-500 p-1"
+                                                title="Edit"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                                            </button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); handleDeleteClick(msg._id); }}
+                                                className="text-slate-500 hover:text-red-500 p-1"
+                                                title="Delete"
+                                            >
+                                                <Trash2 size={12} />
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                             </div>

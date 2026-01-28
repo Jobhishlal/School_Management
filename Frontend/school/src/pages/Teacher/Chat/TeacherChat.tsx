@@ -60,7 +60,9 @@ export const TeacherChat: React.FC = () => {
                 }
             });
 
-            setConversations(Array.from(uniqueMap.values()));
+            setConversations(Array.from(uniqueMap.values()).sort((a: any, b: any) => {
+                return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+            }));
         } catch (error) {
             console.error("Error loading conversations", error);
         } finally {

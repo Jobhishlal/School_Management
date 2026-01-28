@@ -207,4 +207,30 @@ export class MongoTeacher implements ITeacherCreate {
 
 
 
+
+  async search(query: string): Promise<Teeacher[]> {
+    const regex = new RegExp(query, 'i');
+    const teachers = await TeacherModel.find({
+      $or: [{ name: regex }, { email: regex }]
+    });
+
+    return teachers.map((teacher) => {
+      return new Teeacher(
+        teacher.id.toString(),
+        teacher.name,
+        teacher.email,
+        teacher.phone,
+        teacher.gender,
+        teacher.role,
+        teacher.createdAt,
+        teacher.updatedAt,
+        teacher.blocked,
+        teacher.Password,
+        teacher.documents,
+        teacher.subjects,
+        teacher.department,
+        teacher.leaveBalance
+      );
+    });
+  }
 }

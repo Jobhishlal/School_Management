@@ -8,6 +8,7 @@ interface NewChatModalProps {
     onClose: () => void;
     onSelectStudent: (student: ChatUser) => void;
     isDark: boolean;
+    existingChatUserIds: Set<string>;
 }
 
 interface ClassData {
@@ -19,7 +20,7 @@ interface ClassData {
 interface StudentData {
     _id?: string;
     id?: string;
-    fullName: string; 
+    fullName: string;
     studentId: string;
     profileImage?: string;
     photos: { url: string }[];

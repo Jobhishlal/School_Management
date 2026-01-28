@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { NotificationDropdown } from "../../../pages/Student/NotificationDropdown";
 import {
-  Sun,
-  Moon,
   LayoutDashboard,
   User,
   Calendar,
@@ -22,11 +20,13 @@ import {
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../layout/ThemeContext";
 import { getInstituteProfile } from "../../../services/authapi";
+import ThemeToggler from "../ThemeToggler";
+
 
 type Props = {};
 
 export default function StudentSidebar({ }: Props) {
-  const { isDark, toggleTheme } = useTheme();
+  const { isDark } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const studentId = localStorage.getItem("studentId");
@@ -162,12 +162,9 @@ export default function StudentSidebar({ }: Props) {
 
           <h1 className={`text-lg font-bold ${textPrimary}`}>Student Portal</h1>
         </div>
-        <button
-          onClick={toggleTheme}
-          className={`p-2.5 rounded-xl ${hoverBg} transition-all duration-300 hover:scale-105 hover:rotate-12`}
-        >
-          {isDark ? <Sun className="text-amber-400" size={20} /> : <Moon className="text-slate-600" size={20} />}
-        </button>
+        <div className="mr-2">
+          <ThemeToggler />
+        </div>
       </div>
 
       <div className="flex h-full">
@@ -273,22 +270,7 @@ export default function StudentSidebar({ }: Props) {
                 unreadCount={unreadCount}
               />
 
-              <button
-                onClick={toggleTheme}
-                className={`flex items-center space-x-3 px-4 py-3 rounded-xl ${hoverBg} transition-all duration-300 hover:scale-105`}
-              >
-                {isDark ? (
-                  <>
-                    <Sun className="text-amber-400" size={18} />
-                    <span className={`text-sm font-medium ${textPrimary}`}>Light</span>
-                  </>
-                ) : (
-                  <>
-                    <Moon className="text-slate-600" size={18} />
-                    <span className={`text-sm font-medium ${textPrimary}`}>Dark</span>
-                  </>
-                )}
-              </button>
+              <ThemeToggler />
 
 
               <div className="relative">

@@ -294,4 +294,17 @@ export class MongoStudentRepo implements StudentDetails {
 
     return students.map(s => this.mapToDomainPopulated(s));
   }
+
+
+  async search(query: string): Promise<Students[]> {
+    const regex = new RegExp(query, 'i');
+    const students = await StudentModel.find({
+      $or: [{ fullName: regex }, { studentId: regex }]
+    })
+      .populate("parent")
+      .populate("address")
+      .populate("classId");
+
+    return students.map(s => this.mapToDomainPopulated(s));
+  }
 }

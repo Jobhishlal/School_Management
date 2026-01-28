@@ -46,7 +46,7 @@ export class AnnouncementController {
         endTime: new Date(values.endTime),
       });
 
-      console.log(data)
+     
 
       res.status(StatusCodes.OK).json({ success: true, data, message: "Announcement created" });
 
@@ -70,8 +70,7 @@ export class AnnouncementController {
 
       const data: UpdateAnnouncementDTO = req.body;
 
-      console.log('Update Body:', req.body);
-      console.log('Update File:', req.file);
+     
 
       if (req.file) {
         const file = req.file as any;

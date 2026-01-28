@@ -9,5 +9,5 @@ export interface ITeacherCreate {
     findById(id: string): Promise<Teeacher | null>;
     addDocument(id: string, document: { url: string; filename: string }): Promise<Teeacher | null>;
     addSubjects(id: string, subjects: { name: string; code: string }[]): Promise<Teeacher | null>;
-
+    search(query: string): Promise<Teeacher[]>;
 }

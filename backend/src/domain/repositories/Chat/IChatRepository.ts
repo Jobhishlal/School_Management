@@ -12,5 +12,6 @@ export interface IChatRepository {
     findConversationById(conversationId: string): Promise<IConversation | null>;
     getGroupMessages(groupId: string): Promise<IMessage[]>;
     updateMessage(messageId: string, content: string): Promise<IMessage | null>;
+    markMessageAsDeleted(messageId: string): Promise<IMessage | null>;
     findMessageById(messageId: string): Promise<IMessage | null>;
 }

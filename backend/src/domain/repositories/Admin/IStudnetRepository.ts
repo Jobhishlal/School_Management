@@ -11,4 +11,5 @@ export interface StudentDetails {
   findByClassId(classId: string): Promise<Students[]>;
   findByStudentClassIdBase(classId: string): Promise<Students[]>
   findByClassIdWithSearch(classId: string, search: string, page: number, limit: number): Promise<{ students: Students[], total: number }>;
+  search(query: string): Promise<Students[]>;
 }

@@ -7,9 +7,12 @@ import { IGetConversationsUseCase } from "../../../../applications/useCases/Chat
 import { IGetMessagesUseCase } from "../../../../applications/useCases/Chat/GetMessagesUseCase";
 import { IMarkMessagesReadUseCase } from "../../../../applications/useCases/Chat/MarkMessagesReadUseCase";
 import { MongoTeacher } from "../../../../infrastructure/repositories/MongoTeacherRepo";
+import { MongoStudentRepo } from "../../../../infrastructure/repositories/MongoStudentRepo";
 import { IEditMessageUseCase } from "../../../../applications/useCases/Chat/EditMessageUseCase";
 import { ICreateClassGroupChatUseCase } from "../../../../applications/useCases/Chat/CreateClassGroupChatUseCase";
 import { IChatRepository } from "../../../../domain/repositories/Chat/IChatRepository";
+
+import { IDeleteMessageUseCase } from "../../../../applications/useCases/Chat/DeleteMessageUseCase";
 
 export class ChatController {
     constructor(
@@ -20,7 +23,9 @@ export class ChatController {
         private teacherRepo: MongoTeacher,
         private createClassGroupChatUseCase: ICreateClassGroupChatUseCase,
         private chatRepo: IChatRepository,
-        private editMessageUseCase: IEditMessageUseCase
+        private editMessageUseCase: IEditMessageUseCase,
+        private deleteMessageUseCase: IDeleteMessageUseCase,
+        private studentRepo: MongoStudentRepo
     ) { }
 
     // Get list of teachers for student to chat with (Legacy/Specific functionality)
@@ -247,6 +252,87 @@ export class ChatController {
                 return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: error.message });
             }
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to edit message" });
+        }
+    }
+
+    deleteMessage = async (req: Request, res: Response) => {
+        try {
+            const authReq = req as AuthRequest;
+            const userId = authReq.user?.id;
+            const { messageId } = req.body;
+
+            if (!userId) {
+                return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
+            }
+
+            const deletedMessage = await this.deleteMessageUseCase.execute(messageId, userId);
+
+            // Socket emission
+            try {
+                const io = getIO();
+
+                if (deletedMessage.receiverModel === 'Conversation') {
+                    const convId = deletedMessage.receiverId.toString();
+                    const conversation = await this.chatRepo.findConversationById(convId);
+                    if (conversation && conversation.participants) {
+                        conversation.participants.forEach((p: any) => {
+                            const pId = (p.participantId as any)._id
+                                ? (p.participantId as any)._id.toString()
+                                : p.participantId.toString();
+                            io.to(pId).emit('message_deleted', { messageId, isDeleted: true });
+                        });
+                    }
+                } else {
+                    io.to(deletedMessage.receiverId.toString()).emit('message_deleted', { messageId, isDeleted: true });
+                    io.to(deletedMessage.senderId.toString()).emit('message_deleted', { messageId, isDeleted: true });
+                }
+
+            } catch (e) {
+                console.error("Socket emit failed", e);
+            }
+
+            res.status(StatusCodes.OK).json({ success: true, data: deletedMessage });
+        } catch (error: any) {
+            console.error("Error deleting message:", error);
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to delete message" });
+        }
+    }
+
+    searchUsers = async (req: Request, res: Response) => {
+        try {
+            const { query, role } = req.query;
+            if (!query || typeof query !== 'string') {
+                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Query string is required" });
+            }
+
+            let users: any[] = []; // Using any[] for now as Teacher and Student have different structures but map similarly
+
+            if (role === 'student') {
+                const students = await this.studentRepo.search(query);
+                users = students.map(s => ({
+                    _id: s.id,
+                    name: s.fullName,
+                    email: s.studentId, // Using studentID as identifier/subtext since emails might not be primary
+                    profileImage: s.photos?.[0]?.url || '',
+                    role: 'student',
+                    isOnline: false
+                }));
+            } else {
+                const teachers = await this.teacherRepo.search(query);
+                users = teachers.map(t => ({
+                    _id: t.id,
+                    name: t.name,
+                    email: t.email,
+                    profileImage: '', // Teacher entity might not have profileImage directly exposed, check if documents has it or default
+                    role: 'teacher',
+                    isOnline: false // Can be enhanced with socket online status later
+                }));
+            }
+
+            res.status(StatusCodes.OK).json({ success: true, data: users });
+        } catch (error) {
+            console.error("Error searching users:", error);
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to search users" });
         }
     }
 }

@@ -62,7 +62,7 @@ export class ChatRepositoryMongo implements IChatRepository {
             .sort({ updatedAt: -1 })
             .lean();
 
-        // Manual Population to bypass refPath issues
+        // Manual Population and Unread Count Calculation
         const populatedConversations = await Promise.all(conversations.map(async (conv) => {
             const populatedParticipants = await Promise.all(conv.participants.map(async (p) => {
                 const model = p.participantModel?.toLowerCase();
@@ -98,18 +98,46 @@ export class ChatRepositoryMongo implements IChatRepository {
                         };
                     }
                 }
-                // Fallback: If not populated, return structure that won't crash frontend but indicates missing data
-                // This shouldn't persist but might help debug
                 return p;
             }));
 
+            // Calculate unread count
+            const otherParticipant = conv.participants.find((p: any) =>
+                p.participantId && p.participantId.toString() !== userId
+            );
+
+            let unreadCount = 0;
+            if (conv.isGroup) {
+                // For groups, count messages sent to the group that are unread
+                // Note: This is a shared read status (limitation of current model)
+                // Checking if the current user is NOT the sender is important but senderId is on message
+                // simplified: count unread messages in this group where sender != userId
+                unreadCount = await MessageModel.countDocuments({
+                    receiverId: conv._id,
+                    senderId: { $ne: userId },
+                    read: false
+                });
+            } else if (otherParticipant) {
+                // For 1-on-1, count messages sent BY the other person TO me that are unread
+                // We need the ID of the other participant. 
+                // Note: populatedParticipants has objects, conv.participants has OIDs if not populated?
+                // conv was .lean(), so it has OIDs.
+                const otherId = otherParticipant.participantId;
+                unreadCount = await MessageModel.countDocuments({
+                    senderId: otherId,
+                    receiverId: userId,
+                    read: false
+                });
+            }
+
             return {
                 ...conv,
-                participants: populatedParticipants
+                participants: populatedParticipants,
+                unreadCount
             };
         }));
 
-        return populatedConversations as IConversation[];
+        return populatedConversations as any[];
     }
 
     async markMessagesAsRead(senderId: string, receiverId: string): Promise<void> {
@@ -148,6 +176,14 @@ export class ChatRepositoryMongo implements IChatRepository {
         return await MessageModel.findByIdAndUpdate(
             messageId,
             { content, isEdited: true },
+            { new: true }
+        );
+    }
+
+    async markMessageAsDeleted(messageId: string): Promise<IMessage | null> {
+        return await MessageModel.findByIdAndUpdate(
+            messageId,
+            { isDeleted: true },
             { new: true }
         );
     }

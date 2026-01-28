@@ -10,6 +10,7 @@ export interface IMessage extends Document {
     read: boolean;
     type: 'text' | 'image' | 'file';
     isEdited?: boolean;
+    isDeleted?: boolean;
 }
 
 const MessageSchema: Schema = new Schema({
@@ -21,7 +22,8 @@ const MessageSchema: Schema = new Schema({
     timestamp: { type: Date, default: Date.now },
     read: { type: Boolean, default: false },
     type: { type: String, enum: ['text', 'image', 'file'], default: 'text' },
-    isEdited: { type: Boolean, default: false }
+    isEdited: { type: Boolean, default: false },
+    isDeleted: { type: Boolean, default: false }
 });
 
 export const MessageModel = mongoose.model<IMessage>('Message', MessageSchema);
