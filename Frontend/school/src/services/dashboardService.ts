@@ -1,4 +1,4 @@
-import api from "./api"; 
+import api from "./api";
 
 export interface DashboardStats {
     studentProfile: {
@@ -27,6 +27,47 @@ export interface DashboardStats {
 export const getParentDashboardStats = async (): Promise<DashboardStats> => {
     try {
         const response = await api.get('/parents/dashboard/stats');
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+export interface TeacherDashboardDTO {
+    totalClassStudents: number;
+    totalSchoolStudents: number;
+    activeAssignmentCount: number;
+    todaysSchedule: {
+        startTime: string;
+        endTime: string;
+        subject: string;
+        type: string;
+        day: string;
+        className?: string;
+        division?: string;
+    }[];
+    topStudents: {
+        studentId: string;
+        fullName: string;
+        avgMarks: number;
+        photoUrl?: string;
+        className: string;
+    }[];
+    upcomingExams: {
+        id: string;
+        examDate: string;
+        startTime: string;
+        endTime: string;
+        subject: string;
+        examType: string;
+        evaluationStatus?: string;
+    }[];
+}
+
+export const getTeacherDashboardStats = async (): Promise<TeacherDashboardDTO> => {
+    try {
+        const response = await api.get('/teacher/dashboard');
         return response.data;
     } catch (error) {
         throw error;

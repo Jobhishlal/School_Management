@@ -389,6 +389,16 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
 
     return results;
   }
+
+  async countActiveAssignments(teacherId: string): Promise<number> {
+    if (!Types.ObjectId.isValid(teacherId)) {
+      throw new Error(`Invalid Teacher ID: ${teacherId}`);
+    }
+    return await AssignmentModel.countDocuments({
+      teacherId: new Types.ObjectId(teacherId),
+      Assignment_Due_Date: { $gte: new Date() }
+    });
+  }
 }
 
 

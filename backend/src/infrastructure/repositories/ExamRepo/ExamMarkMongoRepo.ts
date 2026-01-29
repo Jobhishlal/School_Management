@@ -293,7 +293,7 @@ export class ExamMarkMongoRepository implements IExamMarkRepository {
           fullName: { $first: "$student.fullName" },
           studentId: { $first: "$student.studentId" },
           avgMarks: { $avg: "$marksObtained" },
-          // Add photo logic if possible, otherwise mock or fetch separately
+          photo: { $first: { $arrayElemAt: ["$student.photos.url", 0] } }
         },
       },
       { $sort: { avgMarks: -1 } },

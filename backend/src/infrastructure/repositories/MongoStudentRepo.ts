@@ -307,4 +307,15 @@ export class MongoStudentRepo implements StudentDetails {
 
     return students.map(s => this.mapToDomainPopulated(s));
   }
+
+  async countAll(): Promise<number> {
+    return await StudentModel.countDocuments();
+  }
+
+  async countByClassId(classId: string): Promise<number> {
+    if (!mongoose.Types.ObjectId.isValid(classId)) {
+      throw new Error(`Invalid Class ID: ${classId}`);
+    }
+    return await StudentModel.countDocuments({ classId: new mongoose.Types.ObjectId(classId) });
+  }
 }

@@ -349,4 +349,22 @@ Teacherrouter.patch('/leave/:id/status',
   (req, res) => studentLeaveController.updateLeaveStatus(req as AuthRequest, res)
 );
 
+import { TeacherDashboardController } from "../http/controllers/Teacher/TeacherDashboardController";
+import { GetTeacherDashboardUseCase } from "../../applications/useCases/Teacher/GetTeacherDashboardUseCase";
+
+const teacherDashboardUseCase = new GetTeacherDashboardUseCase(
+  studentrepo,
+  assignmentRepo,
+  timetableRepo,
+  examrepo,
+  exammarkrepo,
+  classrepo
+);
+const teacherDashboardController = new TeacherDashboardController(teacherDashboardUseCase);
+
+Teacherrouter.get('/dashboard',
+  authMiddleware,
+  (req, res) => teacherDashboardController.getDashboardStats(req as AuthRequest, res)
+);
+
 export default Teacherrouter;

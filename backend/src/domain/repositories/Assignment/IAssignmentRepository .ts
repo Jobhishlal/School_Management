@@ -21,4 +21,5 @@ export interface IAssignmentRepository {
   assignmentsubmit(assignmentId: string, studentId: string, fileUrl: string, fileName: string, studentDescription?: string): Promise<SubmitDTO[]>;
   validateAssignment(data: ValidationDTO): Promise<AssignmentEntity | null>;
   getAssignmentSubmissions(assignmentId: string): Promise<SubmissionResult[]>;
+  countActiveAssignments(teacherId: string): Promise<number>; // New
 }
