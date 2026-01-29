@@ -44,6 +44,40 @@ export default function ChatSidebar({ conversations, selectedUser, onSelectUser,
         })
         : [];
 
+    const getOtherParticipant = (conv: Conversation): ChatUser | undefined => {
+        if (conv.isGroup) {
+            return {
+                _id: conv._id,
+                name: conv.groupName || 'Group Chat',
+                email: 'Group',
+                profileImage: '',
+                role: 'group',
+                isGroup: true,
+                participants: conv.participants
+            };
+        }
+
+        const participant = conv.participants.find((p: any) => p.participantId && String((p.participantId as any)._id || p.participantId) !== String(currentUserId));
+        if (!participant) return undefined;
+
+        const pId = participant.participantId;
+        if (typeof pId === 'string') {
+            return {
+                _id: pId,
+                name: 'Unknown User',
+                email: '',
+                profileImage: '',
+                role: 'teacher'
+            };
+        }
+
+        if (!(pId as any)._id && (pId as any).participantId) {
+            return (pId as any).participantId;
+        }
+
+        return pId as ChatUser;
+    };
+
     return (
         <div className={`w-80 border-r flex flex-col ${isDark ? 'border-slate-700 bg-slate-800/30' : 'border-slate-200 bg-slate-50/50'}`}>
             <div className="p-4 border-b border-transparent">
@@ -80,22 +114,7 @@ export default function ChatSidebar({ conversations, selectedUser, onSelectUser,
                             <div className="mb-4">
                                 <p className={`text-xs px-2 mb-2 font-semibold uppercase ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Existing Chats</p>
                                 {filteredConversations.map(conv => {
-                                    let otherUser: ChatUser | undefined;
-                                    if (conv.isGroup) {
-                                        otherUser = {
-                                            _id: conv._id,
-                                            name: conv.groupName || 'Group Chat',
-                                            email: 'Group', // Placeholder
-                                            profileImage: '',
-                                            role: 'group',
-                                            isGroup: true,
-                                            participants: conv.participants
-                                        };
-                                    } else {
-                                        const participant = conv.participants.find((p: any) => p.participantId && String((p.participantId as any)._id || p.participantId) !== String(currentUserId));
-                                        otherUser = participant?.participantId;
-                                    }
-
+                                    const otherUser = getOtherParticipant(conv);
                                     if (!otherUser) return null;
 
                                     return (
@@ -181,22 +200,7 @@ export default function ChatSidebar({ conversations, selectedUser, onSelectUser,
                             </div>
                         ) : (
                             conversations.map(conv => {
-                                let otherUser: ChatUser | undefined;
-                                if (conv.isGroup) {
-                                    otherUser = {
-                                        _id: conv._id,
-                                        name: conv.groupName || 'Group Chat',
-                                        email: '',
-                                        profileImage: '',
-                                        role: 'group',
-                                        isGroup: true,
-                                        participants: conv.participants
-                                    };
-                                } else {
-                                    const participant = conv.participants.find((p: any) => p.participantId && String((p.participantId as any)._id || p.participantId) !== String(currentUserId));
-                                    otherUser = participant?.participantId;
-                                }
-
+                                const otherUser = getOtherParticipant(conv);
                                 if (!otherUser) return null;
 
                                 return (
@@ -223,7 +227,13 @@ export default function ChatSidebar({ conversations, selectedUser, onSelectUser,
                                             <h4 className="font-semibold text-sm truncate">{otherUser!.name || (otherUser as any).fullName}</h4>
                                             <div className="flex justify-between items-center">
                                                 <p className={`text-xs truncate max-w-[140px] ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
-                                                    {conv.lastMessage?.content || 'Click to chat'}
+                                                    {conv.lastMessage?.type === 'audio'
+                                                        ? '🎤 Voice Message'
+                                                        : conv.lastMessage?.type === 'image'
+                                                            ? '📷 Image'
+                                                            : conv.lastMessage?.type === 'file'
+                                                                ? '📎 Attachment'
+                                                                : conv.lastMessage?.content || 'Click to chat'}
                                                 </p>
                                                 {conv.unreadCount && conv.unreadCount > 0 ? (
                                                     <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">

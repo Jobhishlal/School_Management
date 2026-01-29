@@ -5,7 +5,7 @@ import { MessageResponseDTO, ConversationResponseDTO } from "../../applications/
 export class ChatDTOMapper {
     static toMessageDTO(message: Message): MessageResponseDTO {
         return {
-            id: message.id,
+            _id: message.id,
             senderId: message.senderId,
             senderRole: message.senderRole,
             receiverId: message.receiverId,
@@ -21,14 +21,16 @@ export class ChatDTOMapper {
 
     static toConversationDTO(conversation: Conversation): ConversationResponseDTO {
         return {
-            id: conversation.id,
+            _id: conversation.id,
             participants: conversation.participants.map(p => ({
-                participantId: p.participantId,
-                participantModel: p.participantModel,
-                name: p.name,
-                email: p.email,
-                profileImage: p.profileImage,
-                role: p.role
+                participantId: {
+                    _id: p.participantId,
+                    name: p.name,
+                    email: p.email,
+                    profileImage: p.profileImage,
+                    role: p.role || 'student'
+                },
+                participantModel: p.participantModel
             })),
             lastMessage: conversation.lastMessageContent ? {
                 content: conversation.lastMessageContent,

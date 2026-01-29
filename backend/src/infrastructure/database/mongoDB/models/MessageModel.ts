@@ -8,7 +8,7 @@ export interface IMessage extends Document {
     content: string;
     timestamp: Date;
     read: boolean;
-    type: 'text' | 'image' | 'file';
+    type: 'text' | 'image' | 'file' | 'audio';
     isEdited?: boolean;
     isDeleted?: boolean;
 }
@@ -21,7 +21,7 @@ const MessageSchema: Schema = new Schema({
     content: { type: String, required: true },
     timestamp: { type: Date, default: Date.now },
     read: { type: Boolean, default: false },
-    type: { type: String, enum: ['text', 'image', 'file'], default: 'text' },
+    type: { type: String, enum: ['text', 'image', 'file', 'audio'], default: 'text' },
     isEdited: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false }
 });

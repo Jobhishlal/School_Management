@@ -185,7 +185,7 @@ export class SchoolChatController {
             const authReq = req as AuthRequest;
             const userId = authReq.user?.id;
             const { messageId } = req.body;
-
+            console.log(`[SchoolChatController] deleteMessage called. Body:`, req.body);
             if (!userId) {
                 return res.status(StatusCodes.UNAUTHORIZED).json({ message: CHAT_ERRORS.UNAUTHORIZED });
             }

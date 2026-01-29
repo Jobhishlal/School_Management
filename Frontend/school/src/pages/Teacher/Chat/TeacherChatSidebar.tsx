@@ -39,12 +39,34 @@ export default function TeacherChatSidebar({ conversations, selectedUser, onSele
                 profileImage: '',
                 role: 'group',
                 isGroup: true,
-                participants: conv.participants
+                participants: conv.participants as any
             };
         }
-        console.log("teacher data", getOtherParticipant)
-        const participant = conv.participants.find(p => p.participantId && String((p.participantId as any)._id || p.participantId) !== String(currentUserId));
-        return participant?.participantId;
+
+        const participant = conv.participants.find(p => {
+            const pId = (p.participantId as any)._id || p.participantId;
+            return p.participantId && String(pId) !== String(currentUserId);
+        });
+
+        if (!participant) return undefined;
+
+        const pId = participant.participantId;
+        if (typeof pId === 'string') {
+            return {
+                _id: pId,
+                name: 'Unknown User',
+                email: '',
+                profileImage: '',
+                role: 'student'
+            };
+        }
+
+        // Ensure _id exists, if not use the whole object as ID if it looks like one (edge case)
+        if (!(pId as any)._id && (pId as any).participantId) {
+            return (pId as any).participantId;
+        }
+
+        return pId as ChatUser;
     };
 
     return (
@@ -192,7 +214,13 @@ export default function TeacherChatSidebar({ conversations, selectedUser, onSele
                                 <div className="flex-1 min-w-0">
                                     <h4 className="font-semibold text-sm truncate">{otherUser.name || (otherUser as any).fullName}</h4>
                                     <p className={`text-xs truncate ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
-                                        {conv.lastMessage?.content || 'No messages yet'}
+                                        {conv.lastMessage?.type === 'audio'
+                                            ? '🎤 Voice Message'
+                                            : conv.lastMessage?.type === 'image'
+                                                ? '📷 Image'
+                                                : conv.lastMessage?.type === 'file'
+                                                    ? '📎 Attachment'
+                                                    : conv.lastMessage?.content || 'No messages yet'}
                                     </p>
                                 </div>
                             </div>

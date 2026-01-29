@@ -64,50 +64,11 @@ export default function SchoolNavbar({ }: Props) {
 
   const userRole = localStorage.getItem("role");
 
-  // const menuItems = [
-  //   {
-  //     label: "SCHOOL MANAGEMENT",
-  //     links: [
-  //       { icon: LayoutDashboard, text: "Dashboard", path: "/dashboard" },
-  //       { icon: Users, text: "Admins Management", path: "/admins" },
-  //       { icon: GraduationCap, text: "Student Management", path: "/students" },
-
-  //       ...(userRole === "sub_admin"
-  //         ? [{ icon: UserCheck, text: "Admin Profile", path: "/adminprofile" }]
-  //         : []),
-  //       ...(userRole === "super_admin"
-  //         ? [{ icon: Settings, text: "Institute Profile", path: "/instituteprofile" }]
-  //         : []),
-
-  //       { icon: Megaphone, text: "Teacher Management", path: "/teachers" },
-  //       { icon: AlertCircle, text: "Class Base Access", path: "/classbaseview" },
-  //       { icon: DollarSign, text: "Finance", path: "/finance-management" },
-
-  //       ...(userRole==="super_admin"
-  //         ?[{
-  //           icon: GraduationCap, text: "Student Management", path: "/student-management"
-  //         }]:[]
-
-
-  //       ),
-  //       { icon: GraduationCap, text: "approvals", path: "/admin-approval" },
-  //     ],
-  //   },
-  //   {
-  //     label: "COMMUNICATION",
-  //     links: [
-  //       { icon: MessageCircle, text: "Communication", path: "/communication" },
-  //       { icon: FileText, text: "Leave Request", path: "/leave-request" },
-  //       { icon: Calendar, text: "Time Table", path: "/timetable-management" },
-  //     ],
-  //   },
-  // ];
-
+ 
 
 
   React.useEffect(() => {
-    // Only set if not already set to a sub-admin variant, or enforce 'admin' generic?
-    // Better to trust the userRole variable if it's already an admin type, or set to super_admin as fallback
+  
     if (userRole !== "sub_admin") {
       localStorage.setItem("role", "super_admin");
     }
@@ -155,7 +116,7 @@ export default function SchoolNavbar({ }: Props) {
   ];
 
   const sidebarBg = isDark ? "bg-[#121A21]" : "bg-[#fafbfc]";
-  // const sidebarBorder = isDark ? "border-slate-700/50" : "border-slate-200/60";
+
   const headerBg = isDark ? "bg-[#121A21]" : "bg-white";
   const headerBorder = isDark ? "border-slate-700/30" : "border-slate-200/50";
   const cardBg = isDark ? "bg-slate-800/50" : "bg-white";

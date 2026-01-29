@@ -49,7 +49,15 @@ export const initSocket = (httpServer: HttpServer) => {
     });
 
     socket.on('send_private_message', async (data: { senderId: string, receiverId: string, content: string, senderModel?: string, receiverModel?: string, type?: 'text' | 'image' | 'file' }) => {
+      console.log(`[SOCKET] send_private_message received:`, data);
       const { senderId, receiverId, content, senderModel = 'Students', receiverModel = 'Teacher', type = 'text' } = data;
+
+      if (!receiverId || !senderId) {
+        console.error(`[SOCKET ERROR] Missing senderId or receiverId in send_private_message.`, data);
+        // Optionally emit error back to client?
+        return;
+      }
+
       try {
         // 1. Save message
         const savedMessage = await chatRepo.saveMessage({

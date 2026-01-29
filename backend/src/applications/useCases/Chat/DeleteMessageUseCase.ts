@@ -10,6 +10,7 @@ export class DeleteMessageUseCase implements IDeleteMessageUseCase {
     ) { }
 
     async execute(messageId: string, userId: string): Promise<Message> {
+        console.log(`[DeleteMessageUseCase] Executing delete for messageId: ${messageId} by userId: ${userId}`);
         const message = await this.chatRepo.findMessageById(messageId);
 
         if (!message) {

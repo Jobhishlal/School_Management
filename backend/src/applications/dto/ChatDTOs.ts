@@ -16,7 +16,7 @@ export interface DeleteMessageRequestDTO {
 }
 
 export interface MessageResponseDTO {
-    id: string;
+    _id: string;
     senderId: string;
     senderRole: string;
     receiverId: string;
@@ -30,16 +30,12 @@ export interface MessageResponseDTO {
 }
 
 export interface ConversationParticipantDTO {
-    participantId: string;
+    participantId: any; // Nested object { _id, name, email ... }
     participantModel: string;
-    name?: string;
-    email?: string;
-    profileImage?: string;
-    role?: string;
 }
 
 export interface ConversationResponseDTO {
-    id: string;
+    _id: string;
     participants: ConversationParticipantDTO[];
     lastMessage?: {
         content: string;

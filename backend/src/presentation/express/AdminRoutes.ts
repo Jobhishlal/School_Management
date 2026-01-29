@@ -711,7 +711,7 @@ Adminrouter.put('/leave/update-status',
 
 import { AttendanceMongoRepository } from "../../infrastructure/repositories/Attendance/AttendanceMongoRepo";
 import { GetAdminDashboardUseCase } from "../../applications/useCases/admin/GetAdminDashboardUseCase";
-import { AdminDashboardController } from "./controllers/Admin/AdminDashboardController";
+import { AdminDashboardController } from "../http/controllers/AdminDashboardcontroller/AdminDashboardController";
 
 const attendanceRepo = new AttendanceMongoRepository();
 const getAdminDashboardUseCase = new GetAdminDashboardUseCase(

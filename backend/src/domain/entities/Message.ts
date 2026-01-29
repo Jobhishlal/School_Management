@@ -8,7 +8,7 @@ export class Message {
         public readonly content: string,
         public readonly timestamp: Date,
         public readonly read: boolean,
-        public readonly type: 'text' | 'image' | 'file',
+        public readonly type: 'text' | 'image' | 'file' | 'audio',
         public readonly isEdited: boolean = false,
         public readonly isDeleted: boolean = false
     ) { }
