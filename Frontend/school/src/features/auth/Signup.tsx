@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { ParentSignup } from "../../services/Auth/Auth"; 
+import { ParentSignup } from "../../services/Auth/Auth";
 import { MESSAGE } from "../../constants/AuthErrorMessages";
 import { showToast } from "../../utils/toast";
 import { setCredentials } from "../../store/slice/authslice";
@@ -67,13 +67,13 @@ export default function ParentSignupPage() {
   async function handleGoogleLogin() {
     try {
       const popup = window.open(
-        "http://localhost:5000/auth/google",
+        `${import.meta.env.VITE_SERVER_URL || "http://localhost:5000"}/auth/google`,
         "_blank",
         "width=500,height=600"
       );
 
       const listener = (event: MessageEvent) => {
-        if (event.origin !== "http://localhost:5000") return;
+        if (event.origin !== (import.meta.env.VITE_SERVER_URL || "http://localhost:5000")) return;
 
         const { accessToken, refreshToken, user, error } = event.data;
 
@@ -104,7 +104,7 @@ export default function ParentSignupPage() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center px-4 font-inter">
- 
+
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: "url('/SuperadminLogin.jpg')" }}
@@ -162,7 +162,7 @@ export default function ParentSignupPage() {
           </button>
         </form>
 
-       
+
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-600"></div>
@@ -172,7 +172,7 @@ export default function ParentSignupPage() {
           </div>
         </div>
 
-        
+
         <button
           onClick={handleGoogleLogin}
           className="w-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-white font-semibold py-3 rounded-lg"
@@ -181,7 +181,7 @@ export default function ParentSignupPage() {
           Sign Up with Google
         </button>
 
-        
+
         <p className="text-gray-300 mt-4 text-center text-sm">
           Already have an account?{" "}
           <a href="/login" className="text-blue-400 hover:underline font-medium">

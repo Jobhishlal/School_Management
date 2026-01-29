@@ -21,11 +21,15 @@ import { initSocket } from './infrastructure/socket/socket';
 
 const app = express();
 
+// @ts-ignore
+import cookieParser from 'cookie-parser';
+
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: process.env.CLIENT_URL || "http://localhost:5173",
   credentials: true
 }));
 app.use(express.json());
+app.use(cookieParser());
 app.use(passport.initialize());
 
 app.use("/admin", adminRoutes);

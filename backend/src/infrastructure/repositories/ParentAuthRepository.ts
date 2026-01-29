@@ -1,7 +1,9 @@
 
 import { ParentSignupModel } from "../database/models/ParentSignupModel";
 
-export class ParentAuthRepository {
+import { IParentAuthRepository } from "../../domain/repositories/IParentAuthRepository";
+
+export class ParentAuthRepository implements IParentAuthRepository {
   async findByEmailAndStudentId(email: string, studentId: string) {
 
     const parent = await ParentSignupModel.findOne({ email })
@@ -9,11 +11,11 @@ export class ParentAuthRepository {
       .exec();
 
     if (!parent) {
-        console.log("why show this",parent)
+      console.log("why show this", parent)
       throw new Error("UserDoesNotExist");
     }
 
-    
+
     if (!parent.student) {
       throw new Error("StudentNotLinked");
     }

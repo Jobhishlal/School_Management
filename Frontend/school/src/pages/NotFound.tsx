@@ -10,7 +10,7 @@ const NotFound: React.FC = () => {
         <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col items-center justify-center p-4">
             <div className="max-w-md w-full text-center space-y-8">
 
-                {/* Ilustration Area */}
+              
                 <div className="relative w-64 h-64 mx-auto">
                     <div className="absolute inset-0 bg-blue-500/10 rounded-full animate-pulse"></div>
                     <div className="absolute inset-4 bg-blue-500/20 rounded-full"></div>

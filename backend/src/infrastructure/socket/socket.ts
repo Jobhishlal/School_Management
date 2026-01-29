@@ -18,7 +18,7 @@ const chatSocketMap = new Map<string, string>();
 export const initSocket = (httpServer: HttpServer) => {
   io = new Server(httpServer, {
     cors: {
-      origin: "http://localhost:5173",
+      origin: process.env.CLIENT_URL || "http://localhost:5173",
       credentials: true,
     },
   });

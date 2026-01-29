@@ -115,14 +115,14 @@ export default function MainAdminLogincheck() {
 
   async function handleGoogleLogin() {
     try {
-      const popup = window.open(
-        "http://localhost:5000/auth/google",
-        "_blank",
-        "width=500,height=600"
-      );
+      window.open(`${import.meta.env.VITE_SERVER_URL || "http://localhost:5000"}/auth/google`, "_self");
 
+      // The following listener logic is for popup windows.
+      // If navigating in _self, this listener will not be triggered in the same way.
+      // This part of the code might need re-evaluation if the intent is to handle
+      // the response in the same window after a full redirect.
       const listener = (event: MessageEvent) => {
-        if (event.origin !== "http://localhost:5000") return;
+        if (event.origin !== (import.meta.env.VITE_SERVER_URL || "http://localhost:5000")) return;
         const { accessToken, refreshToken, user, error } = event.data;
 
         if (error) {

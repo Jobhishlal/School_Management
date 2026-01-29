@@ -19,7 +19,7 @@ export class Googlauthcontroller implements IGoogleController {
           <script>
             window.opener.postMessage(
               ${JSON.stringify({ error })},
-              "http://localhost:5173"
+              "${process.env.CLIENT_URL || "http://localhost:5173"}"
             );
             window.close();
           </script>
@@ -38,7 +38,7 @@ export class Googlauthcontroller implements IGoogleController {
         <script>
           window.opener.postMessage(
             ${JSON.stringify({ user, accessToken, refreshToken })},
-            "http://localhost:5173"
+            "${process.env.CLIENT_URL || "http://localhost:5173"}"
           );
           window.close();
         </script>

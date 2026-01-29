@@ -11,13 +11,13 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      callbackURL: "http://localhost:5000/auth/google/callback",
+      callbackURL: `${process.env.SERVER_URL || "http://localhost:5000"}/auth/google/callback`,
     },
     async (_accessToken, _refreshToken, profile: Profile, done: VerifyCallback) => {
       try {
         const { user, accessToken, refreshToken } = await authUseCase.loginwithgoogle(profile);
         return done(null, { user, accessToken, refreshToken });
-      } catch (err:any) {
+      } catch (err: any) {
         return done(null, { error: err.message });
       }
     }

@@ -52,7 +52,7 @@ export default function ChatLayout() {
             }
         }
 
-        const newSocket = io('http://localhost:5000', {
+        const newSocket = io(import.meta.env.VITE_SERVER_URL || 'http://localhost:5000', {
             withCredentials: true
         });
 
