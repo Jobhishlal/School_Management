@@ -708,4 +708,28 @@ Adminrouter.put('/leave/update-status',
   (req, res) => leavemanagecontroller.updateLeaveStatus(req as AuthRequest, res)
 );
 
+
+import { AttendanceMongoRepository } from "../../infrastructure/repositories/Attendance/AttendanceMongoRepo";
+import { GetAdminDashboardUseCase } from "../../applications/useCases/admin/GetAdminDashboardUseCase";
+import { AdminDashboardController } from "./controllers/Admin/AdminDashboardController";
+
+const attendanceRepo = new AttendanceMongoRepository();
+const getAdminDashboardUseCase = new GetAdminDashboardUseCase(
+  studentrepo,
+  value,
+  data,
+  classReop,
+  annoucement,
+  finance,
+  paymentRepo,
+  createexpense,
+  attendanceRepo,
+  leaverepo
+);
+const adminDashboardController = new AdminDashboardController(getAdminDashboardUseCase);
+
+Adminrouter.get('/dashboard-stats', authMiddleware, (req, res, next) =>
+  adminDashboardController.getDashboard(req, res, next)
+);
+
 export default Adminrouter;

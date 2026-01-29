@@ -73,3 +73,14 @@ export const getTeacherDashboardStats = async (): Promise<TeacherDashboardDTO> =
         throw error;
     }
 };
+
+import type { AdminDashboardDTO } from "../types/AdminDashboardDTO";
+
+export const getAdminDashboardStats = async (): Promise<AdminDashboardDTO> => {
+    try {
+        const response = await api.get('/admin/dashboard-stats');
+        return response.data.data;
+    } catch (error) {
+        throw error;
+    }
+};

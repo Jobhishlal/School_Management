@@ -25,4 +25,6 @@ export interface IAttandanceRepository {
   getStudentOwnAttendanceByDateRange(studentId: string, startDate: Date, endDate: Date): Promise<ParentAttendanceHistory>;
   calculateClassAttendancePercentage(classId: string): Promise<{ percentage: number, trend: number }>;
   getAttendancePercentages(studentIds: string[]): Promise<Record<string, number>>;
+  getStudentAttendancePercentage(date: Date): Promise<number>;
+  getStaffAttendancePercentage(date: Date): Promise<number>;
 }

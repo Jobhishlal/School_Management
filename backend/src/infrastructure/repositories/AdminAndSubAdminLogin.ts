@@ -49,5 +49,8 @@ export class AdminSubAdminCompaign implements ISubadminLogin {
       admin.documents
     );
   }
+  async countAll(): Promise<number> {
+    return await SubAdminModel.countDocuments();
+  }
 }
 

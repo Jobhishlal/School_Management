@@ -10,7 +10,7 @@ import ParentForgotPassword from './features/auth/ForgotPassWord';
 import Logout from "./features/auth/Logout";
 
 import Layout from "./components/layout/Layout";
-import Dashboard from "./pages/admin/dashboard";
+import Dashboard from "./pages/admin/AdminDashboard";
 import Profile from "./pages/admin/profile";
 import { AdminManagement } from "./pages/admin/AdminManagement";
 import { TeachersManagement } from "./pages/admin/TeacherManagement";

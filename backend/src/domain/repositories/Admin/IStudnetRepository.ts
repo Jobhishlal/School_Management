@@ -13,5 +13,6 @@ export interface StudentDetails {
   findByClassIdWithSearch(classId: string, search: string, page: number, limit: number): Promise<{ students: Students[], total: number }>;
   search(query: string): Promise<Students[]>;
   countAll(): Promise<number>; // New
-  countByClassId(classId: string): Promise<number>; // New
+  countByClassId(classId: string): Promise<number>;
+  countBlocked(): Promise<number>; // New
 }

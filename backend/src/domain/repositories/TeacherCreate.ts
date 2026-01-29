@@ -10,4 +10,6 @@ export interface ITeacherCreate {
     addDocument(id: string, document: { url: string; filename: string }): Promise<Teeacher | null>;
     addSubjects(id: string, subjects: { name: string; code: string }[]): Promise<Teeacher | null>;
     search(query: string): Promise<Teeacher[]>;
+    countAll(): Promise<number>;
+    countBlocked(): Promise<number>;
 }

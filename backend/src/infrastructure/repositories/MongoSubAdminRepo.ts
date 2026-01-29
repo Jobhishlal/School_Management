@@ -255,4 +255,34 @@ export class MongoSubAdminRepo implements SubAdminRepository {
     );
   }
 
+  async countAll(): Promise<number> {
+    return await SubAdminModel.countDocuments();
+  }
+
+  async findByRole(major_role: string): Promise<SubAdminEntities | null> {
+    const doc = await SubAdminModel.findOne({ major_role });
+    if (!doc) return null;
+    return new SubAdminEntities(
+      doc._id.toString(),
+      doc.name,
+      doc.email,
+      doc.phone,
+      doc.role as AdminRole,
+      doc.password,
+      doc.createdAt,
+      doc.updatedAt,
+      doc.blocked,
+      doc.major_role,
+      doc.dateOfBirth,
+      doc.gender,
+      doc.documents,
+      doc.address ? doc.address.toString() : undefined,
+      doc.photo,
+      doc.leaveBalance
+    );
+  }
+
+  async updateBlockStatus(id: string, blocked: boolean): Promise<void> {
+    await SubAdminModel.findByIdAndUpdate(id, { blocked });
+  }
 }

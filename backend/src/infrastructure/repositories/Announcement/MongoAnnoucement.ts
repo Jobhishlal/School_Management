@@ -159,4 +159,11 @@ export class AnnouncementMongo implements IAnnouncementRepository {
     if (!deleted) throw new Error("Announcement not found");
   }
 
+  async findLatest(limit: number): Promise<Announcement[]> {
+    const data = await AnnouncementModel.find({ status: "ACTIVE" })
+      .sort({ createdAt: -1 })
+      .limit(limit);
+
+    return data.map(doc => this.toDomain(doc));
+  }
 }

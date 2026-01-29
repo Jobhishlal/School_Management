@@ -142,7 +142,7 @@ export default function SchoolNavbar({ }: Props) {
     {
       label: "COMMUNICATION",
       links: [
-        { icon: MessageCircle, text: "Communication", path: "/communication" },
+       
         { icon: FileText, text: "Leave Request", path: "/leave-management" },
         ...(userRole === "sub_admin"
           ? [{ icon: FileText, text: "My Leave", path: "/subadmin-leave-application" }]

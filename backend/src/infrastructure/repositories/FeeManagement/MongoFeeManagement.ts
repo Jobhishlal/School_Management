@@ -251,4 +251,19 @@ export class FeeStructureRepository implements IFeeStructureRepository {
     const docs = await FeeStructureModel.find().lean();
     return docs.map(doc => FeeStructureMapper.toDomain(doc));
   }
+
+  async getTotalExpectedFees(): Promise<number> {
+    const feeStructures = await FeeStructureModel.find().lean();
+    let totalExpected = 0;
+
+    for (const fee of feeStructures) {
+      if (!fee.classId) continue;
+
+      const studentCount = await StudentModel.countDocuments({ classId: fee.classId });
+      const feeAmount = fee.feeItems.reduce((sum: number, item: any) => sum + item.amount, 0);
+
+      totalExpected += (studentCount * feeAmount);
+    }
+    return totalExpected;
+  }
 }

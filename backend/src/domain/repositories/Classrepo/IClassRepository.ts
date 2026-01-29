@@ -9,4 +9,5 @@ export interface IClassRepository {
   assignManyStudentsToClass(studentIds: string[], classId: string): Promise<boolean>;
   deleteClass(id: string): Promise<boolean>;
   findByTeacherId(teacherId: string): Promise<Class | null>
+  countAll(): Promise<number>;
 }

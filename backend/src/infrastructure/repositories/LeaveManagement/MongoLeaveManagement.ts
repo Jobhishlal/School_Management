@@ -99,4 +99,15 @@ export class LeaveManagementMongoRepo implements InterfaceLeaveManagement {
         const doc = await LeaveManagementModel.findById(id);
         return doc ? toLeaveManagementEntity(doc) : null;
     }
+    async countPendingRequests(): Promise<number> {
+        return await LeaveManagementModel.countDocuments({ status: "PENDING" });
+    }
+
+    async countStaffOnLeave(date: Date): Promise<number> {
+        return await LeaveManagementModel.countDocuments({
+            status: "APPROVED",
+            startDate: { $lte: date },
+            endDate: { $gte: date }
+        });
+    }
 }

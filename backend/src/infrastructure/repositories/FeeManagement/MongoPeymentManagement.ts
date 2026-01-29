@@ -198,4 +198,13 @@ export class MongoPeymentRepo implements IPaymentTransactionRepository {
 
     return { payments: docs, total };
   }
+
+
+  async getTotalCollectedAmount(): Promise<number> {
+    const result = await PaymentModel.aggregate([
+      { $match: { status: "PAID" } },
+      { $group: { _id: null, total: { $sum: "$amount" } } }
+    ]);
+    return result.length > 0 ? result[0].total : 0;
+  }
 }

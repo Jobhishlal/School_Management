@@ -233,4 +233,12 @@ export class MongoTeacher implements ITeacherCreate {
       );
     });
   }
+
+  async countAll(): Promise<number> {
+    return await TeacherModel.countDocuments();
+  }
+
+  async countBlocked(): Promise<number> {
+    return await TeacherModel.countDocuments({ blocked: true });
+  }
 }

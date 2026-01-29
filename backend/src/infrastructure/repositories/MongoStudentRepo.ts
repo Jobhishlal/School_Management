@@ -318,4 +318,8 @@ export class MongoStudentRepo implements StudentDetails {
     }
     return await StudentModel.countDocuments({ classId: new mongoose.Types.ObjectId(classId) });
   }
+
+  async countBlocked(): Promise<number> {
+    return await StudentModel.countDocuments({ blocked: true });
+  }
 }

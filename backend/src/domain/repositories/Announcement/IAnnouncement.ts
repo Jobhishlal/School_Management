@@ -11,5 +11,5 @@ export interface IAnnouncementRepository {
     data: Partial<Announcement>
   ): Promise<Announcement>;
   delete(id: string): Promise<void>;
-
+  findLatest(limit: number): Promise<Announcement[]>;
 }

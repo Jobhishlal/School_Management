@@ -9,8 +9,8 @@ export interface IPaymentTransactionRepository {
   updateinvoiceurl(paymentId: string, invoiceUrl: string): Promise<void>;
   findById(paymentId: string): Promise<any>;
   getInstitute(): Promise<any>
-
-
+  findAllPayments(filter: any, page: number, limit: number): Promise<{ payments: any[], total: number }>;
   findAllPayments(filter: any, page: number, limit: number): Promise<{ payments: any[], total: number }>;
   findPaymentsByStudentId(studentId: string, page: number, limit: number): Promise<{ payments: any[], total: number }>;
+  getTotalCollectedAmount(): Promise<number>;
 }

@@ -24,4 +24,6 @@ export interface InterfaceLeaveManagement {
     adminRemark?: string
   ): Promise<LeaveManagementEntity | null>;
   findById(id: string): Promise<LeaveManagementEntity | null>;
+  countPendingRequests(): Promise<number>;
+  countStaffOnLeave(date: Date): Promise<number>;
 }

@@ -552,4 +552,34 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
       logs: history
     };
   }
+  async getStudentAttendancePercentage(date: Date): Promise<number> {
+    const start = new Date(date);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(date);
+    end.setHours(23, 59, 59, 999);
+
+    const result = await AttendanceModel.aggregate([
+      { $match: { date: { $gte: start, $lte: end } } },
+      { $unwind: "$attendance" },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: 1 },
+          present: {
+            $sum: { $cond: [{ $eq: ["$attendance.status", "Present"] }, 1, 0] }
+          }
+        }
+      }
+    ]);
+
+    return result.length > 0 && result[0].total > 0
+      ? Math.round((result[0].present / result[0].total) * 100)
+      : 0;
+  }
+
+  async getStaffAttendancePercentage(date: Date): Promise<number> {
+    // Similar implementation for staff if staff attendance is stored similarly
+    // Assuming staff attendance logic is distinct or placeholder needed
+    return 0; // Placeholder as staff attendance might be in a different model or table
+  }
 }

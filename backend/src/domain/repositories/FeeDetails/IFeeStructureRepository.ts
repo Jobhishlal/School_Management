@@ -8,5 +8,7 @@ export interface IFeeStructureRepository {
 
     findClassWisePaymentStatus(classId: string, page: number, limit: number): Promise<{ students: any[], total: number }>;
     findStudentPaymentStatusByName(studentName: string): Promise<any[]>;
+    findStudentPaymentStatusByName(studentName: string): Promise<any[]>;
     findAll(): Promise<FeeStructure[]>;
+    getTotalExpectedFees(): Promise<number>;
 }

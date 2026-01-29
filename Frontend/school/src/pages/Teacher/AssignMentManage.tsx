@@ -59,7 +59,7 @@ export default function AssignmentManage() {
     if (token) {
       try {
         const decoded = jwtDecode<DecodedToken>(token);
-        // Assuming the token payload has 'id' for the user ID
+      
         if (decoded.id) {
           setForm((prev) => ({ ...prev, teacherId: decoded.id }));
         }
@@ -83,8 +83,8 @@ export default function AssignmentManage() {
         }
 
         const teacherData = await GetTeachertimetableList();
-
-        // teacherData.timetable is the array we need
+           
+      
         const timetableList = teacherData?.timetable;
 
         if (!timetableList || !Array.isArray(timetableList)) return;
