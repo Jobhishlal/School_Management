@@ -33,11 +33,10 @@ export class ChatRepositoryMongo implements IChatRepository {
 
     async getMessages(senderId: string, receiverId: string): Promise<Message[]> {
 
-        // Check if receiverId is a Group Conversation using isValid check first to avoid casting errors
         if (mongoose.Types.ObjectId.isValid(receiverId)) {
             const conversation = await ConversationModel.findById(receiverId);
             if (conversation && conversation.isGroup) {
-                // It's a group! Fetch all messages sent TO this group
+           
                 const messages = await MessageModel.find({ receiverId: receiverId }).sort({ timestamp: 1 });
                 return messages.map(msg => ChatPersistenceMapper.toDomainMessage(msg));
             }

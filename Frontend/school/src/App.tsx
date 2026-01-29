@@ -67,6 +67,7 @@ import ComplaintList from "./pages/admin/Complaint/ComplaintList";
 import StudentAIAssistant from "./pages/Student/AIAssistant/StudentAIAssistant";
 import ChatLayout from "./pages/Student/Chat/ChatLayout";
 import TeacherChat from "./pages/Teacher/Chat/TeacherChat";
+import NotFound from "./pages/NotFound";
 
 import PublicRoute from "./components/layout/PublicRoute";
 
@@ -155,6 +156,9 @@ function App() {
           <Route path="/parent/meet" element={<MeetingList />} />
 
         </Route>
+
+        {/* ---------------- 404 ROUTE ---------------- */}
+        <Route path="*" element={<NotFound />} />
 
       </Routes>
     </ErrorBoundary>

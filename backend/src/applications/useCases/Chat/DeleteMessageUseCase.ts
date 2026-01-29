@@ -21,6 +21,11 @@ export class DeleteMessageUseCase implements IDeleteMessageUseCase {
             throw new Error("Unauthorized: You can only delete your own messages");
         }
 
+        const timeDiff = Date.now() - new Date(message.timestamp).getTime();
+        if (timeDiff > 5 * 60 * 1000) {
+            throw new Error("Cannot delete message older than 5 minutes");
+        }
+
         const deletedMessage = await this.chatRepo.markMessageAsDeleted(messageId);
         if (!deletedMessage) {
             throw new Error("Failed to delete message");

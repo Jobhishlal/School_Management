@@ -405,8 +405,9 @@ export default function TeacherChatWindow({ user, isDark, socket }: TeacherChatW
 
                     // Editable check
                     // Editable & Deletable checks
-                    const isEditable = isMe && msg.type === 'text' && (Date.now() - new Date(msg.timestamp).getTime() < 5 * 60 * 1000);
-                    const isDeletable = isMe && !(msg as any).isDeleted;
+                    const messageTimeDiff = Date.now() - new Date(msg.timestamp).getTime();
+                    const isEditable = isMe && msg.type === 'text' && (messageTimeDiff < 5 * 60 * 1000);
+                    const isDeletable = isMe && !(msg as any).isDeleted && (messageTimeDiff < 5 * 60 * 1000);
 
                     return (
                         <div key={idx} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} group/msg`}>
