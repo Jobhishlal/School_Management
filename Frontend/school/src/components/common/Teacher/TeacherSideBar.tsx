@@ -134,7 +134,7 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
             ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
             ${sidebarBg} backdrop-blur-xl overflow-y-auto no-scrollbar`}
         >
-          {/* Logo Section */}
+        
           <div className="p-6">
             <div className={`flex items-center space-x-3 p-4 rounded-2xl`}>
               <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
@@ -177,14 +177,7 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
 
           {/* Bottom Buttons */}
           <div className="p-4 mt-auto space-y-2">
-            <button className="w-full flex items-center justify-center space-x-3 px-4 py-3 rounded-xl bg-blue-600/90 hover:bg-blue-700 text-white transition-colors duration-200">
-              <Video size={18} />
-              <span className="text-sm font-medium">Start Meet</span>
-            </button>
-            <button className="w-full flex items-center justify-center space-x-3 px-4 py-3 rounded-xl bg-gray-700/50 hover:bg-gray-700 text-white transition-colors duration-200">
-              <Plus size={18} />
-              <span className="text-sm font-medium">Apply for Leave</span>
-            </button>
+        
             <button
               onClick={handleLogout}
               className="w-full flex items-center justify-center space-x-3 px-4 py-3 rounded-xl bg-red-600/80 hover:bg-red-700 text-white transition-colors duration-200"

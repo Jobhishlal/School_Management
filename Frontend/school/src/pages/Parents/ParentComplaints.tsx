@@ -6,7 +6,7 @@ import { MessageCircle, Send, AlertCircle, RefreshCw, PenSquare, X } from 'lucid
 import { useTheme } from '../../components/layout/ThemeContext';
 
 interface Complaint {
-    _id: string; 
+    _id: string;
     parentId: string;
     concernTitle: string;
     description: string;
@@ -31,7 +31,7 @@ const ParentComplaints: React.FC = () => {
         setLoading(true);
         try {
             const data = await getMyComplaints();
-          
+
             setComplaints(data.complaints || data || []);
         } catch (error) {
             console.error("Error fetching complaints", error);
@@ -68,7 +68,7 @@ const ParentComplaints: React.FC = () => {
         setEditingId(complaint.id || complaint._id);
         setValue('concernTitle', complaint.concernTitle);
         setValue('description', complaint.description);
-      
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -207,8 +207,8 @@ const ParentComplaints: React.FC = () => {
                                             <h3 className={`text-lg font-semibold ${textPrimary}`}>{complaint.concernTitle}</h3>
                                             <div className="flex items-center space-x-3 text-xs">
                                                 <span className={`px-2.5 py-1 rounded-full font-medium ${complaint.ticketStatus === 'Open' ? 'bg-green-100 text-green-700' :
-                                                        complaint.ticketStatus === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
-                                                            'bg-gray-100 text-gray-700'
+                                                    complaint.ticketStatus === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
+                                                        'bg-gray-100 text-gray-700'
                                                     }`}>
                                                     {complaint.ticketStatus || 'Open'}
                                                 </span>
@@ -218,13 +218,15 @@ const ParentComplaints: React.FC = () => {
                                             </div>
                                         </div>
                                         <div className="flex space-x-2">
-                                            <button
-                                                onClick={() => handleEdit(complaint)}
-                                                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-blue-600 transition-colors"
-                                                title="Edit Complaint"
-                                            >
-                                                <PenSquare size={18} />
-                                            </button>
+                                            {complaint.ticketStatus !== 'solved' && (
+                                                <button
+                                                    onClick={() => handleEdit(complaint)}
+                                                    className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-blue-600 transition-colors"
+                                                    title="Edit Complaint"
+                                                >
+                                                    <PenSquare size={18} />
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                     <p className={`${textSecondary} text-sm leading-relaxed`}>

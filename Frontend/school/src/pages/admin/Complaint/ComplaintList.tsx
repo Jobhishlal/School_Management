@@ -148,13 +148,15 @@ const ComplaintList: React.FC = () => {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center space-x-2">
-                                                    <button
-                                                        onClick={() => handleViewClick(complaint)}
-                                                        className={`p-2 rounded-full transition-colors ${isDark ? "hover:bg-slate-700 text-blue-400" : "hover:bg-gray-100 text-blue-600"}`}
-                                                        title="View Details"
-                                                    >
-                                                        <Eye size={18} />
-                                                    </button>
+                                                    {complaint.ticketStatus !== 'solved' && (
+                                                        <button
+                                                            onClick={() => handleViewClick(complaint)}
+                                                            className={`p-2 rounded-full transition-colors ${isDark ? "hover:bg-slate-700 text-blue-400" : "hover:bg-gray-100 text-blue-600"}`}
+                                                            title="View Details"
+                                                        >
+                                                            <Eye size={18} />
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
