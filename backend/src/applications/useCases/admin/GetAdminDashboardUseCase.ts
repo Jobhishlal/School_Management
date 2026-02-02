@@ -38,9 +38,9 @@ export class GetAdminDashboardUseCase implements IGetAdminDashboardUseCase {
             totalExpenses,
             studentAttendance,
             staffAttendance,
-            pendingComplaints, // Placeholder if no repo for complaints yet
+            pendingComplaints, 
             pendingLeaves,
-            blockedUsers // Placeholder aggregation
+            blockedUsers 
         ] = await Promise.all([
             this.studentRepo.countAll(),
             this.teacherRepo.countAll(),
@@ -52,16 +52,14 @@ export class GetAdminDashboardUseCase implements IGetAdminDashboardUseCase {
             this.expenseRepo.getTotalApprovedAmount(),
             this.attendanceRepo.getStudentAttendancePercentage(new Date()),
             this.attendanceRepo.getStaffAttendancePercentage(new Date()),
-            Promise.resolve(0), // Placeholder for complaints
+            Promise.resolve(0), 
             this.leaveRepo.countPendingRequests(),
-            Promise.resolve(0) // Placeholder
+            Promise.resolve(0) 
         ]);
 
         const blockedStudents = await this.studentRepo.countBlocked();
         const blockedTeachers = await this.teacherRepo.countBlocked();
-        // const blockedAdmins = await this.adminRepo.countBlocked(); // If needed/available
-
-        // Calculate pending fees
+       
         const pendingFees = totalExpectedFees - totalCollectedFees;
 
         return {

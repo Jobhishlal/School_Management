@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { NotificationDropdown } from "../../../pages/Student/NotificationDropdown";
+import { AnnouncementModal } from "../../../pages/admin/Announcement/AnnouncementModal";
 import {
   LayoutDashboard,
   User,
@@ -101,6 +102,23 @@ export default function StudentSidebar({ }: Props) {
     setUnreadCount(0);
   };
 
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+
+  const handleMarkAsRead = (id: string) => {
+    const readIds = JSON.parse(localStorage.getItem("readAnnouncementIds") || "[]");
+    if (!readIds.includes(id)) {
+      const updatedIds = [...readIds, id];
+      localStorage.setItem("readAnnouncementIds", JSON.stringify(updatedIds));
+      setUnreadCount((prev) => Math.max(0, prev - 1));
+    }
+  };
+
+  const handleAnnouncementClick = (announcement: any) => {
+    handleMarkAsRead(announcement._id);
+    setSelectedAnnouncement(announcement);
+    setShowNotifications(false);
+  };
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -117,7 +135,6 @@ export default function StudentSidebar({ }: Props) {
     { icon: FileText, text: "Assignments", path: "/student/assignment" },
     { icon: Calendar, text: "Time Table", path: "/student/timetable-view" },
     { icon: BookOpen, text: "Exams & Results", path: '/student/exam-list' },
-    { icon: CreditCard, text: "Fees", path: "/student/fees" },
     { icon: MessageCircle, text: "Chat with Teachers", path: "/student/chat" },
     { icon: Users, text: "Meet", path: "/student/meet" },
     { icon: Bot, text: "AI Study Helper", path: "/student/ai-assistant" },
@@ -268,6 +285,7 @@ export default function StudentSidebar({ }: Props) {
                 loading={loading}
                 onClear={markAllAsRead}
                 unreadCount={unreadCount}
+                onAnnouncementClick={handleAnnouncementClick}
               />
 
               <ThemeToggler />
@@ -302,6 +320,12 @@ export default function StudentSidebar({ }: Props) {
         </div>
       </div>
 
+      {selectedAnnouncement && (
+        <AnnouncementModal
+          announcement={selectedAnnouncement}
+          onClose={() => setSelectedAnnouncement(null)}
+        />
+      )}
 
       {isMobileMenuOpen && (
         <div

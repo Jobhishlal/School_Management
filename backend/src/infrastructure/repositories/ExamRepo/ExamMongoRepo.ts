@@ -65,4 +65,11 @@ export class ExamMongoRepo implements IExamRepository {
 
     return exams.map(toExamEntity);
   }
+
+  async findExamsByIds(examIds: string[]): Promise<ExamEntity[]> {
+    const exams = await ExamModel.find({
+      _id: { $in: examIds.map(id => new Types.ObjectId(id)) }
+    }).sort({ examDate: -1 });
+    return exams.map(toExamEntity);
+  }
 }

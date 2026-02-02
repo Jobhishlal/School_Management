@@ -30,6 +30,8 @@ export interface StudentExamResultDTO {
   concernResponse?: string | null;
   updatedAt?: Date | null;
   status: "Pending" | "Passed" | "Failed";
+  className?: string;
+  division?: string;
 }
 
 export interface StudentExamResultResponse {

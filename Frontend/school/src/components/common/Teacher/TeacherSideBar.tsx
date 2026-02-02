@@ -9,8 +9,7 @@ import {
   MessageCircle,
   UserCog,
   Settings,
-  Plus,
-  Video,
+
   Lock,
   Sun,
   Moon,
@@ -25,6 +24,9 @@ import {
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../layout/ThemeContext";
 import { getInstituteProfile } from "../../../services/authapi";
+import { useSocket } from "../../../hooks/useSocket";
+import { showToast } from "../../../utils/toast";
+import TeacherNotificationDropdown from "./TeacherNotificationDropdown";
 
 interface TeacherSidebarProps {
   children?: ReactNode;
@@ -95,6 +97,29 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
     navigate("/login", { replace: true });
   };
 
+  const socket = useSocket();
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  React.useEffect(() => {
+    if (socket) {
+      socket.on('staff-meeting-created', (data: any) => {
+        setNotifications(prev => [data, ...prev]);
+        showToast(`📅 New Staff Meeting: ${data.title}`, 'info');
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.off('staff-meeting-created');
+      }
+    };
+  }, [socket]);
+
+  const handleClearNotifications = () => {
+    setNotifications([]);
+  };
+
   return (
     <div
       className={`h-screen overflow-hidden transition-all duration-500 ${isDark ? "bg-[#121A21]" : "bg-slate-50"
@@ -134,7 +159,7 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
             ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
             ${sidebarBg} backdrop-blur-xl overflow-y-auto no-scrollbar`}
         >
-        
+
           <div className="p-6">
             <div className={`flex items-center space-x-3 p-4 rounded-2xl`}>
               <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
@@ -177,7 +202,7 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
 
           {/* Bottom Buttons */}
           <div className="p-4 mt-auto space-y-2">
-        
+
             <button
               onClick={handleLogout}
               className="w-full flex items-center justify-center space-x-3 px-4 py-3 rounded-xl bg-red-600/80 hover:bg-red-700 text-white transition-colors duration-200"
@@ -201,12 +226,24 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
             </div>
 
             <div className="flex items-center space-x-4">
-              <button className={`relative p-3 rounded-xl ${hoverBg} transition-all duration-300 hover:scale-105`}>
+              <button
+                className={`relative p-3 rounded-xl ${hoverBg} transition-all duration-300 hover:scale-105`}
+                onClick={() => setShowNotifications(!showNotifications)}
+              >
                 <Bell className={textSecondary} size={20} />
-                <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">2</span>
-                </div>
+                {notifications.length > 0 && (
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">{notifications.length}</span>
+                  </div>
+                )}
               </button>
+
+              <TeacherNotificationDropdown
+                isOpen={showNotifications}
+                onClose={() => setShowNotifications(false)}
+                notifications={notifications}
+                onClear={handleClearNotifications}
+              />
 
               <button
                 onClick={toggleTheme}

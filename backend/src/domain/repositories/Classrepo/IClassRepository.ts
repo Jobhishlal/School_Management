@@ -10,4 +10,5 @@ export interface IClassRepository {
   deleteClass(id: string): Promise<boolean>;
   findByTeacherId(teacherId: string): Promise<Class | null>
   countAll(): Promise<number>;
+  findClassesByIds(ids: string[]): Promise<Class[]>;
 }

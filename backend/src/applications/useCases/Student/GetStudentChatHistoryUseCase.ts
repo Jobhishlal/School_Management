@@ -1,7 +1,9 @@
 import { IAISessionRepository } from "../../../domain/repositories/AI/IAISessionRepository";
 import { AISession } from "../../../domain/entities/AISession";
 
-export class GetStudentChatHistoryUseCase {
+import { IGetStudentChatHistoryUseCase } from "./interfaces/IGetStudentChatHistoryUseCase";
+
+export class GetStudentChatHistoryUseCase implements IGetStudentChatHistoryUseCase {
     constructor(private sessionRepository: IAISessionRepository) { }
 
     async execute(studentId: string): Promise<AISession[]> {

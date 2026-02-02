@@ -67,8 +67,11 @@ const mongorepo = new ExamMongoRepo()
 const examlistusecase = new Examclassbaseviewusecase(mongorepo, studentmongo)
 import { RaiseExamConcernUseCase } from "../../applications/useCases/Exam/RaiseExamConcernUseCase";
 
+import { MongoClassRepository } from "../../infrastructure/repositories/MongoClassRepo";
+
 const exammark = new ExamMarkMongoRepository()
-const examresultview = new GetStudentExamResultsUseCase(mongorepo, exammark, studentmongo)
+const classRepo = new MongoClassRepository();
+const examresultview = new GetStudentExamResultsUseCase(mongorepo, exammark, studentmongo, classRepo)
 const raiseConcernUseCase = new RaiseExamConcernUseCase(exammark);
 
 const studentexamlistcontroller = new StudentviewExamController(
@@ -151,7 +154,6 @@ Studentrouter.get('/attendance/filter',
 
 
 
-// Student Dashboard
 const getStudentDashboardUseCase = new GetStudentDashboardUseCase(
   timetablemongo,
   attRep,
@@ -167,5 +169,7 @@ Studentrouter.get('/dashboard',
   authMiddleware,
   (req, res) => studentDashboardController.getDashboard(req as AuthRequest, res)
 );
+
+
 
 export default Studentrouter;

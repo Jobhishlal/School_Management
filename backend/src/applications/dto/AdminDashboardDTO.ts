@@ -12,7 +12,7 @@ export interface AdminDashboardDTO {
     };
     finance: {
         totalCollected: number;
-        pendingFees: number; // Calculated as Expected - Collected
+        pendingFees: number; 
         totalExpenses: number;
     };
     attendance: {

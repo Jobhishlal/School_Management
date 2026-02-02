@@ -40,11 +40,14 @@ interface ExamResult {
     concernStatus?: "Pending" | "Resolved" | "Rejected";
     concernResponse?: string;
     updatedAt?: string;
+    className?: string; // Added for filtering
+    division?: string;  // Added for filtering
 }
 
 export const StudentExamResultsPage: React.FC = () => {
     const { isDark } = useTheme();
     const [selectedSubject, setSelectedSubject] = useState<string>("All");
+    const [selectedClass, setSelectedClass] = useState<string>("All");
     const [results, setResults] = useState<ExamResult[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -256,9 +259,14 @@ export const StudentExamResultsPage: React.FC = () => {
 
     // Prepare Data
     const uniqueSubjects = Array.from(new Set(results.map((r) => r.subject))).filter(Boolean);
-    const filteredResults = selectedSubject === "All"
-        ? results
-        : results.filter((r) => r.subject === selectedSubject);
+    const uniqueClasses = Array.from(new Set(results.map((r) => r.className ? `${r.className} ${r.division || ''}`.trim() : "Unknown"))).filter(name => name !== "Unknown" && Boolean(name));
+
+    const filteredResults = results.filter((r) => {
+        const matchesSubject = selectedSubject === "All" || r.subject === selectedSubject;
+        const resultClass = r.className ? `${r.className} ${r.division || ''}`.trim() : "Unknown";
+        const matchesClass = selectedClass === "All" || resultClass === selectedClass;
+        return matchesSubject && matchesClass;
+    });
 
     useEffect(() => {
         setCurrentPage(1);
@@ -332,7 +340,23 @@ export const StudentExamResultsPage: React.FC = () => {
                 </button>
             </div>
 
-            <div className="flex items-center gap-4" data-html2canvas-ignore="true">
+            <div className="flex items-center gap-4 flex-wrap" data-html2canvas-ignore="true">
+                <select
+                    className={`rounded-lg border px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500 ${isDark
+                        ? "bg-slate-800 border-slate-700 text-slate-100"
+                        : "bg-white border-slate-200 text-slate-900"
+                        }`}
+                    value={selectedClass}
+                    onChange={(e) => setSelectedClass(e.target.value)}
+                >
+                    <option value="All">All Classes</option>
+                    {uniqueClasses.map((cls) => (
+                        <option key={cls} value={cls}>
+                            {cls}
+                        </option>
+                    ))}
+                </select>
+
                 <select
                     className={`rounded-lg border px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500 ${isDark
                         ? "bg-slate-800 border-slate-700 text-slate-100"

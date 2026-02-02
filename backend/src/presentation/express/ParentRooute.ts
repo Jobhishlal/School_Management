@@ -119,7 +119,7 @@ ParentRouter.get("/leave/student/:studentId",
     (req, res) => studentLeaveController.getStudentLeaves(req, res)
 )
 
-// Parent Complaint Routes
+
 ParentRouter.post("/complaint/create",
     authMiddleware,
     (req, res) => parentComplaintController.createComplaint(req, res)
@@ -136,8 +136,7 @@ ParentRouter.put("/complaint/update/:id",
 )
 
 
-// Dashboard Stats Dependencies
-// Dashboard Stats Dependencies
+
 import { GetParentDashboardStatsUseCase } from "../../applications/useCases/Parent/GetParentDashboardStatsUseCase";
 import { ParentDashboardController } from "../http/controllers/ParentController.ts/ParentDashboardController";
 import { MongoStudentRepo } from "../../infrastructure/repositories/MongoStudentRepo";

@@ -241,7 +241,10 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
 
 
     const docs = await AssignmentModel.find({
-      classId: new mongoose.Types.ObjectId(classId),
+      $or: [
+        { classId: new mongoose.Types.ObjectId(classId) },
+        { "assignmentSubmitFile.studentId": new mongoose.Types.ObjectId(studentId) }
+      ]
     }).populate("classId", "className division");
 
     return docs.map((doc) => {

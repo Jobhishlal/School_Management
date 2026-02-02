@@ -49,9 +49,11 @@ export const StudentAssignmentList: React.FC = () => {
   const [submittingId, setSubmittingId] = useState<string | null>(null);
   const [expandedAssignment, setExpandedAssignment] = useState<string | null>(null);
 
-  // Subject Filter State
+  // Subject and Class Filter State
   const [selectedSubject, setSelectedSubject] = useState<string>("all");
+  const [selectedClass, setSelectedClass] = useState<string>("all");
   const uniqueSubjects = Array.from(new Set(assignments.map(a => a.subject)));
+  const uniqueClasses = Array.from(new Set(assignments.map((a) => `${a.className}-${a.division}`)));
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -115,8 +117,10 @@ export const StudentAssignmentList: React.FC = () => {
     .filter((assignment) => {
       const daysLeft = getDaysUntilDue(assignment.Assignment_Due_Date);
       const matchesSubject = selectedSubject === "all" || assignment.subject === selectedSubject;
+      const assignmentClass = `${assignment.className}-${assignment.division}`;
+      const matchesClass = selectedClass === "all" || assignmentClass === selectedClass;
 
-      if (!matchesSubject) return false;
+      if (!matchesSubject || !matchesClass) return false;
 
       if (filter === "upcoming") return daysLeft >= 0;
       if (filter === "overdue") return daysLeft < 0;
@@ -242,6 +246,28 @@ export const StudentAssignmentList: React.FC = () => {
                 {f.charAt(0).toUpperCase() + f.slice(1)}
               </button>
             ))}
+          </div>
+
+          {/* Class Filter Dropdown */}
+          <div className="w-full md:w-64">
+            <select
+              value={selectedClass}
+              onChange={(e) => {
+                setSelectedClass(e.target.value);
+                setCurrentPage(1);
+              }}
+              className={`w-full px-4 py-2 rounded-lg border appearance-none cursor-pointer ${isDark
+                ? "bg-slate-800 border-slate-700 text-slate-200 focus:border-blue-500"
+                : "bg-white border-slate-300 text-slate-700 focus:border-blue-500"
+                } focus:outline-none focus:ring-1 focus:ring-blue-500`}
+            >
+              <option value="all">All Classes</option>
+              {uniqueClasses.map((cls) => (
+                <option key={cls} value={cls}>
+                  {cls}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Subject Filter Dropdown */}

@@ -8,15 +8,20 @@ import { Types } from "mongoose";
 import { InterfaceLeaveManagement } from "../../../domain/repositories/ILeaveManagement/ILeaveManagement";
 import { LeaveManagementEntity } from "../../../domain/entities/LeaveManagement/LeaveManagementEntity";
 import { toLeaveManagementEntity } from "../../../domain/Mapper/toLeaveManagementEntity";
-
+import { BaseRepository } from "../BASEREPOSITORIES/Baserepository";
 
 
 export class LeaveManagementMongoRepo implements InterfaceLeaveManagement {
+    private baseRepo: BaseRepository<InterLeaveManagement>;
+
+    constructor() {
+        this.baseRepo = new BaseRepository(LeaveManagementModel);
+    }
 
     async create(leave: LeaveManagementEntity): Promise<LeaveManagementEntity> {
-        const doc = await LeaveManagementModel.create({
-            teacherId: leave.teacherId,
-            subAdminId: leave.subAdminId,
+        const doc = await this.baseRepo.create({
+            teacherId: leave.teacherId as any,
+            subAdminId: leave.subAdminId as any,
             applicantRole: leave.applicantRole,
             leaveType: leave.leaveType,
             startDate: leave.startDate,
@@ -29,9 +34,10 @@ export class LeaveManagementMongoRepo implements InterfaceLeaveManagement {
             actionAt: leave.actionAt,
             adminRemark: leave.adminRemark,
             warningMessage: leave.warningMessage
-        })
-        return toLeaveManagementEntity(doc)
+        });
+        return toLeaveManagementEntity(doc);
     }
+
     async findOverlappingLeave(teacherId: string, startDate: Date, endDate: Date): Promise<LeaveManagementEntity | null> {
 
         const doc = await LeaveManagementModel.findOne({
@@ -39,8 +45,8 @@ export class LeaveManagementMongoRepo implements InterfaceLeaveManagement {
             status: { $in: ["PENDING", "APPROVED"] },
             startDate: { $lte: endDate },
             endDate: { $gte: startDate }
-        })
-        return doc ? toLeaveManagementEntity(doc) : null
+        });
+        return doc ? toLeaveManagementEntity(doc) : null;
     }
 
     async countLeavesByTypeAndMonth(teacherId: string, leaveType: string, month: number, year: number): Promise<number> {
@@ -87,18 +93,15 @@ export class LeaveManagementMongoRepo implements InterfaceLeaveManagement {
             updateData.adminRemark = adminRemark;
         }
 
-        const doc = await LeaveManagementModel.findByIdAndUpdate(
-            leaveId,
-            updateData,
-            { new: true }
-        );
+        const doc = await this.baseRepo.update(leaveId, updateData);
         return doc ? toLeaveManagementEntity(doc) : null;
     }
 
     async findById(id: string): Promise<LeaveManagementEntity | null> {
-        const doc = await LeaveManagementModel.findById(id);
+        const doc = await this.baseRepo.findById(id);
         return doc ? toLeaveManagementEntity(doc) : null;
     }
+
     async countPendingRequests(): Promise<number> {
         return await LeaveManagementModel.countDocuments({ status: "PENDING" });
     }

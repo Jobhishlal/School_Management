@@ -1,19 +1,25 @@
 import { IParentComplaintsRepositroy } from "../../../domain/repositories/ParentComplaints/IParentComplaints";
 import { ParentComplaints } from "../../../domain/entities/ParentComplaints/ParentComplaints";
-import { ParentComplaintsSchema } from "../../database/models/Parents/Complaints";
+import { ParentComplaintsSchema, IParentsComplaints } from "../../database/models/Parents/Complaints";
 import { CreateParentComplaintsDTO } from "../../../applications/dto/Parentcomplaints/CreateParentComplaints";
 import { Types } from "mongoose";
+import { BaseRepository } from "../BASEREPOSITORIES/Baserepository";
 
 
 export class MongoParentComplaints implements IParentComplaintsRepositroy {
+    private baseRepo: BaseRepository<IParentsComplaints>;
+
+    constructor() {
+        this.baseRepo = new BaseRepository(ParentComplaintsSchema);
+    }
 
     async create(data: CreateParentComplaintsDTO): Promise<ParentComplaints> {
 
-        const complaints = await ParentComplaintsSchema.create({
+        const complaints = await this.baseRepo.create({
             parentId: new Types.ObjectId(data.parentId),
             concernTitle: data.concernTitle,
             description: data.description
-        });
+        } as any);
 
 
         return new ParentComplaints(
@@ -52,16 +58,12 @@ export class MongoParentComplaints implements IParentComplaintsRepositroy {
     }
 
     async update(id: string, data: Partial<ParentComplaints>): Promise<ParentComplaints | null> {
-        const updated = await ParentComplaintsSchema.findByIdAndUpdate(
-            id,
-            {
-                concernTitle: data.concernTitle,
-                description: data.description,
-                ticketStatus: data.ticketStatus,
-                adminFeedback: data.adminFeedback
-            },
-            { new: true }
-        );
+        const updated = await this.baseRepo.update(id, {
+            concernTitle: data.concernTitle,
+            description: data.description,
+            ticketStatus: data.ticketStatus as any,
+            adminFeedback: data.adminFeedback
+        } as any);
 
         if (!updated) return null;
 
@@ -97,7 +99,7 @@ export class MongoParentComplaints implements IParentComplaintsRepositroy {
         const mappedComplaints = complaints.map((c: any) => {
             const studentName = c.parentId?.student?.fullName || "Unknown";
             return new ParentComplaints(
-                c.parentId?._id?.toString() || c.parentId?.toString(), // Handle both populated and unpopulated cases safely
+                c.parentId?._id?.toString() || c.parentId?.toString(),
                 c.concernTitle,
                 c.description,
                 c.concernDate,

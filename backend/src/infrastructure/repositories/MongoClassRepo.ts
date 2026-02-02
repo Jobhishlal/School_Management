@@ -195,6 +195,25 @@ export class MongoClassRepository implements IClassRepository {
   async countAll(): Promise<number> {
     return await ClassModel.countDocuments();
   }
+
+  async findClassesByIds(ids: string[]): Promise<Class[]> {
+    const validIds = ids.filter(id => mongoose.Types.ObjectId.isValid(id));
+    const classes = await ClassModel.find({
+      _id: { $in: validIds.map(id => new mongoose.Types.ObjectId(id)) }
+    });
+
+    return classes.map((c) =>
+      new Class(
+        (c._id as mongoose.Types.ObjectId).toString(),
+        c.className,
+        c.division,
+        c.rollNumber,
+        c.department,
+        c.subjects,
+        c.classTeacher?.toString()
+      )
+    );
+  }
 }
 
 

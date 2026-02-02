@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { AnnouncementModal } from "../admin/Announcement/AnnouncementModal";
+import React from "react";
 import { useNavigate } from "react-router-dom";
+import { createPortal } from "react-dom";
 
 
 interface Props {
@@ -10,6 +10,7 @@ interface Props {
   loading: boolean;
   onClear: () => void;
   unreadCount: number;
+  onAnnouncementClick: (announcement: any) => void;
 }
 
 export const NotificationDropdown: React.FC<Props> = ({
@@ -18,15 +19,15 @@ export const NotificationDropdown: React.FC<Props> = ({
   announcements = [],
   loading = false,
   onClear,
-  unreadCount
+  unreadCount,
+  onAnnouncementClick
 }) => {
-  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
   const usenavigate = useNavigate()
 
 
   const goToAnnouncements = () => {
-  usenavigate("/student/notices");
-};
+    usenavigate("/student/notices");
+  };
 
   // Removed internal fetch logic as it is now handled by parent
 
@@ -52,14 +53,14 @@ export const NotificationDropdown: React.FC<Props> = ({
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <>
       <div
         className="fixed inset-0 z-[998]"
         onClick={onClose}
       />
 
-      <div className="fixed top-[70px] right-[20px] w-96 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 z-[999] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+      <div className="fixed top-[70px] right-[20px] w-96 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 z-[9999] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
 
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-4 flex justify-between items-center">
@@ -109,7 +110,7 @@ export const NotificationDropdown: React.FC<Props> = ({
                 <li
                   key={i}
                   className="p-4 hover:bg-blue-50 dark:hover:bg-slate-800 cursor-pointer transition-all group"
-                  onClick={() => setSelectedAnnouncement(a)}
+                  onClick={() => onAnnouncementClick(a)}
                 >
                   <div className="flex gap-3">
                     <div className="text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
@@ -143,26 +144,19 @@ export const NotificationDropdown: React.FC<Props> = ({
           )}
         </div>
 
-       {announcements.length > 0 && (
-  <div className="p-3 bg-gray-50 dark:bg-slate-800 border-t dark:border-slate-700">
-    <button
-      onClick={goToAnnouncements}
-      className="w-full text-center text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-700 transition-all"
-    >
-      View All Announcements →
-    </button>
-  </div>
-)}
+        {announcements.length > 0 && (
+          <div className="p-3 bg-gray-50 dark:bg-slate-800 border-t dark:border-slate-700">
+            <button
+              onClick={goToAnnouncements}
+              className="w-full text-center text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-700 transition-all"
+            >
+              View All Announcements →
+            </button>
+          </div>
+        )}
 
       </div>
-
-      {/* Modal */}
-      {selectedAnnouncement && (
-        <AnnouncementModal
-          announcement={selectedAnnouncement}
-          onClose={() => setSelectedAnnouncement(null)}
-        />
-      )}
-    </>
+    </>,
+    document.body
   );
 };

@@ -325,8 +325,8 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
         $project: {
           _id: 0,
           day: "$days.day",
-          className: "$class.className",
-          division: "$division",
+          className: { $ifNull: ["$class.className", "$className"] },
+          division: { $ifNull: ["$class.division", "$division"] },
           startTime: "$days.periods.startTime",
           endTime: "$days.periods.endTime",
           subject: "$days.periods.subject"

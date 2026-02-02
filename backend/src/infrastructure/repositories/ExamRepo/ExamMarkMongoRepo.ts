@@ -191,7 +191,7 @@ export class ExamMarkMongoRepository implements IExamMarkRepository {
 
     const docs = await ExamMarkModel.find({
       studentId: new Types.ObjectId(studentId)
-    }).populate("examId"); // Populate exam details to get subject and title
+    });
 
     return docs.map(toExamMarkEntity);
   }

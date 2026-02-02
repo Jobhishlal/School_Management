@@ -4,3 +4,5 @@ import { ParentComplaints } from "../../../domain/entities/ParentComplaints/Pare
 export interface ICreateParentComplaintUseCase {
     execute(data: CreateParentComplaintsDTO): Promise<ParentComplaints>;
 }
+
+

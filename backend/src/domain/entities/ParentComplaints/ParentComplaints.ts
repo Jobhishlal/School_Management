@@ -10,7 +10,7 @@ export class ParentComplaints {
         public id?: string,
         public adminFeedback?: string,
         public studentName?: string
-    ) { }
+    ) {}
 
     markAsSolved() {
         this.ticketStatus = 'solved';

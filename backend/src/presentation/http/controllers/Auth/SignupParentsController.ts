@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { IParentSignupUseCase } from "../../../../domain/UseCaseInterface/IParentSignupUseCase";
+import { StatusCodes } from "../../../../shared/constants/statusCodes";
 
 export class SignupParentController {
   constructor(private useCase: IParentSignupUseCase) {}
@@ -10,19 +11,19 @@ export class SignupParentController {
 
       
       if (!studentId || !email || !password) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res.status(StatusCodes.UNAUTHORIZED).json({ message: "All fields are required" });
       }
 
     
       const emailRegex = /^\S+@\S+\.\S+$/;
       if (!emailRegex.test(email)) {
-        return res.status(400).json({ message: "Invalid email format" });
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid email format" });
       }
 
       const passwordRegex =
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
       if (!passwordRegex.test(password)) {
-        return res.status(400).json({
+        return res.status(StatusCodes.BAD_REQUEST).json({
           message:
             "Password must be at least 8 characters and include uppercase, lowercase, number, and special character",
         });
@@ -31,12 +32,12 @@ export class SignupParentController {
   
       const parent = await this.useCase.execute(studentId, email, password);
 
-      res.status(201).json({
+      res.status(StatusCodes.CREATED).json({
         message: "Parent registered successfully",
         parent,
       });
     } catch (err: any) {
-      res.status(400).json({ message: err.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
     }
   }
 }

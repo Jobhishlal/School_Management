@@ -83,6 +83,7 @@ const ParentComplaints: React.FC = () => {
     const numberText = isDark ? "text-slate-300" : "text-slate-700";
     const inputBg = isDark ? "bg-[#0F172A]" : "bg-slate-50";
     const borderColor = isDark ? "border-slate-700" : "border-slate-200";
+    console.log(numberText)
 
     return (
         <div className={`min-h-screen p-6 ${isDark ? "bg-[#121A21]" : "bg-slate-50"}`}>
@@ -117,7 +118,7 @@ const ParentComplaints: React.FC = () => {
                     <div className="p-8">
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
-                            {/* Concern Title */}
+                          
                             <div className="space-y-2">
                                 <label className={`block text-sm font-semibold ${textPrimary}`}>
                                     Subject / Title
@@ -135,7 +136,6 @@ const ParentComplaints: React.FC = () => {
                                 )}
                             </div>
 
-                            {/* Description */}
                             <div className="space-y-2">
                                 <label className={`block text-sm font-semibold ${textPrimary}`}>
                                     Detailed Description
@@ -154,7 +154,7 @@ const ParentComplaints: React.FC = () => {
                                 )}
                             </div>
 
-                            {/* Action Buttons */}
+                           
                             <div className="flex justify-end pt-4">
                                 <button
                                     type="submit"
@@ -176,7 +176,7 @@ const ParentComplaints: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Complaints List */}
+              
                 <div className="space-y-4">
                     <div className="flex justify-between items-end">
                         <h2 className={`text-xl font-bold ${textPrimary}`}>Submited Concerns</h2>

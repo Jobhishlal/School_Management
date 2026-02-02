@@ -1,17 +1,16 @@
 import { Request, Response } from "express";
-import { AskAIDoubtUseCase } from "../../../../applications/useCases/Student/AskAIDoubtUseCase";
-import { GetStudentChatHistoryUseCase } from "../../../../applications/useCases/Student/GetStudentChatHistoryUseCase";
-import { GetChatSessionUseCase } from "../../../../applications/useCases/Student/GetChatSessionUseCase";
+import { IAskAIDoubtUseCase } from "../../../../applications/useCases/Student/interfaces/IAskAIDoubtUseCase";
+import { IGetStudentChatHistoryUseCase } from "../../../../applications/useCases/Student/interfaces/IGetStudentChatHistoryUseCase";
+import { IGetChatSessionUseCase } from "../../../../applications/useCases/Student/interfaces/IGetChatSessionUseCase";
+import { IDeleteChatSessionUseCase } from "../../../../applications/useCases/Student/interfaces/IDeleteChatSessionUseCase";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
-
-import { DeleteChatSessionUseCase } from "../../../../applications/useCases/Student/DeleteChatSessionUseCase";
 
 export class AIController {
     constructor(
-        private askAIDoubtUseCase: AskAIDoubtUseCase,
-        private getStudentChatHistoryUseCase: GetStudentChatHistoryUseCase,
-        private getChatSessionUseCase: GetChatSessionUseCase,
-        private deleteChatSessionUseCase: DeleteChatSessionUseCase
+        private askAIDoubtUseCase: IAskAIDoubtUseCase,
+        private getStudentChatHistoryUseCase: IGetStudentChatHistoryUseCase,
+        private getChatSessionUseCase: IGetChatSessionUseCase,
+        private deleteChatSessionUseCase: IDeleteChatSessionUseCase
     ) { }
 
     async askDoubt(req: Request, res: Response): Promise<void> {

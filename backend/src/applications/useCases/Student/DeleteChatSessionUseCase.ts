@@ -1,6 +1,8 @@
 import { IAISessionRepository } from "../../../domain/repositories/AI/IAISessionRepository";
 
-export class DeleteChatSessionUseCase {
+import { IDeleteChatSessionUseCase } from "./interfaces/IDeleteChatSessionUseCase";
+
+export class DeleteChatSessionUseCase implements IDeleteChatSessionUseCase {
     constructor(private sessionRepository: IAISessionRepository) { }
 
     async execute(sessionId: string): Promise<void> {

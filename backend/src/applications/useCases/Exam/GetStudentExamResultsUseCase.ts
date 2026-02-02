@@ -3,6 +3,7 @@ import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInte
 import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMarkRepoInterface";
 import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
 import { StudentExamResultResponse } from "../../dto/Exam/IGetStudentExamResultsUseCase";
+import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
 
 
 export class GetStudentExamResultsUseCase
@@ -11,7 +12,8 @@ export class GetStudentExamResultsUseCase
   constructor(
     private examRepo: IExamRepository,
     private examMarkRepo: IExamMarkRepository,
-    private studentRepo: StudentDetails
+    private studentRepo: StudentDetails,
+    private classRepo: IClassRepository
   ) { }
 
   async execute(
@@ -22,8 +24,9 @@ export class GetStudentExamResultsUseCase
     const student = await this.studentRepo.findById(studentId);
     if (!student) throw new Error("Student not found");
 
-    const exams = await this.examRepo.findPublishedExamsByClass(classId);
 
+    const marks = await this.examMarkRepo.findAllMarksByStudentId(studentId);
+    console.log("DEBUG: Fetched Marks count:", marks.length);
 
     const studentDTO = {
       id: student.id,
@@ -41,6 +44,22 @@ export class GetStudentExamResultsUseCase
         : undefined,
     };
 
+    const classExams = await this.examRepo.findPublishedExamsByClass(classId);
+    console.log("DEBUG: Current Class Exams count:", classExams.length);
+
+    const historyExamIds = marks.map(m => m.examId.toString());
+    console.log("DEBUG: History Exam IDs:", historyExamIds);
+    const historyExams = await this.examRepo.findExamsByIds(historyExamIds);
+    console.log("DEBUG: Fetched History Exams count:", historyExams.length);
+
+    const allExamsMap = new Map();
+    [...classExams, ...historyExams].forEach(exam => {
+      allExamsMap.set(exam.id, exam);
+    });
+
+    const exams = Array.from(allExamsMap.values());
+    console.log("DEBUG: Combined unique exams count:", exams.length);
+
     if (!exams.length) {
       return {
         student: studentDTO,
@@ -48,15 +67,19 @@ export class GetStudentExamResultsUseCase
       };
     }
 
-    const examIds = exams.map(e => e.id);
-    const marks = await this.examMarkRepo.findMarksForStudent(
-      studentId,
-      examIds
-    );
-    console.log("exam result", marks)
+    // specific change: fetch class details
+    const classIds = [...new Set(exams.map(e => e.classId.toString()))];
+    console.log("DEBUG: Extracted Class IDs:", classIds);
+    const classes = await this.classRepo.findClassesByIds(classIds);
+    console.log("DEBUG: Fetched Classes:", classes);
+    // Fixed: Use c._id.toString() or c.id depending on entity structure, usually _id is reliable from repo
+    const classMap = new Map(classes.map(c => [c._id.toString(), c]));
+
+    console.log("DEBUG: Final Exam List:", exams);
 
     const results = exams.map(exam => {
       const mark = marks.find(m => m.examId.toString() === exam.id);
+      const examClass = classMap.get(exam.classId.toString());
 
       let percentage: number | null = null;
       let status: "Pending" | "Passed" | "Failed" = "Pending";
@@ -87,8 +110,12 @@ export class GetStudentExamResultsUseCase
         concernResponse: (mark as any)?.concernResponse ?? null,
         updatedAt: mark?.updatedAt ?? null,
         status,
+        className: examClass?.className,
+        division: examClass?.division
       };
     });
+
+    console.log("DEBUG: Final Results Count:", results.length);
 
     return {
       student: studentDTO,

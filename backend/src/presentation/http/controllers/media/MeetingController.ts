@@ -32,6 +32,19 @@ export class MeetingController {
             const newMeeting = await this.createMeetingUseCase.execute(meetingData);
 
             console.log("meeting data", newMeeting)
+
+            // Notify staff via socket
+            try {
+                const io = require('../../../../infrastructure/socket/socket').getIO(); // Dynamic import to avoid circular dep issues if any, or just standard import
+                // Filter logic can be here or on client. Sending to all for now, client will filter.
+                // Or better, check if 'participants' or 'scope' implies staff.
+                // Assuming 'newMeeting' has properties like 'scope' or 'participants'.
+
+                io.emit('staff-meeting-created', newMeeting);
+            } catch (socketError) {
+                console.error("Failed to emit socket event:", socketError);
+            }
+
             res.status(StatusCodes.CREATED).json({ success: true, data: newMeeting });
         } catch (error: any) {
             if (error.message === 'Meeting cannot be scheduled in the past' ||
