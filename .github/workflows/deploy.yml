@@ -26,10 +26,10 @@ jobs:
 
       - name: Install Frontend Dependencies
         run: |
-          cd Frontend/School
-          npm install
+            cd Frontend/School
+            npm install
 
       - name: Build Frontend
         run: |
-          cd Frontend
+          cd Frontend/School
           npm run build
