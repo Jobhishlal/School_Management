@@ -127,7 +127,7 @@ export default function MainAdminLogincheck() {
 
         if (error) {
           showToast(error, "error");
-          popup?.close();
+          // popup?.close();
           window.removeEventListener("message", listener);
           return;
         }
@@ -135,7 +135,7 @@ export default function MainAdminLogincheck() {
         if (!accessToken || !refreshToken || !user) return;
 
         window.removeEventListener("message", listener);
-        popup?.close();
+        // popup?.close();
         showToast("Google login successful", "success");
       };
 

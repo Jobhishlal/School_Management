@@ -134,7 +134,7 @@ export function AddStudentForm({ onSuccess, onClose, student }: AddStudentFormPr
         if (addressId) {
           await UpdateAddress(addressId, street, city, state, pincode);
         }
-        await UpdateStudent(student._id, fullName, dateOfBirth, gender, parentId, addressId, classId, photos);
+        await UpdateStudent(student._id, fullName, new Date(dateOfBirth), gender, parentId, addressId, classId, photos);
         showToast("Student updated successfully", "success");
       } else {
         const parentRes = await createParent({ name: parentName, contactNumber: whatsappNumber, whatsappNumber, email: parentEmail, relationship: parentRelationship });
@@ -145,7 +145,7 @@ export function AddStudentForm({ onSuccess, onClose, student }: AddStudentFormPr
         if (!addressRes?.address?._id) throw new Error("Address creation failed");
         const addressIdNew = addressRes.address._id;
 
-        const { student: newStudent, tempPassword } = await CreateStudents(
+        const { tempPassword } = await CreateStudents(
           fullName, dateOfBirth, gender, parentIdNew, addressIdNew, classId, photos
         );
         showToast(`Student created successfully. Temp Password: ${tempPassword}`, "success");

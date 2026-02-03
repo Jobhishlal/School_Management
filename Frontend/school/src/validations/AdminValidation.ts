@@ -17,10 +17,6 @@ export const AdminSchema = z.object({
       "Student_Management",
       "Parents_Management"
     ],
-    {
-      required_error: "Role is required",
-      invalid_type_error: "Invalid role selected",
-    }
   ),
 
   blocked: z.boolean().default(false),

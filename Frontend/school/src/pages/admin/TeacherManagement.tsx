@@ -8,14 +8,14 @@ import { useTheme } from "../../components/layout/ThemeContext";
 import { teacherSchema } from "../../validations/TeacherValidation";
 import { Pagination } from "../../components/common/Pagination";
 import { Modal } from "../../components/common/Modal";
-import { Table } from "../../components/Table/Table";
+import { Table, type Column } from "../../components/Table/Table";
 
 interface Subject {
   name: string;
   code: string;
 }
 
-interface Teachers {
+interface Teacher {
   id: string;
   name: string;
   email: string;
@@ -33,8 +33,8 @@ export function TeachersManagement() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [gender, setGender] = useState("");
-  const [teachers, setTeachers] = useState<Teachers[]>([]);
-  const [filteredTeachers, setFilteredTeachers] = useState<Teachers[]>([]);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [filteredTeachers, setFilteredTeachers] = useState<Teacher[]>([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -44,21 +44,13 @@ export function TeachersManagement() {
   const [department, setDepartment] = useState<"LP" | "UP" | "HS" | "">("");
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [newSubjectName, setNewSubjectName] = useState("");
-  const [isMobile, setIsMobile] = useState(false);
+
 
 
   const itemsPerPage = 5;
 
 
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
 
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
 
   const fetchTeachers = async () => {
     setLoading(true);
@@ -99,43 +91,43 @@ export function TeachersManagement() {
     setCurrentPage(1);
   }, [searchTerm, teachers]);
 
-const validateForm = (): boolean => {
+  const validateForm = (): boolean => {
 
-  if (
-    !name.trim() ||
-    !email.trim() ||
-    !phone.trim() ||
-    !gender.trim() ||
-    !department ||
-    subjects.length === 0
-  ) {
-    showToast("All fields are required", "warning");
-    return false;
-  }
-  const result = teacherSchema.safeParse({
-    name,
-    email,
-    phone,
-    gender,
-    department,
-    subjects,
-  });
-
-  if (!result.success) {
-    
-    const allFieldsError = result.error.issues.find(issue => issue.path[0] === "allFields");
-    if (allFieldsError) {
-      showToast(allFieldsError.message, "warning");
+    if (
+      !name.trim() ||
+      !email.trim() ||
+      !phone.trim() ||
+      !gender.trim() ||
+      !department ||
+      subjects.length === 0
+    ) {
+      showToast("All fields are required", "warning");
       return false;
     }
+    const result = teacherSchema.safeParse({
+      name,
+      email,
+      phone,
+      gender,
+      department,
+      subjects,
+    });
+
+    if (!result.success) {
+
+      const allFieldsError = result.error.issues.find(issue => issue.path[0] === "allFields");
+      if (allFieldsError) {
+        showToast(allFieldsError.message, "warning");
+        return false;
+      }
 
 
-    const firstIssue = result.error.issues[0];
-    showToast(firstIssue.message, "warning");
-    return false;
-  }
-  return true;
-};
+      const firstIssue = result.error.issues[0];
+      showToast(firstIssue.message, "warning");
+      return false;
+    }
+    return true;
+  };
 
   const handleAddSubject = () => {
     if (!newSubjectName.trim()) return;
@@ -153,7 +145,7 @@ const validateForm = (): boolean => {
 
     try {
       if (editId) {
-        await UpdateTeacher(editId, name, email, phone, gender, department, subjects);
+        await UpdateTeacher(editId, name, email, phone, gender, department as "LP" | "UP" | "HS", subjects);
         showToast("Teacher updated successfully", "success");
       } else {
         await CreateTeachers(
@@ -166,7 +158,7 @@ const validateForm = (): boolean => {
           department as "LP" | "UP" | "HS",
           subjects,
           undefined,
-          files
+          files ? Array.from(files) : undefined
         );
         showToast("Teacher created successfully", "success");
       }
@@ -201,7 +193,7 @@ const validateForm = (): boolean => {
     setShowModal(false);
   };
 
-  const handleEdit = (teacher: Teachers) => {
+  const handleEdit = (teacher: Teacher) => {
     setEditId(teacher.id);
     setName(teacher.name);
     setEmail(teacher.email);
@@ -212,7 +204,7 @@ const validateForm = (): boolean => {
     setShowModal(true);
   };
 
-  const handleBlock = async (teacher: Teachers) => {
+  const handleBlock = async (teacher: Teacher) => {
     try {
       const newStatus = !teacher.blocked;
       await BlockTeacher(teacher.id, newStatus);
@@ -224,36 +216,36 @@ const validateForm = (): boolean => {
     }
   };
   const teacherColumns: Column<Teacher>[] = [
-  { label: "Name", key: "name" },
-  { label: "Email", key: "email" },
-  { label: "Phone", key: "phone" },
-  { label: "Department", key: "department" },
-  {
-    label: "Subjects",
-    render: (t) => (
-      <div className="flex flex-wrap gap-1 max-w-[150px]">
-        {t.subjects.map((s, i) => (
-          <span key={i} className="px-2 py-1 rounded-full bg-orange-500 text-white text-xs">{s.name}</span>
-        ))}
-      </div>
-    ),
-  },
-  {
-    label: "Status",
-    render: (t) => (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${t.blocked ? "bg-red-500 text-red-50" : "bg-green-500 text-green-50"}`}>
-        {t.blocked ? "Blocked" : "Active"}
-      </span>
-    ),
-  },
-];
+    { label: "Name", key: "name" },
+    { label: "Email", key: "email" },
+    { label: "Phone", key: "phone" },
+    { label: "Department", key: "department" },
+    {
+      label: "Subjects",
+      render: (t) => (
+        <div className="flex flex-wrap gap-1 max-w-[150px]">
+          {t.subjects.map((s, i) => (
+            <span key={i} className="px-2 py-1 rounded-full bg-orange-500 text-white text-xs">{s.name}</span>
+          ))}
+        </div>
+      ),
+    },
+    {
+      label: "Status",
+      render: (t) => (
+        <span className={`px-2 py-1 rounded-full text-xs font-medium ${t.blocked ? "bg-red-500 text-red-50" : "bg-green-500 text-green-50"}`}>
+          {t.blocked ? "Blocked" : "Active"}
+        </span>
+      ),
+    },
+  ];
 
   const totalPages = Math.ceil(filteredTeachers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentTeachers = filteredTeachers.slice(startIndex, endIndex);
 
-  const TeacherCard = ({ teacher }: { teacher: Teachers }) => (
+  const TeacherCard = ({ teacher }: { teacher: Teacher }) => (
     <div className={`p-4 rounded-lg border mb-4 ${isDark ? "bg-slate-800 border-slate-700" : "bg-white border-gray-200"}`}>
       <div className="flex justify-between items-start mb-3">
         <div className="flex-1 min-w-0">
@@ -264,7 +256,7 @@ const validateForm = (): boolean => {
           {teacher.blocked ? "Blocked" : "Active"}
         </span>
       </div>
-      
+
       <div className="grid grid-cols-2 gap-3 mb-3">
         <div>
           <p className={`text-xs font-medium ${isDark ? "text-slate-400" : "text-gray-500"}`}>Phone </p>
@@ -308,7 +300,7 @@ const validateForm = (): boolean => {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col space-y-4 mb-4 sm:mb-6">
           <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold">Teacher Management</h2>
-          
+
           {/* Search and Add Button */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <div className="flex-1 relative">
@@ -321,8 +313,8 @@ const validateForm = (): boolean => {
               />
               <FaSearch className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDark ? "text-slate-400" : "text-gray-500"}`} />
             </div>
-            <button 
-              onClick={() => setShowModal(true)} 
+            <button
+              onClick={() => setShowModal(true)}
               className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm flex items-center justify-center gap-2"
             >
               <Plus size={16} />
@@ -347,18 +339,18 @@ const validateForm = (): boolean => {
             <>
               {/* Desktop Table View */}
               <div className="hidden md:block overflow-x-auto">
-               <Table
+                <Table
                   columns={teacherColumns}
                   data={currentTeachers}
-                    actions={(t) => (
-             <div className="flex justify-center gap-2">
-              <button><Eye size={16} /></button>
-                 <button onClick={() => handleEdit(t)}><Edit size={16} /></button>
-               <button onClick={() => handleBlock(t)}><UserX size={16} /></button>
-           </div>
-            )}
-           isDark={isDark}
-              />
+                  actions={(t) => (
+                    <div className="flex justify-center gap-2">
+                      <button><Eye size={16} /></button>
+                      <button onClick={() => handleEdit(t)}><Edit size={16} /></button>
+                      <button onClick={() => handleBlock(t)}><UserX size={16} /></button>
+                    </div>
+                  )}
+                  isDark={isDark}
+                />
               </div>
 
               {/* Mobile Card View */}
@@ -371,178 +363,178 @@ const validateForm = (): boolean => {
           )}
         </div>
 
-      
+
         {totalPages > 1 && (
-     
+
 
           <Pagination
-           
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          
+
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+
           />
         )}
 
-       
-      
+
+
 
         <Modal
-           isOpen={showModal}
-           onClose={handleCloseModal}
-           title={editId ? "Edit Teacher" : "Add New Teacher"}
-             >
-              <div className="space-y-4">
-                 
-                  <div>
-                    <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-gray-700"}`}>
-                      Full Name *
-                    </label>
-                    <input 
-                      type="text" 
-                      value={name} 
-                      onChange={(e) => setName(e.target.value)} 
-                      placeholder="Enter full name" 
-                      className={`w-full px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${isDark ? "bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400" : "bg-gray-50 border-gray-300 text-gray-800 placeholder-gray-500"}`} 
+          isOpen={showModal}
+          onClose={handleCloseModal}
+          title={editId ? "Edit Teacher" : "Add New Teacher"}
+        >
+          <div className="space-y-4">
+
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-gray-700"}`}>
+                Full Name *
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter full name"
+                className={`w-full px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${isDark ? "bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400" : "bg-gray-50 border-gray-300 text-gray-800 placeholder-gray-500"}`}
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-gray-700"}`}>
+                Email *
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter email"
+                className={`w-full px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${isDark ? "bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400" : "bg-gray-50 border-gray-300 text-gray-800 placeholder-gray-500"}`}
+              />
+            </div>
+
+            {/* Phone */}
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-gray-700"}`}>
+                Phone *
+              </label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="Enter 10-digit phone"
+                className={`w-full px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${isDark ? "bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400" : "bg-gray-50 border-gray-300 text-gray-800 placeholder-gray-500"}`}
+              />
+            </div>
+
+            {/* Gender and Department in row for desktop */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-gray-700"}`}>
+                  Gender *
+                </label>
+                <select
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  className={`w-full px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${isDark ? "bg-slate-700 border-slate-600 text-slate-100" : "bg-gray-50 border-gray-300 text-gray-800"}`}
+                >
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-gray-700"}`}>
+                  Department *
+                </label>
+                <select
+                  value={department}
+                  onChange={(e) => setDepartment(e.target.value as "LP" | "UP" | "HS")}
+                  className={`w-full px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${isDark ? "bg-slate-700 border-slate-600 text-slate-100" : "bg-gray-50 border-gray-300 text-gray-800"}`}
+                >
+                  <option value="">Select Department</option>
+                  <option value="LP">LP</option>
+                  <option value="UP">UP</option>
+                  <option value="HS">HS</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Subjects */}
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-gray-700"}`}>
+                Subjects
+              </label>
+              <div className="flex gap-2 mb-2">
+                <input
+                  type="text"
+                  value={newSubjectName}
+                  onChange={(e) => setNewSubjectName(e.target.value)}
+                  placeholder="Add subject"
+                  className={`flex-1 px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${isDark ? "bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400" : "bg-gray-50 border-gray-300 text-gray-800 placeholder-gray-500"}`}
+                />
+                <button
+                  type="button"
+                  onClick={handleAddSubject}
+                  className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition-colors flex-shrink-0"
+                >
+                  Add
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {subjects.map((sub, index) => (
+                  <span
+                    key={index}
+                    className={`px-3 py-1 rounded-full text-xs flex items-center gap-2 ${isDark ? "bg-slate-600 text-slate-200" : "bg-gray-200 text-gray-700"}`}
+                  >
+                    {sub.name}
+                    <X
+                      size={12}
+                      className="cursor-pointer hover:text-red-500"
+                      onClick={() => handleRemoveSubject(index)}
                     />
-                  </div>
+                  </span>
+                ))}
+              </div>
+            </div>
 
-                  {/* Email */}
-                  <div>
-                    <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-gray-700"}`}>
-                      Email *
-                    </label>
-                    <input 
-                      type="email" 
-                      value={email} 
-                      onChange={(e) => setEmail(e.target.value)} 
-                      placeholder="Enter email" 
-                      className={`w-full px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${isDark ? "bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400" : "bg-gray-50 border-gray-300 text-gray-800 placeholder-gray-500"}`} 
-                    />
-                  </div>
+            {/* Documents */}
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-gray-700"}`}>
+                Upload Documents
+              </label>
+              <input
+                type="file"
+                multiple
+                onChange={(e) => setFiles(e.target.files)}
+                className={`block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:transition-colors ${isDark ? "text-slate-300 file:bg-slate-700 file:text-slate-200 hover:file:bg-slate-600" : "text-gray-500 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"}`}
+              />
+            </div>
 
-                  {/* Phone */}
-                  <div>
-                    <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-gray-700"}`}>
-                      Phone *
-                    </label>
-                    <input 
-                      type="tel" 
-                      value={phone} 
-                      onChange={(e) => setPhone(e.target.value)} 
-                      placeholder="Enter 10-digit phone" 
-                      className={`w-full px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${isDark ? "bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400" : "bg-gray-50 border-gray-300 text-gray-800 placeholder-gray-500"}`} 
-                    />
-                  </div>
-
-                  {/* Gender and Department in row for desktop */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-gray-700"}`}>
-                        Gender *
-                      </label>
-                      <select 
-                        value={gender} 
-                        onChange={(e) => setGender(e.target.value)} 
-                        className={`w-full px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${isDark ? "bg-slate-700 border-slate-600 text-slate-100" : "bg-gray-50 border-gray-300 text-gray-800"}`}
-                      >
-                        <option value="">Select Gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-gray-700"}`}>
-                        Department *
-                      </label>
-                      <select 
-                        value={department} 
-                        onChange={(e) => setDepartment(e.target.value as "LP"|"UP"|"HS")} 
-                        className={`w-full px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${isDark ? "bg-slate-700 border-slate-600 text-slate-100" : "bg-gray-50 border-gray-300 text-gray-800"}`}
-                      >
-                        <option value="">Select Department</option>
-                        <option value="LP">LP</option>
-                        <option value="UP">UP</option>
-                        <option value="HS">HS</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Subjects */}
-                  <div>
-                    <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-gray-700"}`}>
-                      Subjects
-                    </label>
-                    <div className="flex gap-2 mb-2">
-                      <input 
-                        type="text" 
-                        value={newSubjectName} 
-                        onChange={(e) => setNewSubjectName(e.target.value)} 
-                        placeholder="Add subject" 
-                        className={`flex-1 px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${isDark ? "bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400" : "bg-gray-50 border-gray-300 text-gray-800 placeholder-gray-500"}`} 
-                      />
-                      <button 
-                        type="button" 
-                        onClick={handleAddSubject} 
-                        className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition-colors flex-shrink-0"
-                      >
-                        Add
-                      </button>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {subjects.map((sub, index) => (
-                        <span 
-                          key={index} 
-                          className={`px-3 py-1 rounded-full text-xs flex items-center gap-2 ${isDark ? "bg-slate-600 text-slate-200" : "bg-gray-200 text-gray-700"}`}
-                        >
-                          {sub.name} 
-                          <X 
-                            size={12} 
-                            className="cursor-pointer hover:text-red-500" 
-                            onClick={() => handleRemoveSubject(index)} 
-                          />
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Documents */}
-                  <div>
-                    <label className={`block text-sm font-medium mb-2 ${isDark ? "text-slate-300" : "text-gray-700"}`}>
-                      Upload Documents
-                    </label>
-                    <input 
-                      type="file" 
-                      multiple 
-                      onChange={(e) => setFiles(e.target.files)} 
-                      className={`block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:transition-colors ${isDark ? "text-slate-300 file:bg-slate-700 file:text-slate-200 hover:file:bg-slate-600" : "text-gray-500 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"}`} 
-                    />
-                  </div>
-
-                  {/* Buttons */}
-                  <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 sm:pt-6">
-                    <button 
-                      onClick={handleCloseModal} 
-                      disabled={loading} 
-                      className={`px-4 py-2.5 rounded-lg font-medium border text-sm transition-colors ${isDark ? "bg-transparent border-slate-600 text-slate-400 hover:bg-slate-700" : "bg-transparent border-gray-300 text-gray-500 hover:bg-gray-50"} disabled:opacity-50`}
-                    >
-                      Cancel
-                    </button>
-                    <button 
-                      onClick={handleSubmit} 
-                      disabled={loading} 
-                      className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium flex items-center justify-center gap-2 text-sm transition-colors disabled:opacity-50"
-                    >
-                      {loading ? (
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      ) : (
-                        editId ? "Update Teacher" : "Create Teacher"
-                      )}
-                    </button>
-                  </div>
-                </div>
-</Modal>
+            {/* Buttons */}
+            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 sm:pt-6">
+              <button
+                onClick={handleCloseModal}
+                disabled={loading}
+                className={`px-4 py-2.5 rounded-lg font-medium border text-sm transition-colors ${isDark ? "bg-transparent border-slate-600 text-slate-400 hover:bg-slate-700" : "bg-transparent border-gray-300 text-gray-500 hover:bg-gray-50"} disabled:opacity-50`}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium flex items-center justify-center gap-2 text-sm transition-colors disabled:opacity-50"
+              >
+                {loading ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  editId ? "Update Teacher" : "Create Teacher"
+                )}
+              </button>
+            </div>
+          </div>
+        </Modal>
 
       </div>
     </div>

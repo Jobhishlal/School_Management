@@ -30,7 +30,7 @@ const RevenueBarChart = ({ data, isDark }: any) => {
             borderRadius: "8px",
             color: tooltipText,
           }}
-          formatter={(value: number) => `₹${value.toLocaleString()}`}
+          formatter={(value: any) => `₹${value.toLocaleString()}`}
         />
 
         <Bar

@@ -8,7 +8,7 @@ import { useTheme } from "../../components/layout/ThemeContext";
 import { Pagination } from "../../components/common/Pagination";
 import { Modal } from "../../components/common/Modal";
 import { AddStudentForm } from '../../pages/admin/StudentManagement'
-import { Table } from "../../components/Table/Table";
+import { Table, type Column } from "../../components/Table/Table";
 import { blockStudent, CreateStudents } from "../../services/authapi";
 
 
@@ -180,6 +180,7 @@ export function StudentList() {
     try {
       const { fullName, studentId, class: className, section, guardianName, guardianPhone, status, profilePic } = newStudent;
 
+      // @ts-ignore
       await CreateStudents({
         fullName,
         studentId,

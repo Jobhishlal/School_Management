@@ -12,6 +12,7 @@ import type { UpdateExamDTO } from "../types/UpdateExam";
 import type { ExamEntity } from "../types/ExamEntity";
 import type { CreateExamMarkRequestDTO } from "../types/CreateExamMarkDto";
 import type { CreateLeaveDTO } from "../types/LeaveRequest/CreateLeaveRequest";
+export type { CreateLeaveDTO };
 
 export const GetSubAdmins = async () => {
   const res = await api.get(API_ROUTES.ADMIN.GET_SUBADMINS);
@@ -124,23 +125,23 @@ export const BlockTeacher = async (id: string, blocked: boolean) => {
 
 
 export const CreateStudents = async (
-  fullName: string,
-  dateOfBirth: string,
-  gender: "Male" | "Female" | "Other",
-  parentId: string,
-  addressId: string,
-  classId: string,
-  files: File[],
+  fullName: any,
+  dateOfBirth?: string,
+  gender?: "Male" | "Female" | "Other",
+  parentId?: string,
+  addressId?: string,
+  classId?: string,
+  files?: File[],
 
 ) => {
   const data = new FormData();
 
   data.append("fullName", fullName);
-  data.append("dateOfBirth", dateOfBirth);
-  data.append("gender", gender);
-  data.append("parentId", parentId);
-  data.append("addressId", addressId);
-  data.append("classId", classId);
+  if (dateOfBirth) data.append("dateOfBirth", dateOfBirth);
+  if (gender) data.append("gender", gender);
+  if (parentId) data.append("parentId", parentId);
+  if (addressId) data.append("addressId", addressId);
+  if (classId) data.append("classId", classId);
 
   if (files && files.length > 0) {
     files.forEach((file) => {
@@ -1065,7 +1066,7 @@ export const validateJoinMeeting = async (link: string) => {
 };
 
 
-export const resolveComplaint = async(status:String)=>{
-  const res = await api.put('/admin/:id/resolve',status)
+export const resolveComplaint = async (status: String) => {
+  const res = await api.put('/admin/:id/resolve', status)
   return res.data
 }

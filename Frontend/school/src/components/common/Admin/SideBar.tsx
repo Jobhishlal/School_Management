@@ -1,5 +1,4 @@
 
-
 import React, { useState } from "react";
 import {
   Sun,
@@ -28,9 +27,11 @@ import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../layout/ThemeContext";
 import { getInstituteProfile } from "../../../services/authapi";
 
-type Props = {};
+type Props = {
+  children?: React.ReactNode;
+};
 
-export default function SchoolNavbar({ }: Props) {
+export default function SchoolNavbar({ children }: Props) {
   const { isDark, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
@@ -64,11 +65,11 @@ export default function SchoolNavbar({ }: Props) {
 
   const userRole = localStorage.getItem("role");
 
- 
+
 
 
   React.useEffect(() => {
-  
+
     if (userRole !== "sub_admin") {
       localStorage.setItem("role", "super_admin");
     }
@@ -103,7 +104,7 @@ export default function SchoolNavbar({ }: Props) {
     {
       label: "COMMUNICATION",
       links: [
-       
+
         { icon: FileText, text: "Leave Request", path: "/leave-management" },
         ...(userRole === "sub_admin"
           ? [{ icon: FileText, text: "My Leave", path: "/subadmin-leave-application" }]
@@ -325,7 +326,7 @@ export default function SchoolNavbar({ }: Props) {
 
           <main className="flex-1 p-6 lg:p-8 overflow-y-auto no-scrollbar">
             <div className="max-w-full mx-auto">
-              <Outlet />
+              {children || <Outlet />}
             </div>
           </main>
         </div>

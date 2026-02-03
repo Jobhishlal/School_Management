@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import type { CreateAnnouncementDTO } from "../../../types/CreateAnnouncementDTO";
+import { type Announcement } from "../../../types/Announcement";
 import { useTheme } from "../../../components/layout/ThemeContext";
-import AnnouncementList, { type Announcement } from "./AnnouncementListOut";
+import AnnouncementList from "./AnnouncementListOut";
 import { Modal } from "../../../components/common/Modal";
 import { AnnouncementForm } from "./AnnouncementForm";
 
@@ -9,7 +10,7 @@ const CreateAnnouncement: React.FC = () => {
   const { isDark } = useTheme();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItem, setEditItem] = useState<(CreateAnnouncementDTO & { _id: string }) | undefined>(undefined);
-  const [refreshKey, setRefreshKey] = useState(0); // To trigger list refresh
+  const [refreshKey, setRefreshKey] = useState(0); 
 
   const handleEdit = (announcement: Announcement) => {
     const dto: CreateAnnouncementDTO & { _id: string } = {
@@ -19,7 +20,7 @@ const CreateAnnouncement: React.FC = () => {
       scope: announcement.scope as "GLOBAL" | "CLASS" | "DIVISION",
       classes: announcement.classes || [],
       division: announcement.division,
-      attachment: null, // File input cannot be prefilled
+      attachment: null, 
       activeTime: announcement.activeTime,
       endTime: announcement.endTime,
       status: announcement.status as "DRAFT" | "ACTIVE",

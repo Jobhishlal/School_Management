@@ -1,6 +1,7 @@
+import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 
-export default function PrivateRoute({ children }: { children: JSX.Element }) {
+export default function PrivateRoute({ children }: { children: React.ReactElement }) {
   const location = useLocation();
   const path = location.pathname;
 

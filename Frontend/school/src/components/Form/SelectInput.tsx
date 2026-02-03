@@ -11,6 +11,7 @@ interface SelectInputProps<T extends OptionType> {
   bgColor?: string;
   isDark?: boolean;
   disabled?: boolean;
+  className?: string;
 }
 
 export const SelectInput = <T extends OptionType>({
@@ -22,6 +23,7 @@ export const SelectInput = <T extends OptionType>({
   bgColor,
   isDark = false,
   disabled = false,
+  className,
 }: SelectInputProps<T>) => {
 
 
@@ -39,7 +41,7 @@ export const SelectInput = <T extends OptionType>({
         onChange={(e) => onChange(e.target.value)}
         required={required}
         style={{ backgroundColor: bgColor }}
-        className={`w-full px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm
+        className={`w-full px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm ${className || ""}
         ${isDark
             ? "bg-slate-700 border-slate-600 text-slate-100"
             : "bg-white border-gray-300 text-gray-800"

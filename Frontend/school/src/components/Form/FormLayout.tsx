@@ -3,6 +3,7 @@ interface FormLayoutProps {
   children: React.ReactNode;
   isSubmitting?: boolean;
   disabled?: boolean;
+  className?: string;
 }
 
 
@@ -15,11 +16,11 @@ export const FormLayout: React.FC<FormLayoutProps> = ({
   return (
     <form
       className="flex flex-col gap-6"
-     onSubmit={(e) => onSubmit(e)} 
+      onSubmit={(e) => onSubmit(e)}
     >
       {children}
 
-    
+
       <button
         type="submit"
         className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"

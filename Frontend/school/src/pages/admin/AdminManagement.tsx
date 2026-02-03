@@ -1,27 +1,29 @@
 
 import { useState, useEffect } from "react";
-import { Eye, Edit, UserX , Plus} from "lucide-react";
-import {  FaSearch, } from "react-icons/fa";
+import { Eye, Edit, UserX, Plus } from "lucide-react";
+import { FaSearch, } from "react-icons/fa";
 
-import { SubAdminCreate, GetSubAdmins,UpdateSubAdmin,SubAdminBlock } from "../../services/authapi";
+import { SubAdminCreate, GetSubAdmins, UpdateSubAdmin, SubAdminBlock } from "../../services/authapi";
 import { showToast } from "../../utils/toast";
 import { useTheme } from "../../components/layout/ThemeContext";
 import { AdminSchema } from "../../validations/AdminValidation";
 import { Pagination } from "../../components/common/Pagination";
 import { Modal } from "../../components/common/Modal";
 import { AdminForm } from "../../components/Form/AdminManagement/AdminForm";
-import { Table } from "../../components/Table/Table";
+import { Table, type Column } from "../../components/Table/Table";
 
 interface SubAdmin {
   id: string;
+  _id?: string;
   name: string;
   email: string;
   phone: string;
   role: string;
-  blocked:boolean;
+  blocked: boolean;
+  status?: string;
 }
 
-export function AdminManagement () {
+export function AdminManagement() {
   const { isDark } = useTheme();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -42,29 +44,29 @@ export function AdminManagement () {
 
 
   const fetchAdmins = async () => {
-  setLoading(true);
-  try {
-    const data = await GetSubAdmins();
+    setLoading(true);
+    try {
+      const data = await GetSubAdmins();
 
-    const adminsWithStatus = data.map((admin: any) => ({
-      id: admin.id || admin._id,
-      name: admin.name,
-      email: admin.email,
-      phone: admin.phone,
-      role: admin.role,
-      blocked: admin.blocked,       
-      status: admin.blocked ? "Blocked" : "Active",  
-    }));
+      const adminsWithStatus = data.map((admin: any) => ({
+        id: admin.id || admin._id,
+        name: admin.name,
+        email: admin.email,
+        phone: admin.phone,
+        role: admin.role,
+        blocked: admin.blocked,
+        status: admin.blocked ? "Blocked" : "Active",
+      }));
 
-    setSubAdmins(adminsWithStatus);
-    setFilteredAdmins(adminsWithStatus);
-  } catch (error) {
-    console.error("Error fetching admins:", error);
-    showToast("Error fetching admins", "error");
-  } finally {
-    setLoading(false);
-  }
-};
+      setSubAdmins(adminsWithStatus);
+      setFilteredAdmins(adminsWithStatus);
+    } catch (error) {
+      console.error("Error fetching admins:", error);
+      showToast("Error fetching admins", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchAdmins();
@@ -73,85 +75,85 @@ export function AdminManagement () {
   useEffect(() => {
     const filtered = subAdmins.filter(admin => {
       const matchesSearch = admin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           admin.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           admin.role.toLowerCase().includes(searchTerm.toLowerCase());
-      
+        admin.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        admin.role.toLowerCase().includes(searchTerm.toLowerCase());
+
       const matchesRole = filterRole === "All" || admin.role === filterRole;
       const matchesStatus = filterStatus === "All" || admin.status === filterStatus;
-      
+
       return matchesSearch && matchesRole && matchesStatus;
     });
-    
+
     setFilteredAdmins(filtered);
     setCurrentPage(1);
   }, [searchTerm, subAdmins, filterRole, filterStatus]);
 
-const validateForm = (): boolean => {
- 
-  if (!name || !phone || !email || !role) {
-    showToast("All fields are required", "warning");
-    return false;
-  }
+  const validateForm = (): boolean => {
 
-
-  const result = AdminSchema.safeParse({
-    name,
-    email,
-    phone,
-    role,
-    blocked: false, 
-  });
-
-  if (!result.success) {
-    
-    const firstError = result.error.issues[0].message;
-    showToast(firstError, "warning");
-    return false;
-  }
-
-  return true;
-};
-
-const superadmin = localStorage.getItem("role")
-
-
-
-const handleSubmit = async () => {
-  if (!validateForm()) return;
-
-  setLoading(true);
-  try {
-    if (editingId) {
-     
-      await UpdateSubAdmin(editingId, {
-        name: name.trim(),
-        email: email.trim(),
-        phone: phone.trim(),
-        role,
-      });
-      showToast("Admin updated successfully", "success");
-    } else {
-    
-      await SubAdminCreate(name, email, phone, role);
-      showToast("Admin created successfully", "success");
+    if (!name || !phone || !email || !role) {
+      showToast("All fields are required", "warning");
+      return false;
     }
 
-    setEditingId(null);  
-    setName("");
-    setEmail("");
-    setPhone("");
-    setRole("Finance");
-    setShowModal(false);
 
-    await fetchAdmins();
-  } catch (error: any) {
-    const errorMessage =
-      error.response?.data?.message || error.message || "Error saving admin";
-    showToast(errorMessage, "error");
-  } finally {
-    setLoading(false);
-  }
-};
+    const result = AdminSchema.safeParse({
+      name,
+      email,
+      phone,
+      role,
+      blocked: false,
+    });
+
+    if (!result.success) {
+
+      const firstError = result.error.issues[0].message;
+      showToast(firstError, "warning");
+      return false;
+    }
+
+    return true;
+  };
+
+  const superadmin = localStorage.getItem("role")
+
+
+
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
+
+    setLoading(true);
+    try {
+      if (editingId) {
+
+        await UpdateSubAdmin(editingId, {
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          role,
+        });
+        showToast("Admin updated successfully", "success");
+      } else {
+
+        await SubAdminCreate(name, email, phone, role);
+        showToast("Admin created successfully", "success");
+      }
+
+      setEditingId(null);
+      setName("");
+      setEmail("");
+      setPhone("");
+      setRole("Finance");
+      setShowModal(false);
+
+      await fetchAdmins();
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || error.message || "Error saving admin";
+      showToast(errorMessage, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
 
@@ -162,33 +164,33 @@ const handleSubmit = async () => {
     showToast("not complete", "info");
   };
 
- const handleEdit = (admin: SubAdmin) => {
-  setEditingId(admin.id)
- 
-  setName(admin.name)
-  setEmail(admin.email)
-  setPhone(admin.phone)
-  setRole(admin.role)
-  setShowModal(true)
-};
+  const handleEdit = (admin: SubAdmin) => {
+    setEditingId(admin.id)
 
-const handleToggleBlock = async (admin: SubAdmin) => {
-  try {
-    const newStatus = !admin.blocked;
-    await SubAdminBlock(admin.id, newStatus);
+    setName(admin.name)
+    setEmail(admin.email)
+    setPhone(admin.phone)
+    setRole(admin.role)
+    setShowModal(true)
+  };
 
-    showToast(
-      `Admin ${newStatus ? "blocked" : "unblocked"} successfully`,
-      "success"
-    );
+  const handleToggleBlock = async (admin: SubAdmin) => {
+    try {
+      const newStatus = !admin.blocked;
+      await SubAdminBlock(admin.id, newStatus);
 
-    await fetchAdmins();
-  } catch (error: any) {
-    const errorMessage =
-      error.response?.data?.message || error.message || "Error updating block status";
-    showToast(errorMessage, "error");
-  }
-};
+      showToast(
+        `Admin ${newStatus ? "blocked" : "unblocked"} successfully`,
+        "success"
+      );
+
+      await fetchAdmins();
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || error.message || "Error updating block status";
+      showToast(errorMessage, "error");
+    }
+  };
 
   const handleCloseModal = () => {
     setName("");
@@ -230,15 +232,15 @@ const handleToggleBlock = async (admin: SubAdmin) => {
   const borderColor = isDark ? '#374151' : '#e2e8f0';
 
 
-    const adminColumns: Column<SubAdmin>[] = [
-    { label: "Name", render: (admin, index) => (
+  const adminColumns: Column<SubAdmin>[] = [
+    {
+      label: "Name", render: (admin: SubAdmin, index: number) => (
         <div className="flex items-center gap-3">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-white text-sm bg-gradient-to-r ${
-            index % 4 === 0 ? "from-blue-500 to-purple-500" :
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-white text-sm bg-gradient-to-r ${index % 4 === 0 ? "from-blue-500 to-purple-500" :
             index % 4 === 1 ? "from-green-500 to-teal-500" :
-            index % 4 === 2 ? "from-orange-500 to-red-500" :
-            "from-pink-500 to-rose-500"
-          }`}>{admin.name.charAt(0).toUpperCase()}</div>
+              index % 4 === 2 ? "from-orange-500 to-red-500" :
+                "from-pink-500 to-rose-500"
+            }`}>{admin.name.charAt(0).toUpperCase()}</div>
           <div>
             <div className="font-medium text-sm">{admin.name}</div>
             <div className="text-xs">{admin.phone}</div>
@@ -247,19 +249,19 @@ const handleToggleBlock = async (admin: SubAdmin) => {
       )
     },
     { label: "Email", key: "email" },
-    { label: "Position", key: "role", render: admin => <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getRoleColor(admin.role)}`}>{admin.role.replace(/_/g, " ")}</span> },
-    { label: "Status", key: "status", render: admin => <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getStatusColor(admin.status)}`}>{admin.status}</span> },
+    { label: "Position", key: "role", render: (admin: SubAdmin) => <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getRoleColor(admin.role)}`}>{admin.role.replace(/_/g, " ")}</span> },
+    { label: "Status", key: "status", render: (admin: SubAdmin) => <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getStatusColor(admin.status || 'Active')}`}>{admin.status}</span> },
   ];
 
   return (
-    
-  <div 
-    style={{ backgroundColor: bgMain, color: textPrimary, minHeight: '100vh' }}
-    className="overflow-x-hidden"
-  >
+
+    <div
+      style={{ backgroundColor: bgMain, color: textPrimary, minHeight: '100vh' }}
+      className="overflow-x-hidden"
+    >
 
       <div className="max-w-7xl mx-auto p-4 sm:p-6">
-      
+
         <div className="mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold mb-2">Admin Management</h1>
           <p style={{ color: textSecondary }} className="text-sm">
@@ -268,7 +270,7 @@ const handleToggleBlock = async (admin: SubAdmin) => {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-4 mb-6">
-      
+
           <div className="flex-1 relative">
             <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" style={{ color: textSecondary }} />
             <input
@@ -277,24 +279,24 @@ const handleToggleBlock = async (admin: SubAdmin) => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              style={{ 
-                backgroundColor: bgInput, 
+              style={{
+                backgroundColor: bgInput,
                 borderColor: borderColor,
-                color: textPrimary 
+                color: textPrimary
               }}
             />
           </div>
 
-     
+
           <div className="flex gap-2">
             <select
               value={filterRole}
               onChange={(e) => setFilterRole(e.target.value)}
               className="px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              style={{ 
-                backgroundColor: bgInput, 
+              style={{
+                backgroundColor: bgInput,
                 borderColor: borderColor,
-                color: textPrimary 
+                color: textPrimary
               }}
             >
               <option value="All">All Roles</option>
@@ -303,17 +305,17 @@ const handleToggleBlock = async (admin: SubAdmin) => {
               <option value="School_Management">School Management</option>
               <option value="Student_Management">Student Management</option>
               <option value="Parents_Management">Parents Management</option>
-             
+
             </select>
 
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
               className="px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              style={{ 
-                backgroundColor: bgInput, 
+              style={{
+                backgroundColor: bgInput,
                 borderColor: borderColor,
-                color: textPrimary 
+                color: textPrimary
               }}
             >
               <option value="All">All Status</option>
@@ -322,21 +324,21 @@ const handleToggleBlock = async (admin: SubAdmin) => {
             </select>
           </div>
 
-       { superadmin==="super_admin" && (
-        <button
-            onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm whitespace-nowrap"
-          >
-            <Plus size={16} />
-            Add New Staff
-          </button>
-       )
-       }
-          
+          {superadmin === "super_admin" && (
+            <button
+              onClick={() => setShowModal(true)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm whitespace-nowrap"
+            >
+              <Plus size={16} />
+              Add New Staff
+            </button>
+          )
+          }
+
         </div>
 
-  
-        <div 
+
+        <div
           className="rounded-lg shadow-sm overflow-hidden"
           style={{ backgroundColor: bgCard, borderColor: borderColor }}
         >
@@ -355,46 +357,44 @@ const handleToggleBlock = async (admin: SubAdmin) => {
             </div>
           ) : (
             <>
-            
+
               <div className="hidden lg:block overflow-x-auto">
-               <Table
-            columns={adminColumns}
-            data={currentAdmins}
-            actions={(admin) => (
-              <div className="flex justify-center gap-2">
-                <button onClick={() => handleView(admin)}><Eye size={16} /></button>
-                {superadmin==="super_admin"&&(
-                  <button onClick={() => handleEdit(admin)}><Edit size={16} /></button>
-                )}
-               
-                 {
-                  superadmin==="super_admin"&&(
-                     <button onClick={() => handleToggleBlock(admin)}><UserX size={16} /></button>
-                  )
-                }
-               
-              </div>
-            )}
-            isDark={isDark}
-            loading={loading}
-          />
+                <Table
+                  columns={adminColumns}
+                  data={currentAdmins}
+                  actions={(admin) => (
+                    <div className="flex justify-center gap-2">
+                      <button onClick={() => handleView(admin)}><Eye size={16} /></button>
+                      {superadmin === "super_admin" && (
+                        <button onClick={() => handleEdit(admin)}><Edit size={16} /></button>
+                      )}
+
+                      {
+                        superadmin === "super_admin" && (
+                          <button onClick={() => handleToggleBlock(admin)}><UserX size={16} /></button>
+                        )
+                      }
+
+                    </div>
+                  )}
+                  isDark={isDark}
+                />
               </div>
 
               <div className="lg:hidden space-y-4 p-4">
                 {currentAdmins.map((admin, index) => (
-                  <div 
-                    key={admin._id} 
+                  <div
+                    key={admin.id || admin._id}
                     className="p-4 rounded-lg border"
                     style={{ backgroundColor: bgCard, borderColor: borderColor }}
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-white bg-gradient-to-r ${
-                          index % 4 === 0 ? 'from-blue-500 to-purple-500' :
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-white bg-gradient-to-r ${index % 4 === 0 ? 'from-blue-500 to-purple-500' :
                           index % 4 === 1 ? 'from-green-500 to-teal-500' :
-                          index % 4 === 2 ? 'from-orange-500 to-red-500' :
-                          'from-pink-500 to-rose-500'
-                        }`}>
+                            index % 4 === 2 ? 'from-orange-500 to-red-500' :
+                              'from-pink-500 to-rose-500'
+                          }`}>
                           {admin.name.charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -428,7 +428,7 @@ const handleToggleBlock = async (admin: SubAdmin) => {
                         </button>
                       </div>
 
-     
+
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                       <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getRoleColor(admin.role)}`}>
@@ -448,34 +448,34 @@ const handleToggleBlock = async (admin: SubAdmin) => {
 
         {totalPages > 1 && (
           <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+
           />
         )}
-              <Modal 
-               title={editingId ? "Edit Admin" : "Add New Admin"}
-               isOpen={showModal}
-               onClose={handleCloseModal}>
+        <Modal
+          title={editingId ? "Edit Admin" : "Add New Admin"}
+          isOpen={showModal}
+          onClose={handleCloseModal}>
 
-                <AdminForm
-                 name={name}
-                 setName={setName}
-                 email={email}
-                 setEmail={setEmail}
-                 phone={phone}
-               setPhone={setPhone}
-                role={role}
-                setRole={setRole}
-               onSubmit={handleSubmit}
-               loading={loading}
-                isDark={isDark}
-               onCancel={handleCloseModal}
-                 editing={!!editingId}
-                 />
-          
-              </Modal>
+          <AdminForm
+            name={name}
+            setName={setName}
+            email={email}
+            setEmail={setEmail}
+            phone={phone}
+            setPhone={setPhone}
+            role={role}
+            setRole={setRole}
+            onSubmit={handleSubmit}
+            loading={loading}
+            isDark={isDark}
+            onCancel={handleCloseModal}
+            editing={!!editingId}
+          />
+
+        </Modal>
       </div>
     </div>
   );

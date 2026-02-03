@@ -23,15 +23,15 @@ interface ClassInfo {
 
 const CreateFeeStructureForm: React.FC = () => {
   const { isDark } = useTheme();
-  
+
   const [formData, setFormData] = useState<CreateFeeStructureDTO>({
     name: "",
     classId: "",
     academicYear: "",
     feeItems: [{ feeTypeId: "", amount: 0, isOptional: false }],
     notes: "",
-    startDate: "", 
-    expiryDate: "" 
+    startDate: "",
+    expiryDate: ""
   });
 
   const [feeTypes, setFeeTypes] = useState<FeeType[]>([]);
@@ -43,7 +43,7 @@ const CreateFeeStructureForm: React.FC = () => {
     const fetchData = async () => {
       try {
         const [feeRes, classRes] = await Promise.all([GetAllFeeType(), GetAllClass()]);
-        
+
         setFeeTypes(feeRes.data || []);
         // console.log("fees releted data get it",feeRes||feeRes.data.data)
         setClasses(classRes.data || []);
@@ -54,7 +54,7 @@ const CreateFeeStructureForm: React.FC = () => {
     fetchData();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -86,15 +86,15 @@ const CreateFeeStructureForm: React.FC = () => {
 
     try {
       const response = await createFinanceStructure(formData);
-      showToast(" Fee Structure created successfully!","success");
+      showToast(" Fee Structure created successfully!", "success");
       console.log(response);
     } catch (err: any) {
       const backendMessage =
-    err?.response?.data?.message ||
-    err?.message ||
-    "Failed to create fee structure";
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to create fee structure";
 
-  showToast(backendMessage, "error");
+      showToast(backendMessage, "error");
 
 
     } finally {
@@ -162,29 +162,29 @@ const CreateFeeStructureForm: React.FC = () => {
             className={`w-full border rounded p-2 transition-colors duration-200 ${inputBg}`}
           />
 
-           <div className="flex-1">
-           <label>Start Date</label>
-           <input
-           type="date"
-           name="startDate"
-           value={formData.startDate}
-          onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-          className={`w-full border rounded p-2 transition-colors duration-200 ${inputBg}`}
-      
-          />
-           </div>
+          <div className="flex-1">
+            <label>Start Date</label>
+            <input
+              type="date"
+              name="startDate"
+              value={formData.startDate}
+              onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+              className={`w-full border rounded p-2 transition-colors duration-200 ${inputBg}`}
+
+            />
+          </div>
 
           <div className="flex-1">
-          <label>Expiry Date</label>
-          <input
-            type="date"
-           name="expiryDate"
-           value={formData.expiryDate}
-           onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
-          className={`w-full border rounded p-2 transition-colors duration-200 ${inputBg}`}
-      
-          />
-         </div>
+            <label>Expiry Date</label>
+            <input
+              type="date"
+              name="expiryDate"
+              value={formData.expiryDate}
+              onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
+              className={`w-full border rounded p-2 transition-colors duration-200 ${inputBg}`}
+
+            />
+          </div>
 
           <h3 className="font-semibold mt-4">Fee Items</h3>
           {formData.feeItems.map((item, index) => (
@@ -219,7 +219,7 @@ const CreateFeeStructureForm: React.FC = () => {
                 />
                 <span>Is Optional?</span>
               </label>
-              
+
             </div>
           ))}
 
@@ -242,7 +242,7 @@ const CreateFeeStructureForm: React.FC = () => {
           {message && <p className="mt-4 text-center text-sm">{message}</p>}
         </form>
       </div>
-      <ClassPaymentStatus/>
+      <ClassPaymentStatus />
     </div>
   );
 };

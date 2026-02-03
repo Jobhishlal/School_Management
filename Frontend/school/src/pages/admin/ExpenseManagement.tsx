@@ -22,7 +22,7 @@ interface Expense {
   description: string;
   amount: number;
   expenseDate: string;
-  paymentMode: string;
+  paymentMode: "CASH" | "UPI" | "BANK" | "CARD";
   status: "PENDING" | "APPROVED" | "REJECTED";
   createdBy: string;
   approvedBy?: string;
@@ -34,7 +34,7 @@ interface ExpenseFormDTO {
   description: string;
   amount: number;
   expenseDate: string;
-  paymentMode: string;
+  paymentMode: "CASH" | "UPI" | "BANK" | "CARD";
   createdBy: string;
 }
 
@@ -74,56 +74,56 @@ export default function ExpenseManagement() {
     });
   };
 
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const createdBy = localStorage.getItem("role") || "";
-  if (!createdBy) {
-    showToast("User not logged in", "error");
-    return;
-  }
-
- 
- 
-
-
-
-  const payload = {
-    ...formData,
-    createdBy,
-    
-  };
-
-  try {
-    if (editingExpense) {
-      await PendingExpenseUpdate(editingExpense.id, payload);
-      showToast("Expense updated successfully","success");
-      setEditingExpense(null);
-    } else {
-      await ExpenseCreate(payload);
-      showToast("Expense created successfully","success");
+    const createdBy = localStorage.getItem("role") || "";
+    if (!createdBy) {
+      showToast("User not logged in", "error");
+      return;
     }
 
-    setFormData({
-      title: "",
-      description: "",
-      amount: 0,
-      expenseDate: "",
-      paymentMode: "CASH",
-      createdBy: "",
-    });
 
-    fetchExpenses();
-  } catch (err: any) {
-    const backendMessage =
-      err?.response?.data?.message ||
-      err?.response?.data?.error ||
-      err?.message ||
-      "Operation failed";
 
-    showToast(backendMessage, "error");
-  }
-};
+
+
+
+    const payload = {
+      ...formData,
+      createdBy,
+
+    };
+
+    try {
+      if (editingExpense) {
+        await PendingExpenseUpdate(editingExpense.id, payload);
+        showToast("Expense updated successfully", "success");
+        setEditingExpense(null);
+      } else {
+        await ExpenseCreate(payload);
+        showToast("Expense created successfully", "success");
+      }
+
+      setFormData({
+        title: "",
+        description: "",
+        amount: 0,
+        expenseDate: "",
+        paymentMode: "CASH",
+        createdBy: "",
+      });
+
+      fetchExpenses();
+    } catch (err: any) {
+      const backendMessage =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        err?.message ||
+        "Operation failed";
+
+      showToast(backendMessage, "error");
+    }
+  };
 
 
   const handleEditClick = (expense: Expense) => {
@@ -168,10 +168,9 @@ export default function ExpenseManagement() {
           <NavLink
             to="/finance-management"
             className={({ isActive }) =>
-              `pb-3 border-b-2 font-medium transition-colors duration-200 ${
-                isActive
-                  ? "border-blue-500 text-blue-600"
-                  : `border-transparent ${textSecondary} hover:text-blue-400`
+              `pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
+                ? "border-blue-500 text-blue-600"
+                : `border-transparent ${textSecondary} hover:text-blue-400`
               }`
             }
           >
@@ -181,10 +180,9 @@ export default function ExpenseManagement() {
           <NavLink
             to="/expense-management"
             className={({ isActive }) =>
-              `pb-3 border-b-2 font-medium transition-colors duration-200 ${
-                isActive
-                  ? "border-blue-500 text-blue-600"
-                  : `border-transparent ${textSecondary} hover:text-blue-400`
+              `pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
+                ? "border-blue-500 text-blue-600"
+                : `border-transparent ${textSecondary} hover:text-blue-400`
               }`
             }
           >
@@ -194,10 +192,9 @@ export default function ExpenseManagement() {
           <NavLink
             to='/finance-report'
             className={({ isActive }) =>
-              `pb-3 border-b-2 font-medium transition-colors duration-200 ${
-                isActive
-                  ? "border-blue-500 text-blue-600"
-                  : `border-transparent ${textSecondary} hover:text-blue-400`
+              `pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
+                ? "border-blue-500 text-blue-600"
+                : `border-transparent ${textSecondary} hover:text-blue-400`
               }`
             }
           >
@@ -212,7 +209,7 @@ export default function ExpenseManagement() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-         
+
               <div>
                 <label className={`block text-sm font-medium mb-2 ${textPrimary}`}>
                   Expense Title
@@ -224,7 +221,7 @@ export default function ExpenseManagement() {
                   onChange={handleChange}
                   placeholder="Enter expense title"
                   className={`w-full border rounded-lg px-3 py-2 text-sm transition-colors duration-200 ${inputBg}`}
-                  
+
                 />
               </div>
 
@@ -239,7 +236,7 @@ export default function ExpenseManagement() {
                   onChange={handleChange}
                   placeholder="Enter amount"
                   className={`w-full border rounded-lg px-3 py-2 text-sm transition-colors duration-200 ${inputBg}`}
-                 
+
                 />
               </div>
 
@@ -253,7 +250,7 @@ export default function ExpenseManagement() {
                   value={formData.expenseDate}
                   onChange={handleChange}
                   className={`w-full border rounded-lg px-3 py-2 text-sm transition-colors duration-200 ${inputBg}`}
-                 
+
                 />
               </div>
 
@@ -303,11 +300,10 @@ export default function ExpenseManagement() {
                 <button
                   type="button"
                   onClick={handleCancelEdit}
-                  className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 border ${
-                    isDark
-                      ? "border-slate-600 text-slate-300 hover:bg-slate-700"
-                      : "border-gray-300 text-gray-700 hover:bg-gray-50"
-                  }`}
+                  className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 border ${isDark
+                    ? "border-slate-600 text-slate-300 hover:bg-slate-700"
+                    : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                    }`}
                 >
                   Cancel
                 </button>
@@ -375,9 +371,8 @@ export default function ExpenseManagement() {
                     expenses.map((exp) => (
                       <tr
                         key={exp.id}
-                        className={`transition-colors duration-200 ${
-                          isDark ? "hover:bg-slate-700/30" : "hover:bg-gray-50"
-                        }`}
+                        className={`transition-colors duration-200 ${isDark ? "hover:bg-slate-700/30" : "hover:bg-gray-50"
+                          }`}
                       >
                         <td className={`px-4 py-4 text-sm whitespace-nowrap ${textPrimary}`}>
                           {exp.expenseDate.split('T')[0]}
@@ -396,19 +391,18 @@ export default function ExpenseManagement() {
                         </td>
                         <td className="px-4 py-4 text-sm whitespace-nowrap">
                           <span
-                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                              exp.status === "APPROVED"
-                                ? isDark
-                                  ? "bg-green-900/30 text-green-400 border border-green-800"
-                                  : "bg-green-100 text-green-800 border border-green-200"
-                                : exp.status === "REJECTED"
+                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${exp.status === "APPROVED"
+                              ? isDark
+                                ? "bg-green-900/30 text-green-400 border border-green-800"
+                                : "bg-green-100 text-green-800 border border-green-200"
+                              : exp.status === "REJECTED"
                                 ? isDark
                                   ? "bg-red-900/30 text-red-400 border border-red-800"
                                   : "bg-red-100 text-red-800 border border-red-200"
                                 : isDark
-                                ? "bg-yellow-900/30 text-yellow-400 border border-yellow-800"
-                                : "bg-yellow-100 text-yellow-800 border border-yellow-200"
-                            }`}
+                                  ? "bg-yellow-900/30 text-yellow-400 border border-yellow-800"
+                                  : "bg-yellow-100 text-yellow-800 border border-yellow-200"
+                              }`}
                           >
                             {exp.status}
                           </span>

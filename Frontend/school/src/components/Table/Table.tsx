@@ -4,7 +4,7 @@ import React from "react";
 
 export interface Column<T> {
   label: string;
-  key?: keyof T | string; 
+  key?: keyof T | string;
   render?: (row: T, index: number) => React.ReactNode;
   className?: string;
 }
@@ -61,8 +61,8 @@ export const Table = <T extends Record<string, any>>({
                   {col.render
                     ? col.render(item, index)
                     : col.key
-                    ? (item[col.key as keyof T] as React.ReactNode)
-                    : null}
+                      ? (item[col.key as keyof T] as React.ReactNode)
+                      : null}
                 </td>
               ))}
 
@@ -75,5 +75,5 @@ export const Table = <T extends Record<string, any>>({
   );
 };
 
-export { Column };
+
 

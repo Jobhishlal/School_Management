@@ -4,16 +4,13 @@ import {
   GraduationCap,
   Sun,
   Moon,
-  ArrowRight,
   Star,
   Zap,
   Shield,
   Sparkles,
-  Play,
   Award,
   TrendingUp,
   Globe,
-  Rocket,
   BarChart3,
   Target,
   Briefcase,
@@ -32,12 +29,11 @@ import { getInstituteProfile } from '../../services/authapi';
 
 const SchoolLandingPage = () => {
   const [isDark, setIsDark] = useState(true);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [scrollY, setScrollY] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const heroRef = useRef(null);
   const [instituteDetails, setInstituteDetails] = useState({
-    name: 'BRAINNIX', // Default fallback
+    name: 'BRAINNIX',
     logo: ''
   });
 
@@ -76,19 +72,13 @@ const SchoolLandingPage = () => {
     navigate("/signup");
   }
   useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-
     const handleScroll = () => {
       setScrollY(window.scrollY);
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('scroll', handleScroll);
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
@@ -207,8 +197,8 @@ const SchoolLandingPage = () => {
               <button
                 onClick={handleSignIn}
                 className={`px-6 py-3 text-base rounded-lg transition-all duration-300 hover:scale-105 ${isDark
-                    ? "text-gray-300 bg-gray-800/70 hover:bg-gray-700"
-                    : "text-slate-600 bg-slate-100 hover:bg-slate-200"
+                  ? "text-gray-300 bg-gray-800/70 hover:bg-gray-700"
+                  : "text-slate-600 bg-slate-100 hover:bg-slate-200"
                   } font-medium`}
               >
                 Sign In
@@ -372,9 +362,9 @@ const SchoolLandingPage = () => {
               >
                 <div className="relative z-10">
                   <div className={`inline-flex items-center justify-center w-14 h-14 lg:w-20 lg:h-20 rounded-xl lg:rounded-2xl mb-6 lg:mb-8 transition-all duration-500 group-hover:scale-110 ${feature.accent === 'blue' ? (isDark ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white') :
-                      feature.accent === 'emerald' ? (isDark ? 'bg-emerald-600 text-white' : 'bg-emerald-500 text-white') :
-                        feature.accent === 'slate' ? (isDark ? 'bg-slate-700 text-slate-300' : 'bg-slate-600 text-white') :
-                          (isDark ? 'bg-indigo-600 text-white' : 'bg-indigo-500 text-white')
+                    feature.accent === 'emerald' ? (isDark ? 'bg-emerald-600 text-white' : 'bg-emerald-500 text-white') :
+                      feature.accent === 'slate' ? (isDark ? 'bg-slate-700 text-slate-300' : 'bg-slate-600 text-white') :
+                        (isDark ? 'bg-indigo-600 text-white' : 'bg-indigo-500 text-white')
                     } shadow-lg group-hover:shadow-xl`}>
                     {feature.icon}
                   </div>
@@ -446,8 +436,8 @@ const SchoolLandingPage = () => {
                   ].map((metric, i) => (
                     <div key={i} className={`p-4 lg:p-6 rounded-xl lg:rounded-2xl ${isDark ? 'bg-gray-800/70 border-white/20' : 'bg-slate-50/70 border-slate-200'} backdrop-blur-md border hover:scale-105 transition-all duration-300 shadow-xl`}>
                       <div className={`text-2xl lg:text-3xl font-extrabold ${metric.color === 'emerald' ? (isDark ? 'text-emerald-400' : 'text-emerald-600') :
-                          metric.color === 'blue' ? (isDark ? 'text-blue-400' : 'text-blue-600') :
-                            (isDark ? 'text-gray-300' : 'text-slate-700')
+                        metric.color === 'blue' ? (isDark ? 'text-blue-400' : 'text-blue-600') :
+                          (isDark ? 'text-gray-300' : 'text-slate-700')
                         }`}>
                         {metric.value}
                       </div>
@@ -650,7 +640,7 @@ const SchoolLandingPage = () => {
       </button>
 
       {/* Custom Styles */}
-      <style jsx>{`
+      <style>{`
         @keyframes float {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
           50% { transform: translateY(-20px) rotate(180deg); }

@@ -44,7 +44,7 @@ const RevenueAreaChart: React.FC<Props> = ({ data, isDark }) => {
             color: tooltipText,
           }}
           labelStyle={{ color: tooltipText }}
-          formatter={(value: number) => `₹${value.toLocaleString()}`}
+          formatter={(value: any) => `₹${value.toLocaleString()}`}
         />
 
         <Area
