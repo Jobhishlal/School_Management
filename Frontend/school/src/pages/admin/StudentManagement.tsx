@@ -28,7 +28,6 @@ interface AddStudentFormProps {
 
 export function AddStudentForm({ onSuccess, onClose, student }: AddStudentFormProps) {
   const { isDark } = useTheme();
-  const [loading, setLoading] = useState(false);
 
 
   const [fullName, setFullName] = useState("");
@@ -125,7 +124,7 @@ export function AddStudentForm({ onSuccess, onClose, student }: AddStudentFormPr
     e.preventDefault();
     if (!classId) return showToast("Select a class", "info");
 
-    setLoading(true);
+    // setLoading(true);
     try {
       if (student) {
         if (parentId) {
@@ -162,7 +161,8 @@ export function AddStudentForm({ onSuccess, onClose, student }: AddStudentFormPr
       const err = error as AxiosError<{ message: string }>;
       const message = err.response?.data?.message || (error as Error).message || "Error Creating/Updating Student";
       showToast(message, "error");
-    } finally { setLoading(false); }
+    } finally { // setLoading(false);
+    }
   };
 
   return (

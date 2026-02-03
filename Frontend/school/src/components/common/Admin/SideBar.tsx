@@ -11,7 +11,6 @@ import {
   Megaphone,
   AlertCircle,
   DollarSign,
-  MessageCircle,
   FileText,
   Calendar,
   Settings,

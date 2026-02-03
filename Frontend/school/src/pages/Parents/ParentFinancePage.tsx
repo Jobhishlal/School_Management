@@ -236,7 +236,7 @@ export default function FinanceParentList() {
           });
 
           const refreshed = await ListParentfinance(
-            localStorage.getItem("studentId")!,
+            localStorage.getItem("studentId") || "",
             email
           );
 

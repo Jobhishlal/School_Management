@@ -4,7 +4,7 @@ import {
   AssignClassTeacherOnClass,
   getTeachersList,
   CreateClass,
-  UpdateClass,
+
   assignStudentToDivision,
   deleteClassOrDivision,
   GetAllStudents,
@@ -45,17 +45,16 @@ const ClassBaseAccess: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   const [teachers, setTeachers] = useState<Teacher[]>([]);
-  const [students, setStudents] = useState<Student[]>([]);
+
 
   const [selectedTeacher, setSelectedTeacher] = useState("");
   const [selectedClassId, setSelectedClassId] = useState("");
 
-  const [selectedStudent, setSelectedStudent] = useState("");
-  const [targetClass, setTargetClass] = useState("");
 
 
 
-  const [editingClassName, setEditingClassName] = useState("");
+
+
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
 
@@ -107,17 +106,7 @@ const ClassBaseAccess: React.FC = () => {
     loadTeachers();
   }, []);
 
-  useEffect(() => {
-    const loadStudents = async () => {
-      try {
-        const s = await GetAllStudents();
-        setStudents(s);
-      } catch {
-        showToast("Error fetching students", "error");
-      }
-    };
-    loadStudents();
-  }, []);
+
 
   const assignTeacher = async () => {
     if (!selectedTeacher || !selectedClassId)
@@ -141,27 +130,7 @@ const ClassBaseAccess: React.FC = () => {
     }
   };
 
-  const assignStudent = async () => {
-    if (!selectedStudent || !targetClass)
-      return showToast("Select student & class", "info");
 
-    try {
-      const result = await assignStudentToDivision({
-        studentId: selectedStudent,
-        classId: targetClass,
-      });
-
-      if (result.success) {
-        showToast(result.message, "success");
-        await fetchClasses();
-        await loadAllStudents();
-        setSelectedStudent("");
-        setTargetClass("");
-      } else showToast(result.message, "error");
-    } catch {
-      showToast("Error assigning student", "error");
-    }
-  };
 
 
   const loadAllStudents = async () => {
@@ -234,11 +203,11 @@ const ClassBaseAccess: React.FC = () => {
     }
 
     if (bulkTargetClass) {
-   
+
       const targetClassObj = Object.values(classes).find(c => c.classId === bulkTargetClass);
 
       if (targetClassObj) {
-       
+
         res = res.filter((s: any) => s.className === targetClassObj.className);
       }
     }
@@ -270,29 +239,29 @@ const ClassBaseAccess: React.FC = () => {
   // ================= UPDATE CLASS =================
 
 
-const handleDeleteClass = async () => {
-  if (!deleteTarget) return;
+  const handleDeleteClass = async () => {
+    if (!deleteTarget) return;
 
-  try {
-    const result = await deleteClassOrDivision(deleteTarget);
+    try {
+      const result = await deleteClassOrDivision(deleteTarget);
 
-    if (result.success) {
-      showToast(result.message || "Class deleted successfully", "success");
-      await fetchClasses();
-    } else {
-      showToast(result.message || "Failed to delete class", "error");
+      if (result.success) {
+        showToast(result.message || "Class deleted successfully", "success");
+        await fetchClasses();
+      } else {
+        showToast(result.message || "Failed to delete class", "error");
+      }
+
+    } catch (err: any) {
+      const message =
+        err?.response?.data?.message ||
+        "Cannot delete class. It may still have students assigned.";
+
+      showToast(message, "error");
+    } finally {
+      setDeleteTarget(null);
     }
-
-  } catch (err: any) {
-    const message =
-      err?.response?.data?.message ||
-      "Cannot delete class. It may still have students assigned.";
-
-    showToast(message, "error");
-  } finally {
-    setDeleteTarget(null);   
-  }
-};
+  };
 
 
 
@@ -490,12 +459,12 @@ const handleDeleteClass = async () => {
                     Assign
                   </button>
 
-                 <button
-                 onClick={() => setDeleteTarget(cls.classId)}
-                 className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                 >
-                   Delete
-                 </button>
+                  <button
+                    onClick={() => setDeleteTarget(cls.classId)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                  >
+                    Delete
+                  </button>
 
                 </div>
               </div>
@@ -559,32 +528,32 @@ const handleDeleteClass = async () => {
       </Modal>
 
       <Modal
-  isOpen={!!deleteTarget}
-  onClose={() => setDeleteTarget(null)}
-  title="Confirm Delete"
->
-  <p className="mb-4">
-    Are you sure you want to delete this class/division? 
-    <br />
-    <strong>This cannot be undone.</strong>
-  </p>
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        title="Confirm Delete"
+      >
+        <p className="mb-4">
+          Are you sure you want to delete this class/division?
+          <br />
+          <strong>This cannot be undone.</strong>
+        </p>
 
-  <div className="flex justify-end gap-3">
-    <button
-      onClick={() => setDeleteTarget(null)}
-      className="px-4 py-2 border rounded hover:bg-gray-100 dark:hover:bg-slate-700"
-    >
-      Cancel
-    </button>
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={() => setDeleteTarget(null)}
+            className="px-4 py-2 border rounded hover:bg-gray-100 dark:hover:bg-slate-700"
+          >
+            Cancel
+          </button>
 
-    <button
-      onClick={handleDeleteClass}
-      className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-    >
-      Yes — Delete
-    </button>
-  </div>
-</Modal>
+          <button
+            onClick={handleDeleteClass}
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            Yes — Delete
+          </button>
+        </div>
+      </Modal>
 
     </div>
   );

@@ -4,13 +4,10 @@ import {
   Calendar,
   FileText,
   DollarSign,
-  ClipboardList,
   Bell,
   Video,
   User,
   MessageCircle,
-  BookOpen,
-  Clock,
   Settings,
   ChevronDown,
   X,
@@ -20,7 +17,6 @@ import {
   Moon,
   Sun,
   Lock,
-  Brain,
 } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../layout/ThemeContext";

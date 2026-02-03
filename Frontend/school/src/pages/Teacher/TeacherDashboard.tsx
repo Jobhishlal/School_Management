@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getTeacherDashboardStats, type TeacherDashboardDTO } from '../../services/dashboardService';
-import { User, BookOpen, Clock, Calendar, TrendingUp, Users, ClipboardList } from 'lucide-react';
+import { BookOpen, ClipboardList } from 'lucide-react';
 import { useTheme } from '../../components/layout/ThemeContext';
 
 const TeacherDashboard: React.FC = () => {

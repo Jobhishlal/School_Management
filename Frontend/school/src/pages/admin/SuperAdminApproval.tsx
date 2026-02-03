@@ -1,4 +1,4 @@
-// import React, { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 // import { ExpanceApproval, Pendingstatuslist } from "../../services/authapi";
 // import { showToast } from "../../utils/toast";
 
@@ -107,8 +107,8 @@
 
 
 
-import React, { useEffect, useState } from "react";
-import { ExpanceApproval, ListOutFullExpense, Pendingstatuslist } from "../../services/authapi";
+import { useEffect, useState } from "react";
+import { ExpanceApproval, ListOutFullExpense } from "../../services/authapi";
 import { showToast } from "../../utils/toast";
 import { useTheme } from "../../components/layout/ThemeContext";
 import { Pagination } from "../../components/common/Pagination";
@@ -177,7 +177,7 @@ export default function SuperAdminExpenseApproval() {
   ) => {
     try {
       setLoading(true);
-      const res = await ExpanceApproval(expenseId, action);
+      await ExpanceApproval(expenseId, action);
       showToast(`Expense ${action.toLowerCase()} successfully`, "success");
       setSelectedExpense(null);
       fetchExpenses();

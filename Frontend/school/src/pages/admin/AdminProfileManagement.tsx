@@ -25,9 +25,9 @@ const ProfileSection = ({ title, children, className = "" }: { title: string; ch
 
 
 const DarkModeButton = ({ children, onClick, type = "button", className = "" }: { children: React.ReactNode; onClick?: (e: React.FormEvent | React.MouseEvent) => void; type?: "button" | "submit" | "reset", className?: string }) => (
-  <button 
-    type={type} 
-    onClick={onClick} 
+  <button
+    type={type}
+    onClick={onClick}
     className={`bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 ${className}`}
   >
     {children}
@@ -47,8 +47,7 @@ export function AdminProfileManagement() {
   const [phone, setPhone] = useState("");
   const [gender, setGender] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
-  const [designation, setDesignation] = useState("");
-  const [department, setDepartment] = useState("");
+
 
   const [addressId, setAddressId] = useState<string | undefined>(undefined);
   const [street, setStreet] = useState("");
@@ -70,7 +69,7 @@ export function AdminProfileManagement() {
   const bgClass = isDark ? "bg-[#121A21] text-slate-100" : "bg-slate-50 text-slate-900";
   const sectionBgClass = isDark ? "bg-slate-800 border-slate-700 text-slate-100" : "bg-white border-gray-300 text-black";
   const inputBgClass = isDark ? "bg-slate-700 text-slate-100 placeholder-slate-400 border-slate-600" : "bg-white text-black placeholder-gray-500 border-gray-300";
-  const buttonPrimaryClass = isDark ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-blue-500 hover:bg-blue-600 text-white";
+
 
   // --- FETCH PROFILE ---
   useEffect(() => {
@@ -86,8 +85,7 @@ export function AdminProfileManagement() {
         setPhone(profileData.phone || "");
         setGender(profileData.gender || "");
         setDateOfBirth(profileData.dateOfBirth?.slice(0, 10) || "");
-        setDesignation(profileData.designation || "");
-        setDepartment(profileData.department || "");
+
 
         if (profileData.address) {
           setAddressId(profileData.address._id);
@@ -144,22 +142,22 @@ export function AdminProfileManagement() {
       setProfile(updatedProfile.profile ?? updatedProfile);
       if (updatedProfile.profile?.photo) setExistingPhotos(updatedProfile.profile.photo);
       showToast("Profile updated successfully!", "success");
-    } catch (error:any) {
-   
+    } catch (error: any) {
 
-  let message = "Operation failed";
-    if (error.response?.data?.message) {
-      message = error.response.data.message;
-    } else if (error.message) {
-      message = error.message;
-    } else if (typeof error === "string") {
-      message = error;
-    }
 
-    
-    showToast(message, "error");
+      let message = "Operation failed";
+      if (error.response?.data?.message) {
+        message = error.response.data.message;
+      } else if (error.message) {
+        message = error.message;
+      } else if (typeof error === "string") {
+        message = error;
+      }
 
-  showToast(message, "error");
+
+      showToast(message, "error");
+
+      showToast(message, "error");
     } finally {
       setLoading(false);
     }
@@ -172,17 +170,17 @@ export function AdminProfileManagement() {
       setOtpToken(res.otpToken);
       setPasswordStep("verify");
       showToast("OTP sent to your email", "success");
-    } catch (error:any) {
+    } catch (error: any) {
       let message = "Operation failed";
-    if (error.response?.data?.message) {
-      message = error.response.data.message;
-    } else if (error.message) {
-      message = error.message;
-    } else if (typeof error === "string") {
-      message = error;
-    }
-  
-    showToast(message, "error");
+      if (error.response?.data?.message) {
+        message = error.response.data.message;
+      } else if (error.message) {
+        message = error.message;
+      } else if (typeof error === "string") {
+        message = error;
+      }
+
+      showToast(message, "error");
     }
   };
 
@@ -191,86 +189,85 @@ export function AdminProfileManagement() {
       await verifyPasswordOtp(otpToken, otp);
       setPasswordStep("update");
       showToast("OTP verified", "success");
-    } catch (error:any) {
-            let message = "Operation failed";
-    if (error.response?.data?.message) {
-      message = error.response.data.message;
-    } else if (error.message) {
-      message = error.message;
-    } else if (typeof error === "string") {
-      message = error;
-    }
+    } catch (error: any) {
+      let message = "Operation failed";
+      if (error.response?.data?.message) {
+        message = error.response.data.message;
+      } else if (error.message) {
+        message = error.message;
+      } else if (typeof error === "string") {
+        message = error;
+      }
 
-    // --- SHOW THE MESSAGE ---
-    showToast(message, "error");
+      // --- SHOW THE MESSAGE ---
+      showToast(message, "error");
     }
   };
 
- const handleUpdatePassword = async () => {
-  if (!newPassword) return showToast("Enter new password", "error");
-  if (!profile?._id) return showToast("Profile ID missing", "error");
+  const handleUpdatePassword = async () => {
+    if (!newPassword) return showToast("Enter new password", "error");
+    if (!profile?._id) return showToast("Profile ID missing", "error");
 
-  try {
-    await updatePassword(profile._id, newPassword);
-    showToast("Password updated successfully", "success");
+    try {
+      await updatePassword(profile._id, newPassword);
+      showToast("Password updated successfully", "success");
 
-    setPasswordStep("request");
-    setOtp("");
-    setNewPassword("");
-    setOtpToken("");
-  } catch (error: any) {
-    // --- Extract proper message from backend ---
-    let message = "Operation failed";
-    if (error.response?.data?.message) {
-      message = error.response.data.message;
-    } else if (error.message) {
-      message = error.message;
-    } else if (typeof error === "string") {
-      message = error;
+      setPasswordStep("request");
+      setOtp("");
+      setNewPassword("");
+      setOtpToken("");
+    } catch (error: any) {
+      // --- Extract proper message from backend ---
+      let message = "Operation failed";
+      if (error.response?.data?.message) {
+        message = error.response.data.message;
+      } else if (error.message) {
+        message = error.message;
+      } else if (typeof error === "string") {
+        message = error;
+      }
+
+      // --- SHOW THE MESSAGE ---
+      showToast(message, "error");
     }
-
-    // --- SHOW THE MESSAGE ---
-    showToast(message, "error");
-  }
-};
+  };
 
 
   return (
     <div className={`min-h-screen p-8 ${bgClass} transition-colors duration-300`}>
       <div className="max-w-6xl mx-auto space-y-8">
-        
+
         <div className="flex justify-between items-start pb-4 border-b border-blue-600">
           <div>
             <h1 className="text-3xl font-extrabold">Profile Management</h1>
             <p className="text-sm text-slate-400">Manage your school's profile and administrative settings</p>
           </div>
-         <div className="flex flex-col items-center">
-  <div className="w-40 h-40 rounded-lg overflow-hidden border-2 border-blue-600 bg-gray-700 flex items-center justify-center">
-    {existingPhotos.length > 0 ? (
-      <img
-        src={existingPhotos[0].url}
-        alt="Admin Photo"
-        className="w-full h-full object-cover"
-      />
-    ) : (
-      <span className="text-gray-400 text-sm">No Photo</span>
-    )}
-  </div>
-  <p className="text-xl font-bold mt-2 text-white">Logo</p>
-</div>
+          <div className="flex flex-col items-center">
+            <div className="w-40 h-40 rounded-lg overflow-hidden border-2 border-blue-600 bg-gray-700 flex items-center justify-center">
+              {existingPhotos.length > 0 ? (
+                <img
+                  src={existingPhotos[0].url}
+                  alt="Admin Photo"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-gray-400 text-sm">No Photo</span>
+              )}
+            </div>
+            <p className="text-xl font-bold mt-2 text-white">Logo</p>
+          </div>
 
         </div>
 
         {/* Tabs */}
         <div className="flex space-x-4 border-b border-gray-700">
-          
+
           <button
             onClick={() => setActiveTab("admin")}
-            className={`pb-2 transition duration-200 font-medium ${
-              activeTab === "admin"
-                ? "text-blue-500 border-b-2 border-blue-500"
-                : "text-gray-400 hover:text-white"
-            }`}
+            className={`pb-2 transition duration-200 font-medium ${activeTab === "admin"
+              ? "text-blue-500 border-b-2 border-blue-500"
+              : "text-gray-400 hover:text-white"
+              }`}
           >
             Admin Profile
           </button>
@@ -279,19 +276,19 @@ export function AdminProfileManagement() {
         {/* --- Admin Profile Form --- */}
         {activeTab === "admin" && (
           <FormLayout onSubmit={handleProfileSubmit} isSubmitting={loading} className="space-y-8">
-            
+
             {/* Personal Information */}
             <ProfileSection title="Personal Information" className={sectionBgClass}>
-              <TextInput label="Name" value={name} onChange={setName} placeholder="Name" className={inputBgClass}  />
+              <TextInput label="Name" value={name} onChange={setName} placeholder="Name" className={inputBgClass} />
               <TextInput label="Date of Birth" value={dateOfBirth} onChange={setDateOfBirth} type="date" className={inputBgClass} />
-              <SelectInput label="Gender" value={gender} onChange={setGender} options={["Male", "Female", "Other"]} className={inputBgClass}  />
+              <SelectInput label="Gender" value={gender} onChange={setGender} options={["Male", "Female", "Other"]} className={inputBgClass} />
               <TextInput label="Phone" value={phone} onChange={setPhone} placeholder="Phone" className={inputBgClass} />
-              <TextInput label="Email" value={email} onChange={setEmail} placeholder="Email" type="email" className={inputBgClass}  />
+              <TextInput label="Email" value={email} onChange={setEmail} placeholder="Email" type="email" className={inputBgClass} />
             </ProfileSection>
 
             <div className="w-full h-px bg-gray-700" />
 
-           
+
 
             <div className="w-full h-px bg-gray-700" />
 
@@ -334,7 +331,7 @@ export function AdminProfileManagement() {
         {/* --- Password Update --- */}
         <div className={`mt-8 p-6 border rounded-lg shadow-xl ${isDark ? "bg-slate-800 border-slate-700" : "bg-white border-gray-300"} space-y-4`}>
           <h2 className="text-xl font-bold">Security & Settings</h2>
-          
+
           <div className="space-y-4 max-w-md">
             {passwordStep === "request" && (
               <div className="space-y-2">
