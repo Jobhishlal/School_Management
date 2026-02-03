@@ -1,26 +1,27 @@
-import { AnnouncementNotificationDTO } from "../../applications/dto/AnnouncementNotificationDTO";
+import { NotificationDTO } from "../../applications/dto/AnnouncementNotificationDTO";
 import { NotificationPort } from "../../applications/ports/NotificationPort";
-import { Announcement } from "../../domain/entities/Announcement/Announcement";
 import { getIO } from "./socket";
 
-export class SocketNotification implements NotificationPort{
-    
-    async send(data: AnnouncementNotificationDTO): Promise<void> {
+export class SocketNotification implements NotificationPort {
+
+    async send(data: NotificationDTO): Promise<void> {
         const io = getIO()
-        if(data.scope==="GLOBAL"){
-            console.log("socket working",data)
-            io.emit("announcement",data)
+        console.log("Socket Notification Sending:", data);
+
+        const eventName = "notification:new";
+
+        if (data.scope === "GLOBAL") {
+            io.emit(eventName, data)
         }
-        if(data.scope==="CLASS"){
+        if (data.scope === "CLASS") {
             data.classes.forEach(cls => {
-                console.log("socket working",data)
-            io.to(`class-${cls}`).emit("announcement:new", data);
-         });
+                io.to(`class-${cls}`).emit(eventName, data);
+            });
         }
         if (data.scope === "DIVISION") {
-      io.to(`division-${data.division}`)
-        .emit("announcement:new", data);
-    }
+            io.to(`division-${data.division}`)
+                .emit(eventName, data);
+        }
 
     }
 }

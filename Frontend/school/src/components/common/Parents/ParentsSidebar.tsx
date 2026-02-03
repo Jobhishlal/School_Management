@@ -25,6 +25,7 @@ import {
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../layout/ThemeContext";
 import { getInstituteProfile } from "../../../services/authapi";
+import ParentNotificationDropdown from "../Parent/ParentNotificationDropdown";
 
 interface ParentSidebarProps {
   children?: ReactNode;
@@ -66,12 +67,12 @@ const ParentSidebar: React.FC<ParentSidebarProps> = ({ children }) => {
     { icon: Calendar, text: "Student Attendance Report", path: "/parent/attendacelist" },
     { icon: FileText, text: "Student Exams Results", path: "/parent/exams" },
     { icon: DollarSign, text: "Student Fees Details", path: "/parent/financelist" },
-   
+
     { icon: Bell, text: "Leave Request", path: "/parent/leave" },
     { icon: Video, text: "Meet", path: "/parent/meet" },
     { icon: User, text: "Profile", path: "/parent/profile" },
     { icon: MessageCircle, text: "Complaint Ticket", path: "/parent/complaints" },
-   
+
   ];
 
   // Theme-based styles
@@ -199,12 +200,7 @@ const ParentSidebar: React.FC<ParentSidebarProps> = ({ children }) => {
             </div>
 
             <div className="flex items-center space-x-4">
-              <button className={`relative p-3 rounded-xl ${hoverBg} transition-all duration-300 hover:scale-105`}>
-                <Bell className={textSecondary} size={20} />
-                <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">2</span>
-                </div>
-              </button>
+              <ParentNotificationDropdown />
 
               <button
                 onClick={toggleTheme}

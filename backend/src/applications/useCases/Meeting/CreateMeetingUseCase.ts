@@ -1,9 +1,13 @@
 import { Meeting } from "../../../domain/entities/Meeting";
 import { IMeetingRepository } from "../../../domain/repositories/IMeetingRepository";
 import { ICreateMeetingUseCase } from "../../../domain/UseCaseInterface/Meeting/ICreateMeetingUseCase";
+import { NotificationPort } from "../../ports/NotificationPort";
 
 export class CreateMeetingUseCase implements ICreateMeetingUseCase {
-    constructor(private readonly meetingRepository: IMeetingRepository) { }
+    constructor(
+        private readonly meetingRepository: IMeetingRepository,
+        private readonly notificationPort: NotificationPort
+    ) { }
 
     async execute(meetingData: Meeting): Promise<Meeting> {
         if (!meetingData.link) {
@@ -28,6 +32,18 @@ export class CreateMeetingUseCase implements ICreateMeetingUseCase {
             throw new Error('Meeting cannot be scheduled in the past');
         }
 
-        return await this.meetingRepository.createMeeting(meetingData);
+        const createdMeeting = await this.meetingRepository.createMeeting(meetingData);
+
+        // Emit Notification
+        await this.notificationPort.send({
+            title: `New Meeting: ${meetingData.title}`,
+            content: meetingData.description || "A new meeting has been scheduled.",
+            type: "MEETING",
+            scope: "GLOBAL", // Default to GLOBAL for now, can be refined based on meetingData details
+            classes: [],
+            link: meetingData.link
+        });
+
+        return createdMeeting;
     }
 }

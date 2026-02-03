@@ -1,5 +1,5 @@
-import { AnnouncementNotificationDTO } from "../dto/AnnouncementNotificationDTO";
+import { NotificationDTO } from "../dto/AnnouncementNotificationDTO";
 
 export interface NotificationPort {
-  send(data: AnnouncementNotificationDTO): Promise<void>;
+  send(data: NotificationDTO): Promise<void>;
 }

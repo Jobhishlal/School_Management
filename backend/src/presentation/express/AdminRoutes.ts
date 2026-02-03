@@ -319,7 +319,7 @@ const timetablemanagecontroller = new TimeTableManageController(
 const finance = new FeeStructureRepository()
 const financetype = new FeeTypeManagemnt()
 
-const createfinance = new CreateFeeStructureUseCase(finance, financetype)
+const createfinance = new CreateFeeStructureUseCase(finance, financetype, socketNotification)
 const createtypeusecase = new CreateFeeTypeUseCase(financetype)
 const getallfeetype = new GetFeeTypeAll(financetype)
 const searchname = new SearchStudentName(finance)

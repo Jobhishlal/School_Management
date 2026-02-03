@@ -8,14 +8,15 @@ import { CreateValidationFeeStructure } from "../../validators/FeeStructureValid
 import { calculateExpiryDate } from "../../../shared/constants/utils/dateUtils";
 import { SendEMail } from "../../../infrastructure/providers/EmailService";
 import { feeExpiredTemplate } from "../../../shared/constants/utils/templates/FeeExpiredTemplate";
+import { NotificationPort } from "../../ports/NotificationPort";
 
 export class CreateFeeStructureUseCase implements ICreateFeeStructureUseCase {
   constructor(
     private feeStructureRepo: IFeeStructureRepository,
     private feeTypeRepo: IFeeTypeRepository,
- 
+    private notificationPort: NotificationPort
 
-  ) {}
+  ) { }
 
   async execute(request: CreateFeeStructureDTO): Promise<FeeStructure> {
     CreateValidationFeeStructure(request);
@@ -37,7 +38,7 @@ export class CreateFeeStructureUseCase implements ICreateFeeStructureUseCase {
       );
     }
 
-    const startDate = new Date();                       
+    const startDate = new Date();
     const expiryDate = calculateExpiryDate(startDate, 4);
 
     const feeStructure = new FeeStructure(
@@ -52,8 +53,20 @@ export class CreateFeeStructureUseCase implements ICreateFeeStructureUseCase {
       startDate,
       expiryDate
     );
-    
-      
-    return await this.feeStructureRepo.create(feeStructure);
+
+
+    const createdFee = await this.feeStructureRepo.create(feeStructure);
+
+    // Emit Notification
+    await this.notificationPort.send({
+      title: "New Fee Structure: " + request.name,
+      content: `New fee payment details available for ${request.name}`,
+      type: "FINANCE",
+      scope: "CLASS",
+      classes: [request.classId],
+      link: "/parent/finance"
+    });
+
+    return createdFee;
   }
 }

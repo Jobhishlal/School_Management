@@ -9,9 +9,11 @@ import { ValidateMeetingJoinUseCase } from '../../applications/useCases/Meeting/
 
 const MeetingRouter = Router();
 
+import { SocketNotification } from '../../infrastructure/socket/SocketNotification';
 const meetingRepository = new MeetingRepository();
 const studentRepository = new MongoStudentRepo();
-const createMeetingUseCase = new CreateMeetingUseCase(meetingRepository);
+const socketNotification = new SocketNotification();
+const createMeetingUseCase = new CreateMeetingUseCase(meetingRepository, socketNotification);
 const getScheduledMeetingsUseCase = new GetScheduledMeetingsUseCase(meetingRepository);
 const validateMeetingJoinUseCase = new ValidateMeetingJoinUseCase(meetingRepository, studentRepository);
 
