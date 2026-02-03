@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import * as authapi from "../../../services/authapi";
 import { toast } from "react-toastify";
 import { useTheme } from "../../../components/layout/ThemeContext";
-import { CheckCircle, XCircle, Clock, AlertCircle } from "lucide-react";
+import { CheckCircle, XCircle, Clock } from "lucide-react";
 
 interface LeaveRequest {
     id: string;
@@ -40,7 +40,7 @@ const TeacherStudentLeavePage: React.FC = () => {
 
     const fetchClassLeaves = async () => {
         try {
-         
+
             const classData = await authapi.getTeacherClass();
             console.log("TeacherStudentLeavePage fetched classData:", classData);
             if (classData && classData.data && classData.data.classInfo) {
@@ -54,7 +54,7 @@ const TeacherStudentLeavePage: React.FC = () => {
             }
         } catch (error) {
             console.error("Error fetching class leaves", error);
-           
+
         } finally {
             setLoading(false);
         }

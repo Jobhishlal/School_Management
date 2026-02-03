@@ -66,7 +66,7 @@ const VideoMeeting: React.FC = () => {
     // Profile Data
     const [userProfile, setUserProfile] = useState<{ name: string; image?: string } | null>(null);
     const [profileLoaded, setProfileLoaded] = useState(false);
-    const [isWaiting, setIsWaiting] = useState(false);
+
     const [waitingList, setWaitingList] = useState<any[]>([]);
 
     // Chat State
@@ -84,7 +84,7 @@ const VideoMeeting: React.FC = () => {
     // Grid State
     const [pinnedUserId, setPinnedUserId] = useState<string | null>(null);
     const [lastSpokeAt, setLastSpokeAt] = useState<{ [userId: string]: number }>({});
-    const [showParticipantsList, setShowParticipantsList] = useState(false);
+
 
     const socketRef = useRef<Socket | null>(null);
     const userVideo = useRef<HTMLVideoElement>(null);
@@ -259,17 +259,17 @@ const VideoMeeting: React.FC = () => {
 
                 socketRef.current.on('waiting-for-host', () => {
                     console.log("Host not present. Waiting...");
-                    setIsWaiting(true);
+
                 });
 
                 socketRef.current.on('waiting-for-approval', () => {
                     console.log("Host present. Waiting for approval...");
-                    setIsWaiting(true);
+
                 });
 
                 socketRef.current.on('admission-granted', () => {
                     console.log("Admission Granted!");
-                    setIsWaiting(false);
+
 
                 });
 

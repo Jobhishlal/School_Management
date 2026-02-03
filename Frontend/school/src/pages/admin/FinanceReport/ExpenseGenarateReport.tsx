@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ExpenseReport } from "../../../services/authapi";
 import type { ExpenseReportType } from "../../../types/ExpenseReport.types";
 import { showToast } from "../../../utils/toast";
@@ -20,25 +20,25 @@ export function ExpenseReletedReport() {
     fetchExpenseReport();
   }, []);
 
-const fetchExpenseReport = async () => {
-  try {
-    setLoading(true);
-    const res = await ExpenseReport();
+  const fetchExpenseReport = async () => {
+    try {
+      setLoading(true);
+      const res = await ExpenseReport();
 
-    const normalized: ExpenseReportType = {
-      totalExpense: res.totalExpense,
-      approvedExpense: res.approvedExpense,
-      pendingExpense: res.pendingExpense,
-      monthlyExpense: res.monthlyexpense,
-    };
+      const normalized: ExpenseReportType = {
+        totalExpense: res.totalExpense,
+        approvedExpense: res.approvedExpense,
+        pendingExpense: res.pendingExpense,
+        monthlyExpense: res.monthlyexpense,
+      };
 
-    setReport(normalized);
-  } catch (error) {
-    showToast("Failed to fetch expense report", "error");
-  } finally {
-    setLoading(false);
-  }
-};
+      setReport(normalized);
+    } catch (error) {
+      showToast("Failed to fetch expense report", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
 
@@ -107,11 +107,11 @@ const fetchExpenseReport = async () => {
                 </h3>
 
                 <RevenueBarChart
-                data={report.monthlyExpense}
-                isDark={isDark}
-                   />
+                  data={report.monthlyExpense}
+                  isDark={isDark}
+                />
 
-          
+
               </div>
 
               {/* Expense Trend Area Chart */}
@@ -120,10 +120,10 @@ const fetchExpenseReport = async () => {
                   Expense Trend
                 </h3>
 
-                        <RevenueAreaChart
-                    data={report.monthlyExpense}
-                       isDark={isDark}
-                       />
+                <RevenueAreaChart
+                  data={report.monthlyExpense}
+                  isDark={isDark}
+                />
               </div>
             </div>
           </>

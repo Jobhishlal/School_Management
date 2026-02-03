@@ -173,7 +173,7 @@ const TeacherMyClass: React.FC = () => {
                                 </tr>
                             </thead>
                             <tbody className={`divide-y ${isDark ? "divide-slate-700" : "divide-slate-100"}`}>
-                                {classData.students.map((student, index) => (
+                                {classData.students.map((student) => (
                                     <tr key={student.id} className={`transition-colors ${isDark ? "hover:bg-slate-700/50" : "hover:bg-slate-50"}`}>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">

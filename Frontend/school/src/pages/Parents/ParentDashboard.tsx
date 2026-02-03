@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   AreaChart,
   Area,
@@ -191,7 +191,7 @@ function ParentDashboard() {
                     <Tooltip cursor={{ fill: 'transparent' }} content={<CustomTooltip />} />
                     <Bar dataKey="value" fill="#334155" radius={[4, 4, 0, 0]}>
                       {
-                        stats.examStats.subjectComparison.map((entry, index) => (
+                        stats.examStats.subjectComparison.map((_, index) => (
                           <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#3B82F6' : '#334155'} />
                         ))
                       }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ListOutFullExpense } from "../../services/authapi";
 import { showToast } from "../../utils/toast";
 
@@ -62,13 +62,12 @@ export default function ExpenseHistory() {
                 <td className="border p-2">{exp.amount}</td>
                 <td className="border p-2">{exp.createdBy}</td>
                 <td
-                  className={`border p-2 font-semibold ${
-                    exp.status === "APPROVED"
+                  className={`border p-2 font-semibold ${exp.status === "APPROVED"
                       ? "text-green-600"
                       : exp.status === "REJECTED"
-                      ? "text-red-600"
-                      : "text-yellow-600"
-                  }`}
+                        ? "text-red-600"
+                        : "text-yellow-600"
+                    }`}
                 >
                   {exp.status}
                 </td>

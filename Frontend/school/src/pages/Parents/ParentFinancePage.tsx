@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ListParentfinance,
   CreatePayment,
@@ -34,7 +34,7 @@ export default function FinanceParentList() {
   const [historyLoading, setHistoryLoading] = useState(false);
   const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1, total: 0 });
 
-  const email = localStorage.getItem("email");
+  const email = localStorage.getItem("email") || "";
 
   // Theme Classes
   const containerBg = isDark ? "bg-[#121A21] text-slate-100" : "bg-[#fafbfc] text-slate-900";

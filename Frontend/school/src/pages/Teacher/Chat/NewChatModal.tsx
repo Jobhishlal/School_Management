@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Search } from 'lucide-react';
 import api from '../../../services/api';
 import { type ChatUser } from '../../../services/ChatService';

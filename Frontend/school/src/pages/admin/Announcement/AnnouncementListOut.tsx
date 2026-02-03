@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { findallAnnouncement, deleteAnnouncement } from "../../../services/authapi";
 import { showToast } from "../../../utils/toast";
 import { Pagination } from "../../../components/common/Pagination";
@@ -73,7 +73,7 @@ const AnnouncementListOut = ({
 
   return (
     <div className="mt-8">
-     
+
 
       {loading ? (
         <p className="text-sm opacity-70">Loading announcements...</p>

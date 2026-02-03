@@ -8,8 +8,9 @@ import { useTheme } from "../../components/layout/ThemeContext";
 import { Pagination } from "../../components/common/Pagination";
 import { Modal } from "../../components/common/Modal";
 import { AddStudentForm } from '../../pages/admin/StudentManagement'
+
 import { Table, type Column } from "../../components/Table/Table";
-import { blockStudent, CreateStudents } from "../../services/authapi";
+import { blockStudent } from "../../services/authapi";
 
 
 export interface Student {
@@ -73,16 +74,7 @@ export function StudentList() {
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
 
   const itemsPerPage = 10;
-  const [newStudent, setNewStudent] = useState({
-    fullName: "",
-    studentId: "",
-    class: "",
-    section: "",
-    guardianName: "",
-    guardianPhone: "",
-    status: "Active",
-    profilePic: null as File | null,
-  });
+
 
   const fetchStudents = async () => {
     setLoading(true);
@@ -152,16 +144,7 @@ export function StudentList() {
   }, [searchTerm, students]);
 
   const handleCloseModal = () => {
-    setNewStudent({
-      fullName: "",
-      studentId: "",
-      class: "",
-      section: "",
-      guardianName: "",
-      guardianPhone: "",
-      status: "Active",
-      profilePic: null,
-    });
+
     setShowModal(false);
     setEditingStudent(null);
   };
@@ -175,31 +158,7 @@ export function StudentList() {
 
 
 
-  const handleAddStudent = async () => {
-    setLoading(true);
-    try {
-      const { fullName, studentId, class: className, section, guardianName, guardianPhone, status, profilePic } = newStudent;
 
-      // @ts-ignore
-      await CreateStudents({
-        fullName,
-        studentId,
-        classDetails: { className, section },
-        guardian: { name: guardianName, phone: guardianPhone },
-        status,
-        profilePic,
-
-      });
-      showToast("Student added successfully", "success");
-      handleCloseModal();
-      await fetchStudents();
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || "Error adding student";
-      showToast(errorMessage, "error");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;

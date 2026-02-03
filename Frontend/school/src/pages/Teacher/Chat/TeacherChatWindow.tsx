@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { getChatHistory, markMessagesRead, type ChatUser, type ChatMessage } from '../../../services/ChatService';
-import { Send, Paperclip, MoreVertical, Check, CheckCheck, Trash2, Mic, Loader2 } from 'lucide-react';
+import { Send, Paperclip, Check, CheckCheck, Trash2, Mic, Loader2 } from 'lucide-react';
 import { Socket } from 'socket.io-client';
 import api from '../../../services/api';
 import { jwtDecode } from 'jwt-decode';

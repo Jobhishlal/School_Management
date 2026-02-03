@@ -22,7 +22,7 @@ export const SelectInput = <T extends OptionType>({
   required = false,
   bgColor,
   isDark = false,
-  disabled = false,
+
   className,
 }: SelectInputProps<T>) => {
 

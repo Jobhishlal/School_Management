@@ -47,7 +47,7 @@ export default function ParentSignupPage() {
 
     try {
       setLoading(true);
-      const res = await ParentSignup({
+      await ParentSignup({
         studentId: form.studentId,
         email: form.email,
         password: form.password,

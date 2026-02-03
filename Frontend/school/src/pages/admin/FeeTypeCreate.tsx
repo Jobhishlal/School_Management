@@ -1,7 +1,7 @@
 
 
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { createfinancetype } from "../../services/authapi";
 import type { CreateFeeTypePayload, OfferInterface } from "../../types/CreateFeeTypePayload";
 import { showToast } from "../../utils/toast";
@@ -10,16 +10,16 @@ import { NavLink } from "react-router-dom";
 
 const CreateFeeTypeForm: React.FC = () => {
   const { isDark } = useTheme();
-  
+
   const [formData, setFormData] = useState<CreateFeeTypePayload>({
     name: "",
     description: "",
-    defaultAmount: "", 
+    defaultAmount: "",
     frequency: "ONCE",
     isOptional: false,
     isActive: true,
     offers: [],
-  
+
   });
 
   const [offer, setOffer] = useState<OfferInterface>({
@@ -40,20 +40,20 @@ const CreateFeeTypeForm: React.FC = () => {
     try {
       const response = await createfinancetype(formData);
       console.log("Created:", response.data);
-      showToast("FeeType Created!","success");
+      showToast("FeeType Created!", "success");
     } catch (err: any) {
       const backendMessage =
         err?.response?.data?.message ||
         err?.message ||
         "Failed to create FeeType";
-      showToast(backendMessage,"error");
+      showToast(backendMessage, "error");
     }
   };
 
-  
+
   const containerBg = isDark ? "bg-[#121A21] text-slate-100" : "bg-[#fafbfc] text-slate-900";
   const cardBg = isDark ? "bg-slate-800/50 border-gray-700" : "bg-white border-gray-300";
-  const textPrimary = isDark ? "text-slate-200" : "text-gray-900";
+
   const textSecondary = isDark ? "text-slate-400" : "text-gray-600";
   const inputBg = isDark ? "bg-slate-700/50 border-slate-600 text-slate-100" : "bg-white border-gray-300 text-slate-900";
   const buttonPrimary = isDark ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-blue-600 hover:bg-blue-700 text-white";
@@ -63,49 +63,46 @@ const CreateFeeTypeForm: React.FC = () => {
 
   return (
     <div className={`p-6 rounded max-w-4xl mx-auto transition-colors duration-300 ${containerBg}`}>
-   <div className="flex gap-6 text-sm border-b border-slate-700/50">
-  <NavLink
-    to="/finance-management"
-    className={({ isActive }) =>
-      `pb-3 border-b-2 font-medium transition-colors duration-200 ${
-        isActive
-          ? "border-blue-500 text-blue-600"
-          : `border-transparent ${textSecondary} hover:text-blue-400`
-      }`
-    }
-  >
-    Fee Management
-  </NavLink>
+      <div className="flex gap-6 text-sm border-b border-slate-700/50">
+        <NavLink
+          to="/finance-management"
+          className={({ isActive }) =>
+            `pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
+              ? "border-blue-500 text-blue-600"
+              : `border-transparent ${textSecondary} hover:text-blue-400`
+            }`
+          }
+        >
+          Fee Management
+        </NavLink>
 
-  <NavLink
-    to="/expense-management"
-    className={({ isActive }) =>
-      `pb-3 border-b-2 font-medium transition-colors duration-200 ${
-        isActive
-          ? "border-blue-500 text-blue-600"
-          : `border-transparent ${textSecondary} hover:text-blue-400`
-      }`
-    }
-  >
-    Expense Management
-  </NavLink>
+        <NavLink
+          to="/expense-management"
+          className={({ isActive }) =>
+            `pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
+              ? "border-blue-500 text-blue-600"
+              : `border-transparent ${textSecondary} hover:text-blue-400`
+            }`
+          }
+        >
+          Expense Management
+        </NavLink>
 
-  <NavLink
-    to="/finance-report"
-    className={({ isActive }) =>
-      `pb-3 border-b-2 font-medium transition-colors duration-200 ${
-        isActive
-          ? "border-blue-500 text-blue-600"
-          : `border-transparent ${textSecondary} hover:text-blue-400`
-      }`
-    }
-  >
-    Fee Report
-  </NavLink>
-</div>
+        <NavLink
+          to="/finance-report"
+          className={({ isActive }) =>
+            `pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
+              ? "border-blue-500 text-blue-600"
+              : `border-transparent ${textSecondary} hover:text-blue-400`
+            }`
+          }
+        >
+          Fee Report
+        </NavLink>
+      </div>
 
 
-     
+
 
       <div className={`p-6 border rounded-lg transition-colors duration-300 ${cardBg}`}>
         <h2 className="text-xl font-bold mb-6">Create Fee Type</h2>
@@ -148,7 +145,7 @@ const CreateFeeTypeForm: React.FC = () => {
           {/* Offer Section */}
           <div className={`border-t pt-4 mt-4 transition-colors duration-200 ${dividerBorder}`}>
             <h3 className="font-semibold mb-3 text-lg">Add Offer</h3>
-            
+
             <div className="space-y-3">
               <div>
                 <label className="block text-sm font-medium mb-1">Offer Type</label>

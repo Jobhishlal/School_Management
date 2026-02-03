@@ -26,8 +26,7 @@ const MeetingChat: React.FC<MeetingChatProps> = ({
     messages,
     newMessage,
     setNewMessage,
-    sendMessage,
-    isDark
+    sendMessage
 }) => {
     const formatMessageWithLinks = (text: string) => {
         const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;

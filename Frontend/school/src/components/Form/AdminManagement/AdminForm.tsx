@@ -33,20 +33,20 @@ export const AdminForm: React.FC<AdminFormProps> = ({
   onCancel,
   editing = false,
 }) => {
-  const bgInput = isDark ? "#334155" : "#ffffff";
+
 
   return (
     <div className="space-y-4">
-      <TextInput label="Full Name" value={name} onChange={setName}  isDark={isDark} />
-      <TextInput label="Email" type="email" value={email} onChange={setEmail}  isDark ={isDark}/>
-      <TextInput label="Phone" type="tel" value={phone} onChange={setPhone}  isDark={isDark} />
+      <TextInput label="Full Name" value={name} onChange={setName} isDark={isDark} />
+      <TextInput label="Email" type="email" value={email} onChange={setEmail} isDark={isDark} />
+      <TextInput label="Phone" type="tel" value={phone} onChange={setPhone} isDark={isDark} />
       <SelectInput<string>
         label="Role"
         value={role}
         onChange={setRole}
-        options={["Finance","Communication","School_Management","Student_Management","Parents_Management"]}
+        options={["Finance", "Communication", "School_Management", "Student_Management", "Parents_Management"]}
         isDark={isDark}
-       
+
       />
 
       <div className="flex justify-end gap-3 pt-4">

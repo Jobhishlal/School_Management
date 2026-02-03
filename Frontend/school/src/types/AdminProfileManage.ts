@@ -1,4 +1,4 @@
-interface AdminProfile {
+export interface AdminProfile {
   id: string;
   name: string;
   email: string;
@@ -10,6 +10,4 @@ interface AdminProfile {
   documents?: string[];
 }
 
-interface GetProfileResponse {
-  profile: AdminProfile;
-}
+

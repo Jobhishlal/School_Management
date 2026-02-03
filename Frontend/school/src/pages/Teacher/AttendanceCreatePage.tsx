@@ -1,20 +1,19 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   GetStudentsByTeacher,
-  fetchTodayAttendanceSummary
 } from "../../services/authapi";
 import AttendanceReportView from "./AttendanceReportView";
 import TodayAttendanceSummary from "./TodayAttendanceSummary";
 import TakeAttendanceForm from "./AttendanceCreate";
 import { getDecodedToken } from "../../utils/DecodeToken";
 import { useTheme } from "../../components/layout/ThemeContext";
-import type { TodayAttendanceItem } from "./TodayAttendanceSummary";
+
 import { Calendar, AlertCircle } from "lucide-react";
 
 const AttendanceCreatePage = () => {
   const { isDark } = useTheme();
   const [students, setStudents] = useState<any[]>([]);
-  const [summary, setSummary] = useState<TodayAttendanceItem[]>([]);
+
   const [session, setSession] = useState<"Morning" | "Afternoon" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -28,14 +27,7 @@ const AttendanceCreatePage = () => {
     return null;
   };
 
-  const loadSummary = async (classId: string) => {
-    try {
-      const res = await fetchTodayAttendanceSummary(classId);
-      setSummary(res.attendance?.attendance || []);
-    } catch (err) {
-      console.error("Failed to load summary", err);
-    }
-  };
+
 
   useEffect(() => {
     const init = async () => {
@@ -51,9 +43,7 @@ const AttendanceCreatePage = () => {
 
         if (res.success) {
           setStudents(res.students);
-          if (res.students.length > 0) {
-            loadSummary(res.students[0].classId);
-          }
+
         }
       } catch (error: any) {
         console.error(error);
@@ -95,8 +85,8 @@ const AttendanceCreatePage = () => {
           </div>
 
           <div className={`rounded-lg border p-8 text-center ${isDark
-              ? "bg-yellow-900/20 border-yellow-800"
-              : "bg-yellow-50 border-yellow-200"
+            ? "bg-yellow-900/20 border-yellow-800"
+            : "bg-yellow-50 border-yellow-200"
             }`}>
             <AlertCircle className={`w-16 h-16 mx-auto mb-4 ${isDark ? "text-yellow-400" : "text-yellow-600"
               }`} />
@@ -169,7 +159,7 @@ const AttendanceCreatePage = () => {
               students={students}
               teacherId={teacherId}
               session={session}
-              onSuccess={() => loadSummary(students[0].classId)}
+              onSuccess={() => { }}
             />
           </div>
         )}

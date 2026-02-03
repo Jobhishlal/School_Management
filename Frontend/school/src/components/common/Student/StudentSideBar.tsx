@@ -9,7 +9,6 @@ import {
   MessageCircle,
   Users,
   BookOpen,
-  CreditCard,
   Bell,
   ChevronDown,
   X,

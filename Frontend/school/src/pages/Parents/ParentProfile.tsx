@@ -5,14 +5,10 @@ import { getDecodedToken } from "../../utils/DecodeToken";
 import {
   Loader2,
   User,
-  Phone,
-  Mail,
   MapPin,
   GraduationCap,
-  Calendar,
-  Users,
 } from "lucide-react";
-import type{ ParentProfileDTO } from "../../types/ParentProfileDTO";
+import type { ParentProfileDTO } from "../../types/ParentProfileDTO";
 
 
 const ParentProfile: React.FC = () => {
@@ -37,13 +33,13 @@ const ParentProfile: React.FC = () => {
         // console.log("PROFILE FROM API:", data.profile);
         // console.log("data",data)
 
-        setProfile(data.profile);   
+        setProfile(data.profile);
       } catch (err: any) {
         console.error("Error fetching profile:", err);
         setError(
           err?.response?.data?.message ||
-            err?.message ||
-            "Failed to load profile."
+          err?.message ||
+          "Failed to load profile."
         );
       } finally {
         setLoading(false);
@@ -69,18 +65,16 @@ const ParentProfile: React.FC = () => {
 
   if (!profile) return null;
 
-  const cardClass = `rounded-xl p-6 shadow-lg border ${
-    isDark ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200"
-  }`;
+  const cardClass = `rounded-xl p-6 shadow-lg border ${isDark ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200"
+    }`;
 
   const textPrimary = isDark ? "text-slate-100" : "text-slate-900";
   const textSecondary = isDark ? "text-slate-400" : "text-slate-500";
 
   return (
     <div
-      className={`min-h-screen p-6 ${
-        isDark ? "bg-[#121A21]" : "bg-slate-50"
-      }`}
+      className={`min-h-screen p-6 ${isDark ? "bg-[#121A21]" : "bg-slate-50"
+        }`}
     >
       <h1 className={`text-2xl font-bold mb-8 ${textPrimary}`}>
         My Profile

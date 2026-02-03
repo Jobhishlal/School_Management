@@ -35,7 +35,7 @@ interface Student {
 }
 
 export const StudentProfilePage: React.FC = () => {
-  const { studentId } = useParams<{ studentId: string }>();
+  useParams<{ studentId: string }>();
   const { isDark } = useTheme();
 
   const [student, setStudent] = useState<Student | null>(null);
@@ -70,12 +70,11 @@ export const StudentProfilePage: React.FC = () => {
 
   return (
     <div
-      className={`min-h-screen p-4 sm:p-8 ${
-        isDark ? "bg-[#121A21] text-slate-100" : "bg-slate-50 text-slate-900"
-      }`}
+      className={`min-h-screen p-4 sm:p-8 ${isDark ? "bg-[#121A21] text-slate-100" : "bg-slate-50 text-slate-900"
+        }`}
     >
       <div className="max-w-7xl mx-auto">
-       
+
         <h2 className="text-3xl font-bold mb-1">Profile Management</h2>
         <p className="text-slate-400 mb-6">
           View detailed information about the student
@@ -87,13 +86,12 @@ export const StudentProfilePage: React.FC = () => {
           </div>
         </div>
 
-       
+
         <div
-          className={`rounded-lg p-6 shadow-xl relative ${
-            isDark ? "bg-slate-800/50" : "bg-white"
-          }`}
+          className={`rounded-lg p-6 shadow-xl relative ${isDark ? "bg-slate-800/50" : "bg-white"
+            }`}
         >
-         
+
           <div className="flex flex-col items-center text-center mb-8">
             {student.photos?.length > 0 ? (
               <img
@@ -103,11 +101,10 @@ export const StudentProfilePage: React.FC = () => {
               />
             ) : (
               <div
-                className={`w-32 h-32 rounded-full flex items-center justify-center mb-4 ${
-                  isDark
+                className={`w-32 h-32 rounded-full flex items-center justify-center mb-4 ${isDark
                     ? "bg-slate-700 text-slate-400"
                     : "bg-gray-200 text-gray-500"
-                }`}
+                  }`}
               >
                 No Photo
               </div>
@@ -116,9 +113,9 @@ export const StudentProfilePage: React.FC = () => {
             <p className="text-slate-400">{student.role?.toUpperCase()}</p>
           </div>
 
-         
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
+
             <div>
               <h3 className="text-lg font-semibold border-b border-slate-700 pb-2 mb-3 flex items-center gap-2">
                 <User size={18} /> Basic Information
@@ -146,7 +143,7 @@ export const StudentProfilePage: React.FC = () => {
                 <li>
                   <b>Division:</b> {student.classDetails?.division || "-"}
                 </li>
-              
+
               </ul>
             </div>
 

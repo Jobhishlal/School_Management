@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { GetStudentsByTeacher } from "../../services/authapi";
-import { Loader2, Search, User, Phone, Mail, Users } from "lucide-react";
+import { Loader2, Search, User, Phone, Mail } from "lucide-react";
 import { useTheme } from "../../components/layout/ThemeContext";
 import { Pagination } from "../../components/common/Pagination";
 

@@ -5,7 +5,7 @@ import { type CreateAssignmentDTO } from "../types/AssignmentCreate";
 import type { CreateFeeStructureDTO } from "../types/CreateFeeStructureDTO ";
 import type { CreateFeeTypePayload } from "../types/CreateFeeTypePayload";
 import type { ExpenseFormDTO } from "../types/ExpenseCreatedto";
-import type { CreateAnnouncementDTO } from "../types/CreateAnnouncementDTO";
+
 import type { TakeAttendancePayload } from "../types/AttendanceType";
 import type { CreateExamDTO } from "../types/ExamCreateDTO";
 import type { UpdateExamDTO } from "../types/UpdateExam";

@@ -103,9 +103,8 @@ const TeacherScheduleView: React.FC = () => {
         return { dayName: day, events: dayEvents };
     });
 
-    // Calculate rows for desktop table
-    const maxEvents = Math.max(...processedDays.map(d => d.events.length), 0);
-    const rowsArray = Array.from({ length: maxEvents }, (_, i) => i);
+
+
 
     const getEventStyle = (type: ScheduleItem['type']) => {
         switch (type) {
@@ -238,7 +237,7 @@ const TeacherScheduleView: React.FC = () => {
                                     {/* Get all unique start times to define standard rows */}
                                     {Array.from(new Set(scheduleData.map(s => s.startTime)))
                                         .sort() // String sort works for "09:00", "10:00" etc.
-                                        .map((time, rowIndex) => (
+                                        .map((time) => (
                                             <tr
                                                 key={time}
                                                 className={`${isDark ? 'hover:bg-slate-700/30' : 'hover:bg-teal-50/50'} transition-colors`}
