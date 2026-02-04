@@ -1,18 +1,19 @@
-import { CreateTimetableDTO } from "../../applications/dto/CreateTImeTableDTO"; 
+import { CreateTimetableDTO } from "../../applications/dto/CreateTImeTableDTO";
 import { TimetableResponseDTO } from "../../applications/dto/TimeTableResponseDTO";
-import { TimetableEntity,DayScheduleEntity,PeriodEntity } from "../entities/TimeTableEntity";
+import { TimetableEntity, DayScheduleEntity, PeriodEntity } from "../entities/TimeTableEntity";
 
 
-export const creatTimeTableDTOToEntity = (dto:CreateTimetableDTO):TimetableEntity=>{
-    return new TimetableEntity(
-        "",
-        dto.classId,
-        dto.division,
-        dto.days.map(d=>new DayScheduleEntity(
-            d.day,
-            d.periods.map(da=> new PeriodEntity(da.startTime,da.endTime,da.subject,da.teacherId) )
-        ))
-    )
+export const creatTimeTableDTOToEntity = (dto: CreateTimetableDTO): TimetableEntity => {
+  return new TimetableEntity(
+    "",
+    dto.classId,
+    dto.className,
+    dto.division,
+    dto.days.map(d => new DayScheduleEntity(
+      d.day,
+      d.periods.map(da => new PeriodEntity(da.startTime, da.endTime, da.subject, da.teacherId))
+    ))
+  )
 }
 
 export const timetableEntityToDTO = (
