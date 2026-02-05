@@ -117,10 +117,7 @@ export default function MainAdminLogincheck() {
     try {
       window.open(`${import.meta.env.VITE_SERVER_URL || "http://localhost:5000"}/auth/google`, "_self");
 
-      // The following listener logic is for popup windows.
-      // If navigating in _self, this listener will not be triggered in the same way.
-      // This part of the code might need re-evaluation if the intent is to handle
-      // the response in the same window after a full redirect.
+
       const listener = (event: MessageEvent) => {
         if (event.origin !== (import.meta.env.VITE_SERVER_URL || "http://localhost:5000")) return;
         const { accessToken, refreshToken, user, error } = event.data;
@@ -243,24 +240,25 @@ export default function MainAdminLogincheck() {
           )}
 
 
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-600"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-[#1E1E1E] text-gray-400">or</span>
-            </div>
-          </div>
-
-
           {loginType === "parent" && (
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              className="w-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-white font-medium py-3 rounded-lg"
-            >
-              <FcGoogle className="mr-2 text-xl" /> Sign Up with Google
-            </button>
+            <>
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-600"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-[#1E1E1E] text-gray-400">or</span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleGoogleLogin}
+                className="w-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-white font-medium py-3 rounded-lg"
+              >
+                <FcGoogle className="mr-2 text-xl" /> Sign Up with Google
+              </button>
+            </>
           )}
 
           {/* Submit */}
