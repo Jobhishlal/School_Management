@@ -250,8 +250,9 @@ const ClassPaymentView: React.FC<{
                 ))}
               </div>
             </>
+          )}
 
-              {/* Expandable Details Section */}
+          {/* Expandable Details Section */}
           {students.map(
             (s) =>
               s.feeStructure &&
@@ -333,7 +334,7 @@ const ClassPaymentView: React.FC<{
               )
           )}
         </div>
-          )}
+
         {/* Pagination Controls */}
         {students.length > 0 && (
           <Pagination
@@ -343,7 +344,6 @@ const ClassPaymentView: React.FC<{
           />
         )}
       </div>
-      </div >
     );
   };
 

@@ -17,7 +17,7 @@ import {
   LogOut,
   Menu,
   X,
-  Bell,
+ 
   ChevronDown,
   User,
   Video,
@@ -264,12 +264,12 @@ export default function SchoolNavbar({ children }: Props) {
             </div>
 
             <div className="flex items-center space-x-4">
-              <button className={`relative p-3 rounded-xl ${hoverBg} transition-all duration-300 hover:scale-105`}>
+              {/* <button className={`relative p-3 rounded-xl ${hoverBg} transition-all duration-300 hover:scale-105`}>
                 <Bell className={textSecondary} size={20} />
                 <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
                   <span className="text-white text-xs font-bold">3</span>
                 </div>
-              </button>
+              </button> */}
 
               <button
                 onClick={toggleTheme}
@@ -296,7 +296,7 @@ export default function SchoolNavbar({ children }: Props) {
                   <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                     <User size={16} className="text-white" />
                   </div>
-                  <span className={`text-sm font-medium ${textPrimary}`}>Admin</span>
+             
                   <ChevronDown
                     size={16}
                     className={`${textSecondary} transition-transform duration-200 ${showProfileDropdown ? "rotate-180" : ""}`}
@@ -304,21 +304,7 @@ export default function SchoolNavbar({ children }: Props) {
                 </button>
 
                 {/* Profile Dropdown Logout */}
-                {showProfileDropdown && (
-                  <div className={`absolute right-0 top-full mt-2 w-48 ${cardBg} backdrop-blur-xl border ${headerBorder} rounded-xl shadow-xl z-50 py-2`}>
-                    <Link to="/profile" className={`flex items-center space-x-3 px-4 py-3 ${hoverBg} transition-colors duration-200`}>
-                      <Settings size={16} className={textSecondary} />
-                      <span className={`text-sm ${textPrimary}`}>Settings</span>
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className={`w-full flex items-center space-x-3 px-4 py-3 ${hoverBg} transition-colors duration-200 text-red-500 hover:text-red-600`}
-                    >
-                      <LogOut size={16} />
-                      <span className="text-sm">Logout</span>
-                    </button>
-                  </div>
-                )}
+              
               </div>
             </div>
           </div>
