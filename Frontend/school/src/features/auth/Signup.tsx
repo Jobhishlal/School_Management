@@ -1,16 +1,16 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+
 import { ParentSignup } from "../../services/Auth/Auth";
 import { MESSAGE } from "../../constants/AuthErrorMessages";
 import { showToast } from "../../utils/toast";
-import { setCredentials } from "../../store/slice/authslice";
+
 import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
 
 
 export default function ParentSignupPage() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+ 
 
   const [form, setForm] = useState({
     studentId: "",
