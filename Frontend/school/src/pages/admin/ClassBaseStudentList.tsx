@@ -317,19 +317,19 @@ const ClassBaseAccess: React.FC = () => {
         {/* ================= BULK STUDENT ASSIGNMENT UI ================= */}
         <div className={`rounded-lg p-6 shadow mb-8 ${isDark ? "bg-slate-800/50" : "bg-white"}`}>
           <h3 className="text-xl font-semibold mb-4">Bulk Student Assignment</h3>
-          <div className="flex flex-col sm:flex-row justify-between gap-4 mb-4">
+          <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
             <input
               type="text"
               placeholder="Search students (Name, ID, Class)..."
               value={studentSearch}
               onChange={e => setStudentSearch(e.target.value)}
-              className={`flex-1 border px-3 py-2 rounded ${isDark ? "bg-slate-700 text-white" : "bg-white"}`}
+              className={`w-full md:flex-1 border px-3 py-2 rounded ${isDark ? "bg-slate-700 text-white" : "bg-white"}`}
             />
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
               <select
                 value={bulkTargetClass}
                 onChange={e => setBulkTargetClass(e.target.value)}
-                className={`border rounded px-3 py-2 dark:bg-slate-700 dark:text-white min-w-[200px]`}
+                className={`border rounded px-3 py-2 dark:bg-slate-700 dark:text-white w-full sm:min-w-[200px]`}
               >
                 <option value="">Select Target Class-Division</option>
                 {Object.values(classes).map(cls => (
@@ -341,15 +341,15 @@ const ClassBaseAccess: React.FC = () => {
               <button
                 onClick={handleBulkAssign}
                 disabled={selectedStudentIds.size === 0 || !bulkTargetClass}
-                className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50 hover:bg-blue-700"
+                className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50 hover:bg-blue-700 w-full sm:w-auto"
               >
                 Assign ({selectedStudentIds.size})
               </button>
             </div>
           </div>
 
-          {/* STUDENT TABLE */}
-          <div className="overflow-x-auto">
+          {/* STUDENT TABLE (Desktop) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead className={`text-xs uppercase ${isDark ? "bg-slate-700 text-slate-300" : "bg-gray-100 text-gray-700"}`}>
                 <tr>
@@ -388,6 +388,45 @@ const ClassBaseAccess: React.FC = () => {
             </table>
           </div>
 
+          {/* STUDENT CARDS (Mobile) */}
+          <div className="md:hidden space-y-3">
+            <div className="flex items-center gap-2 mb-2 p-2 rounded bg-slate-100 dark:bg-slate-700">
+              <input type="checkbox"
+                checked={filteredStudents.slice((studentPage - 1) * itemsPerPage, studentPage * itemsPerPage).length > 0 && filteredStudents.slice((studentPage - 1) * itemsPerPage, studentPage * itemsPerPage).every(s => selectedStudentIds.has(s.studentId))}
+                onChange={toggleAllPageSelection}
+                className="w-4 h-4"
+              />
+              <span className="text-sm font-medium">Select All on Page</span>
+            </div>
+            {filteredStudents.slice((studentPage - 1) * itemsPerPage, studentPage * itemsPerPage).map((student) => (
+              <div key={student.studentId}
+                onClick={() => toggleStudentSelection(student.studentId)}
+                className={`p-3 rounded border border-l-4 ${selectedStudentIds.has(student.studentId) ? 'border-l-blue-500 border-gray-300' : 'border-l-transparent border-gray-200'} ${isDark ? "bg-slate-700 border-slate-600" : "bg-white"}`}
+              >
+                <div className="flex justify-between items-start">
+                  <div className="flex gap-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedStudentIds.has(student.studentId)}
+                      onChange={() => toggleStudentSelection(student.studentId)}
+                      className="mt-1"
+                    />
+                    <div>
+                      <p className="font-semibold">{student.fullName}</p>
+                      <p className="text-xs opacity-70">ID: {student.studentId}</p>
+                    </div>
+                  </div>
+                  <span className="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded">
+                    {(student as any).className}-{(student as any).division}
+                  </span>
+                </div>
+              </div>
+            ))}
+            {filteredStudents.length === 0 && (
+              <div className="text-center py-4">No students found</div>
+            )}
+          </div>
+
           {Math.ceil(filteredStudents.length / itemsPerPage) > 1 && (
             <Pagination
               currentPage={studentPage}
@@ -424,24 +463,24 @@ const ClassBaseAccess: React.FC = () => {
             <div key={cls.classId}
               className={`rounded-lg p-6 shadow-lg mb-6 ${isDark ? "bg-slate-800/50" : "bg-white"}`}
             >
-              <div className="flex justify-between items-center mb-4">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
                 <h3 className="text-xl font-semibold">
                   Class {cls.className} - Division {cls.division}
-                  <span className="text-green-500 ml-2">
+                  <span className="block md:inline text-sm md:text-base text-green-500 md:ml-2">
                     {cls.classTeacher
                       ? `(Teacher: ${cls.classTeacher.name})`
                       : "(No teacher assigned)"}
                   </span>
                 </h3>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
                   <select
                     value={selectedTeacher}
                     onChange={(e) => {
                       setSelectedTeacher(e.target.value);
                       setSelectedClassId(cls.classId);
                     }}
-                    className="border px-2 py-1 rounded dark:bg-slate-700"
+                    className="border px-2 py-1 rounded dark:bg-slate-700 w-full md:w-auto"
                   >
                     <option value="">Select Teacher</option>
                     {teachers.map((t) => (
@@ -454,14 +493,14 @@ const ClassBaseAccess: React.FC = () => {
                   <button
                     disabled={!selectedTeacher || !selectedClassId}
                     onClick={assignTeacher}
-                    className="bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white px-3 py-1 rounded"
+                    className="bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white px-3 py-1 rounded w-full md:w-auto"
                   >
                     Assign
                   </button>
 
                   <button
                     onClick={() => setDeleteTarget(cls.classId)}
-                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded w-full md:w-auto"
                   >
                     Delete
                   </button>
@@ -469,7 +508,8 @@ const ClassBaseAccess: React.FC = () => {
                 </div>
               </div>
 
-              <div className="overflow-x-auto">
+              {/* Desktop Table */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="min-w-full border border-slate-400 text-sm">
                   <thead className={isDark ? "bg-slate-700" : "bg-slate-100"}>
                     <tr>
@@ -488,6 +528,21 @@ const ClassBaseAccess: React.FC = () => {
                     ))}
                   </tbody>
                 </table>
+              </div>
+
+              {/* Mobile Cards */}
+              <div className="md:hidden space-y-2">
+                <p className="text-sm font-semibold mb-2">Students ({cls.students.length})</p>
+                {cls.students.map((s) => (
+                  <div key={s.studentId} className={`p-3 rounded border ${isDark ? "bg-slate-700 border-slate-600" : "bg-slate-50 border-gray-200"}`}>
+                    <div className="flex justify-between">
+                      <span className="font-medium">{s.fullName}</span>
+                      <span className="text-xs opacity-70 p-1 bg-black/10 rounded">{s.gender}</span>
+                    </div>
+                    <p className="text-xs opacity-70">ID: {s.studentId}</p>
+                  </div>
+                ))}
+                {cls.students.length === 0 && <p className="text-sm opacity-50 italic">No students in this class.</p>}
               </div>
 
             </div>

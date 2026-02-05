@@ -187,7 +187,7 @@ export const AnnouncementForm: React.FC<AnnouncementFormProps> = ({
             {(form.scope === "CLASS" || form.scope === "DIVISION") && (
                 <div className="mb-3">
                     <p className="font-medium mb-2">Select Classes</p>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {classes.map((cls) => (
                             <label key={cls._id} className="flex gap-2 items-center">
                                 <input

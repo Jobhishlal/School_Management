@@ -240,7 +240,7 @@ export default function SuperAdminExpenseApproval() {
   };
 
   return (
-    <div className={`p-6 min-h-screen transition-colors duration-300 ${containerBg}`}>
+    <div className={`p-4 md:p-6 min-h-screen transition-colors duration-300 ${containerBg}`}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">
@@ -340,7 +340,8 @@ export default function SuperAdminExpenseApproval() {
 
           {!loading && filteredExpenses.length > 0 && (
             <>
-              <div className={`rounded-lg overflow-hidden border transition-colors duration-300 ${tableBg}`}>
+              {/* Desktop Table View */}
+              <div className={`hidden md:block rounded-lg overflow-hidden border transition-colors duration-300 ${tableBg}`}>
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
@@ -425,6 +426,62 @@ export default function SuperAdminExpenseApproval() {
                 </div>
               </div>
 
+              {/* Mobile Card View */}
+              <div className="md:hidden space-y-4">
+                {paginatedExpenses.map((exp) => (
+                  <div key={exp.id} className={`rounded-lg border p-4 ${cardBg} transition-colors duration-300`}>
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h3 className={`font-semibold ${textPrimary}`}>{exp.title}</h3>
+                        <p className={`text-sm ${textSecondary}`}>{new Date(exp.expenseDate).toLocaleDateString()}</p>
+                      </div>
+                      <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(exp.status)}`}>
+                        {exp.status}
+                      </span>
+                    </div>
+
+                    <div className="mb-4 space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className={`text-sm ${textSecondary}`}>Amount:</span>
+                        <span className={`font-bold ${textPrimary}`}>₹{exp.amount.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className={`text-sm ${textSecondary}`}>By:</span>
+                        <span className={`text-sm ${textPrimary}`}>{exp.createdBy}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+                      {exp.status === "PENDING" ? (
+                        <>
+                          <button
+                            onClick={() => handleApproval(exp.id, "APPROVED")}
+                            disabled={loading}
+                            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 disabled:opacity-50 ${buttonSuccess}`}
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => handleApproval(exp.id, "REJECTED")}
+                            disabled={loading}
+                            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 disabled:opacity-50 ${buttonDanger}`}
+                          >
+                            Reject
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => setSelectedExpense(exp)}
+                          className={`w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${inputBg} border`}
+                        >
+                          View Details
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
               {/* Pagination Controls */}
               <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
                 <div className={`text-sm ${textSecondary}`}>
@@ -441,78 +498,80 @@ export default function SuperAdminExpenseApproval() {
         </div>
 
         {/* Details Modal */}
-        {selectedExpense && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setSelectedExpense(null)}>
-            <div className={`rounded-lg border p-6 max-w-2xl w-full transition-colors duration-300 ${modalBg}`} onClick={(e) => e.stopPropagation()}>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className={`text-xl font-bold ${textPrimary}`}>Expense Details</h3>
-                <button
-                  onClick={() => setSelectedExpense(null)}
-                  className={`p-1 rounded-lg hover:bg-slate-700/30 transition-colors ${textSecondary}`}
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <p className={`text-sm ${textSecondary}`}>Title</p>
-                  <p className={`text-lg font-medium ${textPrimary}`}>{selectedExpense.title}</p>
+        {
+          selectedExpense && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setSelectedExpense(null)}>
+              <div className={`rounded-lg border p-6 w-[95%] md:max-w-2xl transition-colors duration-300 ${modalBg}`} onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className={`text-xl font-bold ${textPrimary}`}>Expense Details</h3>
+                  <button
+                    onClick={() => setSelectedExpense(null)}
+                    className={`p-1 rounded-lg hover:bg-slate-700/30 transition-colors ${textSecondary}`}
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
                 </div>
 
-                {selectedExpense.description && (
+                <div className="space-y-4">
                   <div>
-                    <p className={`text-sm ${textSecondary}`}>Description</p>
-                    <p className={textPrimary}>{selectedExpense.description}</p>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className={`text-sm ${textSecondary}`}>Amount</p>
-                    <p className={`text-xl font-bold ${textPrimary}`}>₹{selectedExpense.amount.toLocaleString()}</p>
+                    <p className={`text-sm ${textSecondary}`}>Title</p>
+                    <p className={`text-lg font-medium ${textPrimary}`}>{selectedExpense.title}</p>
                   </div>
 
-                  <div>
-                    <p className={`text-sm ${textSecondary}`}>Payment Mode</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className={textSecondary}>
-                        {getPaymentModeIcon(selectedExpense.paymentMode)}
-                      </span>
-                      <p className={textPrimary}>{selectedExpense.paymentMode}</p>
+                  {selectedExpense.description && (
+                    <div>
+                      <p className={`text-sm ${textSecondary}`}>Description</p>
+                      <p className={textPrimary}>{selectedExpense.description}</p>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className={`text-sm ${textSecondary}`}>Amount</p>
+                      <p className={`text-xl font-bold ${textPrimary}`}>₹{selectedExpense.amount.toLocaleString()}</p>
+                    </div>
+
+                    <div>
+                      <p className={`text-sm ${textSecondary}`}>Payment Mode</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className={textSecondary}>
+                          {getPaymentModeIcon(selectedExpense.paymentMode)}
+                        </span>
+                        <p className={textPrimary}>{selectedExpense.paymentMode}</p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className={`text-sm ${textSecondary}`}>Created By</p>
+                      <p className={textPrimary}>{selectedExpense.createdBy}</p>
+                    </div>
+
+                    <div>
+                      <p className={`text-sm ${textSecondary}`}>Date</p>
+                      <p className={textPrimary}>
+                        {new Date(selectedExpense.expenseDate).toLocaleDateString('en-IN', {
+                          day: '2-digit',
+                          month: 'long',
+                          year: 'numeric'
+                        })}
+                      </p>
                     </div>
                   </div>
 
                   <div>
-                    <p className={`text-sm ${textSecondary}`}>Created By</p>
-                    <p className={textPrimary}>{selectedExpense.createdBy}</p>
+                    <p className={`text-sm ${textSecondary}`}>Status</p>
+                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium mt-1 ${getStatusBadge(selectedExpense.status)}`}>
+                      {selectedExpense.status}
+                    </span>
                   </div>
-
-                  <div>
-                    <p className={`text-sm ${textSecondary}`}>Date</p>
-                    <p className={textPrimary}>
-                      {new Date(selectedExpense.expenseDate).toLocaleDateString('en-IN', {
-                        day: '2-digit',
-                        month: 'long',
-                        year: 'numeric'
-                      })}
-                    </p>
-                  </div>
-                </div>
-
-                <div>
-                  <p className={`text-sm ${textSecondary}`}>Status</p>
-                  <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium mt-1 ${getStatusBadge(selectedExpense.status)}`}>
-                    {selectedExpense.status}
-                  </span>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
-    </div>
+          )
+        }
+      </div >
+    </div >
   );
 }

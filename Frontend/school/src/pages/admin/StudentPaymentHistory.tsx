@@ -152,159 +152,198 @@ const ClassPaymentView: React.FC<{
           )}
 
           {!loading && students.length > 0 && (
-            <div className={`rounded-lg overflow-hidden border transition-colors duration-300 ${tableBg}`}>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr
-                      className={`border-b transition-colors duration-200 ${borderColor} ${tableHeaderBg}`}
-                    >
-                      <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>
-                        Student Name
-                      </th>
-                      <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>
-                        Fee Structure
-                      </th>
-                      <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>
-                        Academic Year
-                      </th>
-                      <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>
-                        Amount Paid
-                      </th>
-                      <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>
-                        Total Amount
-                      </th>
-                      <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {students.map((s) => (
+            <>
+              {/* Desktop Table */}
+              <div className={`hidden md:block rounded-lg overflow-hidden border transition-colors duration-300 ${tableBg}`}>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
                       <tr
-                        key={s.studentId}
-                        className={`border-b transition-colors duration-200 ${borderColor} ${tableRowHover}`}
+                        className={`border-b transition-colors duration-200 ${borderColor} ${tableHeaderBg}`}
                       >
-                        <td className={`py-4 px-4 ${textPrimary}`}>{s.studentName}</td>
-                        <td className={`py-4 px-4 ${textPrimary}`}>{s.feeStructure?.name ?? "N/A"}</td>
-                        <td className={`py-4 px-4 ${textPrimary}`}>
-                          {s.feeStructure?.academicYear ?? "N/A"}
-                        </td>
-                        <td className={`py-4 px-4 ${textPrimary}`}>
-                          ₹{s.feeStructure?.totalPaid ?? 0}
-                        </td>
-                        <td className={`py-4 px-4 ${textPrimary}`}>
-                          ₹{s.feeStructure?.totalAmount ?? 0}
-                        </td>
-                        <td className="py-4 px-4">
-                          <span
-                            className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${s.paymentStatus === "COMPLETED"
-                              ? "bg-green-900 text-green-300"
-                              : s.paymentStatus === "PARTIAL"
-                                ? "bg-orange-900 text-orange-300"
-                                : "bg-red-900 text-red-300"
-                              }`}
-                          >
-                            {s.paymentStatus}
-                          </span>
-                        </td>
+                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>
+                          Student Name
+                        </th>
+                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>
+                          Fee Structure
+                        </th>
+                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>
+                          Academic Year
+                        </th>
+                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>
+                          Amount Paid
+                        </th>
+                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>
+                          Total Amount
+                        </th>
+                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Status</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {students.map((s) => (
+                        <tr
+                          key={s.studentId}
+                          className={`border-b transition-colors duration-200 ${borderColor} ${tableRowHover}`}
+                        >
+                          <td className={`py-4 px-4 ${textPrimary}`}>{s.studentName}</td>
+                          <td className={`py-4 px-4 ${textPrimary}`}>{s.feeStructure?.name ?? "N/A"}</td>
+                          <td className={`py-4 px-4 ${textPrimary}`}>
+                            {s.feeStructure?.academicYear ?? "N/A"}
+                          </td>
+                          <td className={`py-4 px-4 ${textPrimary}`}>
+                            ₹{s.feeStructure?.totalPaid ?? 0}
+                          </td>
+                          <td className={`py-4 px-4 ${textPrimary}`}>
+                            ₹{s.feeStructure?.totalAmount ?? 0}
+                          </td>
+                          <td className="py-4 px-4">
+                            <span
+                              className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${s.paymentStatus === "COMPLETED"
+                                ? "bg-green-900 text-green-300"
+                                : s.paymentStatus === "PARTIAL"
+                                  ? "bg-orange-900 text-orange-300"
+                                  : "bg-red-900 text-red-300"
+                                }`}
+                            >
+                              {s.paymentStatus}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
-              {/* Expandable Details Section */}
-              {students.map(
-                (s) =>
-                  s.feeStructure &&
-                  s.feeStructure.items &&
-                  s.feeStructure.items.length > 0 && (
-                    <details
-                      key={`${s.studentId}-details`}
-                      className={`border-t transition-colors duration-200 ${borderColor}`}
-                    >
-                      <summary
-                        className={`py-3 px-4 cursor-pointer text-blue-400 font-medium transition-colors duration-200 ${tableRowHover}`}
+              {/* Mobile Cards */}
+              <div className="md:hidden space-y-4">
+                {students.map((s) => (
+                  <div key={s.studentId} className={`rounded-lg border p-4 ${tableBg}`}>
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className={`font-semibold ${textPrimary}`}>{s.studentName}</h4>
+                      <span
+                        className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${s.paymentStatus === "COMPLETED"
+                          ? "bg-green-900 text-green-300"
+                          : s.paymentStatus === "PARTIAL"
+                            ? "bg-orange-900 text-orange-300"
+                            : "bg-red-900 text-red-300"
+                          }`}
                       >
-                        View Fee Breakdown - {s.studentName}
-                      </summary>
-                      <div className="px-4 pb-4">
-                        {s.feeStructure.notes && (
-                          <p className={`mb-3 text-sm ${textSecondary}`}>{s.feeStructure.notes}</p>
-                        )}
-                        <div className="overflow-x-auto">
-                          <table className="w-full">
-                            <thead>
-                              <tr className={`${tableHeaderBg}`}>
-                                <th
-                                  className={`text-left py-2 px-3 text-sm font-medium ${textSecondary}`}
-                                >
-                                  Fee Item
-                                </th>
-                                <th
-                                  className={`text-left py-2 px-3 text-sm font-medium ${textSecondary}`}
-                                >
-                                  Amount
-                                </th>
-                                <th
-                                  className={`text-left py-2 px-3 text-sm font-medium ${textSecondary}`}
-                                >
-                                  Paid
-                                </th>
-                                <th
-                                  className={`text-left py-2 px-3 text-sm font-medium ${textSecondary}`}
-                                >
-                                  Status
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {s.feeStructure.items.filter(Boolean).map((item, idx) => (
-                                <tr
-                                  key={idx}
-                                  className={`border-t transition-colors duration-200 ${borderColor}`}
-                                >
-                                  <td className={`py-2 px-3 text-sm ${textPrimary}`}>
-                                    {item?.name ?? "N/A"}
-                                  </td>
-                                  <td className={`py-2 px-3 text-sm ${textPrimary}`}>
-                                    ₹{item?.amount ?? 0}
-                                  </td>
-                                  <td className={`py-2 px-3 text-sm ${textPrimary}`}>
-                                    ₹{item?.paidAmount ?? 0}
-                                  </td>
-                                  <td className="py-2 px-3 text-sm">
-                                    <span
-                                      className={`font-medium ${item?.status === "PAID"
-                                        ? "text-green-400"
-                                        : item?.status === "PARTIAL"
-                                          ? "text-orange-400"
-                                          : "text-red-400"
-                                        }`}
-                                    >
-                                      {item?.status ?? "UNKNOWN"}
-                                    </span>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
+                        {s.paymentStatus}
+                      </span>
+                    </div>
+                    <div className="text-sm space-y-1 mb-2">
+                      <div className={`flex justify-between ${textSecondary}`}>
+                        <span>Structure:</span>
+                        <span className={textPrimary}>{s.feeStructure?.name ?? "N/A"}</span>
                       </div>
-                    </details>
-                  )
-              )}
-            </div>
-          )}
-          {/* Pagination Controls */}
-          {students.length > 0 && (
-            <Pagination
-              currentPage={pagination.currentPage}
-              totalPages={pagination.totalPages}
-              onPageChange={(page) => fetchPaymentStatus(selectedClassId, page)}
-            />
+                      <div className={`flex justify-between ${textSecondary}`}>
+                        <span>Amount Paid:</span>
+                        <span className="font-medium text-green-500">₹{s.feeStructure?.totalPaid ?? 0}</span>
+                      </div>
+                      <div className={`flex justify-between ${textSecondary}`}>
+                        <span>Total Amount:</span>
+                        <span className="font-medium text-blue-500">₹{s.feeStructure?.totalAmount ?? 0}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+
+              {/* Expandable Details Section */}
+          {students.map(
+            (s) =>
+              s.feeStructure &&
+              s.feeStructure.items &&
+              s.feeStructure.items.length > 0 && (
+                <details
+                  key={`${s.studentId}-details`}
+                  className={`border-t transition-colors duration-200 ${borderColor}`}
+                >
+                  <summary
+                    className={`py-3 px-4 cursor-pointer text-blue-400 font-medium transition-colors duration-200 ${tableRowHover}`}
+                  >
+                    View Fee Breakdown - {s.studentName}
+                  </summary>
+                  <div className="px-4 pb-4">
+                    {s.feeStructure.notes && (
+                      <p className={`mb-3 text-sm ${textSecondary}`}>{s.feeStructure.notes}</p>
+                    )}
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className={`${tableHeaderBg}`}>
+                            <th
+                              className={`text-left py-2 px-3 text-sm font-medium ${textSecondary}`}
+                            >
+                              Fee Item
+                            </th>
+                            <th
+                              className={`text-left py-2 px-3 text-sm font-medium ${textSecondary}`}
+                            >
+                              Amount
+                            </th>
+                            <th
+                              className={`text-left py-2 px-3 text-sm font-medium ${textSecondary}`}
+                            >
+                              Paid
+                            </th>
+                            <th
+                              className={`text-left py-2 px-3 text-sm font-medium ${textSecondary}`}
+                            >
+                              Status
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {s.feeStructure.items.filter(Boolean).map((item, idx) => (
+                            <tr
+                              key={idx}
+                              className={`border-t transition-colors duration-200 ${borderColor}`}
+                            >
+                              <td className={`py-2 px-3 text-sm ${textPrimary}`}>
+                                {item?.name ?? "N/A"}
+                              </td>
+                              <td className={`py-2 px-3 text-sm ${textPrimary}`}>
+                                ₹{item?.amount ?? 0}
+                              </td>
+                              <td className={`py-2 px-3 text-sm ${textPrimary}`}>
+                                ₹{item?.paidAmount ?? 0}
+                              </td>
+                              <td className="py-2 px-3 text-sm">
+                                <span
+                                  className={`font-medium ${item?.status === "PAID"
+                                    ? "text-green-400"
+                                    : item?.status === "PARTIAL"
+                                      ? "text-orange-400"
+                                      : "text-red-400"
+                                    }`}
+                                >
+                                  {item?.status ?? "UNKNOWN"}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </details>
+              )
           )}
         </div>
+          )}
+        {/* Pagination Controls */}
+        {students.length > 0 && (
+          <Pagination
+            currentPage={pagination.currentPage}
+            totalPages={pagination.totalPages}
+            onPageChange={(page) => fetchPaymentStatus(selectedClassId, page)}
+          />
+        )}
       </div>
+      </div >
     );
   };
 
@@ -427,44 +466,71 @@ const PaymentHistoryLogView: React.FC<{ theme: any }> = ({ theme }) => {
       )}
 
       {!loading && historyData.length > 0 && (
-        <div className={`rounded-lg overflow-hidden border transition-colors duration-300 ${tableBg}`}>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className={`border-b transition-colors duration-200 ${borderColor} ${tableHeaderBg}`}>
-                  <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Student Name</th>
-                  <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Fee Name</th>
-                  <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Date</th>
-                  <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Time</th>
-                  <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Amount</th>
-                  <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Method</th>
-                  <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {historyData.map((item: any) => (
-                  <tr key={item.id} className={`border-b transition-colors duration-200 ${borderColor} ${tableRowHover}`}>
-                    <td className={`py-4 px-4 ${textPrimary}`}>{item.studentId?.fullName}</td>
-                    <td className={`py-4 px-4 ${textPrimary}`}>
-                      {item.studentFeeId?.name || "N/A"}
-                    </td>
-                    <td className={`py-4 px-4 ${textPrimary}`}>{onlyDate(item.paymentDate)}</td>
-                    <td className={`py-4 px-4 ${textPrimary}`}>
-                      {new Date(item.paymentDate).toLocaleTimeString()}
-                    </td>
-                    <td className={`py-4 px-4 ${textPrimary}`}>₹{item.amount}</td>
-                    <td className={`py-4 px-4 ${textPrimary}`}>{item.method}</td>
-                    <td className="py-4 px-4">
-                      <span className="bg-green-900 text-green-300 px-3 py-1 rounded-full text-sm">
-                        {item.status}
-                      </span>
-                    </td>
+        <>
+          <div className={`hidden md:block rounded-lg overflow-hidden border transition-colors duration-300 ${tableBg}`}>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className={`border-b transition-colors duration-200 ${borderColor} ${tableHeaderBg}`}>
+                    <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Student Name</th>
+                    <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Fee Name</th>
+                    <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Date</th>
+                    <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Time</th>
+                    <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Amount</th>
+                    <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Method</th>
+                    <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {historyData.map((item: any) => (
+                    <tr key={item.id} className={`border-b transition-colors duration-200 ${borderColor} ${tableRowHover}`}>
+                      <td className={`py-4 px-4 ${textPrimary}`}>{item.studentId?.fullName}</td>
+                      <td className={`py-4 px-4 ${textPrimary}`}>
+                        {item.studentFeeId?.name || "N/A"}
+                      </td>
+                      <td className={`py-4 px-4 ${textPrimary}`}>{onlyDate(item.paymentDate)}</td>
+                      <td className={`py-4 px-4 ${textPrimary}`}>
+                        {new Date(item.paymentDate).toLocaleTimeString()}
+                      </td>
+                      <td className={`py-4 px-4 ${textPrimary}`}>₹{item.amount}</td>
+                      <td className={`py-4 px-4 ${textPrimary}`}>{item.method}</td>
+                      <td className="py-4 px-4">
+                        <span className="bg-green-900 text-green-300 px-3 py-1 rounded-full text-sm">
+                          {item.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+
+          {/* Mobile Cards */}
+          <div className="md:hidden space-y-3">
+            {historyData.map((item: any) => (
+              <div key={item.id} className={`rounded-lg border p-4 ${tableBg}`}>
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h4 className={`font-semibold ${textPrimary}`}>{item.studentId?.fullName}</h4>
+                    <p className={`text-xs ${textSecondary}`}>{item.studentFeeId?.name || "N/A"}</p>
+                  </div>
+                  <span className="bg-green-900 text-green-300 px-2 py-0.5 rounded-full text-xs">
+                    {item.status}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-sm mb-1">
+                  <span className={textSecondary}>{onlyDate(item.paymentDate)}</span>
+                  <span className={`font-bold ${textPrimary}`}>₹{item.amount}</span>
+                </div>
+                <div className="flex justify-between items-center text-xs text-gray-400">
+                  <span>{new Date(item.paymentDate).toLocaleTimeString()}</span>
+                  <span>{item.method}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       <Pagination

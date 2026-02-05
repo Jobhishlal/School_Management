@@ -11,7 +11,7 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
     async execute(token: string) {
         try {
             const decoded = this.tokenService.verifyRefreshToken(token);
-            // Generate new access token
+           
             const authToken = this.tokenService.generateAccessToken({
                 email: decoded.email,
                 role: decoded.role,

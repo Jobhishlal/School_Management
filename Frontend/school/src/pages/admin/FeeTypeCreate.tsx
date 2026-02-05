@@ -63,11 +63,11 @@ const CreateFeeTypeForm: React.FC = () => {
 
   return (
     <div className={`p-6 rounded max-w-4xl mx-auto transition-colors duration-300 ${containerBg}`}>
-      <div className="flex gap-6 text-sm border-b border-slate-700/50">
+      <div className="flex flex-col md:flex-row gap-2 md:gap-6 text-sm border-b border-slate-700/50 mb-6">
         <NavLink
           to="/finance-management"
           className={({ isActive }) =>
-            `pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
+            `pb-2 md:pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
               ? "border-blue-500 text-blue-600"
               : `border-transparent ${textSecondary} hover:text-blue-400`
             }`
@@ -79,7 +79,7 @@ const CreateFeeTypeForm: React.FC = () => {
         <NavLink
           to="/expense-management"
           className={({ isActive }) =>
-            `pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
+            `pb-2 md:pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
               ? "border-blue-500 text-blue-600"
               : `border-transparent ${textSecondary} hover:text-blue-400`
             }`
@@ -91,7 +91,7 @@ const CreateFeeTypeForm: React.FC = () => {
         <NavLink
           to="/finance-report"
           className={({ isActive }) =>
-            `pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
+            `pb-2 md:pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
               ? "border-blue-500 text-blue-600"
               : `border-transparent ${textSecondary} hover:text-blue-400`
             }`

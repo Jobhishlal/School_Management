@@ -114,7 +114,7 @@ const AdminTimeTablePage: React.FC = () => {
   };
 
   const addPeriod = (day: string) => {
-   
+
     const currentDay = days.find(d => d.day === day);
 
     if (currentDay && currentDay.periods.length > 0) {
@@ -162,22 +162,22 @@ const AdminTimeTablePage: React.FC = () => {
               startM = breakEndM;
             }
 
-        
+
             if (startH >= 16) {
               return d;
             }
 
             newStartTime = `${String(startH).padStart(2, '0')}:${String(startM).padStart(2, '0')}`;
 
-           
-            let effectiveDuration = 60; 
+
+            let effectiveDuration = 60;
             if (lastPeriod.startTime) {
               const [lastStartH, lastStartM] = lastPeriod.startTime.split(':').map(Number);
               const durationMinutes = (lastEndH * 60 + lastEndM) - (lastStartH * 60 + lastStartM);
               if (durationMinutes > 0) effectiveDuration = durationMinutes;
             }
 
-            
+
             const newStartTotalMinutes = startH * 60 + startM;
             const newEndTotalMinutes = newStartTotalMinutes + effectiveDuration;
 
@@ -285,7 +285,7 @@ const AdminTimeTablePage: React.FC = () => {
   };
 
   const updateBreak = (day: string, idx: number, key: 'startTime' | 'endTime' | 'name', value: string) => {
- 
+
     if (key === 'startTime' || key === 'endTime') {
       const [h, m] = value.split(":").map(Number);
       if (h > 16 || (h === 16 && m > 0)) {
@@ -407,7 +407,7 @@ const AdminTimeTablePage: React.FC = () => {
 
   const getTeacherId = (t: Teacher) => t.teacherId || t.id || t._id || "";
 
-  
+
   const containerBg = isDark ? "bg-[#121A21] text-slate-100" : "bg-[#fafbfc] text-slate-900";
   const cardBg = isDark ? "bg-slate-800/50 border-gray-700" : "bg-white border-gray-300";
 
@@ -449,14 +449,16 @@ const AdminTimeTablePage: React.FC = () => {
               <h3 className="font-semibold text-lg">{day}</h3>
               <div className="flex flex-col gap-2">
                 {daySchedule?.breaks?.map((b, bIdx) => (
-                  <div key={bIdx} className="flex gap-2 items-end bg-gray-50 dark:bg-gray-800 p-2 rounded">
-                    <TextInput
-                      label="Name"
-                      type="text"
-                      value={b.name || "Break"}
-                      onChange={(val) => updateBreak(day, bIdx, "name", val)}
-                      isDark={isDark}
-                    />
+                  <div key={bIdx} className="grid grid-cols-2 md:flex gap-2 items-end bg-gray-50 dark:bg-gray-800 p-2 rounded">
+                    <div className="col-span-2 md:w-auto">
+                      <TextInput
+                        label="Name"
+                        type="text"
+                        value={b.name || "Break"}
+                        onChange={(val) => updateBreak(day, bIdx, "name", val)}
+                        isDark={isDark}
+                      />
+                    </div>
                     <TextInput
                       label="Start"
                       type="time"
@@ -473,7 +475,7 @@ const AdminTimeTablePage: React.FC = () => {
                     />
                     <button
                       onClick={() => removeBreak(day, bIdx)}
-                      className={`px-2 py-1 text-xs rounded ${buttonDanger} h-8 self-end mb-1`}
+                      className={`px-2 py-1 text-xs rounded ${buttonDanger} h-8 self-end mb-1 col-span-2 md:col-span-1`}
                     >
                       X
                     </button>
@@ -499,7 +501,7 @@ const AdminTimeTablePage: React.FC = () => {
 
                 return (
                   <React.Fragment key={actualIdx}>
-                    <div className="flex gap-2 mb-3 flex-wrap items-end">
+                    <div className="grid grid-cols-2 md:flex gap-2 mb-4 md:mb-3 items-end border-b pb-4 md:border-0 md:pb-0 border-gray-100 dark:border-gray-700">
                       <TextInput
                         label="Start"
                         type="time"
@@ -514,7 +516,7 @@ const AdminTimeTablePage: React.FC = () => {
                         onChange={val => updatePeriod(day, actualIdx, "endTime", val)}
                         isDark={isDark}
                       />
-                      <div className="flex flex-col items-center justify-end pb-2 px-1">
+                      <div className="flex flex-col items-center justify-end pb-2 px-1 col-span-2 md:col-span-1">
                         <label className={`text-xs mb-1 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
                           Break?
                         </label>
@@ -532,30 +534,34 @@ const AdminTimeTablePage: React.FC = () => {
                           className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                         />
                       </div>
-                      <SelectInput
-                        label="Teacher"
-                        value={p.teacherId}
-                        onChange={val => updatePeriod(day, actualIdx, "teacherId", val)}
-                        options={teachers.map(t => ({ value: getTeacherId(t), label: t.name }))}
-                        isDark={isDark}
-                        disabled={p.subject === "Break"}
-                      />
-                      <SelectInput
-                        label="Subject"
-                        value={p.subject}
-                        onChange={(val) => updatePeriod(day, actualIdx, "subject", val)}
-                        options={
-                          teachers.find((t) => getTeacherId(t) === p.teacherId)?.subjects?.map((s) => ({
-                            value: s.name,
-                            label: s.name,
-                          })) || []
-                        }
-                        isDark={isDark}
-                        disabled={(!p.teacherId && p.subject !== "Break") || p.subject === "Break"}
-                      />
+                      <div className="col-span-2 md:w-48">
+                        <SelectInput
+                          label="Teacher"
+                          value={p.teacherId}
+                          onChange={val => updatePeriod(day, actualIdx, "teacherId", val)}
+                          options={teachers.map(t => ({ value: getTeacherId(t), label: t.name }))}
+                          isDark={isDark}
+                          disabled={p.subject === "Break"}
+                        />
+                      </div>
+                      <div className="col-span-2 md:w-32">
+                        <SelectInput
+                          label="Subject"
+                          value={p.subject}
+                          onChange={(val) => updatePeriod(day, actualIdx, "subject", val)}
+                          options={
+                            teachers.find((t) => getTeacherId(t) === p.teacherId)?.subjects?.map((s) => ({
+                              value: s.name,
+                              label: s.name,
+                            })) || []
+                          }
+                          isDark={isDark}
+                          disabled={(!p.teacherId && p.subject !== "Break") || p.subject === "Break"}
+                        />
+                      </div>
                       <button
                         onClick={() => removePeriod(day, actualIdx)}
-                        className={`px-3 py-2 rounded text-sm ${buttonDanger} transition-colors duration-200`}
+                        className={`px-3 py-2 rounded text-sm ${buttonDanger} transition-colors duration-200 col-span-2 md:col-span-1`}
                         title="Remove Period"
                       >
                         Remove
@@ -595,29 +601,60 @@ const AdminTimeTablePage: React.FC = () => {
 
       <div className="mt-6">
         <h3 className="font-semibold mb-2">Existing Class Timetables</h3>
-        <Table
-          columns={[
-            { label: "Class", key: "className" },
-            { label: "Division", key: "division" },
-            {
-              label: "Action",
-              key: "action",
-              render: (row: ClassOption) => (
-                <button
-                  onClick={() => {
-                    setSelectedClass(row);
-                    setSelectedClassId(row._id);
-                  }}
-                  className={`px-2 py-1 rounded ${buttonPrimary} transition-colors duration-200`}
-                >
-                  Edit/Update
-                </button>
-              )
-            }
-          ]}
-          data={classes}
-          isDark={isDark}
-        />
+        <div className="hidden md:block">
+          <Table
+            columns={[
+              { label: "Class", key: "className" },
+              { label: "Division", key: "division" },
+              {
+                label: "Action",
+                key: "action",
+                render: (row: ClassOption) => (
+                  <button
+                    onClick={() => {
+                      setSelectedClass(row);
+                      setSelectedClassId(row._id);
+                    }}
+                    className={`px-2 py-1 rounded ${buttonPrimary} transition-colors duration-200`}
+                  >
+                    Edit/Update
+                  </button>
+                )
+              }
+            ]}
+            data={classes}
+            isDark={isDark}
+          />
+        </div>
+
+        <div className="md:hidden space-y-4">
+          {classes.map((cls) => (
+            <div
+              key={cls._id}
+              className={`p-4 rounded border shadow-sm ${cardBg}`}
+            >
+              <div className="flex justify-between items-center mb-2">
+                <div>
+                  <h4 className="font-semibold">{cls.className}</h4>
+                  <p className="text-sm opacity-70">Div: {cls.division}</p>
+                </div>
+                <span className="text-xs uppercase bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                  {cls.department}
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  setSelectedClass(cls);
+                  setSelectedClassId(cls._id);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`w-full text-center px-3 py-2 rounded text-sm ${buttonPrimary} transition-colors duration-200 mt-2`}
+              >
+                Edit/Update
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

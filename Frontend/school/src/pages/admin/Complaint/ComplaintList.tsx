@@ -122,48 +122,94 @@ const ComplaintList: React.FC = () => {
                             <p className="text-base sm:text-lg font-medium">No complaints found</p>
                         </div>
                     ) : (
-                        <div className="overflow-x-auto">
-                            <table className={`w-full text-sm text-left ${isDark ? "text-slate-300" : "text-gray-500"}`}>
-                                <thead className={`text-xs uppercase ${isDark ? "bg-slate-700/50 text-slate-300" : "bg-gray-50 text-gray-700"}`}>
-                                    <tr>
-                                        <th className="px-6 py-3">Student</th>
-                                        <th className="px-6 py-3">Title</th>
-                                        <th className="px-6 py-3">Description</th>
-                                        <th className="px-6 py-3">Date</th>
-                                        <th className="px-6 py-3">Status</th>
-                                        <th className="px-6 py-3">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                        <>
+                            <div className="overflow-x-auto hidden md:block">
+                                <table className={`w-full text-sm text-left ${isDark ? "text-slate-300" : "text-gray-500"}`}>
+                                    <thead className={`text-xs uppercase ${isDark ? "bg-slate-700/50 text-slate-300" : "bg-gray-50 text-gray-700"}`}>
+                                        <tr>
+                                            <th className="px-6 py-3">Student</th>
+                                            <th className="px-6 py-3">Title</th>
+                                            <th className="px-6 py-3">Description</th>
+                                            <th className="px-6 py-3">Date</th>
+                                            <th className="px-6 py-3">Status</th>
+                                            <th className="px-6 py-3">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredComplaints.map((complaint) => (
+                                            <tr key={complaint.id} className={`border-b ${isDark ? "border-slate-700 hover:bg-slate-700/30" : "border-gray-100 hover:bg-gray-50"}`}>
+                                                <td className="px-6 py-4 font-medium">{complaint.studentName || 'N/A'}</td>
+                                                <td className="px-6 py-4">{complaint.concernTitle}</td>
+                                                <td className="px-6 py-4 max-w-xs truncate" title={complaint.description}>{complaint.description}</td>
+                                                <td className="px-6 py-4">{new Date(complaint.concernDate).toLocaleDateString()}</td>
+                                                <td className="px-6 py-4">
+                                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${complaint.ticketStatus === 'solved' ? "bg-green-500/10 text-green-500" : "bg-yellow-500/10 text-yellow-500"}`}>
+                                                        {complaint.ticketStatus}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center space-x-2">
+                                                        {complaint.ticketStatus !== 'solved' && (
+                                                            <button
+                                                                onClick={() => handleViewClick(complaint)}
+                                                                className={`p-2 rounded-full transition-colors ${isDark ? "hover:bg-slate-700 text-blue-400" : "hover:bg-gray-100 text-blue-600"}`}
+                                                                title="View Details"
+                                                            >
+                                                                <Eye size={18} />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div className="md:hidden">
+                                <div className="divide-y divide-gray-100 dark:divide-gray-800">
                                     {filteredComplaints.map((complaint) => (
-                                        <tr key={complaint.id} className={`border-b ${isDark ? "border-slate-700 hover:bg-slate-700/30" : "border-gray-100 hover:bg-gray-50"}`}>
-                                            <td className="px-6 py-4 font-medium">{complaint.studentName || 'N/A'}</td>
-                                            <td className="px-6 py-4">{complaint.concernTitle}</td>
-                                            <td className="px-6 py-4 max-w-xs truncate" title={complaint.description}>{complaint.description}</td>
-                                            <td className="px-6 py-4">{new Date(complaint.concernDate).toLocaleDateString()}</td>
-                                            <td className="px-6 py-4">
+                                        <div
+                                            key={complaint.id}
+                                            className={`p-4 ${isDark ? "bg-slate-800/50" : "bg-white"}`}
+                                        >
+                                            <div className="flex justify-between items-start mb-2">
+                                                <div>
+                                                    <h3 className={`font-medium ${isDark ? "text-slate-200" : "text-gray-900"}`}>
+                                                        {complaint.studentName || 'N/A'}
+                                                    </h3>
+                                                    <p className={`text-xs ${isDark ? "text-slate-400" : "text-gray-500"}`}>
+                                                        {new Date(complaint.concernDate).toLocaleDateString()}
+                                                    </p>
+                                                </div>
                                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${complaint.ticketStatus === 'solved' ? "bg-green-500/10 text-green-500" : "bg-yellow-500/10 text-yellow-500"}`}>
                                                     {complaint.ticketStatus}
                                                 </span>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center space-x-2">
-                                                    {complaint.ticketStatus !== 'solved' && (
-                                                        <button
-                                                            onClick={() => handleViewClick(complaint)}
-                                                            className={`p-2 rounded-full transition-colors ${isDark ? "hover:bg-slate-700 text-blue-400" : "hover:bg-gray-100 text-blue-600"}`}
-                                                            title="View Details"
-                                                        >
-                                                            <Eye size={18} />
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </td>
-                                        </tr>
+                                            </div>
+
+                                            <p className={`text-sm mb-1 font-medium ${isDark ? "text-slate-300" : "text-gray-800"}`}>
+                                                {complaint.concernTitle}
+                                            </p>
+                                            <p className={`text-sm mb-3 truncate ${isDark ? "text-slate-400" : "text-gray-600"}`}>
+                                                {complaint.description}
+                                            </p>
+
+                                            <div className="flex justify-end pt-2 border-t border-gray-100 dark:border-gray-800">
+                                                {complaint.ticketStatus !== 'solved' && (
+                                                    <button
+                                                        onClick={() => handleViewClick(complaint)}
+                                                        className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${isDark ? "bg-slate-700 text-blue-400 hover:bg-slate-600" : "bg-blue-50 text-blue-600 hover:bg-blue-100"}`}
+                                                    >
+                                                        <Eye size={16} />
+                                                        View Details
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
                                     ))}
-                                </tbody>
-                            </table>
-                        </div>
+                                </div>
+                            </div>
+                        </>
                     )}
                 </div>
 

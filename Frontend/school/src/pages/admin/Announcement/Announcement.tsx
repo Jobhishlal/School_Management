@@ -10,7 +10,7 @@ const CreateAnnouncement: React.FC = () => {
   const { isDark } = useTheme();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItem, setEditItem] = useState<(CreateAnnouncementDTO & { _id: string }) | undefined>(undefined);
-  const [refreshKey, setRefreshKey] = useState(0); 
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const handleEdit = (announcement: Announcement) => {
     const dto: CreateAnnouncementDTO & { _id: string } = {
@@ -20,7 +20,7 @@ const CreateAnnouncement: React.FC = () => {
       scope: announcement.scope as "GLOBAL" | "CLASS" | "DIVISION",
       classes: announcement.classes || [],
       division: announcement.division,
-      attachment: null, 
+      attachment: null,
       activeTime: announcement.activeTime,
       endTime: announcement.endTime,
       status: announcement.status as "DRAFT" | "ACTIVE",
@@ -46,11 +46,11 @@ const CreateAnnouncement: React.FC = () => {
 
   return (
     <div className={`p-6 rounded-lg ${containerBg}`}>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h2 className="text-xl font-bold">Announcements</h2>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
           Add Announcement
         </button>

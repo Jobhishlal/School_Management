@@ -81,27 +81,64 @@ const AnnouncementListOut = ({
         <p className="text-sm opacity-70">No announcements found</p>
       ) : (
         <>
-          <Table
-            columns={columns}
-            data={currentAnnouncements}
-            isDark={isDark}
-            actions={(a) => (
-              <div className="flex gap-2">
-                <button
-                  onClick={() => onEdit(a)}
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(a._id)}
-                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
-                >
-                  Delete
-                </button>
+          <div className="hidden md:block">
+            <Table
+              columns={columns}
+              data={currentAnnouncements}
+              isDark={isDark}
+              actions={(a) => (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => onEdit(a)}
+                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(a._id)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
+            />
+          </div>
+
+          <div className="md:hidden space-y-4">
+            {currentAnnouncements.map((announcement) => (
+              <div
+                key={announcement._id}
+                className={`p-4 rounded-lg border shadow-sm ${isDark ? "bg-slate-800 border-slate-700" : "bg-white border-gray-200"
+                  }`}
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h3 className="font-semibold">{announcement.title}</h3>
+                    <div className="text-sm opacity-70 mt-1">
+                      <span className="mr-3">Scope: {announcement.scope}</span>
+                      <span>Status: {announcement.status}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                  <button
+                    onClick={() => onEdit(announcement)}
+                    className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded text-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(announcement._id)}
+                    className="flex-1 bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded text-sm"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-            )}
-          />
+            ))}
+          </div>
 
           {/* Pagination */}
           <Pagination

@@ -164,11 +164,11 @@ export default function ExpenseManagement() {
     <div className={`min-h-screen p-6 transition-colors duration-300 ${containerBg}`}>
       <div className="max-w-7xl mx-auto">
         {/* Navigation Tabs */}
-        <div className="flex gap-6 text-sm border-b mb-6" style={{ borderColor: isDark ? "rgba(71, 85, 105, 0.5)" : "rgba(229, 231, 235, 1)" }}>
+        <div className="flex flex-col md:flex-row gap-2 md:gap-6 text-sm border-b mb-6" style={{ borderColor: isDark ? "rgba(71, 85, 105, 0.5)" : "rgba(229, 231, 235, 1)" }}>
           <NavLink
             to="/finance-management"
             className={({ isActive }) =>
-              `pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
+              `pb-2 md:pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
                 ? "border-blue-500 text-blue-600"
                 : `border-transparent ${textSecondary} hover:text-blue-400`
               }`
@@ -180,7 +180,7 @@ export default function ExpenseManagement() {
           <NavLink
             to="/expense-management"
             className={({ isActive }) =>
-              `pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
+              `pb-2 md:pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
                 ? "border-blue-500 text-blue-600"
                 : `border-transparent ${textSecondary} hover:text-blue-400`
               }`
@@ -192,7 +192,7 @@ export default function ExpenseManagement() {
           <NavLink
             to='/finance-report'
             className={({ isActive }) =>
-              `pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
+              `pb-2 md:pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
                 ? "border-blue-500 text-blue-600"
                 : `border-transparent ${textSecondary} hover:text-blue-400`
               }`
@@ -323,112 +323,157 @@ export default function ExpenseManagement() {
             </span>
           </div>
 
-          <div className={`rounded-lg border overflow-hidden transition-colors duration-200 ${tableBg} ${tableBorder}`}>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className={`${tableHeaderBg}`}>
-                  <tr>
-                    <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${textSecondary}`}>
-                      Date
-                    </th>
-                    <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${textSecondary}`}>
-                      Title
-                    </th>
-                    <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${textSecondary}`}>
-                      Description
-                    </th>
-                    <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${textSecondary}`}>
-                      Amount
-                    </th>
-                    <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${textSecondary}`}>
-                      Payment
-                    </th>
-                    <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${textSecondary}`}>
-                      Status
-                    </th>
-                    <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${textSecondary}`}>
-                      Approved By
-                    </th>
-                    <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${textSecondary}`}>
-                      Action
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y" style={{ borderColor: isDark ? "rgba(71, 85, 105, 0.5)" : "rgba(229, 231, 235, 1)" }}>
-                  {expenses.length === 0 ? (
-                    <tr>
-                      <td colSpan={8} className={`px-4 py-12 text-center text-sm ${textSecondary}`}>
-                        <div className="flex flex-col items-center justify-center">
-                          <svg className="w-12 h-12 mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                          </svg>
-                          <p className="font-medium">No expenses found</p>
-                          <p className="text-xs mt-1">Create your first expense using the form above</p>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : (
-                    expenses.map((exp) => (
-                      <tr
-                        key={exp.id}
-                        className={`transition-colors duration-200 ${isDark ? "hover:bg-slate-700/30" : "hover:bg-gray-50"
+          {expenses.length === 0 ? (
+            <div className={`text-center py-12 border rounded-lg ${cardBg}`}>
+              <p className={`font-medium ${textSecondary}`}>No expenses found</p>
+              <p className={`text-xs mt-1 ${textSecondary}`}>Create your first expense using the form above</p>
+            </div>
+          ) : (
+            <>
+              {/* Desktop Table View */}
+              <div className={`hidden md:block rounded-lg border overflow-hidden transition-colors duration-200 ${tableBg} ${tableBorder}`}>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className={`${tableHeaderBg}`}>
+                      <tr>
+                        <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${textSecondary}`}>
+                          Date
+                        </th>
+                        <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${textSecondary}`}>
+                          Title
+                        </th>
+                        <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${textSecondary}`}>
+                          Description
+                        </th>
+                        <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${textSecondary}`}>
+                          Amount
+                        </th>
+                        <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${textSecondary}`}>
+                          Payment
+                        </th>
+                        <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${textSecondary}`}>
+                          Status
+                        </th>
+                        <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${textSecondary}`}>
+                          Approved By
+                        </th>
+                        <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${textSecondary}`}>
+                          Action
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y" style={{ borderColor: isDark ? "rgba(71, 85, 105, 0.5)" : "rgba(229, 231, 235, 1)" }}>
+                      {expenses.map((exp) => (
+                        <tr
+                          key={exp.id}
+                          className={`transition-colors duration-200 ${isDark ? "hover:bg-slate-700/30" : "hover:bg-gray-50"
+                            }`}
+                        >
+                          <td className={`px-4 py-4 text-sm whitespace-nowrap ${textPrimary}`}>
+                            {exp.expenseDate.split('T')[0]}
+                          </td>
+                          <td className={`px-4 py-4 text-sm font-medium ${textPrimary}`}>
+                            {exp.title}
+                          </td>
+                          <td className={`px-4 py-4 text-sm ${textSecondary} max-w-xs truncate`}>
+                            {exp.description || "-"}
+                          </td>
+                          <td className={`px-4 py-4 text-sm font-semibold ${textPrimary}`}>
+                            ₹{exp.amount.toLocaleString()}
+                          </td>
+                          <td className={`px-4 py-4 text-sm ${textSecondary}`}>
+                            {exp.paymentMode}
+                          </td>
+                          <td className="px-4 py-4 text-sm whitespace-nowrap">
+                            <span
+                              className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${exp.status === "APPROVED"
+                                ? isDark
+                                  ? "bg-green-900/30 text-green-400 border border-green-800"
+                                  : "bg-green-100 text-green-800 border border-green-200"
+                                : exp.status === "REJECTED"
+                                  ? isDark
+                                    ? "bg-red-900/30 text-red-400 border border-red-800"
+                                    : "bg-red-100 text-red-800 border border-red-200"
+                                  : isDark
+                                    ? "bg-yellow-900/30 text-yellow-400 border border-yellow-800"
+                                    : "bg-yellow-100 text-yellow-800 border border-yellow-200"
+                                }`}
+                            >
+                              {exp.status}
+                            </span>
+                          </td>
+                          <td className={`px-4 py-4 text-sm ${textSecondary}`}>
+                            {exp.approvedBy || "-"}
+                          </td>
+                          <td className="px-4 py-4 text-sm whitespace-nowrap">
+                            {exp.status === "PENDING" ? (
+                              <button
+                                onClick={() => handleEditClick(exp)}
+                                className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200 hover:underline"
+                              >
+                                Edit
+                              </button>
+                            ) : (
+                              <span className={textSecondary}>-</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Mobile Card View */}
+              <div className="md:hidden space-y-4">
+                {expenses.map((exp) => (
+                  <div key={exp.id} className={`rounded-lg border p-4 ${cardBg}`}>
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h4 className={`font-semibold ${textPrimary}`}>{exp.title}</h4>
+                        <span className={`text-xs ${textSecondary}`}>{exp.expenseDate.split('T')[0]}</span>
+                      </div>
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${exp.status === "APPROVED"
+                          ? isDark
+                            ? "bg-green-900/30 text-green-400 border border-green-800"
+                            : "bg-green-100 text-green-800 border border-green-200"
+                          : exp.status === "REJECTED"
+                            ? isDark
+                              ? "bg-red-900/30 text-red-400 border border-red-800"
+                              : "bg-red-100 text-red-800 border border-red-200"
+                            : isDark
+                              ? "bg-yellow-900/30 text-yellow-400 border border-yellow-800"
+                              : "bg-yellow-100 text-yellow-800 border border-yellow-200"
                           }`}
                       >
-                        <td className={`px-4 py-4 text-sm whitespace-nowrap ${textPrimary}`}>
-                          {exp.expenseDate.split('T')[0]}
-                        </td>
-                        <td className={`px-4 py-4 text-sm font-medium ${textPrimary}`}>
-                          {exp.title}
-                        </td>
-                        <td className={`px-4 py-4 text-sm ${textSecondary} max-w-xs truncate`}>
-                          {exp.description || "-"}
-                        </td>
-                        <td className={`px-4 py-4 text-sm font-semibold ${textPrimary}`}>
-                          ₹{exp.amount.toLocaleString()}
-                        </td>
-                        <td className={`px-4 py-4 text-sm ${textSecondary}`}>
-                          {exp.paymentMode}
-                        </td>
-                        <td className="px-4 py-4 text-sm whitespace-nowrap">
-                          <span
-                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${exp.status === "APPROVED"
-                              ? isDark
-                                ? "bg-green-900/30 text-green-400 border border-green-800"
-                                : "bg-green-100 text-green-800 border border-green-200"
-                              : exp.status === "REJECTED"
-                                ? isDark
-                                  ? "bg-red-900/30 text-red-400 border border-red-800"
-                                  : "bg-red-100 text-red-800 border border-red-200"
-                                : isDark
-                                  ? "bg-yellow-900/30 text-yellow-400 border border-yellow-800"
-                                  : "bg-yellow-100 text-yellow-800 border border-yellow-200"
-                              }`}
-                          >
-                            {exp.status}
-                          </span>
-                        </td>
-                        <td className={`px-4 py-4 text-sm ${textSecondary}`}>
-                          {exp.approvedBy || "-"}
-                        </td>
-                        <td className="px-4 py-4 text-sm whitespace-nowrap">
-                          {exp.status === "PENDING" ? (
-                            <button
-                              onClick={() => handleEditClick(exp)}
-                              className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200 hover:underline"
-                            >
-                              Edit
-                            </button>
-                          ) : (
-                            <span className={textSecondary}>-</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+                        {exp.status}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className={`text-lg font-bold ${textPrimary}`}>₹{exp.amount.toLocaleString()}</span>
+                      <span className={`text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 ${textSecondary}`}>{exp.paymentMode}</span>
+                    </div>
+                    {exp.description && <p className={`text-sm mb-3 ${textSecondary}`}>{exp.description}</p>}
+
+                    <div className="flex justify-between items-center pt-2 border-t border-gray-100 dark:border-gray-700">
+                      <span className={`text-xs ${textSecondary}`}>
+                        {exp.approvedBy ? `Approved by: ${exp.approvedBy}` : ""}
+                      </span>
+                      {exp.status === "PENDING" && (
+                        <button
+                          onClick={() => handleEditClick(exp)}
+                          className="text-blue-500 text-sm font-medium hover:underline"
+                        >
+                          Edit
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

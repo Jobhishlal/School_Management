@@ -56,77 +56,74 @@ const RevenueGenerateReport: React.FC = () => {
   const buttonPrimary =
     "bg-blue-600 hover:bg-blue-700 text-white";
 
-   
+
   const textSecondary = isDark ? "text-slate-400" : "text-gray-600";
 
   return (
     <div className={`min-h-screen p-6 ${containerBg}`}>
 
 
-         <div className="flex gap-6 text-sm border-b mb-6" style={{ borderColor: isDark ? "rgba(71, 85, 105, 0.5)" : "rgba(229, 231, 235, 1)" }}>
-          <NavLink
-            to="/finance-management"
-            className={({ isActive }) =>
-              `pb-3 border-b-2 font-medium transition-colors duration-200 ${
-                isActive
-                  ? "border-blue-500 text-blue-600"
-                  : `border-transparent ${textSecondary} hover:text-blue-400`
-              }`
-            }
-          >
-            Fee Management
-          </NavLink>
+      <div className="flex flex-col md:flex-row gap-2 md:gap-6 text-sm border-b mb-6" style={{ borderColor: isDark ? "rgba(71, 85, 105, 0.5)" : "rgba(229, 231, 235, 1)" }}>
+        <NavLink
+          to="/finance-management"
+          className={({ isActive }) =>
+            `pb-2 md:pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
+              ? "border-blue-500 text-blue-600"
+              : `border-transparent ${textSecondary} hover:text-blue-400`
+            }`
+          }
+        >
+          Fee Management
+        </NavLink>
 
-          <NavLink
-            to="/expense-management"
-            className={({ isActive }) =>
-              `pb-3 border-b-2 font-medium transition-colors duration-200 ${
-                isActive
-                  ? "border-blue-500 text-blue-600"
-                  : `border-transparent ${textSecondary} hover:text-blue-400`
-              }`
-            }
-          >
-            Expense Management
-          </NavLink>
+        <NavLink
+          to="/expense-management"
+          className={({ isActive }) =>
+            `pb-2 md:pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
+              ? "border-blue-500 text-blue-600"
+              : `border-transparent ${textSecondary} hover:text-blue-400`
+            }`
+          }
+        >
+          Expense Management
+        </NavLink>
 
-          <NavLink
-            to='/finance-report'
-            className={({ isActive }) =>
-              `pb-3 border-b-2 font-medium transition-colors duration-200 ${
-                isActive
-                  ? "border-blue-500 text-blue-600"
-                  : `border-transparent ${textSecondary} hover:text-blue-400`
-              }`
-            }
-          >
-            Fee Report
-          </NavLink>
-        </div>
+        <NavLink
+          to='/finance-report'
+          className={({ isActive }) =>
+            `pb-2 md:pb-3 border-b-2 font-medium transition-colors duration-200 ${isActive
+              ? "border-blue-500 text-blue-600"
+              : `border-transparent ${textSecondary} hover:text-blue-400`
+            }`
+          }
+        >
+          Fee Report
+        </NavLink>
+      </div>
       <div className="max-w-7xl mx-auto">
         <h2 className="text-2xl font-bold mb-6">
           Finance Revenue Report
         </h2>
 
         {/* 📅 Date Range */}
-        <div className="flex gap-4 mb-8">
+        <div className="flex flex-col md:flex-row gap-4 mb-8">
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className={`p-3 rounded-lg border ${inputBg}`}
+            className={`p-3 rounded-lg border ${inputBg} w-full`}
           />
 
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className={`p-3 rounded-lg border ${inputBg}`}
+            className={`p-3 rounded-lg border ${inputBg} w-full`}
           />
 
           <button
             onClick={generateReport}
-            className={`px-6 py-3 rounded-lg ${buttonPrimary}`}
+            className={`px-6 py-3 rounded-lg ${buttonPrimary} w-full md:w-auto`}
           >
             Generate Report
           </button>
@@ -143,11 +140,11 @@ const RevenueGenerateReport: React.FC = () => {
                 Fee Collection Trends
               </h3>
 
-               <RevenueAreaChart
-                 key={isDark ? "dark" : "light"}
+              <RevenueAreaChart
+                key={isDark ? "dark" : "light"}
                 data={report.monthlyRevenue}
                 isDark={isDark}
-                  />
+              />
             </div>
 
             {/* Monthly Income */}
@@ -164,7 +161,7 @@ const RevenueGenerateReport: React.FC = () => {
           </div>
         )}
 
-        
+
         {report && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8">
             <SummaryCard
@@ -186,7 +183,7 @@ const RevenueGenerateReport: React.FC = () => {
           </div>
         )}
       </div>
-      <ExpenseReletedReport/>
+      <ExpenseReletedReport />
     </div>
   );
 };

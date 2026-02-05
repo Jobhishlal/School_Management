@@ -89,9 +89,9 @@ export const AdminLeaveRequest: React.FC = () => {
 
     return (
         <div className={`p-6 min-h-screen ${isDark ? "bg-[#1a2632] text-white" : "bg-gray-50 text-gray-900"}`}>
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <h1 className={`text-2xl font-bold ${isDark ? "text-white" : "text-gray-800"}`}>Leave Requests</h1>
-                <div className={`p-4 rounded shadow-sm text-sm border ${isDark ? "bg-[#0d1117] border-gray-700" : "bg-white border-gray-100"}`}>
+                <div className={`p-4 rounded shadow-sm text-sm border w-full md:w-auto ${isDark ? "bg-[#0d1117] border-gray-700" : "bg-white border-gray-100"}`}>
                     <span className={`font-semibold block mb-2 ${isDark ? "text-gray-300" : "text-gray-600"}`}>Total Yearly Limits:</span>
                     <div className="flex gap-4">
                         <span className="font-medium text-green-500">Sick Leave: 5</span>
@@ -101,7 +101,7 @@ export const AdminLeaveRequest: React.FC = () => {
             </div>
 
             <div className={`rounded-lg shadow overflow-hidden border ${isDark ? "bg-[#0d1117] border-gray-700" : "bg-white border-gray-200"}`}>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto hidden md:block">
                     <table className="min-w-full divide-y">
                         <thead className={isDark ? "bg-[#161b22] text-gray-300" : "bg-gray-50 text-gray-500"}>
                             <tr>
@@ -195,6 +195,83 @@ export const AdminLeaveRequest: React.FC = () => {
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                <div className="md:hidden">
+                    {loading ? (
+                        <div className={`text-center py-4 ${isDark ? "text-gray-400" : "text-gray-500"}`}>Loading...</div>
+                    ) : currentLeaves.length === 0 ? (
+                        <div className={`text-center py-4 ${isDark ? "text-gray-400" : "text-gray-500"}`}>No leave requests found.</div>
+                    ) : (
+                        <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                            {currentLeaves.map((leave) => (
+                                <div
+                                    key={leave.id}
+                                    onClick={() => openModal(leave)}
+                                    className={`p-4 cursor-pointer hover:bg-opacity-50 transition-colors ${isDark ? "hover:bg-[#161b22]" : "hover:bg-gray-50"}`}
+                                >
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div className={`font-medium ${isDark ? "text-gray-200" : "text-gray-900"}`}>
+                                            {leave.applicantRole === "SUB_ADMIN" ? (
+                                                <span className="flex items-center gap-2">
+                                                    {leave.subAdminName || "SubAdmin"}
+                                                    <span className="px-1.5 py-0.5 text-[10px] rounded bg-purple-100 text-purple-800 font-bold border border-purple-200">SA</span>
+                                                </span>
+                                            ) : (
+                                                <span className="flex items-center gap-2">
+                                                    {leave.teacherName || leave.teacherId}
+                                                    <span className="px-1.5 py-0.5 text-[10px] rounded bg-blue-100 text-blue-800 font-bold border border-blue-200">T</span>
+                                                </span>
+                                            )}
+                                        </div>
+                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${leave.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
+                                            leave.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
+                                                'bg-yellow-100 text-yellow-800'
+                                            }`}>
+                                            {leave.status}
+                                        </span>
+                                    </div>
+
+                                    <div className="flex gap-2 mb-2">
+                                        <span className={`px-2 py-0.5 text-xs font-semibold rounded ${leave.leaveType === 'SICK' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`}>
+                                            {leave.leaveType}
+                                        </span>
+                                        <span className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                                            {new Date(leave.startDate).toLocaleDateString()} - {new Date(leave.endDate).toLocaleDateString()}
+                                            <span className="ml-1 opacity-75">({leave.totalDays} days)</span>
+                                        </span>
+                                    </div>
+
+                                    {leave.warningMessage && (
+                                        <div className="text-xs font-bold text-red-600 bg-red-50 p-2 rounded border border-red-200 mb-2">
+                                            ⚠️ {leave.warningMessage}
+                                        </div>
+                                    )}
+
+                                    <div className={`text-sm mb-3 truncate ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                                        {leave.reason}
+                                    </div>
+
+                                    <div className="flex gap-2 border-t pt-3 dark:border-gray-800">
+                                        <button
+                                            onClick={(e) => handleAction(leave.id, "APPROVED", e)}
+                                            disabled={leave.status !== 'PENDING'}
+                                            className={`flex-1 py-1.5 text-sm font-medium rounded text-indigo-600 bg-indigo-50 hover:bg-indigo-100 disabled:text-gray-400 disabled:bg-gray-100 dark:bg-indigo-900/20 dark:hover:bg-indigo-900/30 dark:disabled:bg-gray-800`}
+                                        >
+                                            Approve
+                                        </button>
+                                        <button
+                                            onClick={(e) => handleAction(leave.id, "REJECTED", e)}
+                                            disabled={leave.status !== 'PENDING'}
+                                            className={`flex-1 py-1.5 text-sm font-medium rounded text-red-600 bg-red-50 hover:bg-red-100 disabled:text-gray-400 disabled:bg-gray-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 dark:disabled:bg-gray-800`}
+                                        >
+                                            Reject
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
 
