@@ -253,13 +253,15 @@ export default function MainAdminLogincheck() {
           </div>
 
 
-          <button
-            type="button"
-            onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-white font-medium py-3 rounded-lg"
-          >
-            <FcGoogle className="mr-2 text-xl" /> Sign Up with Google
-          </button>
+          {loginType === "parent" && (
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              className="w-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-white font-medium py-3 rounded-lg"
+            >
+              <FcGoogle className="mr-2 text-xl" /> Sign Up with Google
+            </button>
+          )}
 
           {/* Submit */}
           <button
