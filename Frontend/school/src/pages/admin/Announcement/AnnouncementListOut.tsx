@@ -45,17 +45,21 @@ const AnnouncementListOut = ({
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this announcement?")) {
-      try {
-        await deleteAnnouncement(id);
-        showToast("Announcement deleted successfully", "success");
-        fetchAnnouncements(); // Refresh list
-      } catch (error) {
-        showToast("Failed to delete announcement", "error");
-      }
-    }
-  };
+ const handleDelete = async (id: string) => {
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this announcement?"
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+    await deleteAnnouncement(id);
+    showToast("Announcement deleted successfully", "success");
+    fetchAnnouncements();
+  } catch (error) {
+    showToast("Failed to delete announcement", "error");
+  }
+};
 
   // Slice announcements for current page
   const startIndex = (currentPage - 1) * PAGE_SIZE;

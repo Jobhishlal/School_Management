@@ -60,7 +60,7 @@ export const AnnouncementForm: React.FC<AnnouncementFormProps> = ({
         if (initialData) {
             setForm({
                 ...initialData,
-                attachment: null, // Reset attachment on edit init as we can't prefill file input
+                attachment: null, 
                 classes: initialData.classes || [],
                 activeTime: initialData.activeTime ? new Date(initialData.activeTime).toISOString().split('T')[0] : "",
                 endTime: initialData.endTime ? new Date(initialData.endTime).toISOString().split('T')[0] : "",
