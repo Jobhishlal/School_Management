@@ -84,12 +84,14 @@ AuthRouter.get(
   (req, res) => {
     const { user, accessToken, refreshToken, error } = req.user as any;
 
+    const CLIENT_URL = process.env.CLIENT_URL;
+
     if (error) {
       return res.send(`
         <script>
           window.opener.postMessage(
             ${JSON.stringify({ error })},
-            "${process.env.CLIENT_URL || "http://localhost:5173"}"
+            "${CLIENT_URL}"
           );
           window.close();
         </script>
@@ -97,20 +99,21 @@ AuthRouter.get(
     }
 
     if (!accessToken || !refreshToken || !user) {
-      return res.status(500).json({ message: GoogleAuthMsg.Token_NOT_GENARATE });
+      return res.status(500).json({ message: "Google token generation failed" });
     }
 
     return res.send(`
       <script>
         window.opener.postMessage(
           ${JSON.stringify({ user, accessToken, refreshToken })},
-          "http://localhost:5173"
+          "${CLIENT_URL}"
         );
         window.close();
       </script>
     `);
   }
 );
+
 
 
 
