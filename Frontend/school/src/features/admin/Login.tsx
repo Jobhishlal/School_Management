@@ -4,7 +4,7 @@ import { MainAdminLogin } from "../../services/Auth/Auth";
 import { useState, useEffect } from "react";
 import { showToast } from "../../utils/toast";
 import { useNavigate } from "react-router-dom";
-import { FcGoogle } from "react-icons/fc";
+
 import { AxiosError } from "axios";
 
 type LoginType = "student" | "parent" | "staff";
@@ -113,78 +113,7 @@ export default function MainAdminLogincheck() {
   }
 
 
-  async function handleGoogleLogin() {
-    try {
-      window.open(`${import.meta.env.VITE_SERVER_URL || "http://localhost:5000"}/auth/google`, "_blank", "width=500,height=600");
-
-
-      const listener = (event: MessageEvent) => {
-        if (event.origin !== (import.meta.env.VITE_SERVER_URL || "http://localhost:5000")) return;
-
-        // Expected data structure: { user, accessToken, refreshToken, error }
-        // Note: Backend GoogleAuth now returns user, role, accessToken, refreshToken
-        const data = event.data;
-
-        if (data.error) {
-          showToast(data.error, "error");
-          window.removeEventListener("message", listener);
-          return;
-        }
-
-        if (!data.accessToken || !data.refreshToken || !data.user) return;
-
-        // Store Tokens
-        localStorage.setItem("accessToken", data.accessToken);
-        localStorage.setItem("refreshToken", data.refreshToken);
-
-        // Handle Role
-        // If role is provided in top-level response verify it, otherwise derive or default
-        // The backend fix now returns 'role' in the response.
-        let role = (data.role || "staff").toLowerCase();
-
-        // Store Role
-        localStorage.setItem("role", role);
-
-        // Store role-specific access token (mirroring manual login logic)
-        if (role === "teacher") {
-          localStorage.setItem("teacherAccessToken", data.accessToken);
-        } else if (role === "students") {
-          localStorage.setItem("studentAccessToken", data.accessToken);
-        } else if (role === "parent") {
-          localStorage.setItem("parentAccessToken", data.accessToken);
-          // Store additional parent info if available
-          if (data.user.email) localStorage.setItem("email", data.user.email);
-          if (data.user.student) localStorage.setItem("studentId", data.user.student.studentId || "");
-        } else if (role === "super_admin" || role === "sub_admin" || role === "admin") {
-          localStorage.setItem("adminAccessToken", data.accessToken);
-        }
-
-        window.removeEventListener("message", listener);
-        showToast("Google login successful", "success");
-
-        // Navigate
-        switch (role) {
-          case "students":
-            navigate("/student/dashboard", { replace: true });
-            break;
-          case "parent":
-            navigate("/parent/dashboard", { replace: true });
-            break;
-          case "teacher":
-            navigate("/teacher/dashboard", { replace: true });
-            break;
-          default:
-            navigate("/dashboard", { replace: true });
-        }
-      };
-
-      window.addEventListener("message", listener);
-      showToast("Google login initiated", "info");
-    } catch (err) {
-      console.error("Google login failed", err);
-      showToast("Google login failed", "error");
-    }
-  }
+  
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-black text-white px-4 font-inter">
@@ -293,13 +222,7 @@ export default function MainAdminLogincheck() {
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={handleGoogleLogin}
-                className="w-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-white font-medium py-3 rounded-lg"
-              >
-                <FcGoogle className="mr-2 text-xl" /> Sign Up with Google
-              </button>
+             
             </>
           )}
 

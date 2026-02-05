@@ -6,7 +6,7 @@ import { showToast } from "../../utils/toast";
 import { setCredentials } from "../../store/slice/authslice";
 import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
-import { FcGoogle } from "react-icons/fc";
+
 
 export default function ParentSignupPage() {
   const navigate = useNavigate();
@@ -64,43 +64,7 @@ export default function ParentSignupPage() {
   }
 
   // ----------------- Google Signup -----------------
-  async function handleGoogleLogin() {
-    try {
-      const popup = window.open(
-        `${import.meta.env.VITE_SERVER_URL || "http://localhost:5000"}/auth/google`,
-        "_blank",
-        "width=500,height=600"
-      );
 
-      const listener = (event: MessageEvent) => {
-        if (event.origin !== (import.meta.env.VITE_SERVER_URL || "http://localhost:5000")) return;
-
-        const { accessToken, refreshToken, user, error } = event.data;
-
-        if (error) {
-          showToast(error, "error");
-          popup?.close();
-          window.removeEventListener("message", listener);
-          return;
-        }
-
-        if (!accessToken || !refreshToken || !user) return;
-
-        dispatch(setCredentials({ accessToken, refreshToken, user }));
-        window.removeEventListener("message", listener);
-        popup?.close();
-        showToast("Google login successful", "success");
-
-        navigate("/parent/dashboard");
-      };
-
-      window.addEventListener("message", listener);
-      showToast("Google login initiated", "info");
-    } catch (err) {
-      console.error("Google login failed", err);
-      showToast("Google login failed", "error");
-    }
-  }
 
   return (
     <div className="relative min-h-screen flex items-center justify-center px-4 font-inter">
@@ -173,13 +137,7 @@ export default function ParentSignupPage() {
         </div>
 
 
-        <button
-          onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-white font-semibold py-3 rounded-lg"
-        >
-          <FcGoogle className="mr-2 text-xl" />
-          Sign Up with Google
-        </button>
+      
 
 
         <p className="text-gray-300 mt-4 text-center text-sm">
