@@ -11,7 +11,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      callbackURL: `${process.env.SERVER_URL || "http://localhost:5000"}/auth/google/callback`,
+      callbackURL: `${"http://brainnots.ddns.net"}/auth/google/callback`,
     },
     async (_accessToken, _refreshToken, profile: Profile, done: VerifyCallback) => {
       try {
