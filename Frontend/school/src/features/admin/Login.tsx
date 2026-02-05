@@ -120,20 +120,62 @@ export default function MainAdminLogincheck() {
 
       const listener = (event: MessageEvent) => {
         if (event.origin !== (import.meta.env.VITE_SERVER_URL || "http://localhost:5000")) return;
-        const { accessToken, refreshToken, user, error } = event.data;
 
-        if (error) {
-          showToast(error, "error");
-          // popup?.close();
+        // Expected data structure: { user, accessToken, refreshToken, error }
+        // Note: Backend GoogleAuth now returns user, role, accessToken, refreshToken
+        const data = event.data;
+
+        if (data.error) {
+          showToast(data.error, "error");
           window.removeEventListener("message", listener);
           return;
         }
 
-        if (!accessToken || !refreshToken || !user) return;
+        if (!data.accessToken || !data.refreshToken || !data.user) return;
+
+        // Store Tokens
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("refreshToken", data.refreshToken);
+
+        // Handle Role
+        // If role is provided in top-level response verify it, otherwise derive or default
+        // The backend fix now returns 'role' in the response.
+        let role = (data.role || "staff").toLowerCase();
+
+        // Store Role
+        localStorage.setItem("role", role);
+
+        // Store role-specific access token (mirroring manual login logic)
+        if (role === "teacher") {
+          localStorage.setItem("teacherAccessToken", data.accessToken);
+        } else if (role === "students") {
+          localStorage.setItem("studentAccessToken", data.accessToken);
+        } else if (role === "parent") {
+          localStorage.setItem("parentAccessToken", data.accessToken);
+          // Store additional parent info if available
+          if (data.user.email) localStorage.setItem("email", data.user.email);
+          if (data.user.student) localStorage.setItem("studentId", data.user.student.studentId || "");
+        } else if (role === "super_admin" || role === "sub_admin" || role === "admin") {
+          localStorage.setItem("adminAccessToken", data.accessToken);
+        }
 
         window.removeEventListener("message", listener);
-        // popup?.close();
         showToast("Google login successful", "success");
+
+        // Navigate
+        switch (role) {
+          case "students":
+            navigate("/student/dashboard", { replace: true });
+            break;
+          case "parent":
+            navigate("/parent/dashboard", { replace: true });
+            break;
+          case "teacher":
+            navigate("/teacher/dashboard", { replace: true });
+            break;
+          default:
+            navigate("/dashboard", { replace: true });
+        }
       };
 
       window.addEventListener("message", listener);
