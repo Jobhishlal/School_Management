@@ -115,7 +115,7 @@ export default function MainAdminLogincheck() {
 
   async function handleGoogleLogin() {
     try {
-      window.open(`${import.meta.env.VITE_SERVER_URL || "http://localhost:5000"}/auth/google`, "_self");
+      window.open(`${import.meta.env.VITE_SERVER_URL || "http://localhost:5000"}/auth/google`, "_blank", "width=500,height=600");
 
 
       const listener = (event: MessageEvent) => {
