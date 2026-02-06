@@ -422,11 +422,11 @@ Adminrouter.put("/admins/:id/block", (req, res) =>
 Adminrouter.get("/teacher", (req, res) =>
   teachercreatecontroller.getAllTeacher(req, res)
 );
-Adminrouter.post("/teacher", upload.array("documents", 5), (req, res) =>
-  teachercreatecontroller.createteacher(req, res)
+Adminrouter.post("/teacher", authMiddleware, upload.array("documents", 5), (req, res) =>
+  teachercreatecontroller.createteacher(req as AuthRequest, res)
 );
-Adminrouter.put("/teacher/:id", upload.array("documents", 5), (req, res) =>
-  teachercreatecontroller.updateTeacher(req, res)
+Adminrouter.put("/teacher/:id", authMiddleware, upload.array("documents", 5), (req, res) =>
+  teachercreatecontroller.updateTeacher(req as AuthRequest, res)
 );
 Adminrouter.put("/teacher/:id/block", (req, res) =>
   teachercreatecontroller.blockTeacher(req, res)
