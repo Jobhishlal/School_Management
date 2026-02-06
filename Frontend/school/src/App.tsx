@@ -140,6 +140,7 @@ function App() {
           <Route path="/teacher/classes" element={<TeacherMyClass />} />
           <Route path="/teacher/student-leave" element={<TeacherStudentLeavePage />} />
           <Route path="/teacher/chat" element={<TeacherChat />} />
+          <Route path="/teacher/meet" element={<MeetingList />} />
         </Route>
 
 

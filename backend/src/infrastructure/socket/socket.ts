@@ -125,8 +125,9 @@ export const initSocket = (httpServer: HttpServer) => {
 
       const isCreator = String(userId).trim() === String(meetingCreatorId).trim();
       const normalizedRole = role ? String(role).toLowerCase() : '';
+      console.log(`[Host Check] Normalized Role: '${normalizedRole}', Original Role: '${role}'`);
 
-      const isAdmin = normalizedRole === 'admin' || normalizedRole === 'super_admin';
+      const isAdmin = normalizedRole === 'admin' || normalizedRole === 'super_admin' || normalizedRole === 'sub_admin';
       const isHost = isCreator || isAdmin;
 
       console.log(`[Host Check] Meeting: ${meetingId}`);

@@ -652,7 +652,10 @@ const VideoMeeting: React.FC = () => {
         });
     };
 
-    const isHost = userId === meeting?.createdBy;
+    const isCreator = userId === meeting?.createdBy;
+    const normalizedRole = userRole ? String(userRole).toLowerCase() : '';
+    const isAdmin = normalizedRole === 'admin' || normalizedRole === 'super_admin' || normalizedRole === 'sub_admin';
+    const isHost = isCreator || isAdmin;
 
 
 
