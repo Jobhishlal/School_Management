@@ -1,15 +1,15 @@
 
 
 import React, { useEffect, useState } from "react";
-import { 
-  CreateAddress, 
-  CreateInstituteProfile, 
-  getInstituteProfile, 
-  UpdateAddress, 
-  UpdateInstituteProfile 
+import {
+  CreateAddress,
+  CreateInstituteProfile,
+  getInstituteProfile,
+  UpdateAddress,
+  UpdateInstituteProfile
 } from "../../services/authapi";
 import { showToast } from "../../utils/toast";
-import { Edit2, Save, Lock } from "lucide-react"; 
+import { Edit2, Save, Lock } from "lucide-react";
 import { useTheme } from "../../components/layout/ThemeContext";
 
 export const InstituteManagementPage: React.FC = () => {
@@ -18,7 +18,7 @@ export const InstituteManagementPage: React.FC = () => {
   const [institute, setInstitute] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
-  
+
   const [instituteName, setInstituteName] = useState("");
   const [contact, setContact] = useState("");
   const [email, setEmail] = useState("");
@@ -32,7 +32,7 @@ export const InstituteManagementPage: React.FC = () => {
   const [state, setState] = useState("");
   const [pincode, setPincode] = useState("");
 
-  const [isEditing, setIsEditing] = useState(false); 
+  const [isEditing, setIsEditing] = useState(false);
 
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,7 +54,7 @@ export const InstituteManagementPage: React.FC = () => {
           const inst = res.institute[0];
           setInstitute(inst);
 
-       
+
           setInstituteName(inst.instituteName || "");
           setContact(inst.contactInformation || "");
           setEmail(inst.email || "");
@@ -81,14 +81,14 @@ export const InstituteManagementPage: React.FC = () => {
       }
     };
     fetchInstitute();
-  }, []); 
+  }, []);
 
-  
+
   const handleSubmit = async () => {
     setLoading(true);
     try {
       if (!institute) {
-    
+
         const addressRes = await CreateAddress({ street, city, state, pincode });
         const addressId = addressRes.address?._id;
         if (!addressId) throw new Error("Failed to create address.");
@@ -103,11 +103,18 @@ export const InstituteManagementPage: React.FC = () => {
           logo
         );
         showToast("Institute created successfully!", "success");
-        setInstitute(instRes); 
-        setIsEditing(false); 
+        setInstitute(instRes);
+        setIsEditing(false);
       } else {
-        
-        const addressId = institute.address._id;
+        // Update existing institute
+        const addressId = typeof institute.address === 'string'
+          ? institute.address
+          : institute.address?._id;
+
+        if (!addressId) {
+          throw new Error("Address ID is missing. Please contact support.");
+        }
+
         await UpdateAddress(addressId, street, city, state, pincode);
 
         await UpdateInstituteProfile(
@@ -124,7 +131,7 @@ export const InstituteManagementPage: React.FC = () => {
 
         const res = await getInstituteProfile();
         if (res?.institute?.length > 0) setInstitute(res.institute[0]);
-        setIsEditing(false); 
+        setIsEditing(false);
       }
     } catch (error: any) {
       console.error(error);
@@ -142,8 +149,8 @@ export const InstituteManagementPage: React.FC = () => {
         type={type}
         className={`
           w-full px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm
-          ${isEditing ? 
-            "bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400" : 
+          ${isEditing ?
+            "bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400" :
             "bg-slate-800 border-slate-700 text-slate-300 pointer-events-none"
           }
         `}
@@ -162,12 +169,12 @@ export const InstituteManagementPage: React.FC = () => {
 
         <div className="flex border-b border-slate-700 mb-6">
           <div className="px-4 py-2 font-medium border-b-2 border-blue-500 text-blue-500">Institute Profile</div>
-        
+
         </div>
 
         <div className={`rounded-lg p-6 shadow-xl ${isDark ? "bg-slate-800/50" : "bg-white"} relative`}>
           {institute && (
-            <button 
+            <button
               onClick={() => setIsEditing(prev => !prev)}
               className={`absolute top-6 right-6 p-2 rounded-full transition-colors ${isDark ? "hover:bg-slate-700" : "hover:bg-gray-100"} ${isEditing ? "text-red-400" : "text-blue-400"}`}
               title={isEditing ? "Disable Editing" : "Enable Editing"}
@@ -218,10 +225,10 @@ export const InstituteManagementPage: React.FC = () => {
                   accept="image/*"
                   onChange={handleFileChange}
                   disabled={!isEditing}
-                  className={`block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:transition-colors ${isEditing ? 
+                  className={`block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:transition-colors ${isEditing ?
                     (isDark ? "text-slate-300 file:bg-slate-700 file:text-blue-400 hover:file:bg-slate-600" : "text-gray-500 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100") :
                     "opacity-50 pointer-events-none"
-                  }`}
+                    }`}
                 />
               </div>
             </div>
