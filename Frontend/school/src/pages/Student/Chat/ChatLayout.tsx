@@ -52,9 +52,16 @@ export default function ChatLayout() {
             }
         }
 
-        const newSocket = io(import.meta.env.VITE_SERVER_URL || 'https://brainnots.ddns.net', {
+        const socketUrl = import.meta.env.VITE_SERVER_URL?.startsWith('/')
+            ? window.location.origin
+            : (import.meta.env.VITE_SERVER_URL || 'https://brainnots.ddns.net');
+
+        console.log("ChatLayout: Initializing socket with URL:", socketUrl);
+
+        const newSocket = io(socketUrl, {
             withCredentials: true,
-            transports: ['websocket']
+            transports: ['websocket'],
+            path: '/socket.io'
         });
 
         newSocket.on('connect', () => {

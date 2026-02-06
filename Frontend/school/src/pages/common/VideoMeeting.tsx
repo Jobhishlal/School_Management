@@ -240,14 +240,21 @@ const VideoMeeting: React.FC = () => {
                 }
 
 
-              
-                 socketRef.current = io(import.meta.env.VITE_SERVER_URL, {
-                 withCredentials: true,
-                 transports: ["websocket"]
-                 });
+
+                const socketUrl = import.meta.env.VITE_SERVER_URL?.startsWith('/')
+                    ? window.location.origin
+                    : (import.meta.env.VITE_SERVER_URL || 'http://localhost:5000');
+
+                console.log("VideoMeeting: Initializing socket with URL:", socketUrl);
+
+                socketRef.current = io(socketUrl, {
+                    withCredentials: true,
+                    transports: ["websocket"],
+                    path: '/socket.io'
+                });
 
 
-         
+
                 const roomId = meeting.link;
 
                 console.log("EMIT join-meeting with userData:", userProfile);

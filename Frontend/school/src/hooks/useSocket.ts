@@ -19,9 +19,19 @@ export const useSocket = () => {
             }
         }
 
-        const newSocket = io(import.meta.env.VITE_SERVER_URL || 'http://localhost:5000', {
+        // If VITE_SERVER_URL is relative (starts with /), use window.location.origin
+        // This ensures the socket request hits https://domain.com/socket.io/ directly
+        // matching the Nginx location /socket.io/ block.
+        const socketUrl = import.meta.env.VITE_SERVER_URL?.startsWith('/')
+            ? window.location.origin
+            : (import.meta.env.VITE_SERVER_URL || 'http://localhost:5000');
+
+        console.log("Initializing socket with URL:", socketUrl);
+
+        const newSocket = io(socketUrl, {
             withCredentials: true,
-            transports: ['websocket']
+            transports: ['websocket'],
+            path: '/socket.io'
         });
 
         newSocket.on('connect', () => {
