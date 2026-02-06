@@ -39,7 +39,7 @@ export class CreateMeetingUseCase implements ICreateMeetingUseCase {
             title: `New Meeting: ${meetingData.title}`,
             content: meetingData.description || "A new meeting has been scheduled.",
             type: "MEETING",
-            scope: "GLOBAL", // Default to GLOBAL for now, can be refined based on meetingData details
+            scope: "GLOBAL", 
             classes: [],
             link: meetingData.link
         });

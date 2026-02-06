@@ -167,9 +167,8 @@ export const initSocket = (httpServer: HttpServer) => {
         socket.emit(hostSocketId ? "waiting-for-approval" : "waiting-for-host");
         console.log(`User ${userId} added to WAITING ROOM for ${meetingId}`);
 
-        if (hostSocketId) {
-          io.to(hostSocketId).emit("user-joined-waiting", { userId, role, userData, socketId: socket.id });
-        }
+        // Notify ALL participants in the meeting room about the new waiter
+        io.to(meetingId).emit("user-joined-waiting", { userId, role, userData, socketId: socket.id });
         return;
       }
 
@@ -241,6 +240,10 @@ export const initSocket = (httpServer: HttpServer) => {
         }
 
         console.log(`Admitted user ${userData.userId} to meeting ${meetingId}`);
+
+        // Notify all meeting participants of updated waiting list
+        const updatedWaiters = Array.from(waiters.values());
+        io.to(meetingId).emit("waiting-list-update", updatedWaiters);
       }
     });
 
@@ -252,6 +255,10 @@ export const initSocket = (httpServer: HttpServer) => {
         // Disconnect them?
         const rejectedSocket = io.sockets.sockets.get(socketId);
         if (rejectedSocket) rejectedSocket.disconnect();
+
+        // Notify all meeting participants of updated waiting list
+        const updatedWaiters = Array.from(waiters.values());
+        io.to(meetingId).emit("waiting-list-update", updatedWaiters);
       }
     });
 
