@@ -385,8 +385,9 @@ const financeReportController = new FinanceReportManagementController(
 
 const razorpayService = new RazorpayServices();
 const paymentRepo = new MongoPeymentRepo();
+const paymentSocketNotification = new SocketNotification();
 const createRazorpayOrder = new CreateRazorpayOrder(razorpayService, paymentRepo);
-const verifyPaymentStatus = new VerifyPaymentStatus(paymentRepo);
+const verifyPaymentStatus = new VerifyPaymentStatus(paymentRepo, paymentSocketNotification);
 const verifyPaymentByFeeId = new VerifyPaymentByFeeId(paymentRepo);
 const downloadInvoice = new DownLoadInvoice(paymentRepo);
 const getPaymentHistory = new GetPaymentHistory(paymentRepo);

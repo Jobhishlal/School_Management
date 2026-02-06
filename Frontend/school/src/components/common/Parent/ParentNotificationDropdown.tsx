@@ -7,7 +7,7 @@ import { getDecodedToken } from "../../../utils/DecodeToken";
 interface Notification {
     title: string;
     content: string;
-    type: 'ANNOUNCEMENT' | 'MEETING' | 'FINANCE';
+    type: 'ANNOUNCEMENT' | 'MEETING' | 'FINANCE' | 'PAYMENT';
     scope: 'GLOBAL' | 'CLASS' | 'DIVISION';
     link?: string;
     timestamp: number;
@@ -162,8 +162,8 @@ const ParentNotificationDropdown: React.FC = () => {
                                         <div className="flex-1">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full uppercase tracking-wider ${notif.type === 'MEETING' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' :
-                                                        notif.type === 'FINANCE' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' :
-                                                            'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                                                    notif.type === 'FINANCE' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' :
+                                                        'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
                                                     }`}>
                                                     {notif.type}
                                                 </span>

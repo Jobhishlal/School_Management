@@ -107,12 +107,17 @@ export const InstituteManagementPage: React.FC = () => {
         setIsEditing(false);
       } else {
         // Update existing institute
+        console.log("Institute object:", institute);
+        console.log("Institute address:", institute.address);
+        console.log("Institute address type:", typeof institute.address);
+
         const addressId = typeof institute.address === 'string'
           ? institute.address
           : institute.address?._id;
 
         if (!addressId) {
-          throw new Error("Address ID is missing. Please contact support.");
+          console.error("Failed to get addressId. Institute:", institute);
+          throw new Error(`Address ID is missing. Address value: ${JSON.stringify(institute.address)}`);
         }
 
         await UpdateAddress(addressId, street, city, state, pincode);

@@ -33,6 +33,7 @@ import { CreateParentComplaintUseCase } from "../../applications/useCases/Parent
 import { MongoParentComplaints } from "../../infrastructure/repositories/ParentComplaint/ParentComplaintmongo";
 import { GetParentComplaintsUseCase } from "../../applications/useCases/Parent/GetParentComplaintsUseCase";
 import { UpdateParentComplaintUseCase } from "../../applications/useCases/Parent/UpdateParentComplaintUseCase";
+import { SocketNotification } from "../../infrastructure/socket/SocketNotification";
 
 
 const ParentRouter = Router()
@@ -43,8 +44,9 @@ const ParentController = new ParentFinanceList(parentlistfinance)
 
 const peyment = new RazorpayServices()
 const peymentrepo = new MongoPeymentRepo()
+const socketNotification = new SocketNotification()
 const createpeyment = new CreateRazorpayOrder(peyment, peymentrepo)
-const verfystatus = new VerifyPaymentStatus(peymentrepo)
+const verfystatus = new VerifyPaymentStatus(peymentrepo, socketNotification)
 const verifydataFeeIdbase = new VerifyPaymentByFeeId(peymentrepo)
 const invoicedownload = new DownLoadInvoice(peymentrepo)
 const getpaymenthistory = new GetPaymentHistory(peymentrepo)

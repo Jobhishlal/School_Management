@@ -1,7 +1,7 @@
 export interface NotificationDTO {
     title: string;
     content: string;
-    type: 'ANNOUNCEMENT' | 'MEETING' | 'FINANCE';
+    type: 'ANNOUNCEMENT' | 'MEETING' | 'FINANCE' | 'PAYMENT';
     scope: 'GLOBAL' | 'CLASS' | 'DIVISION';
     classes: string[];
     division?: string | undefined;
