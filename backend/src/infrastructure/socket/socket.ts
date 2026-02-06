@@ -38,6 +38,7 @@ export const initSocket = (httpServer: HttpServer) => {
     console.log("🔌 User connected:", socket.id);
 
     socket.on("join", ({ classId, division }) => {
+      console.log(`User socket ${socket.id} joining rooms: class-${classId}, division-${division}`);
       if (classId) socket.join(`class-${classId}`);
       if (division) socket.join(`division-${division}`);
     });

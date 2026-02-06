@@ -8,9 +8,10 @@ interface Notification {
     title: string;
     content: string;
     type: 'ANNOUNCEMENT' | 'MEETING' | 'FINANCE' | 'PAYMENT';
-    scope: 'GLOBAL' | 'CLASS' | 'DIVISION';
+    scope: 'GLOBAL' | 'CLASS' | 'DIVISION' | 'USER';
     link?: string;
     timestamp: number;
+    recipientId?: string;
     read: boolean;
 }
 
@@ -59,7 +60,8 @@ const ParentNotificationDropdown: React.FC = () => {
         console.log("Parent Notification Socket Initialized");
 
         const handleNotification = (data: any) => {
-            console.log("New Notification Received:", data);
+            console.log("New Notification Received in Dropdown:", data);
+            console.log("Current Student state for filtering:", student);
 
             // Filter logic:
             // 1. GLOBAL: Always show
@@ -69,14 +71,32 @@ const ParentNotificationDropdown: React.FC = () => {
             let shouldShow = false;
             if (data.scope === 'GLOBAL') {
                 shouldShow = true;
-            } else if (data.scope === 'CLASS' && student?.classId) {
-                // Backend might send classId as string or array
-                if (data.classes && data.classes.includes(student.classId)) {
+                console.log("Filter: GLOBAL scope matched");
+            } else if (data.scope === 'CLASS') {
+                console.log(`Filter: Comparing data.classes [${data.classes}] with student.classId [${student?.classId}]`);
+                if (student?.classId && data.classes && data.classes.includes(student.classId)) {
                     shouldShow = true;
+                    console.log("Filter: CLASS scope matched");
+                } else {
+                    console.log("Filter: CLASS scope NOT matched");
                 }
-            } else if (data.scope === 'DIVISION' && student?.classDetails?.division) {
-                if (data.division === student.classDetails.division) {
+            } else if (data.scope === 'DIVISION') {
+                const studentDiv = student?.classDetails?.division;
+                console.log(`Filter: Comparing data.division [${data.division}] with student.division [${studentDiv}]`);
+                if (studentDiv && data.division === studentDiv) {
                     shouldShow = true;
+                    console.log("Filter: DIVISION scope matched");
+                } else {
+                    console.log("Filter: DIVISION scope NOT matched");
+                }
+            } else if (data.scope === 'USER') {
+                const userId = getDecodedToken()?.id;
+                console.log(`Filter: Comparing data.recipientId [${data.recipientId}] with current userId [${userId}]`);
+                if (data.recipientId === userId) {
+                    shouldShow = true;
+                    console.log("Filter: USER scope matched");
+                } else {
+                    console.log("Filter: USER scope NOT matched");
                 }
             }
 

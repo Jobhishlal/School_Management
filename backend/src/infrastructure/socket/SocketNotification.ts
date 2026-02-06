@@ -15,14 +15,18 @@ export class SocketNotification implements NotificationPort {
         }
         if (data.scope === "CLASS") {
             data.classes.forEach(cls => {
-                io.to(`class-${cls}`).emit(eventName, data);
+                const room = `class-${cls}`;
+                console.log(`Emitting CLASS notification to room: ${room}`);
+                io.to(room).emit(eventName, data);
             });
         }
         if (data.scope === "DIVISION") {
-            io.to(`division-${data.division}`)
-                .emit(eventName, data);
+            const room = `division-${data.division}`;
+            console.log(`Emitting DIVISION notification to room: ${room}`);
+            io.to(room).emit(eventName, data);
         }
         if (data.scope === "USER" && data.recipientId) {
+            console.log(`Emitting USER notification to room: ${data.recipientId}`);
             io.to(data.recipientId).emit(eventName, data);
         }
 
