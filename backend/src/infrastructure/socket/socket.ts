@@ -128,7 +128,13 @@ export const initSocket = (httpServer: HttpServer) => {
 
 
 
-    socket.on("join-meeting", ({ meetingId, userId, role, userData, meetingCreatorId }) => {
+    socket.on("join-meeting", async ({ meetingId, userId, role, userData, meetingCreatorId }) => {
+      console.log('\n🔵 === JOIN-MEETING EVENT RECEIVED ===');
+      console.log(`Meeting ID: ${meetingId}`);
+      console.log(`User ID: ${userId}`);
+      console.log(`Role: ${role}`);
+      console.log(`Creator ID: ${meetingCreatorId}`);
+      console.log(`Socket ID: ${socket.id}`);
 
       const isCreator = String(userId).trim() === String(meetingCreatorId).trim();
       const normalizedRole = role ? String(role).toLowerCase() : '';
@@ -171,12 +177,22 @@ export const initSocket = (httpServer: HttpServer) => {
         waitingRoom.get(meetingId)?.set(socket.id, { userId, role, userData, socketId: socket.id });
         socket.join(`waiting-${meetingId}`); // Special room for waiters
 
+        console.log(`\n❌ PARTICIPANT ROUTE - Adding to waiting room`);
+        console.log(`User ${userId} added to WAITING ROOM for ${meetingId}`);
+        console.log(`Current waiting room size: ${waitingRoom.get(meetingId)?.size}`);
+        console.log(`Host socket exists: ${!!hostSocketId}`);
 
         socket.emit(hostSocketId ? "waiting-for-approval" : "waiting-for-host");
-        console.log(`User ${userId} added to WAITING ROOM for ${meetingId}`);
 
         // Notify ALL participants in the meeting room about the new waiter
+        console.log(`📢 EMITTING user-joined-waiting to room: ${meetingId}`);
+        console.log(`Broadcasting to all sockets in room ${meetingId}`);
+        const roomSockets = await io.in(meetingId).fetchSockets();
+        console.log(`Room ${meetingId} has ${roomSockets.length} sockets`);
+        roomSockets.forEach(s => console.log(`  - Socket: ${s.id}`));
+
         io.to(meetingId).emit("user-joined-waiting", { userId, role, userData, socketId: socket.id });
+        console.log(`✅ Emitted user-joined-waiting event`);
         return;
       }
 
@@ -197,7 +213,10 @@ export const initSocket = (httpServer: HttpServer) => {
       const uniqueUsers = new Set(Array.from(participants?.values() || []).map(p => p.userId)).size;
       const activeConnections = participants?.size || 0;
 
+      console.log(`\n✅ HOST ROUTE - Adding to meeting room`);
       console.log(`HOST ${userId} joined meeting ${meetingId}. Active Connections: ${activeConnections}`);
+      console.log(`Socket ${socket.id} joined room: ${meetingId}`);
+      console.log(`=== END JOIN-MEETING ===\n`);
 
       const waiters = waitingRoom.has(meetingId)
         ? Array.from(waitingRoom.get(meetingId)?.values() || [])
