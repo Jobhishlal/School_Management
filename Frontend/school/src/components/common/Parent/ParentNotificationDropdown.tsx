@@ -32,6 +32,18 @@ const ParentNotificationDropdown: React.FC = () => {
                     // data.profile.student contains filtering info like classId
                     if (data?.profile?.student) {
                         setStudent(data.profile.student);
+
+                        // Join class and division rooms for real-time notifications
+                        if (socket) {
+                            console.log("Joining socket rooms for student:", data.profile.student.classId);
+                            socket.emit("join", {
+                                classId: data.profile.student.classId,
+                                division: data.profile.student.classDetails?.division
+                            });
+
+                            // Also join personal room for direct notifications
+                            socket.emit("join_chat", decoded.id);
+                        }
                     }
                 } catch (error) {
                     console.error("Failed to fetch student info for filtering notifications:", error);
@@ -39,7 +51,7 @@ const ParentNotificationDropdown: React.FC = () => {
             }
         };
         fetchStudentData();
-    }, []);
+    }, [socket]);
 
     useEffect(() => {
         if (!socket) return;

@@ -50,7 +50,7 @@ export class MongoPeymentRepo implements IPaymentTransactionRepository {
   async updatePaymentStatus(
     orderId: string,
     update: Partial<PeymentTransactrion>
-  ): Promise<PeymentTransactrion | null> {
+  ): Promise<any> {
     const updated = await PaymentModel.findOneAndUpdate(
       { razorpayOrderId: orderId },
       {
@@ -63,9 +63,19 @@ export class MongoPeymentRepo implements IPaymentTransactionRepository {
         },
       },
       { new: true }
-    );
+    ).populate({
+      path: 'studentId',
+      select: 'parent'
+    });
 
-    return updated ? this.toDomain(updated) : null;
+    if (!updated) return null;
+
+    const domain = this.toDomain(updated as any);
+    // Attach parentId to the returned object so UseCase can use it
+    return {
+      ...domain,
+      recipientId: (updated.studentId as any)?.parent?.toString()
+    };
   }
 
   async updatePaymentStatusByFeeId(

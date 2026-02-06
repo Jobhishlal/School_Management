@@ -22,6 +22,9 @@ export class SocketNotification implements NotificationPort {
             io.to(`division-${data.division}`)
                 .emit(eventName, data);
         }
+        if (data.scope === "USER" && data.recipientId) {
+            io.to(data.recipientId).emit(eventName, data);
+        }
 
     }
 }

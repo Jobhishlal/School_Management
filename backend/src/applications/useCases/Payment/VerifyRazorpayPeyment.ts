@@ -31,7 +31,8 @@ export class VerifyPaymentStatus implements IVerifyStatusChange {
         title: "Payment Successful",
         content: `Your payment of ₹${updated.amount} has been received successfully.`,
         type: "PAYMENT",
-        scope: "GLOBAL",
+        scope: "USER",
+        recipientId: (updated as any).recipientId,
         classes: [],
         link: "/parent/finance"
       });
