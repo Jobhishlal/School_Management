@@ -24,8 +24,25 @@ const app = express();
 // @ts-ignore
 import cookieParser from 'cookie-parser';
 
+const allowedOrigins = [
+  'http://brainnots.ddns.net',
+  'http://13.54.178.155',
+  'http://localhost:5173',
+  process.env.CLIENT_URL
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:5173",
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log(`CORS blocked origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());

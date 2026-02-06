@@ -657,6 +657,19 @@ const VideoMeeting: React.FC = () => {
     const isAdmin = normalizedRole === 'admin' || normalizedRole === 'super_admin' || normalizedRole === 'sub_admin';
     const isHost = isCreator || isAdmin;
 
+    // 🔍 DEBUG LOGGING - Remove after testing
+    console.log('=== HOST DETECTION DEBUG ===');
+    console.log('User ID:', userId);
+    console.log('Meeting Creator ID:', meeting?.createdBy);
+    console.log('User Role:', userRole);
+    console.log('Normalized Role:', normalizedRole);
+    console.log('Is Creator?', isCreator);
+    console.log('Is Admin?', isAdmin);
+    console.log('✅ IS HOST?', isHost);
+    console.log('Waiting List Count:', waitingList.length);
+    console.log('Waiting List:', waitingList);
+    console.log('===========================');
+
 
 
 

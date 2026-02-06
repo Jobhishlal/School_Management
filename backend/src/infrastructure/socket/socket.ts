@@ -16,9 +16,16 @@ const onlineUsers = new Map<string, Set<string>>();
 const chatSocketMap = new Map<string, string>();
 
 export const initSocket = (httpServer: HttpServer) => {
+  const allowedOrigins = [
+    'http://brainnots.ddns.net',
+    'http://13.54.178.155',
+    'http://localhost:5173',
+    process.env.CLIENT_URL
+  ].filter((origin): origin is string => typeof origin === 'string');
+
   io = new Server(httpServer, {
     cors: {
-      origin: process.env.CLIENT_URL || "http://localhost:5173",
+      origin: allowedOrigins,
       credentials: true,
     },
   });
