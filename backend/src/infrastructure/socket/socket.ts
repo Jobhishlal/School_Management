@@ -27,12 +27,14 @@ export const initSocket = (httpServer: HttpServer) => {
     process.env.SERVER_URL
   ].filter((origin): origin is string => typeof origin === 'string');
 
+  
+
   io = new Server(httpServer, {
     cors: {
       origin: allowedOrigins,
       credentials: true,
     },
-    transports: ['websocket', 'polling'], // Allow both, but prefer websocket
+    transports: ['websocket', 'polling'], 
     pingTimeout: 60000,
     pingInterval: 25000,
   });

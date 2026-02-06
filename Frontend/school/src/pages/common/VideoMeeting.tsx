@@ -245,7 +245,7 @@ const VideoMeeting: React.FC = () => {
                     transports: ["websocket"]
                 });
 
-
+         
                 const roomId = meeting.link;
 
                 console.log("EMIT join-meeting with userData:", userProfile);
