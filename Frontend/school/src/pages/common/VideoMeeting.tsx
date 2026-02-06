@@ -240,11 +240,10 @@ const VideoMeeting: React.FC = () => {
                 }
 
 
-                // socketRef.current = io(import.meta.env.VITE_SERVER_URL || "http://localhost:5000", { withCredentials: true });
-                socketRef.current = io("https://brainnots.ddns.net", {
-         withCredentials: true,
-        transports: ["websocket"]
-          });
+                socketRef.current = io(import.meta.env.VITE_SERVER_URL || "https://brainnots.ddns.net", {
+                    withCredentials: true,
+                    transports: ["websocket"]
+                });
 
 
                 const roomId = meeting.link;

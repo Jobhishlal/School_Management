@@ -32,6 +32,9 @@ export const initSocket = (httpServer: HttpServer) => {
       origin: allowedOrigins,
       credentials: true,
     },
+    transports: ['websocket', 'polling'], // Allow both, but prefer websocket
+    pingTimeout: 60000,
+    pingInterval: 25000,
   });
 
   io.on("connection", (socket) => {

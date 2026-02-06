@@ -52,8 +52,9 @@ export default function ChatLayout() {
             }
         }
 
-        const newSocket = io(import.meta.env.VITE_SERVER_URL || 'http://localhost:5000', {
-            withCredentials: true
+        const newSocket = io(import.meta.env.VITE_SERVER_URL || 'https://brainnots.ddns.net', {
+            withCredentials: true,
+            transports: ['websocket']
         });
 
         newSocket.on('connect', () => {
