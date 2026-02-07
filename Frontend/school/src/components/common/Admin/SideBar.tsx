@@ -165,7 +165,7 @@ export default function SchoolNavbar({ children }: Props) {
                 <School className="text-white" size={24} />
               )}
             </div>
-            <div>jobhishlal</div>
+            <div>jobhishlal t tp</div>
             <div className="flex flex-col">
               <span className="text-lg font-bold tracking-tight">{instituteDetails.name}</span>
               <span className={`text-xs ${textSecondary} font-medium`}>School Management</span>
