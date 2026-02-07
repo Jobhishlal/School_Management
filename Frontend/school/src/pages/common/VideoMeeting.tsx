@@ -532,12 +532,14 @@ const VideoMeeting: React.FC = () => {
 
     const handleAuthRedirect = (role: string) => {
         const r = role?.toLowerCase();
-        if (r === 'admin' || r === 'super_admin') {
+        if (r === 'admin' || r === 'super_admin' || r === 'sub_admin') {
             navigate('/create-meeting');
         } else if (r === 'teacher') {
             navigate('/teacher/dashboard');
+        } else if (r === 'parent') {
+            navigate('/parent/dashboard');
         } else {
-            navigate('/student-dashboard'); // Default for students/parents
+            navigate('/student/dashboard');
         }
     };
 
