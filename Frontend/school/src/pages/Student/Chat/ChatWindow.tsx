@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { getChatHistory, markMessagesRead, type ChatUser, type ChatMessage } from '../../../services/ChatService';
-import { Send, Paperclip, MoreVertical, Check, CheckCheck, Trash2, Mic, Loader2 } from 'lucide-react';
+import { Send, Paperclip, MoreVertical, Check, CheckCheck, Trash2, Mic, Loader2, ChevronLeft } from 'lucide-react';
 import { Socket } from 'socket.io-client';
 import api from '../../../services/api';
 
@@ -8,10 +8,11 @@ interface ChatWindowProps {
     teacher: ChatUser;
     isDark: boolean;
     socket: Socket | null;
+    onBack: () => void;
 }
 
 
-export default function ChatWindow({ teacher, isDark, socket }: ChatWindowProps) {
+export default function ChatWindow({ teacher, isDark, socket, onBack }: ChatWindowProps) {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -373,15 +374,21 @@ export default function ChatWindow({ teacher, isDark, socket }: ChatWindowProps)
     return (
         <div className={`flex flex-col h-full ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}>
             {/* Header */}
-            <div className={`p-4 border-b flex items-center justify-between ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
-                <div className="flex items-center gap-3">
-                    <img src={teacher.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(teacher.name)}&background=random`} alt={teacher.name} className="w-10 h-10 rounded-full object-cover" />
-                    <div>
-                        <h3 className={`font-medium ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{teacher.name}</h3>
-                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{teacher.isOnline ? 'Online' : 'Offline'}</p>
+            <div className={`p-3 md:p-4 border-b flex items-center justify-between ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
+                <div className="flex items-center gap-2 md:gap-3 min-w-0">
+                    <button
+                        onClick={onBack}
+                        className="md:hidden p-2 -ml-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors"
+                    >
+                        <ChevronLeft size={20} className="text-slate-500" />
+                    </button>
+                    <img src={teacher.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(teacher.name)}&background=random`} alt={teacher.name} className="w-9 h-9 md:w-10 md:h-10 rounded-full object-cover flex-shrink-0" />
+                    <div className="min-w-0">
+                        <h3 className={`font-semibold text-sm md:text-base truncate ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{teacher.name}</h3>
+                        <p className={`text-[10px] md:text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{teacher.isOnline ? 'Online' : 'Offline'}</p>
                     </div>
                 </div>
-                <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full">
+                <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full flex-shrink-0">
                     <MoreVertical size={20} className="text-slate-500" />
                 </button>
             </div>

@@ -203,31 +203,47 @@ export default function ChatLayout() {
     }, []);
 
     return (
-        <div className={`flex h-[calc(100vh-2rem)] rounded-2xl overflow-hidden border ${isDark ? 'bg-[#121A21] border-slate-700' : 'bg-white border-slate-200'} shadow-xl`}>
-            <ChatSidebar
-                conversations={conversations}
-                selectedUser={selectedUser}
-                onSelectUser={setSelectedUser}
-                isDark={isDark}
-                onlineUsers={onlineUsers}
-                currentUserId={currentUserId}
-            />
+        <div className={`flex h-[calc(100vh-2rem)] md:h-[calc(100vh-2rem)] rounded-xl md:rounded-2xl overflow-hidden border ${isDark ? 'bg-[#121A21] border-slate-700' : 'bg-white border-slate-200'} shadow-xl relative`}>
+            {/* Sidebar: hidden on mobile if a user is selected */}
+            <div className={`w-full md:w-80 h-full ${selectedUser ? 'hidden md:flex' : 'flex'}`}>
+                <ChatSidebar
+                    conversations={conversations}
+                    selectedUser={selectedUser}
+                    onSelectUser={setSelectedUser}
+                    isDark={isDark}
+                    onlineUsers={onlineUsers}
+                    currentUserId={currentUserId}
+                />
+            </div>
+
+            {/* Chat Window: hidden on mobile if no user is selected */}
             {selectedUser ? (
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 h-full flex flex-col">
                     <ChatWindow
                         teacher={selectedUser}
                         isDark={isDark}
                         socket={socket}
+                        onBack={() => setSelectedUser(null)}
                     />
                 </div>
             ) : (
-                <div className={`flex-1 flex items-center justify-center ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
-                    <div className="text-center">
-                        <h3 className="text-xl font-semibold mb-2">Select a teacher to start chatting</h3>
-                        <p>Communicate with your teachers instantly.</p>
+                <div className={`hidden md:flex flex-1 items-center justify-center ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                    <div className="text-center p-6">
+                        <div className={`w-16 h-16 rounded-2xl ${isDark ? 'bg-slate-800' : 'bg-slate-50'} flex items-center justify-center mx-auto mb-4 border ${isDark ? 'border-slate-700' : 'border-slate-200'}`}>
+                            <ChatUserIcon size={32} />
+                        </div>
+                        <h3 className="text-xl font-bold mb-2">Select a Teacher</h3>
+                        <p className="text-sm max-w-[240px]">Start an instant conversation with your teachers or group members.</p>
                     </div>
                 </div>
             )}
         </div>
     );
 }
+
+// Simple internal icon component for the placeholder
+const ChatUserIcon = ({ size }: { size: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    </svg>
+);

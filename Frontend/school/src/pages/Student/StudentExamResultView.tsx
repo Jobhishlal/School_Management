@@ -44,6 +44,58 @@ interface ExamResult {
     division?: string;  // Added for filtering
 }
 
+const ResultAction: React.FC<{ result: ExamResult; isDark: boolean; handleRaiseConcernClick: (r: ExamResult) => void; isMobile?: boolean }> = ({ result, isDark, handleRaiseConcernClick, isMobile }) => {
+    if (result.concernStatus === "Pending") {
+        return (
+            <div className={`flex items-center gap-1.5 px-2 py-1 rounded-md bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 ${isMobile ? "w-fit" : ""}`}>
+                <AlertTriangle size={14} />
+                <span className="text-[10px] md:text-xs font-black uppercase tracking-tight">Under Review</span>
+            </div>
+        );
+    }
+
+    if (result.concernStatus === "Resolved" || result.concernStatus === "Rejected") {
+        return (
+            <div className="group relative inline-block">
+                <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full cursor-help ${result.concernStatus === "Resolved"
+                    ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                    : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                    }`}>
+                    {result.concernStatus === "Resolved" ? <CheckCircle size={14} /> : <AlertCircle size={14} />}
+                    <span className="text-[10px] md:text-xs font-black uppercase tracking-tight">{result.concernStatus}</span>
+                </div>
+                {result.concernResponse && (
+                    <div className={`absolute bottom-full right-0 mb-2 w-56 p-3 rounded-xl shadow-2xl text-[10px] md:text-xs z-50 hidden group-hover:block transition-all border ${isDark ? "bg-slate-800 border-slate-700 text-slate-200" : "bg-white border-slate-200 text-gray-700"}`}>
+                        <p className="font-black mb-1.5 border-b pb-1 border-slate-700/30 text-[10px]">Teacher's Note:</p>
+                        <p className="leading-relaxed opacity-90">{result.concernResponse}</p>
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    const isExpired = result.updatedAt && (new Date().getTime() - new Date(result.updatedAt).getTime() > 24 * 60 * 60 * 1000);
+    if (isExpired) {
+        return (
+            <span className={`text-[10px] md:text-xs font-bold italic opacity-40`}>
+                Concern Closed
+            </span>
+        );
+    }
+
+    return (
+        <button
+            onClick={() => handleRaiseConcernClick(result)}
+            className={`${isMobile ? "w-full py-3" : "px-4 py-1.5"} text-[10px] md:text-xs rounded-lg border font-bold transition-all shadow-sm active:scale-95 ${isDark
+                ? "border-slate-600 hover:bg-slate-700 text-slate-300 bg-slate-800"
+                : "border-slate-300 hover:bg-slate-100 text-slate-600 bg-white"
+                }`}
+        >
+            Raise Concern
+        </button>
+    );
+};
+
 export const StudentExamResultsPage: React.FC = () => {
     const { isDark } = useTheme();
     const [selectedSubject, setSelectedSubject] = useState<string>("All");
@@ -324,23 +376,23 @@ export const StudentExamResultsPage: React.FC = () => {
     }
 
     return (
-        <div className={`space-y-8 p-6 ${isDark ? "bg-[#121A21]" : "bg-slate-50"} min-h-screen`} ref={printRef}>
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className={`text-2xl font-bold ${textPrimary}`}>Exam Results</h1>
-                    <p className={textSecondary}>Track your academic performance</p>
+        <div className={`p-4 md:p-6 space-y-6 md:space-y-8 ${isDark ? "bg-[#121A21]" : "bg-slate-50"} min-h-screen`} ref={printRef}>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-1">
+                    <h1 className={`text-xl md:text-2xl font-bold tracking-tight ${textPrimary}`}>Exam Results</h1>
+                    <p className={`text-xs md:text-sm font-medium ${textSecondary}`}>Track your academic performance</p>
                 </div>
                 <button
                     onClick={handleDownloadPDF}
-                    className="flex items-center gap-2 rounded-lg bg-slate-700 px-4 py-2 text-white hover:bg-slate-600 transition-colors"
+                    className="flex w-full md:w-auto items-center justify-center gap-2 rounded-xl bg-slate-700 px-5 py-2.5 text-xs md:text-sm font-bold text-white hover:bg-slate-600 transition-all shadow-md active:scale-95"
                     data-html2canvas-ignore="true"
                 >
-                    <Download size={18} />
+                    <Download size={16} className="md:w-[18px] md:h-[18px]" />
                     <span>Download Report</span>
                 </button>
             </div>
 
-            <div className="flex items-center gap-4 flex-wrap" data-html2canvas-ignore="true">
+            <div className="flex items-center gap-3 flex-wrap" data-html2canvas-ignore="true">
                 <select
                     className={`rounded-lg border px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500 ${isDark
                         ? "bg-slate-800 border-slate-700 text-slate-100"
@@ -375,24 +427,32 @@ export const StudentExamResultsPage: React.FC = () => {
             </div>
 
             <div>
-                <h2 className={`mb-4 text-xl font-semibold ${textPrimary}`}>Performance Overview</h2>
+                <h2 className={`mb-3 md:mb-4 text-lg md:text-xl font-bold tracking-tight ${textPrimary}`}>Performance Overview</h2>
                 {selectedSubject === "All" ? (
-                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                        <div className={`rounded-xl border ${border} ${cardBg} p-6 shadow-md`}>
-                            <h3 className={`mb-4 text-sm font-medium ${textSecondary}`}>Subject Performance (Avg %)</h3>
-                            <div className="h-64 w-full">
+                    <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-2">
+                        <div className={`rounded-xl md:rounded-2xl border ${border} ${cardBg} p-4 md:p-6 shadow-sm`}>
+                            <h3 className={`mb-4 text-xs md:text-sm font-bold uppercase tracking-wider ${textSecondary}`}>Subject Performance (Avg %)</h3>
+                            <div className="h-56 md:h-64 w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={overallSubjectData}>
                                         <CartesianGrid strokeDasharray="3 3" opacity={0.1} vertical={false} />
-                                        <XAxis dataKey="subject" axisLine={false} tickLine={false} />
+                                        <XAxis
+                                            dataKey="subject"
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fontSize: 10, fill: isDark ? "#94a3b8" : "#64748b" }}
+                                        />
                                         <YAxis hide domain={[0, 100]} />
                                         <Tooltip
                                             cursor={{ fill: 'transparent' }}
                                             contentStyle={{
                                                 backgroundColor: isDark ? "#1e293b" : "#fff",
                                                 borderColor: isDark ? "#334155" : "#e2e8f0",
-                                                borderRadius: "8px",
-                                                color: isDark ? "#f1f5f9" : "#0f172a"
+                                                borderRadius: "12px",
+                                                fontSize: "12px",
+                                                fontWeight: "bold",
+                                                color: isDark ? "#f1f5f9" : "#0f172a",
+                                                boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)"
                                             }}
                                         />
                                         <Bar dataKey="average" radius={[4, 4, 0, 0]}>
@@ -405,17 +465,17 @@ export const StudentExamResultsPage: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className={`rounded-xl border ${border} ${cardBg} p-6 shadow-md`}>
-                            <h3 className={`mb-4 text-sm font-medium ${textSecondary}`}>Exam Results Status</h3>
-                            <div className="h-64 w-full flex items-center justify-center">
+                        <div className={`rounded-xl md:rounded-2xl border ${border} ${cardBg} p-4 md:p-6 shadow-sm`}>
+                            <h3 className={`mb-4 text-xs md:text-sm font-bold uppercase tracking-wider ${textSecondary}`}>Exam Results Status</h3>
+                            <div className="h-56 md:h-64 w-full flex items-center justify-center">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
                                         <Pie
                                             data={passFailData}
                                             cx="50%"
                                             cy="50%"
-                                            innerRadius={60}
-                                            outerRadius={80}
+                                            innerRadius={50}
+                                            outerRadius={70}
                                             paddingAngle={5}
                                             dataKey="value"
                                         >
@@ -427,33 +487,44 @@ export const StudentExamResultsPage: React.FC = () => {
                                             contentStyle={{
                                                 backgroundColor: isDark ? "#1e293b" : "#fff",
                                                 borderColor: isDark ? "#334155" : "#e2e8f0",
-                                                borderRadius: "8px",
-                                                color: isDark ? "#f1f5f9" : "#0f172a"
+                                                borderRadius: "12px",
+                                                fontSize: "12px",
+                                                fontWeight: "bold",
+                                                color: isDark ? "#f1f5f9" : "#0f172a",
+                                                boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)"
                                             }}
                                         />
                                     </PieChart>
                                 </ResponsiveContainer>
                             </div>
-                            <div className="flex justify-center gap-4 text-sm">
-                                <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-green-500"></span> Passed: {passCount}</span>
-                                <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-red-500"></span> Failed: {failCount}</span>
+                            <div className="flex justify-center gap-6 text-[10px] md:text-xs font-bold uppercase tracking-widest mt-2">
+                                <span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-sm shadow-green-500/30"></span> Passed: {passCount}</span>
+                                <span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm shadow-red-500/30"></span> Failed: {failCount}</span>
                             </div>
                         </div>
 
-                        <div className={`rounded-xl border ${border} ${cardBg} p-6 shadow-md col-span-1 lg:col-span-2`}>
-                            <h3 className={`mb-4 text-sm font-medium ${textSecondary}`}>Exam Performance Timeline</h3>
-                            <div className="h-64 w-full">
+                        <div className={`rounded-xl md:rounded-2xl border ${border} ${cardBg} p-4 md:p-6 shadow-sm col-span-1 lg:col-span-2`}>
+                            <h3 className={`mb-4 text-xs md:text-sm font-bold uppercase tracking-wider ${textSecondary}`}>Exam Performance Timeline</h3>
+                            <div className="h-56 md:h-64 w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <LineChart data={results.filter(r => r.percentage !== null).sort((a, b) => new Date(a.examDate).getTime() - new Date(b.examDate).getTime())}>
                                         <CartesianGrid strokeDasharray="3 3" opacity={0.1} vertical={false} />
-                                        <XAxis dataKey="examTitle" axisLine={false} tickLine={false} />
+                                        <XAxis
+                                            dataKey="examTitle"
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fontSize: 10, fill: isDark ? "#94a3b8" : "#64748b" }}
+                                        />
                                         <YAxis hide domain={[0, 100]} />
                                         <Tooltip
                                             contentStyle={{
                                                 backgroundColor: isDark ? "#1e293b" : "#fff",
                                                 borderColor: isDark ? "#334155" : "#e2e8f0",
-                                                borderRadius: "8px",
-                                                color: isDark ? "#f1f5f9" : "#0f172a"
+                                                borderRadius: "12px",
+                                                fontSize: "12px",
+                                                fontWeight: "bold",
+                                                color: isDark ? "#f1f5f9" : "#0f172a",
+                                                boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)"
                                             }}
                                         />
                                         <Line
@@ -461,8 +532,8 @@ export const StudentExamResultsPage: React.FC = () => {
                                             dataKey="percentage"
                                             stroke="#8b5cf6"
                                             strokeWidth={3}
-                                            dot={{ r: 4, fill: "#8b5cf6" }}
-                                            activeDot={{ r: 6, fill: "#8b5cf6", strokeWidth: 0 }}
+                                            dot={{ r: 4, fill: "#8b5cf6", strokeWidth: 2, stroke: isDark ? "#0f172a" : "#fff" }}
+                                            activeDot={{ r: 6, fill: "#8b5cf6", strokeWidth: 2, stroke: isDark ? "#0f172a" : "#fff" }}
                                         />
                                     </LineChart>
                                 </ResponsiveContainer>
@@ -470,20 +541,28 @@ export const StudentExamResultsPage: React.FC = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className={`rounded-xl border ${border} ${cardBg} p-6 shadow-md`}>
-                        <h3 className={`mb-4 text-sm font-medium ${textSecondary}`}>{selectedSubject} Performance Trend</h3>
-                        <div className="h-64 w-full">
+                    <div className={`rounded-xl md:rounded-2xl border ${border} ${cardBg} p-4 md:p-6 shadow-sm`}>
+                        <h3 className={`mb-4 text-xs md:text-sm font-bold uppercase tracking-wider ${textSecondary}`}>{selectedSubject} Performance Trend</h3>
+                        <div className="h-56 md:h-64 w-full">
                             <ResponsiveContainer width="100%" height="100%">
                                 <LineChart data={subjectTrendData}>
                                     <CartesianGrid strokeDasharray="3 3" opacity={0.1} vertical={false} />
-                                    <XAxis dataKey="examTitle" axisLine={false} tickLine={false} />
+                                    <XAxis
+                                        dataKey="examTitle"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fontSize: 10, fill: isDark ? "#94a3b8" : "#64748b" }}
+                                    />
                                     <YAxis hide domain={[0, 100]} />
                                     <Tooltip
                                         contentStyle={{
                                             backgroundColor: isDark ? "#1e293b" : "#fff",
                                             borderColor: isDark ? "#334155" : "#e2e8f0",
-                                            borderRadius: "8px",
-                                            color: isDark ? "#f1f5f9" : "#0f172a"
+                                            borderRadius: "12px",
+                                            fontSize: "12px",
+                                            fontWeight: "bold",
+                                            color: isDark ? "#f1f5f9" : "#0f172a",
+                                            boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)"
                                         }}
                                     />
                                     <Line
@@ -491,8 +570,8 @@ export const StudentExamResultsPage: React.FC = () => {
                                         dataKey="percentage"
                                         stroke="#3b82f6"
                                         strokeWidth={3}
-                                        dot={{ r: 4, fill: "#3b82f6" }}
-                                        activeDot={{ r: 6, fill: "#3b82f6", strokeWidth: 0 }}
+                                        dot={{ r: 4, fill: "#3b82f6", strokeWidth: 2, stroke: isDark ? "#0f172a" : "#fff" }}
+                                        activeDot={{ r: 6, fill: "#3b82f6", strokeWidth: 2, stroke: isDark ? "#0f172a" : "#fff" }}
                                     />
                                 </LineChart>
                             </ResponsiveContainer>
@@ -501,57 +580,57 @@ export const StudentExamResultsPage: React.FC = () => {
                 )}
             </div>
 
-            <div className={`rounded-xl border ${border} ${cardBg} shadow-md overflow-hidden`}>
-                <div className="p-6 border-b border-slate-700/50">
-                    <h3 className={`text-lg font-semibold ${textPrimary}`}>Detailed Results</h3>
+            <div className={`rounded-xl md:rounded-2xl border ${border} ${cardBg} shadow-sm overflow-hidden`}>
+                <div className="p-4 md:p-6 border-b border-slate-700/50 flex justify-between items-center">
+                    <h3 className={`text-base md:text-lg font-bold tracking-tight ${textPrimary}`}>Detailed Results</h3>
                 </div>
-                <div className="overflow-x-auto">
+
+                {/* Desktop Table View */}
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left text-sm">
                         <thead className={`border-b ${border} ${isDark ? "bg-slate-900/50" : "bg-slate-100"}`}>
                             <tr>
-                                <th className={`p-4 font-medium ${textSecondary}`}>Exam Title</th>
-                                <th className={`p-4 font-medium ${textSecondary}`}>Date</th>
-                                <th className={`p-4 font-medium ${textSecondary}`}>Subject</th>
-                                <th className={`p-4 font-medium ${textSecondary}`}>Marks (Max/Pass)</th>
-                                <th className={`p-4 font-medium ${textSecondary}`}>Obtained</th>
-                                <th className={`p-4 font-medium ${textSecondary}`}>Percentage</th>
-                                <th className={`p-4 font-medium ${textSecondary}`}>Status</th>
-                                <th className={`p-4 font-medium ${textSecondary}`} data-html2canvas-ignore="true">Action</th>
+                                <th className={`p-4 font-bold uppercase tracking-wider text-xs ${textSecondary}`}>Exam Details</th>
+                                <th className={`p-4 font-bold uppercase tracking-wider text-xs ${textSecondary}`}>Subject</th>
+                                <th className={`p-4 font-bold uppercase tracking-wider text-xs ${textSecondary}`}>Marks</th>
+                                <th className={`p-4 font-bold uppercase tracking-wider text-xs ${textSecondary}`}>Obtained</th>
+                                <th className={`p-4 font-bold uppercase tracking-wider text-xs ${textSecondary}`}>Percentage</th>
+                                <th className={`p-4 font-bold uppercase tracking-wider text-xs ${textSecondary}`}>Status</th>
+                                <th className={`p-4 font-bold uppercase tracking-wider text-xs ${textSecondary}`} data-html2canvas-ignore="true">Action</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-700/30">
                             {currentResults.length === 0 ? (
                                 <tr>
-                                    <td colSpan={8} className="p-8 text-center text-slate-500">No exam results found.</td>
+                                    <td colSpan={7} className="p-8 text-center text-slate-500 font-medium">No exam results found.</td>
                                 </tr>
                             ) : (
                                 currentResults.map((result) => (
                                     <tr
                                         key={result.examId}
-                                        className={`group transition-colors ${isDark ? "hover:bg-slate-700/30" : "hover:bg-slate-50"
-                                            }`}
+                                        className={`group transition-colors ${isDark ? "hover:bg-slate-700/30" : "hover:bg-slate-50"}`}
                                     >
-                                        <td className={`p-4 font-medium ${textPrimary}`}>{result.examTitle}</td>
-                                        <td className={`p-4 ${textSecondary}`}>
-                                            {new Date(result.examDate).toLocaleDateString()}
+                                        <td className="p-4">
+                                            <p className={`font-bold ${textPrimary}`}>{result.examTitle}</p>
+                                            <p className={`text-xs font-medium ${textSecondary}`}>{new Date(result.examDate).toLocaleDateString()}</p>
                                         </td>
-                                        <td className={`p-4 ${textSecondary}`}>{result.subject}</td>
-                                        <td className={`p-4 ${textSecondary}`}>
-                                            <span className="font-semibold text-blue-500">{result.maxMarks}</span> / <span className="text-gray-500">{result.passMarks}</span>
+                                        <td className={`p-4 font-medium ${textSecondary}`}>{result.subject}</td>
+                                        <td className={`p-4 ${textSecondary} font-medium`}>
+                                            <span className="text-blue-500 font-bold">{result.maxMarks}</span> <span className="opacity-40">/</span> <span className="opacity-60">{result.passMarks}</span>
                                         </td>
-                                        <td className={`p-4 font-semibold ${textPrimary}`}>
+                                        <td className={`p-4 font-black ${textPrimary} text-base`}>
                                             {result.marksObtained !== null ? result.marksObtained : "-"}
                                         </td>
-                                        <td className={`p-4 ${textSecondary}`}>
+                                        <td className={`p-4 font-bold ${textSecondary}`}>
                                             {result.percentage !== null ? `${result.percentage}%` : "-"}
                                         </td>
                                         <td className="p-4">
                                             <span
-                                                className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${result.status === "Passed"
-                                                    ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                                                className={`inline-flex items-center rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-wider ${result.status === "Passed"
+                                                    ? "bg-green-500/10 text-green-500 border border-green-500/20"
                                                     : result.status === "Failed"
-                                                        ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
-                                                        : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
+                                                        ? "bg-red-500/10 text-red-500 border border-red-500/20"
+                                                        : "bg-yellow-500/10 text-yellow-500 border border-yellow-500/20"
                                                     }`}
                                             >
                                                 {result.status}
@@ -559,48 +638,7 @@ export const StudentExamResultsPage: React.FC = () => {
                                         </td>
                                         <td className="p-4" data-html2canvas-ignore="true">
                                             {result.marksObtained !== null && (
-                                                result.concernStatus === "Pending" ? (
-                                                    <div className="flex items-center gap-2 px-2 py-1 rounded-md bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
-                                                        <AlertTriangle size={14} />
-                                                        <span className="text-xs font-semibold">Under Review</span>
-                                                    </div>
-                                                ) : result.concernStatus === "Resolved" || result.concernStatus === "Rejected" ? (
-                                                    <div className="group relative inline-block">
-                                                        <div className={`flex items-center gap-1 px-2 py-1 rounded-md cursor-help ${result.concernStatus === "Resolved"
-                                                            ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                                                            : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                                                            }`}>
-                                                            {result.concernStatus === "Resolved" ? <CheckCircle size={14} /> : <AlertCircle size={14} />}
-                                                            <span className="text-xs font-semibold">{result.concernStatus}</span>
-                                                        </div>
-                                                        {result.concernResponse && (
-                                                            <div className={`absolute bottom-full right-0 mb-2 w-56 p-3 rounded-lg shadow-xl text-xs z-50 hidden group-hover:block transition-opacity opacity-0 group-hover:opacity-100 ${isDark ? "bg-slate-800 border border-slate-600 text-slate-200" : "bg-white border border-gray-200 text-gray-700"
-                                                                }`}>
-                                                                <p className="font-bold mb-1 border-b pb-1 border-gray-200 dark:border-gray-600">Teacher's Note:</p>
-                                                                <p className="leading-relaxed">{result.concernResponse}</p>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                ) : (
-                                                    (() => {
-                                                        const isExpired = result.updatedAt && (new Date().getTime() - new Date(result.updatedAt).getTime() > 24 * 60 * 60 * 1000);
-                                                        return isExpired ? (
-                                                            <span className={`text-xs italic ${isDark ? "text-slate-500" : "text-slate-400"}`}>
-                                                                Concern Closed
-                                                            </span>
-                                                        ) : (
-                                                            <button
-                                                                onClick={() => handleRaiseConcernClick(result)}
-                                                                className={`text-xs px-3 py-1.5 rounded-md border font-medium transition-colors ${isDark
-                                                                    ? "border-slate-600 hover:bg-slate-700 text-slate-300 bg-slate-800"
-                                                                    : "border-slate-300 hover:bg-slate-100 text-slate-600 bg-white"
-                                                                    }`}
-                                                            >
-                                                                Raise Concern
-                                                            </button>
-                                                        );
-                                                    })()
-                                                )
+                                                <ResultAction result={result} isDark={isDark} handleRaiseConcernClick={handleRaiseConcernClick} />
                                             )}
                                         </td>
                                     </tr>
@@ -609,12 +647,65 @@ export const StudentExamResultsPage: React.FC = () => {
                         </tbody>
                     </table>
                 </div>
-                <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={setCurrentPage}
-                />
+
+                {/* Mobile Card Layout */}
+                <div className="md:hidden divide-y divide-slate-700/30">
+                    {currentResults.length === 0 ? (
+                        <div className="p-8 text-center text-slate-500 font-medium">No exam results found.</div>
+                    ) : (
+                        currentResults.map((result) => (
+                            <div key={result.examId} className="p-4 space-y-4">
+                                <div className="flex justify-between items-start gap-4">
+                                    <div className="space-y-1">
+                                        <h4 className={`text-sm font-black tracking-tight ${textPrimary}`}>{result.examTitle}</h4>
+                                        <div className="flex items-center gap-2">
+                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded bg-slate-700/30 ${textSecondary}`}>{result.subject}</span>
+                                            <span className={`text-[10px] font-medium ${textSecondary}`}>{new Date(result.examDate).toLocaleDateString()}</span>
+                                        </div>
+                                    </div>
+                                    <span
+                                        className={`shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${result.status === "Passed"
+                                            ? "bg-green-500/10 text-green-500 border border-green-500/20"
+                                            : result.status === "Failed"
+                                                ? "bg-red-500/10 text-red-500 border border-red-500/20"
+                                                : "bg-yellow-500/10 text-yellow-500 border border-yellow-500/20"
+                                            }`}
+                                    >
+                                        {result.status}
+                                    </span>
+                                </div>
+
+                                <div className="grid grid-cols-3 gap-2 bg-slate-800/20 rounded-xl p-3">
+                                    <div className="text-center space-y-0.5">
+                                        <p className={`text-[8px] font-bold uppercase tracking-tighter ${textSecondary} opacity-60`}>Marks</p>
+                                        <p className={`text-xs font-black ${textPrimary}`}>{result.marksObtained ?? "-"}</p>
+                                    </div>
+                                    <div className="text-center border-x border-slate-700/30 space-y-0.5">
+                                        <p className={`text-[8px] font-bold uppercase tracking-tighter ${textSecondary} opacity-60`}>Max</p>
+                                        <p className={`text-xs font-black ${textPrimary}`}>{result.maxMarks}</p>
+                                    </div>
+                                    <div className="text-center space-y-0.5">
+                                        <p className={`text-[8px] font-bold uppercase tracking-tighter ${textSecondary} opacity-60`}>Result</p>
+                                        <p className={`text-xs font-black text-blue-500`}>{result.percentage ? `${result.percentage}%` : "-"}</p>
+                                    </div>
+                                </div>
+
+                                <div data-html2canvas-ignore="true" className="pt-1">
+                                    {result.marksObtained !== null && (
+                                        <ResultAction result={result} isDark={isDark} handleRaiseConcernClick={handleRaiseConcernClick} isMobile />
+                                    )}
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
             </div>
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+            />
+
             {/* Concern Modal */}
             <Modal isOpen={concernModalOpen} onClose={() => setConcernModalOpen(false)} title="Raise a Concern">
                 <div className="space-y-4">
