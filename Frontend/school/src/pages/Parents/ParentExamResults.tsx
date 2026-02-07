@@ -292,24 +292,24 @@ const ParentExamResults: React.FC = () => {
     }
 
     return (
-        <div className={`space-y-6 p-4 md:p-6 ${isDark ? "bg-[#121A21]" : "bg-slate-50"} min-h-screen`} ref={printRef}>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 p-5 md:p-6 shadow-xl w-full sm:w-auto">
+        <div className={`space-y-4 md:space-y-6 p-3 md:p-6 ${isDark ? "bg-[#121A21]" : "bg-slate-50"} min-h-screen`} ref={printRef}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 md:gap-6">
+                <div className="relative overflow-hidden rounded-xl md:rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 p-4 md:p-6 shadow-xl w-full sm:w-auto">
 
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                    <div className="absolute top-0 right-0 w-32 md:w-40 h-32 md:h-40 bg-white/10 rounded-full blur-3xl"></div>
+                    <div className="absolute bottom-0 left-0 w-24 md:w-32 h-24 md:h-32 bg-white/10 rounded-full blur-2xl"></div>
 
-                    <div className="relative flex items-center gap-4">
+                    <div className="relative flex items-center gap-3 md:gap-4">
 
-                        <div className="flex-shrink-0 w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm border-2 border-white/40 flex items-center justify-center text-2xl font-bold text-white shadow-lg">
+                        <div className="flex-shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/20 backdrop-blur-sm border-2 border-white/40 flex items-center justify-center text-xl md:text-2xl font-bold text-white shadow-lg">
                             {studentProfile?.name?.charAt(0).toUpperCase()}
                         </div>
 
                         <div className="flex-1 min-w-0">
-                            <p className="text-white/90 text-xs md:text-sm font-medium mb-1">📊 Academic Performance Report</p>
-                            <h2 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2 truncate">
+                            <p className="text-white/90 text-[10px] md:text-sm font-medium mb-0.5 md:mb-1">📊 Academic Performance Report</p>
+                            <h2 className="text-lg md:text-2xl font-bold text-white flex items-center gap-2 truncate">
                                 {studentProfile?.name}
-                                <span className="text-sm md:text-base bg-white/20 backdrop-blur-sm px-2 md:px-3 py-1 rounded-full flex-shrink-0">
+                                <span className="text-xs md:text-base bg-white/20 backdrop-blur-sm px-2 md:px-3 py-0.5 md:py-1 rounded-full flex-shrink-0">
                                     🎓
                                 </span>
                             </h2>
@@ -319,17 +319,17 @@ const ParentExamResults: React.FC = () => {
 
                 <button
                     onClick={handleDownloadPDF}
-                    className="flex items-center justify-center gap-2 rounded-lg bg-slate-700 px-4 py-2.5 text-white hover:bg-slate-600 transition-colors w-full sm:w-auto shadow-sm"
+                    className="flex items-center justify-center gap-2 rounded-xl bg-slate-700 px-4 py-3 text-white hover:bg-slate-600 transition-colors w-full sm:w-auto shadow-sm text-sm font-semibold"
                     data-html2canvas-ignore="true"
                 >
                     <Download size={18} />
-                    <span className="font-medium">Download Report</span>
+                    <span>Download Report</span>
                 </button>
             </div>
 
             <div className="flex flex-wrap items-center gap-3" data-html2canvas-ignore="true">
                 <select
-                    className={`w-full sm:w-auto rounded-lg border px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all ${isDark
+                    className={`w-full sm:w-auto rounded-xl border px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all text-sm ${isDark
                         ? "bg-slate-800 border-slate-700 text-slate-100 focus:border-blue-500"
                         : "bg-white border-slate-200 text-slate-900 focus:border-blue-400"
                         }`}
@@ -474,26 +474,31 @@ const ParentExamResults: React.FC = () => {
             </div>
 
             <div className={`rounded-xl border ${border} ${cardBg} shadow-md overflow-hidden`}>
-                <div className="p-6 border-b border-slate-700/50">
-                    <h3 className={`text-lg font-semibold ${textPrimary}`}>Detailed Results</h3>
+                <div className="p-4 md:p-6 border-b border-slate-700/50 flex items-center justify-between">
+                    <h3 className={`text-base md:text-lg font-bold ${textPrimary}`}>Detailed Results</h3>
+                    <span className={`text-[10px] md:text-xs px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-500 font-medium ${isDark ? "bg-blue-900/20" : ""}`}>
+                        {filteredResults.length} Exams
+                    </span>
                 </div>
-                <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+
+                {/* Desktop View Table */}
+                <div className="hidden md:block overflow-x-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
                     <table className="w-full text-left text-sm min-w-[700px]">
                         <thead className={`border-b ${border} ${isDark ? "bg-slate-900/50" : "bg-slate-100"}`}>
                             <tr>
-                                <th className={`p-4 font-medium ${textSecondary}`}>Exam Title</th>
-                                <th className={`p-4 font-medium ${textSecondary}`}>Date</th>
-                                <th className={`p-4 font-medium ${textSecondary}`}>Subject</th>
-                                <th className={`p-4 font-medium ${textSecondary}`}>Marks (Max/Pass)</th>
-                                <th className={`p-4 font-medium ${textSecondary}`}>Obtained</th>
-                                <th className={`p-4 font-medium ${textSecondary}`}>Percentage</th>
-                                <th className={`p-4 font-medium ${textSecondary}`}>Status</th>
+                                <th className={`p-4 font-semibold ${textSecondary}`}>Exam Title</th>
+                                <th className={`p-4 font-semibold ${textSecondary}`}>Date</th>
+                                <th className={`p-4 font-semibold ${textSecondary}`}>Subject</th>
+                                <th className={`p-4 font-semibold ${textSecondary}`}>Marks (Max/Pass)</th>
+                                <th className={`p-4 font-semibold ${textSecondary}`}>Obtained</th>
+                                <th className={`p-4 font-semibold ${textSecondary}`}>Percentage</th>
+                                <th className={`p-4 font-semibold ${textSecondary}`}>Status</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-700/30">
                             {currentResults.length === 0 ? (
                                 <tr>
-                                    <td colSpan={8} className="p-8 text-center text-slate-500">No exam results found.</td>
+                                    <td colSpan={8} className="p-8 text-center text-slate-500 font-medium">No exam results found.</td>
                                 </tr>
                             ) : (
                                 currentResults.map((result) => (
@@ -502,27 +507,27 @@ const ParentExamResults: React.FC = () => {
                                         className={`group transition-colors ${isDark ? "hover:bg-slate-700/30" : "hover:bg-slate-50"
                                             }`}
                                     >
-                                        <td className={`p-4 font-medium ${textPrimary}`}>{result.examTitle}</td>
-                                        <td className={`p-4 ${textSecondary}`}>
+                                        <td className={`p-4 font-bold ${textPrimary}`}>{result.examTitle}</td>
+                                        <td className={`p-4 ${textSecondary} font-medium`}>
                                             {new Date(result.examDate).toLocaleDateString()}
                                         </td>
-                                        <td className={`p-4 ${textSecondary}`}>{result.subject}</td>
-                                        <td className={`p-4 ${textSecondary}`}>
-                                            <span className="font-semibold text-blue-500">{result.maxMarks}</span> / <span className="text-gray-500">{result.passMarks}</span>
+                                        <td className={`p-4 ${textSecondary} font-medium`}>{result.subject}</td>
+                                        <td className={`p-4 ${textSecondary} font-medium`}>
+                                            <span className="font-bold text-blue-500">{result.maxMarks}</span> / <span className="opacity-60">{result.passMarks}</span>
                                         </td>
-                                        <td className={`p-4 font-semibold ${textPrimary}`}>
+                                        <td className={`p-4 font-bold ${textPrimary}`}>
                                             {result.marksObtained !== null ? result.marksObtained : "-"}
                                         </td>
-                                        <td className={`p-4 ${textSecondary}`}>
+                                        <td className={`p-4 font-bold ${textPrimary}`}>
                                             {result.percentage !== null ? `${result.percentage}%` : "-"}
                                         </td>
                                         <td className="p-4">
                                             <span
-                                                className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${result.status === "Passed"
-                                                    ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                                                className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold ${result.status === "Passed"
+                                                    ? "bg-green-500/10 text-green-500"
                                                     : result.status === "Failed"
-                                                        ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
-                                                        : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
+                                                        ? "bg-red-500/10 text-red-500"
+                                                        : "bg-yellow-500/10 text-yellow-500"
                                                     }`}
                                             >
                                                 {result.status}
@@ -533,6 +538,56 @@ const ParentExamResults: React.FC = () => {
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Mobile Card View */}
+                <div className="md:hidden divide-y divide-slate-700/30">
+                    {currentResults.length === 0 ? (
+                        <div className="p-8 text-center text-slate-500 font-medium">No exam results found.</div>
+                    ) : (
+                        currentResults.map((result) => (
+                            <div key={result.examId} className={`p-4 space-y-3 ${isDark ? "hover:bg-slate-700/20" : "hover:bg-slate-50/50"} transition-colors`}>
+                                <div className="flex justify-between items-start gap-2">
+                                    <div className="min-w-0">
+                                        <h4 className={`font-bold ${textPrimary} truncate text-sm mb-0.5`}>{result.examTitle}</h4>
+                                        <p className={`text-[10px] ${textSecondary} font-medium`}>
+                                            {new Date(result.examDate).toLocaleDateString()} • {result.subject}
+                                        </p>
+                                    </div>
+                                    <span
+                                        className={`shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ${result.status === "Passed"
+                                            ? "bg-green-500/10 text-green-500"
+                                            : result.status === "Failed"
+                                                ? "bg-red-500/10 text-red-500"
+                                                : "bg-yellow-500/10 text-yellow-500"
+                                            }`}
+                                    >
+                                        {result.status}
+                                    </span>
+                                </div>
+                                <div className="grid grid-cols-3 gap-2">
+                                    <div className="flex flex-col">
+                                        <span className={`text-[9px] uppercase tracking-wider ${textSecondary} font-bold opacity-60 mb-0.5`}>Marks</span>
+                                        <span className={`text-xs font-bold ${textPrimary}`}>
+                                            <span className="text-blue-500">{result.marksObtained ?? "-"}</span>
+                                            <span className={`mx-1 ${textSecondary}`}>/</span>
+                                            <span className={textSecondary}>{result.maxMarks}</span>
+                                        </span>
+                                    </div>
+                                    <div className="flex flex-col items-center">
+                                        <span className={`text-[9px] uppercase tracking-wider ${textSecondary} font-bold opacity-60 mb-0.5`}>Percentage</span>
+                                        <span className={`text-xs font-bold ${result.percentage !== null && result.percentage >= 40 ? "text-green-500" : "text-red-500"}`}>
+                                            {result.percentage !== null ? `${result.percentage}%` : "-"}
+                                        </span>
+                                    </div>
+                                    <div className="flex flex-col items-end">
+                                        <span className={`text-[9px] uppercase tracking-wider ${textSecondary} font-bold opacity-60 mb-0.5`}>Pass Mark</span>
+                                        <span className={`text-xs font-bold ${textSecondary}`}>{result.passMarks}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
                 </div>
                 <Pagination
                     currentPage={currentPage}

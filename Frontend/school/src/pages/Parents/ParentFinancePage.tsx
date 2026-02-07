@@ -326,27 +326,27 @@ export default function FinanceParentList() {
     <div className={`p-6 min-h-screen transition-colors duration-300 ${containerBg}`}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
-          <div>
-            <h1 className={`text-2xl md:text-3xl font-bold mb-2 ${textPrimary}`}>Finance Management</h1>
-            <p className={`text-sm md:text-base ${textSecondary}`}>View and manage your fee payments</p>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-2">
+          <div className="space-y-1">
+            <h1 className={`text-xl md:text-3xl font-bold tracking-tight ${textPrimary}`}>Finance Management</h1>
+            <p className={`text-xs md:text-base font-medium ${textSecondary}`}>Manage your student's fee payments</p>
           </div>
 
-          <div className="flex w-full md:w-auto p-1 bg-slate-800/80 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-inner">
+          <div className="flex w-full md:w-auto p-1 bg-slate-800/60 backdrop-blur-md rounded-xl md:rounded-2xl border border-slate-700/50 shadow-lg">
             <button
               onClick={() => setViewMode("FINANCE")}
-              className={`flex-1 md:flex-none px-4 md:px-6 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${viewMode === "FINANCE"
-                ? "bg-blue-600 text-white shadow-lg shadow-blue-900/40"
-                : "text-gray-400 hover:text-gray-200 hover:bg-slate-700/50"
+              className={`flex-1 md:flex-none px-4 md:px-8 py-2 md:py-2.5 rounded-lg md:rounded-xl text-xs md:text-sm font-bold transition-all duration-300 ${viewMode === "FINANCE"
+                ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30 ring-2 ring-blue-400/20"
+                : "text-slate-400 hover:text-slate-100 hover:bg-slate-700/40"
                 }`}
             >
               Details
             </button>
             <button
               onClick={() => setViewMode("HISTORY")}
-              className={`flex-1 md:flex-none px-4 md:px-6 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${viewMode === "HISTORY"
-                ? "bg-blue-600 text-white shadow-lg shadow-blue-900/40"
-                : "text-gray-400 hover:text-gray-200 hover:bg-slate-700/50"
+              className={`flex-1 md:flex-none px-4 md:px-8 py-2 md:py-2.5 rounded-lg md:rounded-xl text-xs md:text-sm font-bold transition-all duration-300 ${viewMode === "HISTORY"
+                ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30 ring-2 ring-blue-400/20"
+                : "text-slate-400 hover:text-slate-100 hover:bg-slate-700/40"
                 }`}
             >
               History
@@ -355,20 +355,20 @@ export default function FinanceParentList() {
         </div>
 
         {/* Student Info Card - Common for both views */}
-        <div className={`rounded-xl border ${borderColor} p-5 md:p-6 mb-8 transition-all duration-300 shadow-sm ${cardBg}`}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="space-y-1">
-              <p className={`text-xs font-semibold uppercase tracking-wider ${textSecondary}`}>Student Name</p>
-              <p className={`text-base md:text-lg font-bold ${textPrimary}`}>{studentData.name}</p>
+        <div className={`rounded-xl md:rounded-2xl border ${borderColor} p-4 md:p-6 transition-all duration-300 shadow-sm ${cardBg}`}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            <div className="space-y-0.5">
+              <p className={`text-[10px] md:text-xs font-bold uppercase tracking-widest ${textSecondary}`}>Student Name</p>
+              <p className={`text-sm md:text-lg font-extrabold truncate ${textPrimary}`}>{studentData.name}</p>
             </div>
-            <div className="space-y-1">
-              <p className={`text-xs font-semibold uppercase tracking-wider ${textSecondary}`}>Student ID</p>
-              <p className={`text-base md:text-lg font-bold ${textPrimary}`}>{studentData.studentId}</p>
+            <div className="space-y-0.5">
+              <p className={`text-[10px] md:text-xs font-bold uppercase tracking-widest ${textSecondary}`}>Student ID</p>
+              <p className={`text-sm md:text-lg font-extrabold font-mono ${textPrimary}`}>{studentData.studentId}</p>
             </div>
-            <div className="space-y-1 sm:col-span-2 lg:col-span-1">
-              <p className={`text-xs font-semibold uppercase tracking-wider ${textSecondary}`}>Class</p>
-              <p className={`text-base md:text-lg font-bold ${textPrimary}`}>
-                {studentData.class?.className || "N/A"} - {studentData.class?.division || ""}
+            <div className="space-y-0.5 sm:col-span-2 lg:col-span-1">
+              <p className={`text-[10px] md:text-xs font-bold uppercase tracking-widest ${textSecondary}`}>Class & Division</p>
+              <p className={`text-sm md:text-lg font-extrabold ${textPrimary}`}>
+                {studentData.class?.className || "N/A"} <span className="text-blue-500 mx-1">/</span> {studentData.class?.division || ""}
               </p>
             </div>
           </div>
@@ -377,64 +377,64 @@ export default function FinanceParentList() {
         {viewMode === "FINANCE" ? (
           <>
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <div className={`rounded-xl border ${borderColor} p-4 transition-all duration-300 shadow-sm ${cardBg} hover:shadow-md`}>
-                <div className="flex items-center justify-between">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+              <div className={`rounded-xl md:rounded-2xl border ${borderColor} p-3 md:p-4 transition-all duration-300 shadow-sm ${cardBg} hover:shadow-md border-b-4 border-b-blue-500`}>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
                   <div className="min-w-0">
-                    <p className={`text-xs font-semibold uppercase tracking-wider ${textSecondary}`}>Total Fees</p>
-                    <p className={`text-xl md:text-2xl font-bold truncate ${textPrimary}`}>{totalFees}</p>
+                    <p className={`text-[10px] md:text-xs font-bold uppercase tracking-wider ${textSecondary} mb-0.5 md:mb-1`}>Total</p>
+                    <p className={`text-sm md:text-2xl font-black truncate ${textPrimary}`}>{totalFees} <span className="text-[10px] font-medium opacity-60">Fees</span></p>
                   </div>
-                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                    <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  <div className="shrink-0 w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
+                    <svg className="w-4 h-4 md:w-6 md:h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
                 </div>
               </div>
 
-              <div className={`rounded-xl border ${borderColor} p-4 transition-all duration-300 shadow-sm ${cardBg} hover:shadow-md`}>
-                <div className="flex items-center justify-between">
+              <div className={`rounded-xl md:rounded-2xl border ${borderColor} p-3 md:p-4 transition-all duration-300 shadow-sm ${cardBg} hover:shadow-md border-b-4 border-b-green-500`}>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
                   <div className="min-w-0">
-                    <p className={`text-xs font-semibold uppercase tracking-wider ${textSecondary}`}>Paid</p>
-                    <div className="flex items-baseline gap-2">
-                      <p className={`text-xl md:text-2xl font-bold ${textPrimary}`}>{paidFees}</p>
-                      <p className={`text-xs font-medium text-green-500 truncate`}>₹{paidAmount.toLocaleString()}</p>
+                    <p className={`text-[10px] md:text-xs font-bold uppercase tracking-wider ${textSecondary} mb-0.5 md:mb-1`}>Paid</p>
+                    <div className="flex flex-col md:flex-row md:items-baseline md:gap-2">
+                      <p className={`text-sm md:text-2xl font-black ${textPrimary}`}>{paidFees}</p>
+                      <p className={`text-[9px] md:text-xs font-bold text-green-500 truncate`}>₹{paidAmount.toLocaleString()}</p>
                     </div>
                   </div>
-                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center border border-green-500/20">
-                    <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <div className="shrink-0 w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-green-500/10 flex items-center justify-center border border-green-500/20">
+                    <svg className="w-4 h-4 md:w-6 md:h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
                 </div>
               </div>
 
-              <div className={`rounded-xl border ${borderColor} p-4 transition-all duration-300 shadow-sm ${cardBg} hover:shadow-md`}>
-                <div className="flex items-center justify-between">
+              <div className={`rounded-xl md:rounded-2xl border ${borderColor} p-3 md:p-4 transition-all duration-300 shadow-sm ${cardBg} hover:shadow-md border-b-4 border-b-yellow-500`}>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
                   <div className="min-w-0">
-                    <p className={`text-xs font-semibold uppercase tracking-wider ${textSecondary}`}>Pending</p>
-                    <div className="flex items-baseline gap-2">
-                      <p className={`text-xl md:text-2xl font-bold ${textPrimary}`}>{pendingFees}</p>
-                      <p className={`text-xs font-medium text-yellow-500 truncate`}>₹{pendingAmount.toLocaleString()}</p>
+                    <p className={`text-[10px] md:text-xs font-bold uppercase tracking-wider ${textSecondary} mb-0.5 md:mb-1`}>Pending</p>
+                    <div className="flex flex-col md:flex-row md:items-baseline md:gap-2">
+                      <p className={`text-sm md:text-2xl font-black ${textPrimary}`}>{pendingFees}</p>
+                      <p className={`text-[9px] md:text-xs font-bold text-yellow-500 truncate`}>₹{pendingAmount.toLocaleString()}</p>
                     </div>
                   </div>
-                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-yellow-500/10 flex items-center justify-center border border-yellow-500/20">
-                    <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <div className="shrink-0 w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-yellow-500/10 flex items-center justify-center border border-yellow-500/20">
+                    <svg className="w-4 h-4 md:w-6 md:h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
                 </div>
               </div>
 
-              <div className={`rounded-xl border ${borderColor} p-4 transition-all duration-300 shadow-sm ${cardBg} hover:shadow-md`}>
-                <div className="flex items-center justify-between">
+              <div className={`rounded-xl md:rounded-2xl border ${borderColor} p-3 md:p-4 transition-all duration-300 shadow-sm ${cardBg} hover:shadow-md border-b-4 border-b-red-500`}>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
                   <div className="min-w-0">
-                    <p className={`text-xs font-semibold uppercase tracking-wider ${textSecondary}`}>Expired</p>
-                    <p className={`text-xl md:text-2xl font-bold ${textPrimary}`}>{expiredFees}</p>
+                    <p className={`text-[10px] md:text-xs font-bold uppercase tracking-wider ${textSecondary} mb-0.5 md:mb-1`}>Expired</p>
+                    <p className={`text-sm md:text-2xl font-black truncate ${textPrimary}`}>{expiredFees}</p>
                   </div>
-                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center border border-red-500/20">
-                    <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <div className="shrink-0 w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-red-500/10 flex items-center justify-center border border-red-500/20">
+                    <svg className="w-4 h-4 md:w-6 md:h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
                 </div>
@@ -454,97 +454,66 @@ export default function FinanceParentList() {
                   <p className={textSecondary}>Contact administration for more details</p>
                 </div>
               ) : (
-                <div className={`rounded-xl overflow-hidden border ${borderColor} transition-all duration-300 shadow-sm ${tableBg}`}>
-                  <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+                <div className={`rounded-xl md:rounded-2xl overflow-hidden border ${borderColor} transition-all duration-300 shadow-sm ${tableBg}`}>
+                  {/* Desktop View Table */}
+                  <div className="hidden md:block overflow-x-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
                     <table className="w-full min-w-[800px]">
                       <thead>
                         <tr className={`border-b transition-colors duration-200 ${borderColor} ${tableHeaderBg}`}>
-                          <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Fee Name</th>
-                          <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Start Date</th>
-                          <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Expiry Date</th>
-                          <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Amount</th>
-                          <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Status</th>
-                          <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Action</th>
+                          <th className={`text-left py-4 px-4 font-bold uppercase tracking-wider text-[10px] md:text-xs ${textSecondary}`}>Fee Name</th>
+                          <th className={`text-left py-4 px-4 font-bold uppercase tracking-wider text-[10px] md:text-xs ${textSecondary}`}>Period</th>
+                          <th className={`text-left py-4 px-4 font-bold uppercase tracking-wider text-[10px] md:text-xs ${textSecondary}`}>Expiry Date</th>
+                          <th className={`text-left py-4 px-4 font-bold uppercase tracking-wider text-[10px] md:text-xs ${textSecondary}`}>Amount</th>
+                          <th className={`text-left py-4 px-4 font-bold uppercase tracking-wider text-[10px] md:text-xs ${textSecondary}`}>Status</th>
+                          <th className={`text-left py-4 px-4 font-bold uppercase tracking-wider text-[10px] md:text-xs ${textSecondary}`}>Action</th>
                         </tr>
                       </thead>
-                      <tbody>
+                      <tbody className="divide-y divide-slate-700/30">
                         {studentData.finance.map((item: any, i: number) => {
                           const statusInfo = getStatusInfo(item);
                           return (
-                            <tr key={i} className={`border-b transition-colors duration-200 ${borderColor} ${tableRowHover}`}>
+                            <tr key={i} className={`transition-colors duration-200 ${tableRowHover}`}>
                               <td className={`py-4 px-4 ${textPrimary}`}>
-                                <p className="font-medium">{item.name}</p>
+                                <p className="font-bold">{item.name}</p>
                                 {item.academicYear && (
-                                  <p className={`text-sm ${textSecondary}`}>{item.academicYear}</p>
+                                  <p className={`text-xs font-medium opacity-60`}>{item.academicYear}</p>
                                 )}
                               </td>
-                              <td className={`py-4 px-4 ${textPrimary}`}>{onlyDate(item.startDate)}</td>
-                              <td className={`py-4 px-4 ${textPrimary} group relative cursor-help`}>
-                                {onlyDate(item.expiryDate)}
-                                <div className="absolute hidden group-hover:block bg-black text-white text-xs p-2 rounded z-10 w-48 bottom-full mb-2 left-1/2 -translate-x-1/2 text-center shadow-lg">
-                                  Penalty of ₹200 applies after this date
-                                  <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-black"></div>
-                                </div>
-                              </td>
-                              <td className={`py-4 px-4 ${textPrimary} font-semibold`}>
+                              <td className={`py-4 px-4 ${textPrimary} font-medium`}>{onlyDate(item.startDate)}</td>
+                              <td className={`py-4 px-4 ${textPrimary} font-medium`}>{onlyDate(item.expiryDate)}</td>
+                              <td className={`py-4 px-4 ${textPrimary} font-black`}>
                                 ₹{(item.amount || 0).toLocaleString()}
                               </td>
                               <td className="py-4 px-4">
-                                <div className="flex items-center gap-2">
-                                  <span className={statusInfo.color}>
-                                    {statusInfo.icon}
-                                  </span>
-                                  <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${statusInfo.color}`}>
-                                    {statusInfo.label}
-                                  </span>
-                                </div>
+                                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black tracking-wide ${statusInfo.color}`}>
+                                  {statusInfo.icon}
+                                  {statusInfo.label}
+                                </span>
                               </td>
                               <td className="py-4 px-4">
                                 {item.status === "PAID" ? (
                                   <button
                                     onClick={() => handleViewInvoice(item)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2 ${buttonPrimary}`}
+                                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 ${buttonPrimary} shadow-md shadow-blue-500/20 active:scale-95`}
                                   >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                     </svg>
                                     Invoice
                                   </button>
                                 ) : (
-                                  <>
-                                    {isExpired(item.expiryDate) && !item.hasPenalty ? (
-                                      <button
-                                        onClick={() => setSelectedFee(item)}
-                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 bg-red-600 hover:bg-red-700 text-white`}
-                                      >
-                                        Contact Teacher
-                                      </button>
-                                    ) : (
-                                      <div className="flex flex-col gap-1 group relative">
-                                        {item.hasPenalty && (
-                                          <span className="text-xs text-red-500 font-medium">
-                                            +₹200 Penalty Applied
-                                          </span>
-                                        )}
-                                        <button
-                                          onClick={() => handlePayment(item)}
-                                          disabled={processingPayment}
-                                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2 disabled:opacity-50 ${item.hasPenalty ? "bg-red-600 hover:bg-red-700 text-white" : buttonSuccess}`}
-                                        >
-                                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                          </svg>
-                                          {item.hasPenalty ? "Pay with Penalty" : "Pay Now"}
-                                        </button>
-                                        {item.hasPenalty && item.penaltyMessage && (
-                                          <div className="absolute hidden group-hover:block bg-black text-white text-xs p-2 rounded z-10 w-48 bottom-full mb-2 left-1/2 -translate-x-1/2">
-                                            {item.penaltyMessage}
-                                            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-black"></div>
-                                          </div>
-                                        )}
-                                      </div>
-                                    )}
-                                  </>
+                                  <div className="flex flex-col gap-1">
+                                    <button
+                                      onClick={() => handlePayment(item)}
+                                      disabled={processingPayment}
+                                      className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 disabled:opacity-50 ${item.hasPenalty ? "bg-red-600 hover:bg-red-700 text-white shadow-red-500/30" : `${buttonSuccess} shadow-green-500/30`} shadow-md active:scale-95`}
+                                    >
+                                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                      </svg>
+                                      {item.hasPenalty ? "Pay Penalty" : "Pay Now"}
+                                    </button>
+                                  </div>
                                 )}
                               </td>
                             </tr>
@@ -552,6 +521,64 @@ export default function FinanceParentList() {
                         })}
                       </tbody>
                     </table>
+                  </div>
+
+                  {/* Mobile Card Layout */}
+                  <div className="md:hidden divide-y divide-slate-700/30">
+                    {studentData.finance.map((item: any, i: number) => {
+                      const statusInfo = getStatusInfo(item);
+                      return (
+                        <div key={i} className="p-4 space-y-4">
+                          <div className="flex justify-between items-start gap-4">
+                            <div>
+                              <h4 className={`text-sm font-black ${textPrimary} mb-0.5`}>{item.name}</h4>
+                              <p className={`text-[10px] font-bold ${textSecondary} opacity-60 uppercase tracking-wider`}>
+                                {item.academicYear || "Fee Record"}
+                              </p>
+                            </div>
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${statusInfo.color}`}>
+                              {statusInfo.label}
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4 py-3 border-y border-slate-700/30">
+                            <div>
+                              <p className={`text-[9px] font-bold uppercase tracking-widest ${textSecondary} opacity-60 mb-1`}>Expired On</p>
+                              <p className={`text-xs font-bold ${textPrimary}`}>{onlyDate(item.expiryDate)}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className={`text-[9px] font-bold uppercase tracking-widest ${textSecondary} opacity-60 mb-1`}>Amount Due</p>
+                              <p className={`text-sm font-black text-blue-500`}>₹{(item.amount || 0).toLocaleString()}</p>
+                            </div>
+                          </div>
+
+                          <div className="pt-1">
+                            {item.status === "PAID" ? (
+                              <button
+                                onClick={() => handleViewInvoice(item)}
+                                className={`w-full py-3 rounded-xl text-xs font-black transition-all ${buttonPrimary} flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 active:scale-[0.98]`}
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                                DOWNLOAD INVOICE
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => handlePayment(item)}
+                                disabled={processingPayment}
+                                className={`w-full py-3 rounded-xl text-xs font-black transition-all ${item.hasPenalty ? "bg-red-600 text-white shadow-red-500/30" : `${buttonSuccess} shadow-green-500/30`} flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] disabled:opacity-50`}
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                </svg>
+                                {item.hasPenalty ? "PAY WITH PENALTY" : "PROCEED TO PAY"}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -569,40 +596,47 @@ export default function FinanceParentList() {
             )}
 
             {!historyLoading && historyData.length > 0 && (
-              <div className={`rounded-xl overflow-hidden border ${borderColor} transition-colors duration-300 shadow-sm ${tableBg}`}>
-                <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+              <div className={`rounded-xl md:rounded-2xl overflow-hidden border ${borderColor} transition-all duration-300 shadow-sm ${tableBg}`}>
+                {/* Desktop View Table */}
+                <div className="hidden md:block overflow-x-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
                   <table className="w-full min-w-[800px]">
                     <thead>
                       <tr className={`border-b transition-colors duration-200 ${borderColor} ${tableHeaderBg}`}>
-                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Fee Name</th>
-                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Date</th>
-                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Time</th>
-                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Amount</th>
-                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Status</th>
-                        <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Action</th>
+                        <th className={`text-left py-4 px-4 font-bold uppercase tracking-wider text-[10px] md:text-xs ${textSecondary}`}>Fee Name</th>
+                        <th className={`text-left py-4 px-4 font-bold uppercase tracking-wider text-[10px] md:text-xs ${textSecondary}`}>Date</th>
+                        <th className={`text-left py-4 px-4 font-bold uppercase tracking-wider text-[10px] md:text-xs ${textSecondary}`}>Time</th>
+                        <th className={`text-left py-4 px-4 font-bold uppercase tracking-wider text-[10px] md:text-xs ${textSecondary}`}>Amount</th>
+                        <th className={`text-left py-4 px-4 font-bold uppercase tracking-wider text-[10px] md:text-xs ${textSecondary}`}>Status</th>
+                        <th className={`text-left py-4 px-4 font-bold uppercase tracking-wider text-[10px] md:text-xs ${textSecondary}`}>Action</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-slate-700/30">
                       {historyData.map((item: any) => (
-                        <tr key={item.id} className={`border-b transition-colors duration-200 ${borderColor} ${tableRowHover}`}>
-                          <td className={`py-4 px-4 ${textPrimary}`}>
+                        <tr key={item.id} className={`transition-colors duration-200 ${tableRowHover}`}>
+                          <td className={`py-4 px-4 ${textPrimary} font-bold`}>
                             {item.studentFeeId?.name || "N/A"}
                           </td>
-                          <td className={`py-4 px-4 ${textPrimary}`}>{onlyDate(item.paymentDate)}</td>
-                          <td className={`py-4 px-4 ${textPrimary}`}>
+                          <td className={`py-4 px-4 ${textPrimary} font-medium`}>{onlyDate(item.paymentDate)}</td>
+                          <td className={`py-4 px-4 ${textPrimary} font-medium`}>
                             {new Date(item.paymentDate).toLocaleTimeString()}
                           </td>
-                          <td className={`py-4 px-4 ${textPrimary}`}>₹{item.amount}</td>
+                          <td className={`py-4 px-4 ${textPrimary} font-black`}>₹{item.amount.toLocaleString()}</td>
                           <td className="py-4 px-4">
-                            <span className="bg-green-900 text-green-300 px-3 py-1 rounded-full text-sm">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wide bg-green-500/10 text-green-500 border border-green-500/20">
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
                               {item.status}
                             </span>
                           </td>
                           <td className="py-4 px-4">
                             <button
                               onClick={() => handleViewInvoice(item)}
-                              className={`px-3 py-1 rounded text-sm font-medium transition-colors duration-200 ${buttonPrimary}`}
+                              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 ${buttonPrimary} shadow-md shadow-blue-500/20 active:scale-95`}
                             >
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                              </svg>
                               Invoice
                             </button>
                           </td>
@@ -610,6 +644,48 @@ export default function FinanceParentList() {
                       ))}
                     </tbody>
                   </table>
+                </div>
+
+                {/* Mobile Card Layout */}
+                <div className="md:hidden divide-y divide-slate-700/30">
+                  {historyData.map((item: any) => (
+                    <div key={item.id} className="p-4 space-y-4">
+                      <div className="flex justify-between items-start gap-4">
+                        <div>
+                          <h4 className={`text-sm font-black ${textPrimary} mb-0.5`}>{item.studentFeeId?.name || "N/A"}</h4>
+                          <p className={`text-[10px] font-bold ${textSecondary} opacity-60 uppercase tracking-wider`}>
+                            Trans ID: {item.transactionId || "N/A"}
+                          </p>
+                        </div>
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-green-500/10 text-green-500 border border-green-500/20`}>
+                          {item.status}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 py-3 border-y border-slate-700/30">
+                        <div>
+                          <p className={`text-[9px] font-bold uppercase tracking-widest ${textSecondary} opacity-60 mb-1`}>Paid On</p>
+                          <p className={`text-xs font-bold ${textPrimary}`}>{onlyDate(item.paymentDate)}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className={`text-[9px] font-bold uppercase tracking-widest ${textSecondary} opacity-60 mb-1`}>Amount Paid</p>
+                          <p className={`text-sm font-black text-green-500`}>₹{item.amount.toLocaleString()}</p>
+                        </div>
+                      </div>
+
+                      <div className="pt-1">
+                        <button
+                          onClick={() => handleViewInvoice(item)}
+                          className={`w-full py-3 rounded-xl text-xs font-black transition-all ${buttonPrimary} flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 active:scale-[0.98]`}
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                          </svg>
+                          DOWNLOAD INVOICE
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
