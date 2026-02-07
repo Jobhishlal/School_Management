@@ -3,7 +3,7 @@ import jsPDF from "jspdf";
 import { toPng } from "html-to-image";
 import React, { useEffect, useState, useRef } from "react";
 import {
- LineChart,
+    LineChart,
     Line,
     XAxis,
     YAxis,
@@ -159,7 +159,7 @@ const ParentExamResults: React.FC = () => {
 
             const schoolName = instituteDetails?.instituteName || "Excellence Academy";
             const studentName = studentProfile?.name || "Student";
-   
+
             const date = new Date().toLocaleDateString();
 
             let logoDataUrl = "";
@@ -203,7 +203,7 @@ const ParentExamResults: React.FC = () => {
             pdf.setFont("helvetica", "bold");
             pdf.text(studentName, 50, 52);
 
-    
+
 
             pdf.setFont("helvetica", "normal");
             pdf.text(`Report Date:`, pdfWidth - 80, 52);
@@ -292,27 +292,24 @@ const ParentExamResults: React.FC = () => {
     }
 
     return (
-        <div className={`space-y-8 p-6 ${isDark ? "bg-[#121A21]" : "bg-slate-50"} min-h-screen`} ref={printRef}>
-            <div className="flex items-center justify-between">
-             
+        <div className={`space-y-6 p-4 md:p-6 ${isDark ? "bg-[#121A21]" : "bg-slate-50"} min-h-screen`} ref={printRef}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 p-5 md:p-6 shadow-xl w-full sm:w-auto">
 
-
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 p-6 shadow-xl">
-                   
                     <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
 
                     <div className="relative flex items-center gap-4">
-                      
+
                         <div className="flex-shrink-0 w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm border-2 border-white/40 flex items-center justify-center text-2xl font-bold text-white shadow-lg">
                             {studentProfile?.name?.charAt(0).toUpperCase()}
                         </div>
 
-                        <div className="flex-1">
-                            <p className="text-white/90 text-sm font-medium mb-1">📊 Academic Performance Report</p>
-                            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                        <div className="flex-1 min-w-0">
+                            <p className="text-white/90 text-xs md:text-sm font-medium mb-1">📊 Academic Performance Report</p>
+                            <h2 className="text-xl md:text-2xl font-bold text-white flex items-center gap-2 truncate">
                                 {studentProfile?.name}
-                                <span className="text-base bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                                <span className="text-sm md:text-base bg-white/20 backdrop-blur-sm px-2 md:px-3 py-1 rounded-full flex-shrink-0">
                                     🎓
                                 </span>
                             </h2>
@@ -322,19 +319,19 @@ const ParentExamResults: React.FC = () => {
 
                 <button
                     onClick={handleDownloadPDF}
-                    className="flex items-center gap-2 rounded-lg bg-slate-700 px-4 py-2 text-white hover:bg-slate-600 transition-colors"
+                    className="flex items-center justify-center gap-2 rounded-lg bg-slate-700 px-4 py-2.5 text-white hover:bg-slate-600 transition-colors w-full sm:w-auto shadow-sm"
                     data-html2canvas-ignore="true"
                 >
                     <Download size={18} />
-                    <span>Download Report</span>
+                    <span className="font-medium">Download Report</span>
                 </button>
             </div>
 
-            <div className="flex items-center gap-4" data-html2canvas-ignore="true">
+            <div className="flex flex-wrap items-center gap-3" data-html2canvas-ignore="true">
                 <select
-                    className={`rounded-lg border px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500 ${isDark
-                        ? "bg-slate-800 border-slate-700 text-slate-100"
-                        : "bg-white border-slate-200 text-slate-900"
+                    className={`w-full sm:w-auto rounded-lg border px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all ${isDark
+                        ? "bg-slate-800 border-slate-700 text-slate-100 focus:border-blue-500"
+                        : "bg-white border-slate-200 text-slate-900 focus:border-blue-400"
                         }`}
                     value={selectedSubject}
                     onChange={(e) => setSelectedSubject(e.target.value)}
@@ -480,8 +477,8 @@ const ParentExamResults: React.FC = () => {
                 <div className="p-6 border-b border-slate-700/50">
                     <h3 className={`text-lg font-semibold ${textPrimary}`}>Detailed Results</h3>
                 </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm">
+                <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+                    <table className="w-full text-left text-sm min-w-[700px]">
                         <thead className={`border-b ${border} ${isDark ? "bg-slate-900/50" : "bg-slate-100"}`}>
                             <tr>
                                 <th className={`p-4 font-medium ${textSecondary}`}>Exam Title</th>

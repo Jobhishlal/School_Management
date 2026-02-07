@@ -326,44 +326,48 @@ export default function FinanceParentList() {
     <div className={`p-6 min-h-screen transition-colors duration-300 ${containerBg}`}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
           <div>
-            <h1 className={`text-3xl font-bold mb-2 ${textPrimary}`}>Finance Management</h1>
-            <p className={textSecondary}>View and manage your fee payments</p>
+            <h1 className={`text-2xl md:text-3xl font-bold mb-2 ${textPrimary}`}>Finance Management</h1>
+            <p className={`text-sm md:text-base ${textSecondary}`}>View and manage your fee payments</p>
           </div>
 
-          <div className="flex gap-2 bg-slate-800 p-1 rounded-lg">
+          <div className="flex w-full md:w-auto p-1 bg-slate-800/80 backdrop-blur-sm rounded-xl border border-slate-700/50 shadow-inner">
             <button
               onClick={() => setViewMode("FINANCE")}
-              className={`px-4 py-2 rounded-md transition-colors ${viewMode === "FINANCE" ? "bg-blue-600 text-white" : "text-gray-400 hover:text-white"
+              className={`flex-1 md:flex-none px-4 md:px-6 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${viewMode === "FINANCE"
+                ? "bg-blue-600 text-white shadow-lg shadow-blue-900/40"
+                : "text-gray-400 hover:text-gray-200 hover:bg-slate-700/50"
                 }`}
             >
-              Finance Details
+              Details
             </button>
             <button
               onClick={() => setViewMode("HISTORY")}
-              className={`px-4 py-2 rounded-md transition-colors ${viewMode === "HISTORY" ? "bg-blue-600 text-white" : "text-gray-400 hover:text-white"
+              className={`flex-1 md:flex-none px-4 md:px-6 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${viewMode === "HISTORY"
+                ? "bg-blue-600 text-white shadow-lg shadow-blue-900/40"
+                : "text-gray-400 hover:text-gray-200 hover:bg-slate-700/50"
                 }`}
             >
-              Transaction History
+              History
             </button>
           </div>
         </div>
 
         {/* Student Info Card - Common for both views */}
-        <div className={`rounded-lg border p-6 mb-6 transition-colors duration-300 ${cardBg}`}>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <p className={`text-sm ${textSecondary}`}>Student Name</p>
-              <p className={`text-lg font-semibold ${textPrimary}`}>{studentData.name}</p>
+        <div className={`rounded-xl border ${borderColor} p-5 md:p-6 mb-8 transition-all duration-300 shadow-sm ${cardBg}`}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="space-y-1">
+              <p className={`text-xs font-semibold uppercase tracking-wider ${textSecondary}`}>Student Name</p>
+              <p className={`text-base md:text-lg font-bold ${textPrimary}`}>{studentData.name}</p>
             </div>
-            <div>
-              <p className={`text-sm ${textSecondary}`}>Student ID</p>
-              <p className={`text-lg font-semibold ${textPrimary}`}>{studentData.studentId}</p>
+            <div className="space-y-1">
+              <p className={`text-xs font-semibold uppercase tracking-wider ${textSecondary}`}>Student ID</p>
+              <p className={`text-base md:text-lg font-bold ${textPrimary}`}>{studentData.studentId}</p>
             </div>
-            <div>
-              <p className={`text-sm ${textSecondary}`}>Class</p>
-              <p className={`text-lg font-semibold ${textPrimary}`}>
+            <div className="space-y-1 sm:col-span-2 lg:col-span-1">
+              <p className={`text-xs font-semibold uppercase tracking-wider ${textSecondary}`}>Class</p>
+              <p className={`text-base md:text-lg font-bold ${textPrimary}`}>
                 {studentData.class?.className || "N/A"} - {studentData.class?.division || ""}
               </p>
             </div>
@@ -373,59 +377,63 @@ export default function FinanceParentList() {
         {viewMode === "FINANCE" ? (
           <>
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className={`rounded-lg border p-4 transition-colors duration-300 ${cardBg}`}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <div className={`rounded-xl border ${borderColor} p-4 transition-all duration-300 shadow-sm ${cardBg} hover:shadow-md`}>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className={`text-sm ${textSecondary}`}>Total Fees</p>
-                    <p className={`text-2xl font-bold ${textPrimary}`}>{totalFees}</p>
+                  <div className="min-w-0">
+                    <p className={`text-xs font-semibold uppercase tracking-wider ${textSecondary}`}>Total Fees</p>
+                    <p className={`text-xl md:text-2xl font-bold truncate ${textPrimary}`}>{totalFees}</p>
                   </div>
-                  <div className="w-12 h-12 rounded-full bg-blue-900/30 flex items-center justify-center">
-                    <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
+                    <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
                 </div>
               </div>
 
-              <div className={`rounded-lg border p-4 transition-colors duration-300 ${cardBg}`}>
+              <div className={`rounded-xl border ${borderColor} p-4 transition-all duration-300 shadow-sm ${cardBg} hover:shadow-md`}>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className={`text-sm ${textSecondary}`}>Paid</p>
-                    <p className={`text-2xl font-bold ${textPrimary}`}>{paidFees}</p>
-                    <p className={`text-xs ${textSecondary}`}>₹{paidAmount.toLocaleString()}</p>
+                  <div className="min-w-0">
+                    <p className={`text-xs font-semibold uppercase tracking-wider ${textSecondary}`}>Paid</p>
+                    <div className="flex items-baseline gap-2">
+                      <p className={`text-xl md:text-2xl font-bold ${textPrimary}`}>{paidFees}</p>
+                      <p className={`text-xs font-medium text-green-500 truncate`}>₹{paidAmount.toLocaleString()}</p>
+                    </div>
                   </div>
-                  <div className="w-12 h-12 rounded-full bg-green-900/30 flex items-center justify-center">
-                    <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center border border-green-500/20">
+                    <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
                 </div>
               </div>
 
-              <div className={`rounded-lg border p-4 transition-colors duration-300 ${cardBg}`}>
+              <div className={`rounded-xl border ${borderColor} p-4 transition-all duration-300 shadow-sm ${cardBg} hover:shadow-md`}>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className={`text-sm ${textSecondary}`}>Pending</p>
-                    <p className={`text-2xl font-bold ${textPrimary}`}>{pendingFees}</p>
-                    <p className={`text-xs ${textSecondary}`}>₹{pendingAmount.toLocaleString()}</p>
+                  <div className="min-w-0">
+                    <p className={`text-xs font-semibold uppercase tracking-wider ${textSecondary}`}>Pending</p>
+                    <div className="flex items-baseline gap-2">
+                      <p className={`text-xl md:text-2xl font-bold ${textPrimary}`}>{pendingFees}</p>
+                      <p className={`text-xs font-medium text-yellow-500 truncate`}>₹{pendingAmount.toLocaleString()}</p>
+                    </div>
                   </div>
-                  <div className="w-12 h-12 rounded-full bg-yellow-900/30 flex items-center justify-center">
-                    <svg className="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-yellow-500/10 flex items-center justify-center border border-yellow-500/20">
+                    <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
                 </div>
               </div>
 
-              <div className={`rounded-lg border p-4 transition-colors duration-300 ${cardBg}`}>
+              <div className={`rounded-xl border ${borderColor} p-4 transition-all duration-300 shadow-sm ${cardBg} hover:shadow-md`}>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className={`text-sm ${textSecondary}`}>Expired</p>
-                    <p className={`text-2xl font-bold ${textPrimary}`}>{expiredFees}</p>
+                  <div className="min-w-0">
+                    <p className={`text-xs font-semibold uppercase tracking-wider ${textSecondary}`}>Expired</p>
+                    <p className={`text-xl md:text-2xl font-bold ${textPrimary}`}>{expiredFees}</p>
                   </div>
-                  <div className="w-12 h-12 rounded-full bg-red-900/30 flex items-center justify-center">
-                    <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center border border-red-500/20">
+                    <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
@@ -446,9 +454,9 @@ export default function FinanceParentList() {
                   <p className={textSecondary}>Contact administration for more details</p>
                 </div>
               ) : (
-                <div className={`rounded-lg overflow-hidden border transition-colors duration-300 ${tableBg}`}>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
+                <div className={`rounded-xl overflow-hidden border ${borderColor} transition-all duration-300 shadow-sm ${tableBg}`}>
+                  <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+                    <table className="w-full min-w-[800px]">
                       <thead>
                         <tr className={`border-b transition-colors duration-200 ${borderColor} ${tableHeaderBg}`}>
                           <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Fee Name</th>
@@ -561,9 +569,9 @@ export default function FinanceParentList() {
             )}
 
             {!historyLoading && historyData.length > 0 && (
-              <div className={`rounded-lg overflow-hidden border transition-colors duration-300 ${tableBg}`}>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
+              <div className={`rounded-xl overflow-hidden border ${borderColor} transition-colors duration-300 shadow-sm ${tableBg}`}>
+                <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+                  <table className="w-full min-w-[800px]">
                     <thead>
                       <tr className={`border-b transition-colors duration-200 ${borderColor} ${tableHeaderBg}`}>
                         <th className={`text-left py-4 px-4 font-medium ${textSecondary}`}>Fee Name</th>
@@ -616,8 +624,8 @@ export default function FinanceParentList() {
 
 
         {selectedFee && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setSelectedFee(null)}>
-            <div className={`rounded-lg border p-6 max-w-md w-full transition-colors duration-300 ${modalBg}`} onClick={(e) => e.stopPropagation()}>
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={() => setSelectedFee(null)}>
+            <div className={`rounded-2xl border ${borderColor} p-5 md:p-8 max-w-lg w-full transition-all duration-300 shadow-2xl ${modalBg}`} onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-4">
                 <h3 className={`text-xl font-bold ${textPrimary}`}>Payment Expired</h3>
                 <button
