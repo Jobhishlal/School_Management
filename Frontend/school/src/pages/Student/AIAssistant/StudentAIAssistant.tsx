@@ -248,10 +248,10 @@ const StudentAIAssistant: React.FC = () => {
 
             {/* Sidebar */}
             <div className={`
-                absolute md:relative z-50 h-full
-                ${sidebarOpen ? 'w-[280px] translate-x-0' : 'w-0 -translate-x-full md:w-0'}
-                md:w-72 md:translate-x-0
-                transition-all duration-300 flex-shrink-0 flex flex-col border-r backdrop-blur-sm
+                absolute md:relative z-50 h-full overflow-hidden
+                w-[280px] md:w-72 
+                ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:-translate-x-full md:hidden'}
+                transition-all duration-300 ease-in-out flex-shrink-0 flex flex-col border-r backdrop-blur-sm
                 ${isDark ? "bg-slate-900/95 border-slate-800" : "bg-white/95 border-gray-200"}
             `}>
                 {/* Sidebar Header */}
