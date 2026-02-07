@@ -23,7 +23,7 @@ import {
   Cpu,
   Network
 } from 'lucide-react';
-import { FcGoogle } from 'react-icons/fc';
+
 import { useNavigate } from 'react-router-dom';
 import { getInstituteProfile } from '../../services/authapi';
 
@@ -61,10 +61,7 @@ const SchoolLandingPage = () => {
     console.log('Navigate to get started');
   };
 
-  const handleGoogleLogin = () => {
-    console.log('Google Login initiated');
 
-  };
 
   const navigate = useNavigate()
 
@@ -338,13 +335,7 @@ const SchoolLandingPage = () => {
                 </span>
               </button>
 
-              <button
-                onClick={handleGoogleLogin}
-                className={`w-full sm:w-auto flex items-center justify-center px-10 lg:px-12 py-4 lg:py-6 ${isDark ? 'bg-white/10 hover:bg-white/20' : 'bg-slate-200/80 hover:bg-slate-300/80'} text-white rounded-lg font-semibold text-lg lg:text-xl transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-2xl`}
-              >
-                <FcGoogle className="mr-2 text-xl lg:text-2xl" />
-                Sign Up with Google
-              </button>
+              
             </div>
 
             <div className="mt-8 lg:mt-12">
