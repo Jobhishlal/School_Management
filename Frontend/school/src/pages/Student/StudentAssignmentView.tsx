@@ -94,6 +94,14 @@ export const StudentAssignmentList: React.FC = () => {
   const cardBg = isDark ? "bg-slate-800/50" : "bg-white";
   const borderColor = isDark ? "border-slate-700" : "border-slate-200";
 
+  const getFileUrl = (url: string) => {
+    if (!url) return "";
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      return url;
+    }
+    return `${import.meta.env.VITE_BACKEND_URL}/${url}`;
+  };
+
   const getDaysUntilDue = (dueDate: string) => {
     const today = new Date();
     const due = new Date(dueDate);
@@ -420,7 +428,7 @@ export const StudentAssignmentList: React.FC = () => {
                                 </div>
                                 <div className="flex gap-2">
                                   <a
-                                    href={att.url}
+                                    href={getFileUrl(att.url)}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${isDark
@@ -577,7 +585,7 @@ export const StudentAssignmentList: React.FC = () => {
                                   </div>
                                 </div>
                                 <a
-                                  href={`${import.meta.env.VITE_BACKEND_URL}/${file.url}`}
+                                  href={getFileUrl(file.url)}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${isDark
