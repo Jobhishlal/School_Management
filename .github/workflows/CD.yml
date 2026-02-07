@@ -16,15 +16,16 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd School_Management
+            cd ~/School_Management
             git pull origin main
 
+            # 🔹 Backend
             cd backend
             npm install
-            pm2 restart backend
+            pm2 restart backend || pm2 start server.js --name backend
 
+            # 🔹 Frontend
             cd ../Frontend/school
             npm install
             npm run build
-            sudo rm -rf /var/www/html/*
-            sudo cp -r dist/* /var/www/html/
+            pm2 restart frontend || pm2 start "serve -s dist -l 5000" --name frontend
