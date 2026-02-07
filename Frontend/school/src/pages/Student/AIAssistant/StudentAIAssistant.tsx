@@ -236,20 +236,12 @@ const StudentAIAssistant: React.FC = () => {
     };
 
     return (
-        <div className={`flex h-[calc(100vh-1rem)] md:h-[calc(100vh-2rem)] max-w-7xl mx-auto rounded-xl md:rounded-2xl overflow-hidden shadow-2xl relative ${isDark ? "bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950" : "bg-gradient-to-br from-gray-50 via-white to-gray-50"}`}>
-
-            {/* Mobile Menu Button - Fixed position relative to container */}
-            <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className={`md:hidden absolute top-3 left-3 z-[60] p-2.5 rounded-xl shadow-lg backdrop-blur-md transition-all active:scale-95 ${isDark ? "bg-slate-800/90 text-white border border-slate-700" : "bg-white/90 text-gray-800 border border-gray-200"}`}
-            >
-                {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
+        <div className={`flex h-screen md:h-[calc(100vh-2rem)] w-full md:max-w-7xl mx-auto md:rounded-2xl overflow-hidden shadow-2xl relative ${isDark ? "bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950" : "bg-gradient-to-br from-gray-50 via-white to-gray-50"}`}>
 
             {/* Sidebar Overlay (Mobile) */}
             {sidebarOpen && (
                 <div
-                    className="md:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+                    className="md:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity"
                     onClick={() => setSidebarOpen(false)}
                 />
             )}
@@ -340,7 +332,15 @@ const StudentAIAssistant: React.FC = () => {
                     <div className="absolute inset-0 opacity-10">
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-pulse"></div>
                     </div>
-                    <div className="relative flex items-center gap-3 md:gap-4 pl-10 md:pl-0">
+                    <div className="relative flex items-center gap-3 md:gap-4">
+                        {/* Mobile Menu Button - Integrated in Header */}
+                        <button
+                            onClick={() => setSidebarOpen(!sidebarOpen)}
+                            className="md:hidden p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors mr-1"
+                        >
+                            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+                        </button>
+
                         <div className={`p-2 md:p-3 rounded-xl md:rounded-2xl shadow-lg ${isDark ? "bg-gradient-to-br from-purple-600 to-blue-600" : "bg-white/20 backdrop-blur-sm"}`}>
                             <Bot className="text-white w-6 h-6 md:w-7 md:h-7" />
                         </div>
