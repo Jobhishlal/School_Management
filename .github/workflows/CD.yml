@@ -7,7 +7,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+#do some change
     steps:
       - name: Deploy to Server
         uses: appleboy/ssh-action@v1.0.3
