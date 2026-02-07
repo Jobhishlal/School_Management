@@ -27,14 +27,14 @@ export const initSocket = (httpServer: HttpServer) => {
     process.env.SERVER_URL
   ].filter((origin): origin is string => typeof origin === 'string');
 
-  
+
 
   io = new Server(httpServer, {
     cors: {
       origin: allowedOrigins,
       credentials: true,
     },
-    transports: ['websocket', 'polling'], 
+    transports: ['websocket', 'polling'],
     pingTimeout: 60000,
     pingInterval: 25000,
   });
@@ -49,9 +49,23 @@ export const initSocket = (httpServer: HttpServer) => {
     });
 
     // --- Chat Logic ---
-    socket.on('join_chat', (userId: string) => {
+    socket.on('join_chat', (data: string | { userId: string, role?: string }) => {
+      const userId = typeof data === 'string' ? data : data.userId;
+      const role = typeof data === 'string' ? null : data.role;
+
       socket.join(userId);
       console.log(`User ${userId} joined their personal chat room`);
+
+      if (role) {
+        const normalizedRole = role.toLowerCase();
+        if (['admin', 'super_admin', 'sub_admin', 'teacher'].includes(normalizedRole)) {
+          console.log(`User ${userId} (${role}) joining STAFF room`);
+          socket.join("staff");
+        } else if (normalizedRole === 'parent') {
+          console.log(`User ${userId} (${role}) joining PARENTS room`);
+          socket.join("parents");
+        }
+      }
 
 
       if (!onlineUsers.has(userId)) {

@@ -29,6 +29,14 @@ export class SocketNotification implements NotificationPort {
             console.log(`Emitting USER notification to room: ${data.recipientId}`);
             io.to(data.recipientId).emit(eventName, data);
         }
+        if (data.scope === "STAFF") {
+            console.log("Emitting STAFF notification");
+            io.to("staff").emit(eventName, data);
+        }
+        if (data.scope === "PARENTS") {
+            console.log("Emitting PARENTS notification");
+            io.to("parents").emit(eventName, data);
+        }
 
     }
 }

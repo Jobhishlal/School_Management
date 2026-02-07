@@ -104,15 +104,25 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ children }) => {
 
   React.useEffect(() => {
     if (socket) {
-      socket.on('staff-meeting-created', (data: any) => {
-        setNotifications(prev => [data, ...prev]);
-        showToast(`📅 New Staff Meeting: ${data.title}`, 'info');
+      socket.on('notification:new', (data: any) => {
+        if (data.type === 'MEETING') {
+          const meetingData = {
+            title: data.title,
+            description: data.content,
+            link: data.link,
+            startTime: data.startTime || new Date(),
+            type: data.scope, // 'STAFF' or 'PARENTS'
+            status: 'scheduled'
+          };
+          setNotifications(prev => [meetingData, ...prev]);
+          showToast(`📅 New Meeting: ${data.title}`, 'info');
+        }
       });
     }
 
     return () => {
       if (socket) {
-        socket.off('staff-meeting-created');
+        socket.off('notification:new');
       }
     };
   }, [socket]);

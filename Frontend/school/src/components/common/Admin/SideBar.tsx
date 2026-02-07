@@ -17,14 +17,18 @@ import {
   LogOut,
   Menu,
   X,
- 
+
   ChevronDown,
   User,
   Video,
+  Bell,
 } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../../layout/ThemeContext";
 import { getInstituteProfile } from "../../../services/authapi";
+import { useSocket } from "../../../hooks/useSocket";
+import { showToast } from "../../../utils/toast";
+import TeacherNotificationDropdown from "../Teacher/TeacherNotificationDropdown";
 
 type Props = {
   children?: React.ReactNode;
@@ -142,6 +146,39 @@ export default function SchoolNavbar({ children }: Props) {
     navigate("/login", { replace: true });
   };
 
+  const socket = useSocket();
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  React.useEffect(() => {
+    if (socket) {
+      socket.on('notification:new', (data: any) => {
+        if (data.type === 'MEETING') {
+          const meetingData = {
+            title: data.title,
+            description: data.content,
+            link: data.link,
+            startTime: data.startTime || new Date(),
+            type: data.scope,
+            status: 'scheduled'
+          };
+          setNotifications(prev => [meetingData, ...prev]);
+          showToast(`📅 New Meeting: ${data.title}`, 'info');
+        }
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.off('notification:new');
+      }
+    };
+  }, [socket]);
+
+  const handleClearNotifications = () => {
+    setNotifications([]);
+  };
+
   return (
     <div
       className={`h-screen overflow-hidden transition-all duration-500 ${isDark ? "bg-[#121A21]" : "bg-slate-50"
@@ -165,11 +202,11 @@ export default function SchoolNavbar({ children }: Props) {
                 <School className="text-white" size={24} />
               )}
             </div>
-         
+
             <div className="flex flex-col">
               <span className="text-lg font-bold tracking-tight">{instituteDetails.name}</span>
               <span className={`text-xs ${textSecondary} font-medium`}>School Management</span>
-               <span className={`text-xs ${textSecondary} font-medium`}>jobhishlal</span>
+
             </div>
           </div>
         </div>
@@ -266,12 +303,24 @@ export default function SchoolNavbar({ children }: Props) {
             </div>
 
             <div className="flex items-center space-x-4">
-              {/* <button className={`relative p-3 rounded-xl ${hoverBg} transition-all duration-300 hover:scale-105`}>
+              <button
+                className={`relative p-3 rounded-xl ${hoverBg} transition-all duration-300 hover:scale-105`}
+                onClick={() => setShowNotifications(!showNotifications)}
+              >
                 <Bell className={textSecondary} size={20} />
-                <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">3</span>
-                </div>
-              </button> */}
+                {notifications.length > 0 && (
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">{notifications.length}</span>
+                  </div>
+                )}
+              </button>
+
+              <TeacherNotificationDropdown
+                isOpen={showNotifications}
+                onClose={() => setShowNotifications(false)}
+                notifications={notifications}
+                onClear={handleClearNotifications}
+              />
 
               <button
                 onClick={toggleTheme}
@@ -298,7 +347,7 @@ export default function SchoolNavbar({ children }: Props) {
                   <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                     <User size={16} className="text-white" />
                   </div>
-             
+
                   <ChevronDown
                     size={16}
                     className={`${textSecondary} transition-transform duration-200 ${showProfileDropdown ? "rotate-180" : ""}`}
@@ -306,7 +355,7 @@ export default function SchoolNavbar({ children }: Props) {
                 </button>
 
                 {/* Profile Dropdown Logout */}
-              
+
               </div>
             </div>
           </div>

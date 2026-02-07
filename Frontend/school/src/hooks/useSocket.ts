@@ -37,7 +37,8 @@ export const useSocket = () => {
         newSocket.on('connect', () => {
             console.log("Connected to socket");
             if (userId) {
-                newSocket.emit('join_chat', userId);
+                const role = localStorage.getItem('role');
+                newSocket.emit('join_chat', { userId, role });
             }
         });
 

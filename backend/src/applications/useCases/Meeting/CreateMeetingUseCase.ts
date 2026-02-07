@@ -35,13 +35,23 @@ export class CreateMeetingUseCase implements ICreateMeetingUseCase {
         const createdMeeting = await this.meetingRepository.createMeeting(meetingData);
 
         // Emit Notification
+        let scope: any = "GLOBAL";
+        if (meetingData.type === 'staff') {
+            scope = "STAFF";
+        } else if (meetingData.type === 'parent') {
+            scope = "PARENTS";
+        } else if (meetingData.classId && meetingData.type === 'class') {
+            scope = "CLASS";
+        }
+
         await this.notificationPort.send({
             title: `New Meeting: ${meetingData.title}`,
             content: meetingData.description || "A new meeting has been scheduled.",
             type: "MEETING",
-            scope: (meetingData.classId && meetingData.type === 'class') ? "CLASS" : "GLOBAL",
+            scope: scope,
             classes: meetingData.classId ? [meetingData.classId.toString()] : [],
-            link: meetingData.link
+            link: meetingData.link,
+            startTime: meetingData.startTime
         });
 
         return createdMeeting;

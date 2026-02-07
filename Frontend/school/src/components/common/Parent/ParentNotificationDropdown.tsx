@@ -43,7 +43,8 @@ const ParentNotificationDropdown: React.FC = () => {
                             });
 
                             // Also join personal room for direct notifications
-                            socket.emit("join_chat", decoded.id);
+                            const role = localStorage.getItem('role') || 'parent';
+                            socket.emit("join_chat", { userId: decoded.id, role });
                         }
                     }
                 } catch (error) {
@@ -98,6 +99,9 @@ const ParentNotificationDropdown: React.FC = () => {
                 } else {
                     console.log("Filter: USER scope NOT matched");
                 }
+            } else if (data.scope === 'PARENTS') {
+                shouldShow = true;
+                console.log("Filter: PARENTS scope matched");
             }
 
             if (shouldShow) {
