@@ -27,5 +27,6 @@ jobs:
             # 🔹 Frontend
             cd ../Frontend/school
             npm install
-            npm run build
-            pm2 restart frontend || pm2 start "serve -s dist -l 5000" --name frontend
+            NODE_OPTIONS="--max-old-space-size=4096" npm run build
+            sudo rm -rf /var/www/html/*
+            sudo cp -r dist/* /var/www/html/
