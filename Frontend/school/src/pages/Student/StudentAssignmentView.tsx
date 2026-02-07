@@ -99,7 +99,7 @@ export const StudentAssignmentList: React.FC = () => {
     if (url.startsWith("http://") || url.startsWith("https://")) {
       return url;
     }
-    return `${import.meta.env.VITE_BACKEND_URL}/${url}`;
+    return `${url}`;
   };
 
   const getDaysUntilDue = (dueDate: string) => {
