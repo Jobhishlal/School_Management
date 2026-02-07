@@ -62,7 +62,6 @@ const SchoolLandingPage = () => {
   };
 
 
-
   const navigate = useNavigate()
 
   function handleSignIn() {
@@ -335,7 +334,7 @@ const SchoolLandingPage = () => {
                 </span>
               </button>
 
-              
+         
             </div>
 
             <div className="mt-8 lg:mt-12">
