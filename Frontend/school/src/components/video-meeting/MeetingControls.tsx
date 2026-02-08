@@ -32,7 +32,7 @@ const MeetingControls: React.FC<MeetingControlsProps> = ({
     const reactions = ['👍', '👎', '😂', '😮', '❤️', '🎉'];
 
     return (
-        <footer className="fixed bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 z-50 w-auto px-4">
+        <footer className="fixed bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 z-[100] w-auto px-4">
             <div className={`flex items-center gap-1.5 md:gap-2 p-1.5 md:p-2 rounded-2xl border shadow-2xl backdrop-blur-xl ${isDark ? 'bg-gray-900/80 border-gray-700/50' : 'bg-white/80 border-gray-200/50'}`}>
                 <button
                     onClick={toggleMute}

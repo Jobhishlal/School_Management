@@ -6,7 +6,7 @@ import { useTheme } from '../../components/layout/ThemeContext';
 import { validateJoinMeeting, Getadminprofilemanagement, GetTeachertimetableList } from '../../services/authapi';
 import { StudentProfile } from '../../services/Student/StudentApi';
 import { showToast } from '../../utils/toast';
-import { MicOff, Mic } from 'lucide-react';
+import { MicOff, Mic, X } from 'lucide-react';
 import { jwtDecode } from "jwt-decode";
 import MeetingHeader from '../../components/video-meeting/MeetingHeader';
 import MeetingControls from '../../components/video-meeting/MeetingControls';
@@ -249,8 +249,10 @@ const VideoMeeting: React.FC = () => {
 
                 socketRef.current = io(socketUrl, {
                     withCredentials: true,
-                    transports: ["websocket"],
-                    path: '/socket.io'
+                    path: '/socket.io',
+                    transports: ["websocket", "polling"], // Allow polling fallback for aggressive mobile networks
+                    reconnectionAttempts: 5,
+                    timeout: 20000
                 });
 
 
@@ -607,8 +609,33 @@ const VideoMeeting: React.FC = () => {
     const MAX_GRID_ITEMS = 8;
     const peersToShow = visiblePeers.slice(0, MAX_GRID_ITEMS - 1);
     const overflowCount = Math.max(0, visiblePeers.length - (MAX_GRID_ITEMS - 1));
-    if (loading) return <div className="flex justify-center items-center h-screen">Loading Meeting...</div>;
-    if (error) return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;
+    if (loading) return (
+        <div className={`flex flex-col items-center justify-center min-h-[100dvh] space-y-4 px-6 text-center ${isDark ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent" />
+            <div className="space-y-1">
+                <p className="text-lg font-bold">Setting up your meeting...</p>
+                <p className="text-sm opacity-60">Please allow camera and microphone access if prompted.</p>
+            </div>
+        </div>
+    );
+
+    if (error) return (
+        <div className={`flex flex-col items-center justify-center min-h-[100dvh] space-y-6 px-6 text-center ${isDark ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
+            <div className="p-4 bg-red-500/10 rounded-full">
+                <X size={48} className="text-red-500" />
+            </div>
+            <div className="space-y-2 max-w-sm">
+                <h2 className="text-xl font-bold text-red-500">Could Not Join</h2>
+                <p className="text-sm opacity-80">{error}</p>
+            </div>
+            <button
+                onClick={() => window.location.reload()}
+                className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-600/20 active:scale-95 transition-all"
+            >
+                Try Again
+            </button>
+        </div>
+    );
 
     const sendMessage = (e?: React.FormEvent) => {
         e?.preventDefault();
@@ -693,7 +720,7 @@ const VideoMeeting: React.FC = () => {
 
 
     return (
-        <div className={`min-h-screen flex flex-col font-sans selection:bg-blue-500/20 ${isDark ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
+        <div className={`min-h-[100dvh] flex flex-col font-sans selection:bg-blue-500/20 ${isDark ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
             <MeetingHeader
                 meeting={meeting}
                 peers={peers}
