@@ -457,16 +457,35 @@ const VideoMeeting: React.FC = () => {
         peersRef.current.forEach(p => p.peer.destroy());
     }
 
+    const ICE_SERVERS = [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' },
+        { urls: 'stun:stun3.l.google.com:19302' },
+        { urls: 'stun:stun4.l.google.com:19302' },
+        { urls: 'stun:stun.ekiga.net' },
+        { urls: 'stun:stun.ideasip.com' },
+        { urls: 'stun:stun.rixtelecom.se' },
+        { urls: 'stun:stun.schlund.de' },
+        { urls: 'stun:stun.stunprotocol.org:3478' },
+        { urls: 'stun:stun.voiparound.com' },
+        { urls: 'stun:stun.voipbuster.com' },
+        { urls: 'stun:stun.voipstunt.com' },
+        { urls: 'stun:stun.voxgratia.org' }
+    ];
+
     const createPeer = (userToSignal: string, stream: MediaStream | undefined) => {
+        console.log("Creating Peer (Initiator) for:", userToSignal);
         const peer = new SimplePeer({
             initiator: true,
             trickle: false,
             stream: stream,
+            config: { iceServers: ICE_SERVERS }
         });
 
         peer.on('signal', signal => {
             const latestProfile = userProfileRef.current || { name: userRole || 'Participant', image: undefined };
-            console.log("SENDING SIGNAL (Initiator) with profile:", latestProfile);
+            console.log("SENDING SIGNAL (Initiator) to:", userToSignal);
 
             socketRef.current?.emit('signal', {
                 to: userToSignal,
@@ -481,22 +500,26 @@ const VideoMeeting: React.FC = () => {
 
         peer.on('error', (err) => {
             console.error("Peer (Initiator) ERROR with:", userToSignal, err);
+            if (err.message?.includes('Connection failed')) {
+                showToast('Connection failed with a participant. A refresh might help.', 'error', 5000);
+            }
         });
 
         return peer;
     }
 
     const addPeer = (incomingSignal: any, callerID: string, stream: MediaStream | undefined) => {
+        console.log("Adding Peer (Receiver) for:", callerID);
         const peer = new SimplePeer({
             initiator: false,
             trickle: false,
             stream: stream,
+            config: { iceServers: ICE_SERVERS }
         });
 
         peer.on('signal', signal => {
-
             const latestProfile = userProfileRef.current || { name: userRole || 'Participant', image: undefined };
-            console.log("SENDING SIGNAL (Receiver) with profile:", latestProfile);
+            console.log("SENDING SIGNAL (Receiver) to:", callerID);
 
             socketRef.current?.emit('signal', {
                 to: callerID,
@@ -511,6 +534,9 @@ const VideoMeeting: React.FC = () => {
 
         peer.on('error', (err) => {
             console.error("Peer (Receiver) ERROR with:", callerID, err);
+            if (err.message?.includes('Connection failed')) {
+                showToast('Connection failed with a participant.', 'error', 4000);
+            }
         });
 
         peer.signal(incomingSignal);
