@@ -118,21 +118,21 @@ const AttendanceReportView: React.FC<AttendanceReportViewProps> = ({ classId, st
             </div>
 
             {/* Tabs */}
-            <div className={`flex gap-2 px-6 pt-4 border-b ${isDark ? "border-gray-700" : "border-gray-200"}`}>
+            <div className={`flex flex-col sm:flex-row gap-0 sm:gap-2 px-6 pt-2 md:pt-4 border-b ${isDark ? "border-gray-700" : "border-gray-200"}`}>
                 <button
-                    className={`pb-3 px-4 font-medium transition-colors relative ${viewMode === 'dateRange'
+                    className={`pb-3 pt-2 px-4 font-bold text-sm transition-colors relative text-left sm:text-center ${viewMode === 'dateRange'
                         ? isDark
                             ? 'text-blue-400'
                             : 'text-blue-600'
                         : isDark
-                            ? 'text-gray-400 hover:text-gray-300'
+                            ? 'text-gray-500 hover:text-gray-300'
                             : 'text-gray-500 hover:text-gray-700'
                         }`}
                     onClick={() => setViewMode("dateRange")}
                 >
                     <span className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
-                        Date Range Report
+                        Range Report
                     </span>
                     {viewMode === 'dateRange' && (
                         <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${isDark ? "bg-blue-400" : "bg-blue-600"
@@ -140,12 +140,12 @@ const AttendanceReportView: React.FC<AttendanceReportViewProps> = ({ classId, st
                     )}
                 </button>
                 <button
-                    className={`pb-3 px-4 font-medium transition-colors relative ${viewMode === 'studentHistory'
+                    className={`pb-3 pt-2 px-4 font-bold text-sm transition-colors relative text-left sm:text-center ${viewMode === 'studentHistory'
                         ? isDark
                             ? 'text-blue-400'
                             : 'text-blue-600'
                         : isDark
-                            ? 'text-gray-400 hover:text-gray-300'
+                            ? 'text-gray-500 hover:text-gray-300'
                             : 'text-gray-500 hover:text-gray-700'
                         }`}
                     onClick={() => setViewMode("studentHistory")}
@@ -166,9 +166,9 @@ const AttendanceReportView: React.FC<AttendanceReportViewProps> = ({ classId, st
                 {viewMode === "dateRange" && (
                     <div className="space-y-6">
                         {/* Date Range Inputs */}
-                        <div className="flex flex-wrap gap-4 items-end">
-                            <div className="flex-1 min-w-[200px]">
-                                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"
+                        <div className="flex flex-col sm:flex-row gap-4 sm:items-end">
+                            <div className="w-full sm:flex-1">
+                                <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? "text-gray-500" : "text-gray-500"
                                     }`}>
                                     Start Date
                                 </label>
@@ -176,14 +176,14 @@ const AttendanceReportView: React.FC<AttendanceReportViewProps> = ({ classId, st
                                     type="date"
                                     value={startDate}
                                     onChange={(e) => setStartDate(e.target.value)}
-                                    className={`w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 transition-all ${isDark
-                                        ? "bg-[#0d1117] border-gray-600 text-white focus:ring-blue-500"
-                                        : "bg-white border-gray-300 text-gray-900 focus:ring-blue-500"
+                                    className={`w-full px-4 py-2 text-sm rounded-lg border focus:outline-none focus:ring-2 transition-all ${isDark
+                                        ? "bg-[#0d1117] border-gray-700 text-white focus:ring-blue-500/50"
+                                        : "bg-white border-gray-200 text-gray-900 focus:ring-blue-500"
                                         }`}
                                 />
                             </div>
-                            <div className="flex-1 min-w-[200px]">
-                                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"
+                            <div className="w-full sm:flex-1">
+                                <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? "text-gray-500" : "text-gray-500"
                                     }`}>
                                     End Date
                                 </label>
@@ -191,16 +191,16 @@ const AttendanceReportView: React.FC<AttendanceReportViewProps> = ({ classId, st
                                     type="date"
                                     value={endDate}
                                     onChange={(e) => setEndDate(e.target.value)}
-                                    className={`w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 transition-all ${isDark
-                                        ? "bg-[#0d1117] border-gray-600 text-white focus:ring-blue-500"
-                                        : "bg-white border-gray-300 text-gray-900 focus:ring-blue-500"
+                                    className={`w-full px-4 py-2 text-sm rounded-lg border focus:outline-none focus:ring-2 transition-all ${isDark
+                                        ? "bg-[#0d1117] border-gray-700 text-white focus:ring-blue-500/50"
+                                        : "bg-white border-gray-200 text-gray-900 focus:ring-blue-500"
                                         }`}
                                 />
                             </div>
                             <button
                                 onClick={handleRangeSearch}
                                 disabled={rangeLoading}
-                                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
                             >
                                 {rangeLoading ? (
                                     <>
@@ -210,7 +210,7 @@ const AttendanceReportView: React.FC<AttendanceReportViewProps> = ({ classId, st
                                 ) : (
                                     <>
                                         <Search className="w-4 h-4" />
-                                        Get Report
+                                        Fetch Report
                                     </>
                                 )}
                             </button>
@@ -218,50 +218,50 @@ const AttendanceReportView: React.FC<AttendanceReportViewProps> = ({ classId, st
 
                         {/* Summary Cards */}
                         {rangeSummary && (
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className={`rounded-lg p-6 border ${isDark ? "bg-green-900/20 border-green-800" : "bg-green-50 border-green-200"
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+                                <div className={`rounded-xl p-4 md:p-6 border ${isDark ? "bg-green-500/10 border-green-500/20" : "bg-green-50 border-green-100"
                                     }`}>
                                     <div className="flex items-center justify-between mb-2">
-                                        <span className={`text-sm font-medium ${isDark ? "text-green-300" : "text-green-700"
+                                        <span className={`text-[10px] md:text-sm font-bold uppercase tracking-wider ${isDark ? "text-green-500/70" : "text-green-600/70"
                                             }`}>
-                                            Total Present
+                                            Present
                                         </span>
-                                        <CheckCircle className={`w-5 h-5 ${isDark ? "text-green-400" : "text-green-600"
+                                        <CheckCircle className={`w-4 h-4 md:w-5 md:h-5 ${isDark ? "text-green-400" : "text-green-600"
                                             }`} />
                                     </div>
-                                    <p className={`text-3xl font-bold ${isDark ? "text-green-400" : "text-green-600"
+                                    <p className={`text-2xl md:text-3xl font-bold ${isDark ? "text-green-400" : "text-green-600"
                                         }`}>
                                         {rangeSummary.totalPresent}
                                     </p>
                                 </div>
 
-                                <div className={`rounded-lg p-6 border ${isDark ? "bg-red-900/20 border-red-800" : "bg-red-50 border-red-200"
+                                <div className={`rounded-xl p-4 md:p-6 border ${isDark ? "bg-red-500/10 border-red-500/20" : "bg-red-50 border-red-100"
                                     }`}>
                                     <div className="flex items-center justify-between mb-2">
-                                        <span className={`text-sm font-medium ${isDark ? "text-red-300" : "text-red-700"
+                                        <span className={`text-[10px] md:text-sm font-bold uppercase tracking-wider ${isDark ? "text-red-500/70" : "text-red-600/70"
                                             }`}>
-                                            Total Absent
+                                            Absent
                                         </span>
-                                        <XCircle className={`w-5 h-5 ${isDark ? "text-red-400" : "text-red-600"
+                                        <XCircle className={`w-4 h-4 md:w-5 md:h-5 ${isDark ? "text-red-400" : "text-red-600"
                                             }`} />
                                     </div>
-                                    <p className={`text-3xl font-bold ${isDark ? "text-red-400" : "text-red-600"
+                                    <p className={`text-2xl md:text-3xl font-bold ${isDark ? "text-red-400" : "text-red-600"
                                         }`}>
                                         {rangeSummary.totalAbsent}
                                     </p>
                                 </div>
 
-                                <div className={`rounded-lg p-6 border ${isDark ? "bg-blue-900/20 border-blue-800" : "bg-blue-50 border-blue-200"
+                                <div className={`rounded-xl p-4 md:p-6 border col-span-2 md:col-span-1 border ${isDark ? "bg-blue-500/10 border-blue-500/20" : "bg-blue-50 border-blue-100"
                                     }`}>
                                     <div className="flex items-center justify-between mb-2">
-                                        <span className={`text-sm font-medium ${isDark ? "text-blue-300" : "text-blue-700"
+                                        <span className={`text-[10px] md:text-sm font-bold uppercase tracking-wider ${isDark ? "text-blue-500/70" : "text-blue-600/70"
                                             }`}>
-                                            Attendance Rate
+                                            Rate
                                         </span>
-                                        <TrendingUp className={`w-5 h-5 ${isDark ? "text-blue-400" : "text-blue-600"
+                                        <TrendingUp className={`w-4 h-4 md:w-5 md:h-5 ${isDark ? "text-blue-400" : "text-blue-600"
                                             }`} />
                                     </div>
-                                    <p className={`text-3xl font-bold ${isDark ? "text-blue-400" : "text-blue-600"
+                                    <p className={`text-2xl md:text-3xl font-bold ${isDark ? "text-blue-400" : "text-blue-600"
                                         }`}>
                                         {rangeSummary.percentage}%
                                     </p>
@@ -342,74 +342,74 @@ const AttendanceReportView: React.FC<AttendanceReportViewProps> = ({ classId, st
                 {viewMode === "studentHistory" && (
                     <div className="space-y-6">
                         {/* Search Inputs */}
-                        <div className="flex flex-wrap gap-4 items-end">
-                            <div className="flex-1 min-w-[250px]">
-                                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"
+                        <div className="flex flex-col sm:flex-row gap-4 sm:items-end">
+                            <div className="w-full sm:flex-1">
+                                <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? "text-gray-500" : "text-gray-500"
                                     }`}>
-                                    Search Student (Name or ID)
+                                    Student Search
                                 </label>
-                                <input
-                                    type="text"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder="Enter student name or ID..."
-                                    className={`w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 transition-all ${isDark
-                                        ? "bg-[#0d1117] border-gray-600 text-white placeholder-gray-500 focus:ring-blue-500"
-                                        : "bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-blue-500"
-                                        }`}
-                                />
+                                <div className="relative">
+                                    <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isDark ? "text-gray-500" : "text-gray-400"}`} />
+                                    <input
+                                        type="text"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        placeholder="Name or ID..."
+                                        className={`w-full pl-9 pr-4 py-2 text-sm rounded-lg border focus:outline-none focus:ring-2 transition-all ${isDark
+                                            ? "bg-[#0d1117] border-gray-700 text-white placeholder-gray-600 focus:ring-blue-500/50"
+                                            : "bg-white border-gray-200 text-gray-900 placeholder-gray-400 focus:ring-blue-500"
+                                            }`}
+                                    />
+                                </div>
                             </div>
-                            <div className="w-40">
-                                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"
-                                    }`}>
-                                    Month
-                                </label>
-                                <select
-                                    value={selectedMonth}
-                                    onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                                    className={`w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 transition-all ${isDark
-                                        ? "bg-[#0d1117] border-gray-600 text-white focus:ring-blue-500"
-                                        : "bg-white border-gray-300 text-gray-900 focus:ring-blue-500"
-                                        }`}
-                                >
-                                    {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
-                                        <option key={m} value={m}>
-                                            {new Date(0, m - 1).toLocaleString('default', { month: 'long' })}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="w-32">
-                                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"
-                                    }`}>
-                                    Year
-                                </label>
-                                <input
-                                    type="number"
-                                    value={selectedYear}
-                                    onChange={(e) => setSelectedYear(Number(e.target.value))}
-                                    className={`w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 transition-all ${isDark
-                                        ? "bg-[#0d1117] border-gray-600 text-white focus:ring-blue-500"
-                                        : "bg-white border-gray-300 text-gray-900 focus:ring-blue-500"
-                                        }`}
-                                />
+                            <div className="flex gap-4 w-full sm:w-auto">
+                                <div className="flex-1 sm:w-36">
+                                    <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? "text-gray-500" : "text-gray-500"
+                                        }`}>
+                                        Month
+                                    </label>
+                                    <select
+                                        value={selectedMonth}
+                                        onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                                        className={`w-full px-4 py-2 text-sm rounded-lg border focus:outline-none focus:ring-2 transition-all ${isDark
+                                            ? "bg-[#0d1117] border-gray-700 text-white focus:ring-blue-500/50"
+                                            : "bg-white border-gray-200 text-gray-900 focus:ring-blue-500"
+                                            }`}
+                                    >
+                                        {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
+                                            <option key={m} value={m}>
+                                                {new Date(0, m - 1).toLocaleString('default', { month: 'short' })}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="flex-1 sm:w-24">
+                                    <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? "text-gray-500" : "text-gray-500"
+                                        }`}>
+                                        Year
+                                    </label>
+                                    <input
+                                        type="number"
+                                        value={selectedYear}
+                                        onChange={(e) => setSelectedYear(Number(e.target.value))}
+                                        className={`w-full px-4 py-2 text-sm rounded-lg border focus:outline-none focus:ring-2 transition-all ${isDark
+                                            ? "bg-[#0d1117] border-gray-700 text-white focus:ring-blue-500/50"
+                                            : "bg-white border-gray-200 text-gray-900 focus:ring-blue-500"
+                                            }`}
+                                    />
+                                </div>
                             </div>
                             <button
                                 onClick={handleStudentSearch}
                                 disabled={historyLoading}
-                                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
                             >
                                 {historyLoading ? (
-                                    <>
-                                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
-                                        Loading...
-                                    </>
+                                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
                                 ) : (
-                                    <>
-                                        <Search className="w-4 h-4" />
-                                        Search
-                                    </>
+                                    <Search className="w-4 h-4" />
                                 )}
+                                <span>Search</span>
                             </button>
                         </div>
 
@@ -509,16 +509,16 @@ const AttendanceReportView: React.FC<AttendanceReportViewProps> = ({ classId, st
                                                 <div
                                                     key={idx}
                                                     className={`p-4 rounded-lg border transition-all ${record.status === 'Present'
+                                                        ? isDark
+                                                            ? "bg-green-900/20 border-green-800"
+                                                            : "bg-green-50 border-green-200"
+                                                        : record.status === 'Absent'
                                                             ? isDark
-                                                                ? "bg-green-900/20 border-green-800"
-                                                                : "bg-green-50 border-green-200"
-                                                            : record.status === 'Absent'
-                                                                ? isDark
-                                                                    ? "bg-red-900/20 border-red-800"
-                                                                    : "bg-red-50 border-red-200"
-                                                                : isDark
-                                                                    ? "bg-gray-700/30 border-gray-600"
-                                                                    : "bg-gray-50 border-gray-200"
+                                                                ? "bg-red-900/20 border-red-800"
+                                                                : "bg-red-50 border-red-200"
+                                                            : isDark
+                                                                ? "bg-gray-700/30 border-gray-600"
+                                                                : "bg-gray-50 border-gray-200"
                                                         }`}
                                                 >
                                                     <div className="flex justify-between items-start mb-2">
@@ -539,8 +539,8 @@ const AttendanceReportView: React.FC<AttendanceReportViewProps> = ({ classId, st
                                                                     setEditStatus(record.status);
                                                                 }}
                                                                 className={`p-1.5 rounded-full transition-colors ${isDark
-                                                                        ? "hover:bg-gray-700 text-gray-400 hover:text-blue-400"
-                                                                        : "hover:bg-gray-100 text-gray-500 hover:text-blue-600"
+                                                                    ? "hover:bg-gray-700 text-gray-400 hover:text-blue-400"
+                                                                    : "hover:bg-gray-100 text-gray-500 hover:text-blue-600"
                                                                     }`}
                                                                 title="Edit Attendance"
                                                             >
@@ -555,8 +555,8 @@ const AttendanceReportView: React.FC<AttendanceReportViewProps> = ({ classId, st
                                                                 value={editStatus}
                                                                 onChange={(e) => setEditStatus(e.target.value)}
                                                                 className={`w-full px-3 py-1.5 text-sm rounded border focus:outline-none focus:ring-2 ${isDark
-                                                                        ? "bg-[#0d1117] border-gray-600 text-white focus:ring-blue-500"
-                                                                        : "bg-white border-gray-300 text-gray-900 focus:ring-blue-500"
+                                                                    ? "bg-[#0d1117] border-gray-600 text-white focus:ring-blue-500"
+                                                                    : "bg-white border-gray-300 text-gray-900 focus:ring-blue-500"
                                                                     }`}
                                                             >
                                                                 <option value="Present">Present</option>
@@ -575,8 +575,8 @@ const AttendanceReportView: React.FC<AttendanceReportViewProps> = ({ classId, st
                                                                     onClick={() => setEditingRecord(null)}
                                                                     disabled={updateLoading}
                                                                     className={`flex-1 px-3 py-1.5 text-xs font-medium rounded border transition-colors ${isDark
-                                                                            ? "border-gray-600 text-gray-300 hover:bg-gray-700"
-                                                                            : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                                                                        ? "border-gray-600 text-gray-300 hover:bg-gray-700"
+                                                                        : "border-gray-300 text-gray-700 hover:bg-gray-50"
                                                                         }`}
                                                                 >
                                                                     Cancel
@@ -585,16 +585,16 @@ const AttendanceReportView: React.FC<AttendanceReportViewProps> = ({ classId, st
                                                         </div>
                                                     ) : (
                                                         <div className={`font-semibold flex items-center gap-2 mt-2 ${record.status === 'Present'
+                                                            ? isDark
+                                                                ? "text-green-400"
+                                                                : "text-green-700"
+                                                            : record.status === 'Absent'
                                                                 ? isDark
-                                                                    ? "text-green-400"
-                                                                    : "text-green-700"
-                                                                : record.status === 'Absent'
-                                                                    ? isDark
-                                                                        ? "text-red-400"
-                                                                        : "text-red-700"
-                                                                    : isDark
-                                                                        ? "text-gray-400"
-                                                                        : "text-gray-700"
+                                                                    ? "text-red-400"
+                                                                    : "text-red-700"
+                                                                : isDark
+                                                                    ? "text-gray-400"
+                                                                    : "text-gray-700"
                                                             }`}>
                                                             {record.status === 'Present' && <CheckCircle className="w-4 h-4" />}
                                                             {record.status === 'Absent' && <XCircle className="w-4 h-4" />}

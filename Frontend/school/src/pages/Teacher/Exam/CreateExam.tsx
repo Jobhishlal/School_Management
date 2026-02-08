@@ -319,20 +319,20 @@ const ExamForm: React.FC = () => {
   return (
     <div className={`min-h-screen p-6 ${isDark ? "bg-[#121A21] text-white" : "bg-gray-50"}`}>
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className={`text-3xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>
+            <h1 className={`text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent`}>
               Exam Management
             </h1>
-            <p className={`mt-1 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
-              Create and manage your exams
+            <p className={`mt-1 text-sm font-medium ${isDark ? "text-gray-500" : "text-gray-400"}`}>
+              Schedule and monitor student assessments
             </p>
           </div>
           <button
             onClick={handleOpenModal}
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all shadow-lg ${isDark
-              ? "bg-blue-600 hover:bg-blue-700 text-white"
-              : "bg-blue-500 hover:bg-blue-600 text-white"
+            className={`w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold transition-all shadow-lg ${isDark
+              ? "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-900/20"
+              : "bg-blue-500 hover:bg-blue-600 text-white shadow-blue-500/20"
               }`}
           >
             <Plus className="w-5 h-5" />
@@ -340,141 +340,226 @@ const ExamForm: React.FC = () => {
           </button>
         </div>
 
-        <div className={`rounded-xl shadow-lg ${isDark ? "bg-gray-800" : "bg-white"}`}>
-          <div className="p-6">
-            <h2 className={`text-xl font-semibold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}>
-              My Exams
-            </h2>
+        <div className={`rounded-2xl border shadow-sm ${isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}>
+          <div className="p-4 sm:p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className={`text-xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>
+                My Exams
+              </h2>
+              <div className={`text-xs font-bold px-3 py-1 rounded-full ${isDark ? "bg-gray-700 text-gray-400" : "bg-gray-100 text-gray-500"}`}>
+                {exams.length} Total
+              </div>
+            </div>
 
             {exams.length === 0 ? (
               <div className="text-center py-12">
-                <FileText className={`w-16 h-16 mx-auto mb-4 ${isDark ? "text-gray-600" : "text-gray-400"}`} />
-                <p className={isDark ? "text-gray-400" : "text-gray-600"}>No exams found</p>
+                <div className={`w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-2xl ${isDark ? "bg-gray-700" : "bg-gray-100"}`}>
+                  <FileText className={`w-8 h-8 ${isDark ? "text-gray-500" : "text-gray-400"}`} />
+                </div>
+                <p className={`font-medium ${isDark ? "text-gray-500" : "text-gray-400"}`}>No exams found</p>
                 <button
                   onClick={handleOpenModal}
-                  className={`mt-4 px-6 py-2 rounded-lg ${isDark ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"
+                  className={`mt-4 px-6 py-2 rounded-lg font-bold text-sm ${isDark ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-500 hover:bg-blue-600"
                     } text-white`}
                 >
                   Create Your First Exam
                 </button>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className={`border-b ${isDark ? "border-gray-700" : "border-gray-200"}`}>
-                      <th className={`text-left px-4 py-3 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Exam ID</th>
-                      <th className={`text-left px-4 py-3 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Title</th>
-                      <th className={`text-left px-4 py-3 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Type</th>
-                      <th className={`text-left px-4 py-3 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Class</th>
-                      <th className={`text-left px-4 py-3 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Subject</th>
-                      <th className={`text-left px-4 py-3 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Date</th>
-                      <th className={`text-left px-4 py-3 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Time</th>
-                      <th className={`text-left px-4 py-3 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Marks (Max/Pass)</th>
-                      <th className={`text-left px-4 py-3 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Status</th>
-                      <th className={`text-center px-4 py-3 font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentExams.map((exam, index) => (
-                      <tr
-                        key={exam.id}
-                        className={`border-b transition-colors ${isDark
-                          ? index % 2 === 0
-                            ? "bg-gray-800 border-gray-700 hover:bg-gray-750"
-                            : "bg-gray-750 border-gray-700 hover:bg-gray-800"
-                          : index % 2 === 0
-                            ? "bg-white border-gray-200 hover:bg-gray-50"
-                            : "bg-gray-50 border-gray-200 hover:bg-gray-100"
-                          }`}
-                      >
-                        <td className={`px-4 py-3 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                          {exam.examId}
-                        </td>
-                        <td className={`px-4 py-3 font-medium ${isDark ? "text-white" : "text-gray-900"}`}>
-                          {exam.title}
-                        </td>
-                        <td className={`px-4 py-3 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                          {exam.type.replace("_", " ")}
-                        </td>
-                        <td className={`px-4 py-3 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                          {exam.className} - {exam.division}
-                        </td>
-                        <td className={`px-4 py-3 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                          {exam.subject}
-                        </td>
-                        <td className={`px-4 py-3 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                          {new Date(exam.examDate).toLocaleDateString()}
-                        </td>
-                        <td className={`px-4 py-3 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                          {exam.startTime} - {exam.endTime}
-                        </td>
-                        <td className={`px-4 py-3 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                          <span className="font-semibold text-blue-500">{exam.maxMarks}</span> / <span className="text-gray-500">{exam.passMarks}</span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(exam.status)}`}>
-                            {exam.status || "Scheduled"}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          <div className="flex gap-2 justify-center">
-                            <button
-                              onClick={() => handleViewExam(exam)}
-                              className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium transition-colors ${isDark
-                                ? "bg-purple-600 hover:bg-purple-700 text-white"
-                                : "bg-purple-500 hover:bg-purple-600 text-white"
-                                }`}
-                            >
-                              <Eye className="w-4 h-4" />
-                              View
-                            </button>
+              <>
+                {/* Mobile View: Card Layout */}
+                <div className="grid grid-cols-1 gap-4 lg:hidden">
+                  {currentExams.map((exam) => (
+                    <div
+                      key={exam.id}
+                      className={`p-4 rounded-xl border transition-all ${isDark ? "bg-gray-900/50 border-gray-700" : "bg-gray-50 border-gray-200"
+                        }`}
+                    >
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h3 className="font-bold text-lg leading-tight">{exam.title}</h3>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? "text-blue-400" : "text-blue-600"}`}>
+                              {exam.subject}
+                            </span>
+                            <span className={`w-1 h-1 rounded-full ${isDark ? "bg-gray-700" : "bg-gray-300"}`} />
+                            <span className={`text-[10px] font-bold ${isDark ? "text-gray-500" : "text-gray-400"}`}>
+                              {exam.examId}
+                            </span>
+                          </div>
+                        </div>
+                        <span className={`px-2.5 py-1 text-[10px] rounded-full font-bold uppercase tracking-wider ${getStatusColor(exam.status)}`}>
+                          {exam.status || "Scheduled"}
+                        </span>
+                      </div>
 
-                            <button
-                              onClick={() => handleEditExam(exam)}
-                              className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium transition-colors ${isDark
-                                ? "bg-blue-600 hover:bg-blue-700 text-white"
-                                : "bg-blue-500 hover:bg-blue-600 text-white"
-                                }`}
-                            >
-                              <Edit className="w-4 h-4" />
-                              Edit
-                            </button>
-
-                            <div className="relative">
-                              <button
-                                onClick={() => handleTakeMarks(exam)}
-                                className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-medium transition-colors ${isDark
-                                  ? "bg-green-600 hover:bg-green-700 text-white"
-                                  : "bg-green-500 hover:bg-green-600 text-white"
-                                  }`}
+                      <div className="grid grid-cols-2 gap-4 mb-5">
+                        <div className="space-y-3">
+                          <div>
+                            <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${isDark ? "text-gray-500" : "text-gray-400"}`}>
+                              Class
+                            </p>
+                            <p className="text-sm font-medium">{exam.className} - {exam.division}</p>
+                          </div>
+                          <div>
+                            <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${isDark ? "text-gray-500" : "text-gray-400"}`}>
+                              Date & Time
+                            </p>
+                            <p className="text-sm font-medium">{new Date(exam.examDate).toLocaleDateString()}</p>
+                            <p className={`text-[11px] mt-0.5 ${isDark ? "text-gray-500" : "text-gray-400"}`}>
+                              {exam.startTime} - {exam.endTime}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="space-y-3 text-right">
+                          <div>
+                            <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${isDark ? "text-gray-500" : "text-gray-400"}`}>
+                              Marks (Max/Pass)
+                            </p>
+                            <p className="text-sm font-bold">
+                              <span className="text-blue-500 font-black">{exam.maxMarks}</span>
+                              <span className="mx-1 text-gray-500">/</span>
+                              <span className="text-orange-500">{exam.passMarks}</span>
+                            </p>
+                          </div>
+                          <div className="flex justify-end">
+                            {(exam.pendingConcerns || 0) > 0 && (
+                              <div
+                                onClick={() => setViewingConcerns(exam)}
+                                className="flex items-center gap-1.5 px-2 py-1 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg animate-pulse cursor-pointer transition-transform active:scale-95"
                               >
-                                Take Marks
+                                <span className="text-[10px] font-black">{exam.pendingConcerns} Concerns</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2 pt-4 border-t border-dashed border-gray-700/50">
+                        <button
+                          onClick={() => handleViewExam(exam)}
+                          className={`flex-1 min-w-[100px] flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all ${isDark ? "bg-purple-600/20 text-purple-400 hover:bg-purple-600/30" : "bg-purple-50 text-purple-600 hover:bg-purple-100"
+                            }`}
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          View
+                        </button>
+                        <button
+                          onClick={() => handleEditExam(exam)}
+                          className={`flex-1 min-w-[100px] flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all ${isDark ? "bg-blue-600/20 text-blue-400 hover:bg-blue-600/30" : "bg-blue-50 text-blue-600 hover:bg-blue-100"
+                            }`}
+                        >
+                          <Edit className="w-3.5 h-3.5" />
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleTakeMarks(exam)}
+                          className="w-full mt-1 flex items-center justify-center gap-1.5 py-2.5 bg-green-600 text-white rounded-lg text-xs font-black shadow-lg shadow-green-600/20 hover:bg-green-700 transition-all"
+                        >
+                          Take / Update Marks
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop View: Table */}
+                <div className="hidden lg:block overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className={`border-b ${isDark ? "border-gray-700 text-gray-400" : "border-gray-100 text-gray-500"}`}>
+                        <th className="text-left px-4 py-4 text-xs font-black uppercase tracking-widest">Exam ID</th>
+                        <th className="text-left px-4 py-4 text-xs font-black uppercase tracking-widest">Title</th>
+                        <th className="text-left px-4 py-4 text-xs font-black uppercase tracking-widest">Type</th>
+                        <th className="text-left px-4 py-4 text-xs font-black uppercase tracking-widest">Class</th>
+                        <th className="text-left px-4 py-4 text-xs font-black uppercase tracking-widest">Subject</th>
+                        <th className="text-left px-4 py-4 text-xs font-black uppercase tracking-widest">Date</th>
+                        <th className="text-left px-4 py-4 text-xs font-black uppercase tracking-widest">Time</th>
+                        <th className="text-left px-4 py-4 text-xs font-black uppercase tracking-widest">Marks</th>
+                        <th className="text-left px-4 py-4 text-xs font-black uppercase tracking-widest">Status</th>
+                        <th className="text-center px-4 py-4 text-xs font-black uppercase tracking-widest">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className={`divide-y ${isDark ? "divide-gray-700/50" : "divide-gray-100"}`}>
+                      {currentExams.map((exam) => (
+                        <tr
+                          key={exam.id}
+                          className={`group transition-colors ${isDark ? "hover:bg-gray-700/30" : "hover:bg-blue-50/50"}`}
+                        >
+                          <td className="px-4 py-4 text-sm font-medium text-gray-500">
+                            {exam.examId}
+                          </td>
+                          <td className={`px-4 py-4 font-bold text-sm ${isDark ? "text-white" : "text-gray-900"}`}>
+                            {exam.title}
+                          </td>
+                          <td className="px-4 py-4 text-sm font-medium">
+                            {exam.type.replace("_", " ")}
+                          </td>
+                          <td className="px-4 py-4 text-sm font-medium">
+                            {exam.className} - {exam.division}
+                          </td>
+                          <td className="px-4 py-4 text-sm font-bold text-blue-500">
+                            {exam.subject}
+                          </td>
+                          <td className="px-4 py-4 text-sm font-medium">
+                            {new Date(exam.examDate).toLocaleDateString()}
+                          </td>
+                          <td className="px-4 py-4 text-sm font-medium">
+                            {exam.startTime} - {exam.endTime}
+                          </td>
+                          <td className="px-4 py-4 text-sm font-bold">
+                            <span className="text-blue-500">{exam.maxMarks}</span>
+                            <span className="mx-1 text-gray-400">/</span>
+                            <span className="text-orange-500">{exam.passMarks}</span>
+                          </td>
+                          <td className="px-4 py-4">
+                            <span className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${getStatusColor(exam.status)}`}>
+                              {exam.status || "Scheduled"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-4">
+                            <div className="flex gap-2 justify-center">
+                              <button
+                                onClick={() => handleViewExam(exam)}
+                                className={`p-2 rounded-lg transition-all ${isDark ? "bg-gray-700 text-purple-400 hover:bg-purple-400/20" : "bg-purple-50 text-purple-600 hover:bg-purple-100"}`}
+                                title="View Details"
+                              >
+                                <Eye className="w-4 h-4" />
                               </button>
-                              <div className="relative group">
+                              <button
+                                onClick={() => handleEditExam(exam)}
+                                className={`p-2 rounded-lg transition-all ${isDark ? "bg-gray-700 text-blue-400 hover:bg-blue-400/20" : "bg-blue-50 text-blue-600 hover:bg-blue-100"}`}
+                                title="Edit Exam"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </button>
+                              <div className="relative">
+                                <button
+                                  onClick={() => handleTakeMarks(exam)}
+                                  className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-xs font-black shadow-lg shadow-green-600/20 hover:bg-green-700 transition-all"
+                                >
+                                  Marks
+                                </button>
                                 {(exam.pendingConcerns || 0) > 0 && (
-                                  <>
-                                    <span
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setViewingConcerns(exam);
-                                      }}
-                                      className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse shadow-md cursor-pointer hover:scale-110 transition-transform z-10"
-                                      title="Click to view pending concerns"
-                                    >
-                                      {exam.pendingConcerns}
-                                    </span>
-                                  </>
+                                  <span
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setViewingConcerns(exam);
+                                    }}
+                                    className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full animate-pulse shadow-md cursor-pointer hover:scale-110 transition-transform"
+                                  >
+                                    {exam.pendingConcerns}
+                                  </span>
                                 )}
                               </div>
                             </div>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </div>
 
@@ -492,22 +577,18 @@ const ExamForm: React.FC = () => {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
         >
-          <div className="space-y-4">
+          <div className="flex flex-col gap-5">
             {/* Debug Info - Remove in production */}
             {subjects.length === 0 && (
-              <div className="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg text-sm">
-                <p className="text-yellow-800 dark:text-yellow-200">
-                  No subjects found for teacher: <strong>{form.teacherName || "Unknown"}</strong>
-                </p>
-                <p className="text-xs mt-1 text-yellow-700 dark:text-yellow-300">
-                  Teacher ID: {form.teacherId || "Not set"}
-                </p>
+              <div className={`p-4 rounded-xl text-xs flex flex-col gap-1 border ${isDark ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-500" : "bg-yellow-50 border-yellow-100 text-yellow-700"}`}>
+                <p className="font-bold">No subjects found for teacher: <span className="opacity-80">{form.teacherName || "Unknown"}</span></p>
+                <p className="opacity-60 italic">Teacher ID: {form.teacherId || "Not set"}</p>
               </div>
             )}
 
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-5">
               <div>
-                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                <label className={`block text-[10px] font-bold uppercase tracking-wider mb-2 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
                   Exam Title *
                 </label>
                 <input
@@ -515,167 +596,188 @@ const ExamForm: React.FC = () => {
                   required
                   value={form.title}
                   onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
-                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${isDark
-                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  placeholder="Enter exam title"
+                  className={`w-full px-4 py-3 rounded-xl border appearance-none transition-all ${isDark
+                    ? "bg-gray-700/50 border-gray-600 text-white focus:ring-blue-500/50"
+                    : "bg-gray-50 border-gray-200 text-gray-900 focus:ring-blue-500"
+                    } focus:outline-none focus:ring-2`}
+                  placeholder="e.g. Mathematics Final Exam"
                 />
               </div>
 
               <div>
-                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                <label className={`block text-[10px] font-bold uppercase tracking-wider mb-2 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
                   Exam Type *
                 </label>
-                <select
-                  required
-                  value={form.type}
-                  onChange={(e) => setForm((p) => ({ ...p, type: e.target.value as ExamType }))}
-                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${isDark
-                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                >
-                  <option value="UNIT_TEST">Unit Test</option>
-                  <option value="MIDTERM">Midterm</option>
-                  <option value="FINAL">Final</option>
-                </select>
+                <div className="relative">
+                  <select
+                    required
+                    value={form.type}
+                    onChange={(e) => setForm((p) => ({ ...p, type: e.target.value as ExamType }))}
+                    className={`w-full px-4 py-3 rounded-xl border appearance-none transition-all ${isDark
+                      ? "bg-gray-700/50 border-gray-600 text-white focus:ring-blue-500/50"
+                      : "bg-gray-50 border-gray-200 text-gray-900 focus:ring-blue-500"
+                      } focus:outline-none focus:ring-2`}
+                  >
+                    <option value="UNIT_TEST">Unit Test</option>
+                    <option value="MIDTERM">Midterm</option>
+                    <option value="FINAL">Final</option>
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
+                    <Plus className="w-4 h-4 rotate-45" />
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                  Class *
-                </label>
-                <select
-                  required
-                  value={form.classId}
-                  onChange={(e) => handleClassChange(e.target.value)}
-                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${isDark
-                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                >
-                  <option value="">Select Class</option>
-                  {classes.map((c) => (
-                    <option key={c._id} value={c._id}>
-                      {c.className} - {c.division}
-                    </option>
-                  ))}
-                </select>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                  <label className={`block text-[10px] font-bold uppercase tracking-wider mb-2 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
+                    Class *
+                  </label>
+                  <div className="relative">
+                    <select
+                      required
+                      value={form.classId}
+                      onChange={(e) => handleClassChange(e.target.value)}
+                      className={`w-full px-4 py-3 rounded-xl border appearance-none transition-all ${isDark
+                        ? "bg-gray-700/50 border-gray-600 text-white focus:ring-blue-500/50"
+                        : "bg-gray-50 border-gray-200 text-gray-900 focus:ring-blue-500"
+                        } focus:outline-none focus:ring-2`}
+                    >
+                      <option value="">Select Class</option>
+                      {classes.map((c) => (
+                        <option key={c._id} value={c._id}>
+                          {c.className} - {c.division}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
+                      <Plus className="w-4 h-4 rotate-45" />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className={`block text-[10px] font-bold uppercase tracking-wider mb-2 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
+                    Subject *
+                  </label>
+                  <div className="relative">
+                    <select
+                      required
+                      value={form.subject}
+                      onChange={(e) => setForm((p) => ({ ...p, subject: e.target.value }))}
+                      className={`w-full px-4 py-3 rounded-xl border appearance-none transition-all ${isDark
+                        ? "bg-gray-700/50 border-gray-600 text-white focus:ring-blue-500/50"
+                        : "bg-gray-50 border-gray-200 text-gray-900 focus:ring-blue-500"
+                        } focus:outline-none focus:ring-2 disabled:opacity-50`}
+                      disabled={subjects.length === 0}
+                    >
+                      <option value="">
+                        {subjects.length === 0 ? "No subjects available" : "Select Subject"}
+                      </option>
+                      {subjects.map((s) => (
+                        <option key={s._id || s.name} value={s.name}>
+                          {s.name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
+                      <Plus className="w-4 h-4 rotate-45" />
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                  Subject *
-                </label>
-                <select
-                  required
-                  value={form.subject}
-                  onChange={(e) => setForm((p) => ({ ...p, subject: e.target.value }))}
-                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${isDark
-                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  disabled={subjects.length === 0}
-                >
-                  <option value="">
-                    {subjects.length === 0 ? "No subjects available" : "Select Subject"}
-                  </option>
-                  {subjects.map((s) => (
-                    <option key={s._id || s.name} value={s.name}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div>
+                  <label className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider mb-2 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
+                    <Calendar className="w-3.5 h-3.5" />
+                    Exam Date *
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={form.examDate}
+                    onChange={(e) => setForm((p) => ({ ...p, examDate: e.target.value }))}
+                    className={`w-full px-4 py-3 rounded-xl border appearance-none transition-all ${isDark
+                      ? "bg-gray-700/50 border-gray-600 text-white focus:ring-blue-500/50"
+                      : "bg-gray-50 border-gray-200 text-gray-900 focus:ring-blue-500"
+                      } focus:outline-none focus:ring-2`}
+                  />
+                </div>
+
+                <div>
+                  <label className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider mb-2 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
+                    <Clock className="w-3.5 h-3.5" />
+                    Start Time *
+                  </label>
+                  <input
+                    type="time"
+                    required
+                    value={form.startTime}
+                    onChange={(e) => setForm((p) => ({ ...p, startTime: e.target.value }))}
+                    className={`w-full px-4 py-3 rounded-xl border appearance-none transition-all ${isDark
+                      ? "bg-gray-700/50 border-gray-600 text-white focus:ring-blue-500/50"
+                      : "bg-gray-50 border-gray-200 text-gray-900 focus:ring-blue-500"
+                      } focus:outline-none focus:ring-2`}
+                  />
+                </div>
+
+                <div>
+                  <label className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider mb-2 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
+                    <Clock className="w-3.5 h-3.5" />
+                    End Time *
+                  </label>
+                  <input
+                    type="time"
+                    required
+                    value={form.endTime}
+                    onChange={(e) => setForm((p) => ({ ...p, endTime: e.target.value }))}
+                    className={`w-full px-4 py-3 rounded-xl border appearance-none transition-all ${isDark
+                      ? "bg-gray-700/50 border-gray-600 text-white focus:ring-blue-500/50"
+                      : "bg-gray-50 border-gray-200 text-gray-900 focus:ring-blue-500"
+                      } focus:outline-none focus:ring-2`}
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                  <Calendar className="w-4 h-4 inline mr-1" />
-                  Exam Date *
-                </label>
-                <input
-                  type="date"
-                  required
-                  value={form.examDate}
-                  onChange={(e) => setForm((p) => ({ ...p, examDate: e.target.value }))}
-                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${isDark
-                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                />
-              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                  <label className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider mb-2 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
+                    <BookOpen className="w-3.5 h-3.5" />
+                    Max Marks *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    value={form.maxMarks}
+                    onChange={(e) => setForm((p) => ({ ...p, maxMarks: Number(e.target.value) }))}
+                    className={`w-full px-4 py-3 rounded-xl border appearance-none transition-all ${isDark
+                      ? "bg-gray-700/50 border-gray-600 text-white focus:ring-blue-500/50"
+                      : "bg-gray-50 border-gray-200 text-gray-900 focus:ring-blue-500"
+                      } focus:outline-none focus:ring-2`}
+                    placeholder="100"
+                  />
+                </div>
 
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                  <Clock className="w-4 h-4 inline mr-1" />
-                  Start Time *
-                </label>
-                <input
-                  type="time"
-                  required
-                  value={form.startTime}
-                  onChange={(e) => setForm((p) => ({ ...p, startTime: e.target.value }))}
-                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${isDark
-                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                />
-              </div>
-
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                  <Clock className="w-4 h-4 inline mr-1" />
-                  End Time *
-                </label>
-                <input
-                  type="time"
-                  required
-                  value={form.endTime}
-                  onChange={(e) => setForm((p) => ({ ...p, endTime: e.target.value }))}
-                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${isDark
-                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                />
-              </div>
-
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                  <BookOpen className="w-4 h-4 inline mr-1" />
-                  Maximum Marks *
-                </label>
-                <input
-                  type="number"
-                  required
-                  min="1"
-                  value={form.maxMarks}
-                  onChange={(e) => setForm((p) => ({ ...p, maxMarks: Number(e.target.value) }))}
-                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${isDark
-                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  placeholder="100"
-                />
-              </div>
-
-              <div>
-                <label className={`block text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                  <BookOpen className="w-4 h-4 inline mr-1" />
-                  Pass Marks *
-                </label>
-                <input
-                  type="number"
-                  required
-                  min="1"
-                  value={form.passMarks}
-                  onChange={(e) => setForm((p) => ({ ...p, passMarks: Number(e.target.value) }))}
-                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${isDark
-                    ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500"
-                    : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  placeholder="40"
-                />
+                <div>
+                  <label className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider mb-2 ${isDark ? "text-gray-500" : "text-gray-500"}`}>
+                    <BookOpen className="w-3.5 h-3.5" />
+                    Pass Marks *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    value={form.passMarks}
+                    onChange={(e) => setForm((p) => ({ ...p, passMarks: Number(e.target.value) }))}
+                    className={`w-full px-4 py-3 rounded-xl border appearance-none transition-all ${isDark
+                      ? "bg-gray-700/50 border-gray-600 text-white focus:ring-blue-500/50"
+                      : "bg-gray-50 border-gray-200 text-gray-900 focus:ring-blue-500"
+                      } focus:outline-none focus:ring-2`}
+                    placeholder="40"
+                  />
+                </div>
               </div>
             </div>
 

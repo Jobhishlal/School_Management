@@ -149,7 +149,7 @@ const TodayAttendanceSummary: React.FC<Props> = ({ classId }) => {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
       {/* STATS ROW */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         <StatCard
           title="Present"
           value={stats.present}
@@ -172,7 +172,7 @@ const TodayAttendanceSummary: React.FC<Props> = ({ classId }) => {
           borderClass={isDark ? "text-amber-400" : "text-amber-600"}
         />
         <StatCard
-          title="Total Sessions"
+          title="Sessions"
           value={stats.total}
           icon={BarChart3}
           colorClass={isDark ? "bg-blue-500/10" : "bg-blue-50"}
@@ -183,34 +183,36 @@ const TodayAttendanceSummary: React.FC<Props> = ({ classId }) => {
       <div className={`rounded-xl border shadow-sm overflow-hidden ${isDark ? "bg-[#121A21]" : "bg-white border-gray-200"}`}>
 
         {/* HEADER TOOLBAR */}
-        <div className={`p-4 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${isDark ? "border-zinc-800" : "border-gray-100"}`}>
-          <div className="flex items-center gap-2">
-            <h3 className={`font-semibold text-lg ${isDark ? "text-white" : "text-gray-900"}`}>Attendance Log</h3>
-            <span className={`text-xs px-2 py-1 rounded-md ${isDark ? "bg-zinc-800 text-zinc-400" : "bg-gray-100 text-gray-500"}`}>
-              {new Date().toLocaleDateString()}
-            </span>
+        <div className={`p-4 border-b flex flex-col lg:flex-row lg:items-center justify-between gap-4 ${isDark ? "border-zinc-800" : "border-gray-100"}`}>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <h3 className={`font-semibold text-base md:text-lg ${isDark ? "text-white" : "text-gray-900"}`}>Attendance Log</h3>
+              <span className={`text-[10px] md:text-xs px-2 py-1 rounded-md ${isDark ? "bg-zinc-800 text-zinc-400" : "bg-gray-100 text-gray-500"}`}>
+                {new Date().toLocaleDateString()}
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             {/* Search */}
-            <div className="relative">
+            <div className="relative flex-1">
               <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isDark ? "text-zinc-500" : "text-gray-400"}`} />
               <input
                 type="text"
                 placeholder="Search student..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className={`pl-9 pr-4 py-2 text-sm rounded-lg border focus:ring-2 focus:ring-blue-500/20 outline-none transition-all w-full sm:w-64 ${isDark
-                  ? "bg-zinc-800 border-zinc-700 text-white placeholder:text-white-600 focus:border-blue-500/50"
-                  : "bg-gray-50 border-gray-200 text-white-900 placeholder:text-gray-400 focus:border-blue-500"
+                className={`pl-9 pr-4 py-2 text-sm rounded-lg border focus:ring-2 focus:ring-blue-500/20 outline-none transition-all w-full lg:w-64 ${isDark
+                  ? "bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-600 focus:border-blue-500/50"
+                  : "bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-blue-500"
                   }`}
               />
             </div>
 
             {/* Filter */}
-            <div className="relative">
+            <div className="relative flex-1 sm:flex-none">
               <select
-                className={`appearance-none pl-9 pr-8 py-2 text-sm rounded-lg border focus:ring-2 focus:ring-blue-500/20 outline-none cursor-pointer transition-all ${isDark
+                className={`appearance-none pl-9 pr-8 py-2 text-sm rounded-lg border focus:ring-2 focus:ring-blue-500/20 outline-none cursor-pointer transition-all w-full ${isDark
                   ? "bg-zinc-800 border-zinc-700 text-white focus:border-blue-500/50"
                   : "bg-gray-50 border-gray-200 text-gray-900 focus:border-blue-500"
                   }`}

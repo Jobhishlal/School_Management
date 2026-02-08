@@ -236,9 +236,9 @@ export const StudentAssignmentList: React.FC = () => {
         </div>
 
         {/* Filters Container */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div className="flex flex-col gap-4 mb-8">
           {/* Status Filter Tabs */}
-          <div className={`flex border-b ${borderColor} w-full md:w-auto`}>
+          <div className={`flex overflow-x-auto no-scrollbar border-b ${borderColor} -mx-4 px-4 sm:mx-0 sm:px-0`}>
             {["all", "upcoming", "overdue"].map((f) => (
               <button
                 key={f}
@@ -246,58 +246,75 @@ export const StudentAssignmentList: React.FC = () => {
                   setFilter(f as 'all' | 'upcoming' | 'overdue');
                   setCurrentPage(1);
                 }}
-                className={`px-4 py-2 font-medium transition-all ${filter === f
-                  ? `border-b-2 border-blue-500 ${isDark ? "text-blue-400" : "text-blue-600"}`
-                  : isDark ? "text-slate-400 hover:text-slate-300" : "text-slate-600 hover:text-slate-800"
+                className={`px-4 py-3 font-bold text-sm whitespace-nowrap transition-all relative ${filter === f
+                  ? isDark ? "text-blue-400" : "text-blue-600"
+                  : isDark ? "text-slate-500 hover:text-slate-300" : "text-slate-500 hover:text-slate-800"
                   }`}
               >
                 {f.charAt(0).toUpperCase() + f.slice(1)}
+                {filter === f && (
+                  <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${isDark ? "bg-blue-400" : "bg-blue-600"}`} />
+                )}
               </button>
             ))}
           </div>
 
-          {/* Class Filter Dropdown */}
-          <div className="w-full md:w-64">
-            <select
-              value={selectedClass}
-              onChange={(e) => {
-                setSelectedClass(e.target.value);
-                setCurrentPage(1);
-              }}
-              className={`w-full px-4 py-2 rounded-lg border appearance-none cursor-pointer ${isDark
-                ? "bg-slate-800 border-slate-700 text-slate-200 focus:border-blue-500"
-                : "bg-white border-slate-300 text-slate-700 focus:border-blue-500"
-                } focus:outline-none focus:ring-1 focus:ring-blue-500`}
-            >
-              <option value="all">All Classes</option>
-              {uniqueClasses.map((cls) => (
-                <option key={cls} value={cls}>
-                  {cls}
-                </option>
-              ))}
-            </select>
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:w-2/3">
+            {/* Class Filter Dropdown */}
+            <div>
+              <label className={`block text-[10px] font-bold uppercase tracking-wider mb-2 ${isDark ? "text-slate-500" : "text-slate-400"}`}>
+                Class Selection
+              </label>
+              <div className="relative">
+                <select
+                  value={selectedClass}
+                  onChange={(e) => {
+                    setSelectedClass(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className={`w-full px-4 py-2.5 text-sm rounded-xl border appearance-none transition-all ${isDark
+                    ? "bg-slate-800/80 border-slate-700 text-slate-200 focus:ring-blue-500/50"
+                    : "bg-white border-slate-200 text-slate-700 focus:ring-blue-500/20"
+                    } focus:outline-none focus:ring-2`}
+                >
+                  <option value="all">All Classes</option>
+                  {uniqueClasses.map((cls) => (
+                    <option key={cls} value={cls}>{cls}</option>
+                  ))}
+                </select>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                </div>
+              </div>
+            </div>
 
-          {/* Subject Filter Dropdown */}
-          <div className="w-full md:w-64">
-            <select
-              value={selectedSubject}
-              onChange={(e) => {
-                setSelectedSubject(e.target.value);
-                setCurrentPage(1);
-              }}
-              className={`w-full px-4 py-2 rounded-lg border appearance-none cursor-pointer ${isDark
-                ? "bg-slate-800 border-slate-700 text-slate-200 focus:border-blue-500"
-                : "bg-white border-slate-300 text-slate-700 focus:border-blue-500"
-                } focus:outline-none focus:ring-1 focus:ring-blue-500`}
-            >
-              <option value="all">All Subjects</option>
-              {uniqueSubjects.map((subject) => (
-                <option key={subject} value={subject}>
-                  {subject}
-                </option>
-              ))}
-            </select>
+            {/* Subject Filter Dropdown */}
+            <div>
+              <label className={`block text-[10px] font-bold uppercase tracking-wider mb-2 ${isDark ? "text-slate-500" : "text-slate-400"}`}>
+                Browse Subject
+              </label>
+              <div className="relative">
+                <select
+                  value={selectedSubject}
+                  onChange={(e) => {
+                    setSelectedSubject(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className={`w-full px-4 py-2.5 text-sm rounded-xl border appearance-none transition-all ${isDark
+                    ? "bg-slate-800/80 border-slate-700 text-slate-200 focus:ring-blue-500/50"
+                    : "bg-white border-slate-200 text-slate-700 focus:ring-blue-500/20"
+                    } focus:outline-none focus:ring-2`}
+                >
+                  <option value="all">All Subjects</option>
+                  {uniqueSubjects.map((subject) => (
+                    <option key={subject} value={subject}>{subject}</option>
+                  ))}
+                </select>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -352,42 +369,50 @@ export const StudentAssignmentList: React.FC = () => {
                       {getStatusBadge(assignment.Assignment_Due_Date)}
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="flex items-center gap-2">
-                        <Calendar className={`w-4 h-4 ${isDark ? "text-slate-400" : "text-slate-500"}`} />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-500/5 border border-slate-500/10">
+                        <div className={`p-2 rounded-lg ${isDark ? "bg-slate-700" : "bg-white"}`}>
+                          <Calendar className={`w-4 h-4 ${isDark ? "text-blue-400" : "text-blue-600"}`} />
+                        </div>
                         <div>
-                          <p className={`text-xs ${isDark ? "text-slate-500" : "text-slate-500"}`}>Due Date</p>
-                          <p className={`font-semibold text-sm ${isDark ? "text-slate-200" : "text-slate-800"}`}>
+                          <p className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? "text-slate-500" : "text-slate-400"}`}>Due Date</p>
+                          <p className={`font-bold text-sm ${isDark ? "text-slate-200" : "text-slate-800"}`}>
                             {new Date(assignment.Assignment_Due_Date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                           </p>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <Clock className={`w-4 h-4 ${isDark ? "text-slate-400" : "text-slate-500"}`} />
+                      <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-500/5 border border-slate-500/10">
+                        <div className={`p-2 rounded-lg ${isDark ? "bg-slate-700" : "bg-white"}`}>
+                          <Clock className={`w-4 h-4 ${daysLeft < 0 ? "text-red-500" : "text-orange-500"}`} />
+                        </div>
                         <div>
-                          <p className={`text-xs ${isDark ? "text-slate-500" : "text-slate-500"}`}>Time Left</p>
-                          <p className={`font-semibold text-sm ${isDark ? "text-slate-200" : "text-slate-800"}`}>
+                          <p className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? "text-slate-500" : "text-slate-400"}`}>Time Left</p>
+                          <p className={`font-bold text-sm ${daysLeft < 0 ? "text-red-500" : isDark ? "text-slate-200" : "text-slate-800"}`}>
                             {daysLeft >= 0 ? `${daysLeft} days` : "Overdue"}
                           </p>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <Award className={`w-4 h-4 ${isDark ? "text-slate-400" : "text-slate-500"}`} />
+                      <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-500/5 border border-slate-500/10">
+                        <div className={`p-2 rounded-lg ${isDark ? "bg-slate-700" : "bg-white"}`}>
+                          <Award className={`w-4 h-4 ${isDark ? "text-yellow-400" : "text-yellow-600"}`} />
+                        </div>
                         <div>
-                          <p className={`text-xs ${isDark ? "text-slate-500" : "text-slate-500"}`}>Max Marks</p>
-                          <p className={`font-semibold text-sm ${isDark ? "text-slate-200" : "text-slate-800"}`}>
-                            {assignment.maxMarks} pts
+                          <p className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? "text-slate-500" : "text-slate-400"}`}>Maximum</p>
+                          <p className={`font-bold text-sm ${isDark ? "text-slate-200" : "text-slate-800"}`}>
+                            {assignment.maxMarks} Points
                           </p>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <Users className={`w-4 h-4 ${isDark ? "text-slate-400" : "text-slate-500"}`} />
+                      <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-500/5 border border-slate-500/10">
+                        <div className={`p-2 rounded-lg ${isDark ? "bg-slate-700" : "bg-white"}`}>
+                          <Users className={`w-4 h-4 ${isDark ? "text-green-400" : "text-green-600"}`} />
+                        </div>
                         <div>
-                          <p className={`text-xs ${isDark ? "text-slate-500" : "text-slate-500"}`}>Class</p>
-                          <p className={`font-semibold text-sm ${isDark ? "text-slate-200" : "text-slate-800"}`}>
+                          <p className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? "text-slate-500" : "text-slate-400"}`}>Identity</p>
+                          <p className={`font-bold text-sm ${isDark ? "text-slate-200" : "text-slate-800"}`}>
                             {assignment.className}-{assignment.division}
                           </p>
                         </div>

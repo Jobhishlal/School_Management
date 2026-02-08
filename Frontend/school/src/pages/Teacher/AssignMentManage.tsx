@@ -59,7 +59,7 @@ export default function AssignmentManage() {
     if (token) {
       try {
         const decoded = jwtDecode<DecodedToken>(token);
-      
+
         if (decoded.id) {
           setForm((prev) => ({ ...prev, teacherId: decoded.id }));
         }
@@ -83,8 +83,8 @@ export default function AssignmentManage() {
         }
 
         const teacherData = await GetTeachertimetableList();
-           
-      
+
+
         const timetableList = teacherData?.timetable;
 
         if (!timetableList || !Array.isArray(timetableList)) return;
@@ -226,10 +226,11 @@ export default function AssignmentManage() {
   return (
     <div className={`${isDark ? "bg-[#121A21] text-white min-h-screen" : "bg-white text-black min-h-screen"} p-4`}>
       <button
-        className={`mb-4 px-4 py-2 rounded ${isDark ? "bg-green-600 text-white" : "bg-green-500 text-white"}`}
+        className={`mb-6 w-full sm:w-auto px-6 py-3 rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2 ${isDark ? "bg-green-600 text-white hover:bg-green-700" : "bg-green-500 text-white hover:bg-green-600"}`}
         onClick={() => setIsModalOpen(true)}
       >
-        Create Assignment
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
+        Create New Assignment
       </button>
 
       <TeacherAssignmentList
@@ -252,104 +253,137 @@ export default function AssignmentManage() {
         onClose={resetForm}
         className={`${isDark ? "bg-gray-800 text-white" : "bg-white text-black"}`}
       >
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-5 p-1 sm:p-2">
           <TextInput
             label="Title"
             value={form.Assignment_Title}
             onChange={(val) => setForm({ ...form, Assignment_Title: val })}
-            className={isDark ? "bg-gray-700 text-white" : ""}
+            className={`w-full ${isDark ? "bg-gray-700 text-white border-gray-600 focus:ring-blue-500/50" : "bg-gray-50 border-gray-200 focus:ring-blue-500"}`}
           />
           <TextInput
             label="Description"
             value={form.description}
             onChange={(val) => setForm({ ...form, description: val })}
-            className={isDark ? "bg-gray-700 text-white" : ""}
+            className={`w-full ${isDark ? "bg-gray-700 text-white border-gray-600 focus:ring-blue-500/50" : "bg-gray-50 border-gray-200 focus:ring-blue-500"}`}
           />
 
-          <select
-            value={form.classId && form.division ? `${form.classId}|${form.division}` : ""}
-            onChange={(e) => {
-              const val = e.target.value;
-              if (!val) return;
-              const [cId, div] = val.split("|");
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className={`text-xs font-bold uppercase tracking-wider ${isDark ? "text-gray-500" : "text-gray-500"}`}>
+                Class - Division
+              </label>
+              <select
+                value={form.classId && form.division ? `${form.classId}|${form.division}` : ""}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (!val) return;
+                  const [cId, div] = val.split("|");
 
-              setForm((prev) => ({
-                ...prev,
-                classId: cId,
-                division: div,
-              }));
-            }}
-            className={`${isDark ? "bg-gray-700 text-white" : "bg-white text-black"} px-2 py-1 rounded`}
-          >
-            <option value="">Select Class - Division</option>
-            {classes.map((cls, idx) => (
-              <option key={`${cls.classId}-${cls.division}-${idx}`} value={`${cls.classId}|${cls.division}`}>
-                {cls.className} - {cls.division}
-              </option>
-            ))}
-          </select>
+                  setForm((prev) => ({
+                    ...prev,
+                    classId: cId,
+                    division: div,
+                  }));
+                }}
+                className={`w-full px-4 py-2.5 text-sm rounded-lg border focus:outline-none focus:ring-2 transition-all ${isDark ? "bg-gray-700 border-gray-600 text-white focus:ring-blue-500/50" : "bg-white border-gray-200 text-black focus:ring-blue-500"
+                  }`}
+              >
+                <option value="">Select Class</option>
+                {classes.map((cls, idx) => (
+                  <option key={`${cls.classId}-${cls.division}-${idx}`} value={`${cls.classId}|${cls.division}`}>
+                    {cls.className} - {cls.division}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <select
-            value={form.subject || ""}
-            onChange={(e) => setForm({ ...form, subject: e.target.value })}
-            className={`${isDark ? "bg-gray-700 text-white" : "bg-white text-black"} px-2 py-1 rounded`}
-          >
-            <option value="">Select Subject</option>
-            {teacherSubjects.map((subj) => (
-              <option key={subj} value={subj}>
-                {subj}
-              </option>
-            ))}
-          </select>
+            <div className="flex flex-col gap-1.5">
+              <label className={`text-xs font-bold uppercase tracking-wider ${isDark ? "text-gray-500" : "text-gray-500"}`}>
+                Subject
+              </label>
+              <select
+                value={form.subject || ""}
+                onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                className={`w-full px-4 py-2.5 text-sm rounded-lg border focus:outline-none focus:ring-2 transition-all ${isDark ? "bg-gray-700 border-gray-600 text-white focus:ring-blue-500/50" : "bg-white border-gray-200 text-black focus:ring-blue-500"
+                  }`}
+              >
+                <option value="">Select Subject</option>
+                {teacherSubjects.map((subj) => (
+                  <option key={subj} value={subj}>
+                    {subj}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className={`text-xs font-bold uppercase tracking-wider ${isDark ? "text-gray-500" : "text-gray-500"}`}>
+                Start Date
+              </label>
+              <input
+                type="date"
+                value={form.Assignment_date ? new Date(form.Assignment_date).toISOString().split("T")[0] : ""}
+                onChange={(e) => setForm({ ...form, Assignment_date: new Date(e.target.value) })}
+                className={`w-full px-4 py-2.5 text-sm rounded-lg border focus:outline-none focus:ring-2 transition-all ${isDark ? "bg-gray-700 border-gray-600 text-white focus:ring-blue-500/50" : "bg-white border-gray-200 text-black focus:ring-blue-500"
+                  }`}
+              />
+            </div>
 
-          <div className="flex flex-col gap-1">
-            <label className={`text-sm font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-              Start Date
+            <div className="flex flex-col gap-1.5">
+              <label className={`text-xs font-bold uppercase tracking-wider ${isDark ? "text-gray-500" : "text-gray-500"}`}>
+                Due Date
+              </label>
+              <input
+                type="date"
+                value={form.Assignment_Due_Date ? new Date(form.Assignment_Due_Date).toISOString().split("T")[0] : ""}
+                onChange={(e) => setForm({ ...form, Assignment_Due_Date: new Date(e.target.value) })}
+                className={`w-full px-4 py-2.5 text-sm rounded-lg border focus:outline-none focus:ring-2 transition-all ${isDark ? "bg-gray-700 border-gray-600 text-white focus:ring-blue-500/50" : "bg-white border-gray-200 text-black focus:ring-blue-500"
+                  }`}
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className={`text-xs font-bold uppercase tracking-wider ${isDark ? "text-gray-500" : "text-gray-500"}`}>
+              Max Marks
             </label>
             <input
-              type="date"
-              value={form.Assignment_date ? new Date(form.Assignment_date).toISOString().split("T")[0] : ""}
-              onChange={(e) => setForm({ ...form, Assignment_date: new Date(e.target.value) })}
-              className={`${isDark ? "bg-gray-700 text-white" : "bg-white text-black"} px-2 py-1 rounded border ${isDark ? "border-gray-600" : "border-gray-300"}`}
+              type="number"
+              value={form.maxMarks}
+              onChange={(e) => setForm({ ...form, maxMarks: Number(e.target.value) })}
+              className={`w-full px-4 py-2.5 text-sm rounded-lg border focus:outline-none focus:ring-2 transition-all ${isDark ? "bg-gray-700 border-gray-600 text-white focus:ring-blue-500/50" : "bg-white border-gray-200 text-black focus:ring-blue-500"
+                }`}
             />
           </div>
 
-          <div className="flex flex-col gap-1">
-            <label className={`text-sm font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-              Due Date
+          <div className="flex flex-col gap-1.5">
+            <label className={`text-xs font-bold uppercase tracking-wider ${isDark ? "text-gray-500" : "text-gray-500"}`}>
+              Attachments
             </label>
             <input
-              type="date"
-              value={form.Assignment_Due_Date ? new Date(form.Assignment_Due_Date).toISOString().split("T")[0] : ""}
-              onChange={(e) => setForm({ ...form, Assignment_Due_Date: new Date(e.target.value) })}
-              className={`${isDark ? "bg-gray-700 text-white" : "bg-white text-black"} px-2 py-1 rounded border ${isDark ? "border-gray-600" : "border-gray-300"}`}
+              type="file"
+              multiple
+              onChange={handleFileChange}
+              className={`w-full text-xs cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold ${isDark ? "text-gray-300 file:bg-gray-700 file:text-blue-400 hover:file:bg-gray-600" : "text-gray-600 file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
+                }`}
             />
           </div>
 
-          <input
-            type="number"
-            value={form.maxMarks}
-            onChange={(e) => setForm({ ...form, maxMarks: Number(e.target.value) })}
-            className={`${isDark ? "bg-gray-700 text-white" : "bg-white text-black"} px-2 py-1 rounded`}
-          />
-
-          <input
-            type="file"
-            multiple
-            onChange={handleFileChange}
-            className={`${isDark ? "text-white" : ""}`}
-          />
-
-          <div className="flex justify-end gap-2">
-            <button className="px-4 py-2 bg-gray-300 rounded" onClick={resetForm}>
+          <div className="flex flex-col sm:flex-row justify-end gap-3 mt-4">
+            <button
+              className={`order-2 sm:order-1 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${isDark ? "bg-gray-700 text-gray-300 hover:bg-gray-600" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              onClick={resetForm}
+            >
               Cancel
             </button>
             <button
-              className={`px-4 py-2 rounded ${isDark ? "bg-blue-600 text-white" : "bg-blue-500 text-white"}`}
+              className="order-1 sm:order-2 px-8 py-2.5 rounded-lg text-sm font-bold bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/20 transition-all"
               onClick={form.id ? handleUpdate : handleSubmit}
             >
-              {form.id ? "Update" : "Create"}
+              {form.id ? "Update Assignment" : "Create Assignment"}
             </button>
           </div>
         </div>

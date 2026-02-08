@@ -104,52 +104,51 @@ const AttendanceCreatePage = () => {
   }
 
   return (
-    <div className={`min-h-screen p-6 ${isDark ? "bg-[#121A21]" : "bg-gray-50"}`}>
-      <div className="max-w-6xl mx-auto">
+    <div className={`min-h-screen p-4 md:p-6 ${isDark ? "bg-[#121A21]" : "bg-gray-50"}`}>
+      <div className="max-w-6xl mx-auto space-y-6">
 
-        <div className="mb-6">
-          <div className={`flex items-center gap-3 mb-2 ${isDark ? "text-white" : "text-gray-900"}`}>
-            <Calendar className="w-8 h-8" />
-            <h1 className="text-3xl font-bold">Attendance Management</h1>
+        <div>
+          <div className={`flex flex-col sm:flex-row sm:items-center gap-3 mb-2 ${isDark ? "text-white" : "text-gray-900"}`}>
+            <div className="flex items-center gap-3">
+              <Calendar className="w-6 h-6 md:w-8 md:h-8" />
+              <h1 className="text-2xl md:text-3xl font-bold">Attendance</h1>
+            </div>
+            {className && division && (
+              <div className={`text-sm md:text-base font-semibold px-3 py-1 rounded-full ${isDark ? "bg-blue-500/10 text-blue-400" : "bg-blue-50 text-blue-700"}`}>
+                {className} — {division}
+              </div>
+            )}
           </div>
 
-          {className && division && (
-            <p className={`text-base font-semibold ${isDark ? "text-gray-300" : "text-gray-800"}`}>
-              Class: {className} — Division: {division}
-            </p>
-          )}
-
-          <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+          <p className={`text-xs md:text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}>
             Manage and track student attendance efficiently
           </p>
         </div>
 
 
-        <div className="flex items-center gap-4 mb-6">
-          <div className={`p-4 rounded-xl border flex-1 ${isDark ? "bg-[#1a2332] border-gray-700" : "bg-white border-gray-200"}`}>
-            <label className={`text-sm font-medium mb-2 block ${isDark ? "text-gray-400" : "text-gray-600"}`}>
-              Select Session
-            </label>
-            <div className="flex bg-gray-100 p-1 rounded-lg dark:bg-gray-800">
-              <button
-                onClick={() => setSession("Morning")}
-                className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${session === "Morning"
-                  ? "bg-white text-blue-600 shadow-sm dark:bg-gray-700 dark:text-blue-400"
-                  : "text-gray-500 hover:text-gray-700 dark:text-gray-400"
-                  }`}
-              >
-                Morning
-              </button>
-              <button
-                onClick={() => setSession("Afternoon")}
-                className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${session === "Afternoon"
-                  ? "bg-white text-blue-600 shadow-sm dark:bg-gray-700 dark:text-blue-400"
-                  : "text-gray-500 hover:text-gray-700 dark:text-gray-400"
-                  }`}
-              >
-                Afternoon
-              </button>
-            </div>
+        <div className={`p-4 rounded-xl border ${isDark ? "bg-[#1a2332] border-gray-700" : "bg-white border-gray-200 shadow-sm"}`}>
+          <label className={`text-xs md:text-sm font-medium mb-3 block ${isDark ? "text-gray-400" : "text-gray-600 uppercase tracking-wider"}`}>
+            Select Current Session
+          </label>
+          <div className="flex bg-gray-100 p-1.5 rounded-xl dark:bg-gray-800">
+            <button
+              onClick={() => setSession("Morning")}
+              className={`flex-1 py-2 md:py-2.5 text-sm font-semibold rounded-lg transition-all ${session === "Morning"
+                ? "bg-white text-blue-600 shadow-md dark:bg-gray-700 dark:text-blue-400"
+                : "text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                }`}
+            >
+              Morning
+            </button>
+            <button
+              onClick={() => setSession("Afternoon")}
+              className={`flex-1 py-2 md:py-2.5 text-sm font-semibold rounded-lg transition-all ${session === "Afternoon"
+                ? "bg-white text-blue-600 shadow-md dark:bg-gray-700 dark:text-blue-400"
+                : "text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                }`}
+            >
+              Afternoon
+            </button>
           </div>
         </div>
 
