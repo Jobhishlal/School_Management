@@ -705,9 +705,9 @@ const VideoMeeting: React.FC = () => {
             {/* Main Stage Grid */}
             <main className="flex-1 p-4 md:p-6 flex items-center justify-center relative">
 
-                <div className={`grid gap-3 w-full mx-auto transition-all duration-500 ease-in-out place-content-center 
+                <div className={`grid gap-2 md:gap-3 w-full h-full max-h-[calc(100vh-180px)] mx-auto transition-all duration-500 ease-in-out place-content-center 
                     ${pinnedUserId
-                        ? 'grid-cols-1 md:grid-cols-4 grid-rows-4 h-[calc(100vh-160px)]' // Pinned Layout
+                        ? 'grid-cols-1 md:grid-cols-4 grid-rows-6 md:grid-rows-4' // Pinned Layout
                         : (peersToShow.length + 1) <= 1 ? 'grid-cols-1 max-w-2xl' :
                             (peersToShow.length + 1) === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl' :
                                 (peersToShow.length + 1) <= 4 ? 'grid-cols-2 max-w-5xl' :
@@ -717,8 +717,8 @@ const VideoMeeting: React.FC = () => {
                     }`}>
 
                     {/* Self Video Wrapper */}
-                    <div className={`relative w-full h-full min-h-[160px] rounded-2xl overflow-hidden shadow-lg transition-all duration-300 group 
-                        ${pinnedUserId === userId ? 'md:col-span-3 md:row-span-4' : ''}
+                    <div className={`relative w-full h-full min-h-[140px] md:min-h-[160px] rounded-2xl overflow-hidden shadow-lg transition-all duration-300 group 
+                        ${pinnedUserId === userId ? 'row-span-4 md:col-span-3 md:row-span-4' : 'row-span-1 md:row-span-1'}
                         ${!pinnedUserId && 'hover:scale-[1.02]'}
                         ${isSpeakingSelf ? 'ring-4 ring-green-500 shadow-green-500/50' : 'ring-1 ring-black/5 dark:ring-white/5'} bg-black`}
                         onClick={() => setPinnedUserId(pinnedUserId === userId ? null : userId)}
@@ -726,10 +726,10 @@ const VideoMeeting: React.FC = () => {
                         <video ref={userVideo} muted autoPlay playsInline className="w-full h-full object-cover transform scale-x-[-1]" />
 
                         {/* Pin Indicator */}
-                        <div className="absolute top-4 left-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="absolute top-3 left-3 md:top-4 md:left-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button className="p-1.5 bg-black/50 text-white rounded-full hover:bg-black/70">
                                 {/* Pin Icon */}
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>
                             </button>
                         </div>
 
@@ -737,28 +737,28 @@ const VideoMeeting: React.FC = () => {
                         {isSpeakingSelf && <div className="absolute inset-0 border-4 border-green-500/50 rounded-2xl pointer-events-none animate-pulse" />}
                         {reactions[userId] && (
                             <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none animate-bounce">
-                                <span className="text-6xl drop-shadow-2xl filter animate-ping absolute opacity-50">{reactions[userId]}</span>
-                                <span className="text-6xl drop-shadow-2xl relative">{reactions[userId]}</span>
+                                <span className="text-4xl md:text-6xl drop-shadow-2xl filter animate-ping absolute opacity-50">{reactions[userId]}</span>
+                                <span className="text-4xl md:text-6xl drop-shadow-2xl relative">{reactions[userId]}</span>
                             </div>
                         )}
-                        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
+                        <div className="absolute inset-x-0 bottom-0 h-16 md:h-24 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
                         {isSpeakingSelf && (
-                            <div className="absolute top-4 right-4 p-2 bg-green-500 rounded-full animate-bounce shadow-lg shadow-green-500/40 z-10">
-                                <Mic size={14} className="text-white" />
+                            <div className="absolute top-3 right-3 md:top-4 md:right-4 p-1.5 md:p-2 bg-green-500 rounded-full animate-bounce shadow-lg shadow-green-500/40 z-10">
+                                <Mic size={12} className="md:w-3.5 md:h-3.5 text-white" />
                             </div>
                         )}
-                        <div className={`absolute bottom-4 left-4 flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-md border shadow-lg ${isDark ? 'bg-gray-900/60 border-gray-700 text-white' : 'bg-white/60 border-white/20 text-black'}`}>
-                            <div className="w-2 h-2 rounded-full bg-blue-500" />
-                            <span className="text-xs font-semibold tracking-wide">You ({isHost ? 'Host' : 'Guest'})</span>
-                            {isMuted && <div className="pl-2 border-l border-current/20"><MicOff size={10} className="text-red-500" /></div>}
+                        <div className={`absolute bottom-3 left-3 md:bottom-4 md:left-4 flex items-center gap-1.5 md:gap-2 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full backdrop-blur-md border shadow-lg ${isDark ? 'bg-gray-900/60 border-gray-700 text-white' : 'bg-white/60 border-white/20 text-black'}`}>
+                            <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-blue-500" />
+                            <span className="text-[10px] md:text-xs font-semibold tracking-wide truncate max-w-[80px] md:max-w-none">You ({isHost ? 'Host' : 'Guest'})</span>
+                            {isMuted && <div className="pl-1.5 border-l border-current/20 ml-0.5"><MicOff size={10} className="text-red-500" /></div>}
                         </div>
                     </div>
 
                     {/* Peer Video Cards */}
                     {peersToShow.map((peerData) => (
                         <div key={peerData.peerId}
-                            className={`w-full h-full min-h-[160px] cursor-pointer
-                                ${pinnedUserId === peerData.userId ? 'md:col-span-3 md:row-span-4 order-first' : ''}
+                            className={`w-full h-full min-h-[140px] md:min-h-[160px] cursor-pointer
+                                ${pinnedUserId === peerData.userId ? 'row-span-4 md:col-span-3 md:row-span-4 order-first' : 'row-span-1 md:row-span-1'}
                              `}
                             onClick={() => setPinnedUserId(pinnedUserId === peerData.userId ? null : peerData.userId || null)}
                         >
@@ -776,12 +776,12 @@ const VideoMeeting: React.FC = () => {
 
                     {/* Overflow Indicator */}
                     {overflowCount > 0 && (
-                        <div className="w-full h-full min-h-[160px] flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700">
-                            <div className="text-center">
-                                <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center mx-auto mb-2 text-lg font-bold">
+                        <div className="w-full h-full min-h-[140px] md:min-h-[160px] flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700">
+                            <div className="text-center p-2">
+                                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center mx-auto mb-1.5 md:mb-2 text-base md:text-lg font-bold">
                                     +{overflowCount}
                                 </div>
-                                <span className="text-sm text-gray-500 dark:text-gray-400">Other Participants</span>
+                                <span className="text-[10px] md:text-sm text-gray-500 dark:text-gray-400">Other Participants</span>
                             </div>
                         </div>
                     )}

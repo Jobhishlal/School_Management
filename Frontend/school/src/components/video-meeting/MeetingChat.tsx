@@ -52,7 +52,7 @@ const MeetingChat: React.FC<MeetingChatProps> = ({
     };
 
     return (
-        <div className={`fixed inset-y-0 right-0 z-[60] w-80 bg-white dark:bg-gray-900 shadow-2xl transform transition-transform duration-300 ease-in-out ${showChat ? 'translate-x-0' : 'translate-x-full'} border-l border-gray-200 dark:border-gray-800 flex flex-col`}>
+        <div className={`fixed inset-y-0 right-0 z-[60] w-full md:w-80 bg-white dark:bg-gray-900 shadow-2xl transform transition-transform duration-300 ease-in-out ${showChat ? 'translate-x-0' : 'translate-x-full'} border-l border-gray-200 dark:border-gray-800 flex flex-col`}>
             <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/50 backdrop-blur-sm">
                 <h3 className="font-bold text-sm uppercase tracking-wider text-gray-500">In-Call Messages</h3>
                 <button onClick={toggleChat} className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">

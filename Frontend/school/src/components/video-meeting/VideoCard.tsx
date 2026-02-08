@@ -71,22 +71,22 @@ const VideoCard: React.FC<VideoCardProps> = ({ peer, userId, role, userData, isD
             {/* Reaction Overlay */}
             {reaction && (
                 <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none animate-bounce">
-                    <span className="text-6xl drop-shadow-2xl filter animate-ping absolute opacity-50">{reaction}</span>
-                    <span className="text-6xl drop-shadow-2xl relative">{reaction}</span>
+                    <span className="text-4xl md:text-6xl drop-shadow-2xl filter animate-ping absolute opacity-50">{reaction}</span>
+                    <span className="text-4xl md:text-6xl drop-shadow-2xl relative">{reaction}</span>
                 </div>
             )}
 
             {/* Name Tag */}
-            <div className={`absolute bottom-4 left-4 flex items-center gap-3 px-3 py-1.5 rounded-full backdrop-blur-md border shadow-lg max-w-[85%] ${isDark ? 'bg-gray-900/60 border-gray-700 text-white' : 'bg-white/60 border-white/20 text-black'}`}>
+            <div className={`absolute bottom-3 left-3 md:bottom-4 md:left-4 flex items-center gap-2 md:gap-3 px-2 md:px-3 py-1 md:py-1.5 rounded-full backdrop-blur-md border shadow-lg max-w-[90%] md:max-w-[85%] ${isDark ? 'bg-gray-900/60 border-gray-700 text-white' : 'bg-white/60 border-white/20 text-black'}`}>
                 {userData?.image && !imgError ? (
-                    <img src={userData.image} alt={userData.name} className="w-6 h-6 rounded-full object-cover border border-white/20" onError={() => setImgError(true)} />
+                    <img src={userData.image} alt={userData.name} className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover border border-white/20" onError={() => setImgError(true)} />
                 ) : (
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white shadow-inner shrink-0 ${role === 'admin' ? 'bg-purple-600' : 'bg-blue-600'}`}>
+                    <div className={`w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center text-[8px] md:text-[10px] font-bold text-white shadow-inner shrink-0 ${role === 'admin' ? 'bg-purple-600' : 'bg-blue-600'}`}>
                         {userData?.name?.charAt(0) || '?'}
                     </div>
                 )}
                 <div className="flex flex-col overflow-hidden">
-                    <span className="text-xs font-semibold truncate leading-none">{userData?.name || 'Participant'}</span>
+                    <span className="text-[10px] md:text-xs font-semibold truncate leading-none">{userData?.name || 'Participant'}</span>
                 </div>
             </div>
         </div>
