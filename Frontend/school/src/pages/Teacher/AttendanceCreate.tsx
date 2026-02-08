@@ -113,60 +113,60 @@ const TakeAttendanceForm: React.FC<Props> = ({
           return (
             <div
               key={student.id}
-              className={`p-3 md:p-4 rounded-xl border transition-all ${studentAttendance
+              className={`p-4 rounded-2xl border transition-all ${studentAttendance
                 ? getStatusColor(studentAttendance.status)
                 : isDark ? "bg-gray-800/50 border-gray-700" : "bg-gray-50 border-gray-200"
                 }`}
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs font-bold ${isDark ? "bg-gray-700 text-gray-300" : "bg-gray-200 text-gray-700"
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black tracking-widest ${isDark ? "bg-gray-700 text-gray-400" : "bg-gray-200 text-gray-500"
                     }`}>
-                    {index + 1}
+                    {String(index + 1).padStart(2, '0')}
                   </div>
-                  <span className={`font-semibold text-sm md:text-base ${isDark ? "text-white" : "text-gray-900"}`}>
+                  <span className={`font-bold text-sm ${isDark ? "text-white" : "text-gray-900"}`}>
                     {student.fullName}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-3 sm:flex gap-2">
+                <div className="grid grid-cols-3 sm:flex gap-3">
                   <button
                     onClick={() => markAttendance(student.id, "Present")}
-                    className={`flex flex-col items-center justify-center sm:flex-row px-2 sm:px-4 py-2 rounded-lg text-[10px] sm:text-sm font-bold transition-all ${studentAttendance?.status === "Present"
-                      ? "bg-green-600 text-white shadow-lg"
+                    className={`flex flex-col items-center justify-center sm:flex-row gap-1 sm:gap-2 px-3 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${studentAttendance?.status === "Present"
+                      ? "bg-green-600 text-white shadow-lg shadow-green-600/20"
                       : isDark
-                        ? "bg-gray-700 text-gray-400 hover:bg-gray-600"
-                        : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-300"
+                        ? "bg-gray-700/50 text-gray-500 hover:bg-gray-700 hover:text-gray-300"
+                        : "bg-white text-gray-400 hover:bg-gray-100 border border-gray-200"
                       }`}
                   >
-                    <CheckCircle className="w-4 h-4 sm:mr-1.5" />
-                    <span className="mt-1 sm:mt-0">Present</span>
+                    <CheckCircle size={14} />
+                    <span>Present</span>
                   </button>
 
                   <button
                     onClick={() => markAttendance(student.id, "Absent")}
-                    className={`flex flex-col items-center justify-center sm:flex-row px-2 sm:px-4 py-2 rounded-lg text-[10px] sm:text-sm font-bold transition-all ${studentAttendance?.status === "Absent"
-                      ? "bg-red-600 text-white shadow-lg"
+                    className={`flex flex-col items-center justify-center sm:flex-row gap-1 sm:gap-2 px-3 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${studentAttendance?.status === "Absent"
+                      ? "bg-red-600 text-white shadow-lg shadow-red-600/20"
                       : isDark
-                        ? "bg-gray-700 text-gray-400 hover:bg-gray-600"
-                        : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-300"
+                        ? "bg-gray-700/50 text-gray-500 hover:bg-gray-700 hover:text-gray-300"
+                        : "bg-white text-gray-400 hover:bg-gray-100 border border-gray-200"
                       }`}
                   >
-                    <XCircle className="w-4 h-4 sm:mr-1.5" />
-                    <span className="mt-1 sm:mt-0">Absent</span>
+                    <XCircle size={14} />
+                    <span>Absent</span>
                   </button>
 
                   <button
                     onClick={() => markAttendance(student.id, "Leave")}
-                    className={`flex flex-col items-center justify-center sm:flex-row px-2 sm:px-4 py-2 rounded-lg text-[10px] sm:text-sm font-bold transition-all ${studentAttendance?.status === "Leave"
-                      ? "bg-yellow-600 text-white shadow-lg"
+                    className={`flex flex-col items-center justify-center sm:flex-row gap-1 sm:gap-2 px-3 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${studentAttendance?.status === "Leave"
+                      ? "bg-yellow-600 text-white shadow-lg shadow-yellow-600/20"
                       : isDark
-                        ? "bg-gray-700 text-gray-400 hover:bg-gray-600"
-                        : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-300"
+                        ? "bg-gray-700/50 text-gray-500 hover:bg-gray-700 hover:text-gray-300"
+                        : "bg-white text-gray-400 hover:bg-gray-100 border border-gray-200"
                       }`}
                   >
-                    <Calendar className="w-4 h-4 sm:mr-1.5" />
-                    <span className="mt-1 sm:mt-0">Leave</span>
+                    <Calendar size={14} />
+                    <span>Leave</span>
                   </button>
                 </div>
               </div>

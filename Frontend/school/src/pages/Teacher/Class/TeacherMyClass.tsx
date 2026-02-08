@@ -169,14 +169,59 @@ const TeacherMyClass: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto">
+                    <div className="lg:hidden">
+                        <div className={`divide-y ${isDark ? "divide-slate-700" : "divide-slate-100"}`}>
+                            {classData.students.map((student) => (
+                                <div key={student.id} className="p-4 space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-12 h-12 rounded-full overflow-hidden shrink-0 ${isDark ? "bg-slate-700" : "bg-slate-200"}`}>
+                                            {student.photos?.[0] ? (
+                                                <img src={student.photos[0].url} alt={student.fullName} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <Users size={24} className="m-auto mt-3 text-slate-400" />
+                                            )}
+                                        </div>
+                                        <div>
+                                            <p className={`font-bold ${isDark ? "text-white" : "text-slate-900"}`}>{student.fullName}</p>
+                                            <p className="text-xs text-slate-500 font-medium tracking-wide uppercase">{student.studentId}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4 pt-2">
+                                        <div>
+                                            <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${isDark ? "text-slate-500" : "text-slate-400"}`}>Attendance</p>
+                                            <div className="flex items-center gap-2">
+                                                <div className={`flex-1 rounded-full h-1.5 ${isDark ? "bg-slate-700" : "bg-slate-100"}`}>
+                                                    <div className="bg-blue-600 h-1.5 rounded-full" style={{ width: `${student.attendancePercentage || 0}%` }}></div>
+                                                </div>
+                                                <span className={`text-xs font-bold ${isDark ? "text-slate-300" : "text-slate-700"}`}>{student.attendancePercentage || 0}%</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${isDark ? "text-slate-500" : "text-slate-400"}`}>Parent Status</p>
+                                            <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest ${isDark ? "bg-emerald-500/10 text-emerald-400" : "bg-emerald-50 text-emerald-700"}`}>Contacted</span>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        onClick={() => handleStudentClick(student)}
+                                        className={`w-full py-2.5 rounded-xl text-sm font-black uppercase tracking-widest transition-all ${isDark ? "bg-slate-700 text-blue-400 hover:bg-slate-600" : "bg-blue-50 text-blue-600 hover:bg-blue-100"}`}
+                                    >
+                                        View Profile
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="hidden lg:block overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead className={`${isDark ? "bg-slate-900/50 text-slate-400" : "bg-slate-50 text-slate-500"} text-xs uppercase font-semibold`}>
                                 <tr>
                                     <th className="px-6 py-4">Name/Marks/Roll No.</th>
                                     <th className="px-6 py-4">Attendance %</th>
                                     <th className="px-6 py-4">Parent Contact</th>
-                                    <th className="px-6 py-4">Action</th>
+                                    <th className="px-6 py-4 text-right">Action</th>
                                 </tr>
                             </thead>
                             <tbody className={`divide-y ${isDark ? "divide-slate-700" : "divide-slate-100"}`}>
@@ -193,12 +238,11 @@ const TeacherMyClass: React.FC = () => {
                                                 </div>
                                                 <div>
                                                     <p className={`text-sm font-medium ${isDark ? "text-white" : "text-slate-900"}`}>{student.fullName}</p>
-                                                    <p className="text-xs text-slate-500">{student.studentId}</p>
+                                                    <p className="text-xs text-slate-500 font-medium tracking-wide">{student.studentId}</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            {/* Logic to show student's specific attendance if available */}
                                             <div className="flex items-center gap-2">
                                                 <div className={`w-24 rounded-full h-1.5 ${isDark ? "bg-slate-700" : "bg-slate-100"}`}>
                                                     <div className="bg-blue-600 h-1.5 rounded-full" style={{ width: `${student.attendancePercentage || 0}%` }}></div>
@@ -206,29 +250,31 @@ const TeacherMyClass: React.FC = () => {
                                                 <span className={`text-xs font-semibold ${isDark ? "text-slate-300" : "text-slate-700"}`}>{student.attendancePercentage || 0}%</span>
                                             </div>
                                         </td>
-                                        <td className={`px-6 py-4 text-sm ${isDark ? "text-slate-400" : "text-slate-600"}`}>
-                                            Contacted
-                                        </td>
                                         <td className="px-6 py-4">
+                                            <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${isDark ? "bg-emerald-500/10 text-emerald-400" : "bg-emerald-50 text-emerald-700"}`}>Contacted</span>
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
                                             <button
                                                 onClick={() => handleStudentClick(student)}
-                                                className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                                                className="text-blue-600 hover:text-blue-700 text-sm font-black uppercase tracking-widest transition-all"
                                             >
-                                                View Student
+                                                View
                                             </button>
                                         </td>
                                     </tr>
                                 ))}
-                                {classData.students.length === 0 && (
-                                    <tr>
-                                        <td colSpan={4} className="px-6 py-8 text-center text-slate-500">
-                                            No students found.
-                                        </td>
-                                    </tr>
-                                )}
                             </tbody>
                         </table>
                     </div>
+
+                    {classData.students.length === 0 && (
+                        <div className="px-6 py-12 text-center">
+                            <div className={`flex flex-col items-center gap-3 ${isDark ? "text-slate-600" : "text-slate-400"}`}>
+                                <Users size={40} strokeWidth={1.5} />
+                                <p className="text-sm font-medium">No students found for this class.</p>
+                            </div>
+                        </div>
+                    )}
 
                     <div className={`p-4 border-t ${borderColor}`}>
                         <Pagination

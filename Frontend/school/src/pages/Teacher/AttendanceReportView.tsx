@@ -271,9 +271,47 @@ const AttendanceReportView: React.FC<AttendanceReportViewProps> = ({ classId, st
 
                         {/* Report Table */}
                         {rangeReport.length > 0 && (
-                            <div className={`rounded-lg border overflow-hidden ${isDark ? "border-gray-700" : "border-gray-200"
+                            <div className={`rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden ${isDark ? "border-gray-700" : "border-gray-200"
                                 }`}>
-                                <div className="overflow-x-auto">
+                                {/* Mobile Card Layout */}
+                                <div className="md:hidden divide-y divide-gray-100 dark:divide-gray-800">
+                                    {rangeReport.map((item, idx) => (
+                                        <div key={idx} className="p-4 space-y-3">
+                                            <div className="flex justify-between items-center">
+                                                <span className={`text-sm font-bold ${isDark ? "text-gray-300" : "text-gray-900"}`}>
+                                                    {new Date(item.date).toLocaleDateString()}
+                                                </span>
+                                                <span className={`px-2 py-1 text-[10px] font-black uppercase tracking-widest rounded ${item.session === "Morning"
+                                                    ? isDark
+                                                        ? "bg-yellow-900/30 text-yellow-300"
+                                                        : "bg-yellow-100 text-yellow-800"
+                                                    : isDark
+                                                        ? "bg-purple-900/30 text-purple-300"
+                                                        : "bg-purple-100 text-purple-800"
+                                                    }`}>
+                                                    {item.session}
+                                                </span>
+                                            </div>
+                                            <div className="grid grid-cols-3 gap-4">
+                                                <div className="text-center">
+                                                    <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${isDark ? "text-gray-500" : "text-gray-400"}`}>Present</p>
+                                                    <p className={`text-sm font-black ${isDark ? "text-green-400" : "text-green-600"}`}>{item.presentCount}</p>
+                                                </div>
+                                                <div className="text-center">
+                                                    <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${isDark ? "text-gray-500" : "text-gray-400"}`}>Absent</p>
+                                                    <p className={`text-sm font-black ${isDark ? "text-red-400" : "text-red-600"}`}>{item.absentCount}</p>
+                                                </div>
+                                                <div className="text-center">
+                                                    <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${isDark ? "text-gray-500" : "text-gray-400"}`}>Not Marked</p>
+                                                    <p className={`text-sm font-medium ${isDark ? "text-gray-400" : "text-gray-500"}`}>{item.attendance.length - item.presentCount - item.absentCount}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Desktop Table View */}
+                                <div className="hidden md:block overflow-x-auto">
                                     <table className="w-full">
                                         <thead className={isDark ? "bg-[#0d1117]" : "bg-gray-50"}>
                                             <tr>
@@ -501,14 +539,14 @@ const AttendanceReportView: React.FC<AttendanceReportViewProps> = ({ classId, st
                                         }`}>
                                         Attendance History
                                     </h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                         {historyData.history.map((record: any, idx: number) => {
                                             const isEditing = editingRecord?.date === record.date && editingRecord?.session === record.session;
 
                                             return (
                                                 <div
                                                     key={idx}
-                                                    className={`p-4 rounded-lg border transition-all ${record.status === 'Present'
+                                                    className={`p-5 rounded-2xl border border-gray-100 dark:border-gray-800 transition-all ${record.status === 'Present'
                                                         ? isDark
                                                             ? "bg-green-900/20 border-green-800"
                                                             : "bg-green-50 border-green-200"
@@ -521,13 +559,13 @@ const AttendanceReportView: React.FC<AttendanceReportViewProps> = ({ classId, st
                                                                 : "bg-gray-50 border-gray-200"
                                                         }`}
                                                 >
-                                                    <div className="flex justify-between items-start mb-2">
+                                                    <div className="flex justify-between items-start mb-4">
                                                         <div>
-                                                            <div className={`text-sm font-medium ${isDark ? "text-gray-300" : "text-gray-700"
+                                                            <div className={`text-sm font-bold ${isDark ? "text-gray-300" : "text-gray-700"
                                                                 }`}>
                                                                 {new Date(record.date).toLocaleDateString()}
                                                             </div>
-                                                            <div className={`text-xs ${isDark ? "text-gray-500" : "text-gray-500"
+                                                            <div className={`text-[10px] font-black uppercase tracking-widest mt-0.5 ${isDark ? "text-gray-500" : "text-gray-400"
                                                                 }`}>
                                                                 {record.session} Session
                                                             </div>
@@ -538,9 +576,9 @@ const AttendanceReportView: React.FC<AttendanceReportViewProps> = ({ classId, st
                                                                     setEditingRecord(record);
                                                                     setEditStatus(record.status);
                                                                 }}
-                                                                className={`p-1.5 rounded-full transition-colors ${isDark
-                                                                    ? "hover:bg-gray-700 text-gray-400 hover:text-blue-400"
-                                                                    : "hover:bg-gray-100 text-gray-500 hover:text-blue-600"
+                                                                className={`p-2 rounded-xl transition-all ${isDark
+                                                                    ? "bg-gray-800/50 hover:bg-gray-700 text-gray-400"
+                                                                    : "bg-white hover:bg-gray-100 text-gray-500 border border-gray-200"
                                                                     }`}
                                                                 title="Edit Attendance"
                                                             >
@@ -550,12 +588,12 @@ const AttendanceReportView: React.FC<AttendanceReportViewProps> = ({ classId, st
                                                     </div>
 
                                                     {isEditing ? (
-                                                        <div className="mt-3 space-y-3">
+                                                        <div className="space-y-3">
                                                             <select
                                                                 value={editStatus}
                                                                 onChange={(e) => setEditStatus(e.target.value)}
-                                                                className={`w-full px-3 py-1.5 text-sm rounded border focus:outline-none focus:ring-2 ${isDark
-                                                                    ? "bg-[#0d1117] border-gray-600 text-white focus:ring-blue-500"
+                                                                className={`w-full px-3 py-2 text-sm rounded-xl border focus:outline-none focus:ring-2 transition-all ${isDark
+                                                                    ? "bg-[#0d1117] border-gray-600 text-white focus:ring-blue-500/50"
                                                                     : "bg-white border-gray-300 text-gray-900 focus:ring-blue-500"
                                                                     }`}
                                                             >
@@ -563,20 +601,20 @@ const AttendanceReportView: React.FC<AttendanceReportViewProps> = ({ classId, st
                                                                 <option value="Absent">Absent</option>
                                                                 <option value="Leave">Leave</option>
                                                             </select>
-                                                            <div className="flex gap-2">
+                                                            <div className="flex gap-2 pt-1">
                                                                 <button
                                                                     onClick={handleUpdateAttendance}
                                                                     disabled={updateLoading}
-                                                                    className="flex-1 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700 transition-colors disabled:opacity-50"
+                                                                    className="flex-2 px-4 py-2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50"
                                                                 >
                                                                     {updateLoading ? "Saving..." : "Save"}
                                                                 </button>
                                                                 <button
                                                                     onClick={() => setEditingRecord(null)}
                                                                     disabled={updateLoading}
-                                                                    className={`flex-1 px-3 py-1.5 text-xs font-medium rounded border transition-colors ${isDark
+                                                                    className={`flex-1 px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl border transition-all ${isDark
                                                                         ? "border-gray-600 text-gray-300 hover:bg-gray-700"
-                                                                        : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                                                                        : "border-gray-300 text-gray-700 hover:bg-gray-50 items-center justify-center flex"
                                                                         }`}
                                                                 >
                                                                     Cancel
@@ -584,21 +622,22 @@ const AttendanceReportView: React.FC<AttendanceReportViewProps> = ({ classId, st
                                                             </div>
                                                         </div>
                                                     ) : (
-                                                        <div className={`font-semibold flex items-center gap-2 mt-2 ${record.status === 'Present'
+                                                        <div className={`flex items-center gap-2 mt-4 px-3 py-1.5 rounded-lg border w-fit ${record.status === 'Present'
                                                             ? isDark
-                                                                ? "text-green-400"
-                                                                : "text-green-700"
+                                                                ? "bg-green-500/10 border-green-500/20 text-green-400"
+                                                                : "bg-green-500/10 border-green-500/20 text-green-700"
                                                             : record.status === 'Absent'
                                                                 ? isDark
-                                                                    ? "text-red-400"
-                                                                    : "text-red-700"
+                                                                    ? "bg-red-500/10 border-red-500/20 text-red-400"
+                                                                    : "bg-red-500/10 border-red-500/20 text-red-700"
                                                                 : isDark
-                                                                    ? "text-gray-400"
-                                                                    : "text-gray-700"
+                                                                    ? "bg-gray-500/10 border-gray-500/20 text-gray-400"
+                                                                    : "bg-gray-500/10 border-gray-500/20 text-gray-700"
                                                             }`}>
                                                             {record.status === 'Present' && <CheckCircle className="w-4 h-4" />}
                                                             {record.status === 'Absent' && <XCircle className="w-4 h-4" />}
-                                                            {record.status}
+                                                            {record.status === 'Leave' && <Clock className="w-4 h-4" />}
+                                                            <span className="text-[10px] font-black uppercase tracking-widest">{record.status}</span>
                                                         </div>
                                                     )}
                                                 </div>

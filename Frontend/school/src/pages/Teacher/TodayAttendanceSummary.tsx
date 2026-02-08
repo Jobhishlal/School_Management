@@ -230,66 +230,107 @@ const TodayAttendanceSummary: React.FC<Props> = ({ classId }) => {
           </div>
         </div>
 
-        {/* TABLE */}
+        {/* LOG SECTION */}
         <div className="overflow-x-auto">
           {loading ? (
             <div className="p-12 flex justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
             </div>
           ) : (
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className={`border-b text-xs uppercase tracking-wider ${isDark ? "border-zinc-800 bg-zinc-900/50 text-zinc-400" : "border-gray-100 bg-gray-50/50 text-gray-500"}`}>
-                  <th className="px-6 py-4 font-medium w-16">#</th>
-                  <th className="px-6 py-4 font-medium">Student Name</th>
-                  <th className="px-6 py-4 font-medium text-center">Morning Session</th>
-                  <th className="px-6 py-4 font-medium text-center">Afternoon Session</th>
-                </tr>
-              </thead>
-              <tbody className={`divide-y ${isDark ? "divide-zinc-800" : "divide-gray-100"}`}>
+            <>
+              {/* Mobile Card Layout */}
+              <div className="sm:hidden divide-y divide-gray-100 dark:divide-zinc-800">
                 {filteredStudents.length > 0 ? (
-                  filteredStudents.map((s, i) => (
-                    <tr key={s.studentId} className={`group transition-colors ${isDark ? "hover:bg-zinc-800/50" : "hover:bg-gray-50/80"}`}>
-                      <td className={`px-6 py-4 text-sm ${isDark ? "text-zinc-500" : "text-gray-400"}`}>
-                        {String(i + 1).padStart(2, '0')}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${isDark ? "bg-blue-500/10 text-blue-400" : "bg-blue-100 text-blue-700"
-                            }`}>
-                            {s.studentName.charAt(0)}
-                          </div>
-                          <span className={`font-medium ${isDark ? "text-zinc-200" : "text-gray-700"}`}>
-                            {s.studentName}
-                          </span>
+                  filteredStudents.map((s) => (
+                    <div key={s.studentId} className="p-4 space-y-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black tracking-widest ${isDark ? "bg-blue-500/10 text-blue-400" : "bg-blue-100 text-blue-700"
+                          }`}>
+                          {s.studentName.charAt(0)}
                         </div>
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <StatusBadge
-                          status={s.Morning}
-                          onClick={() => setEdit({ studentId: s.studentId, session: "Morning", status: s.Morning || "Not Marked" })}
-                        />
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <StatusBadge
-                          status={s.Afternoon}
-                          onClick={() => setEdit({ studentId: s.studentId, session: "Afternoon", status: s.Afternoon || "Not Marked" })}
-                        />
-                      </td>
-                    </tr>
+                        <span className={`font-bold ${isDark ? "text-zinc-200" : "text-gray-700"}`}>
+                          {s.studentName}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <p className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? "text-zinc-500" : "text-gray-400"}`}>Morning</p>
+                          <StatusBadge
+                            status={s.Morning}
+                            onClick={() => setEdit({ studentId: s.studentId, session: "Morning", status: s.Morning || "Not Marked" })}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <p className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? "text-zinc-500" : "text-gray-400"}`}>Afternoon</p>
+                          <StatusBadge
+                            status={s.Afternoon}
+                            onClick={() => setEdit({ studentId: s.studentId, session: "Afternoon", status: s.Afternoon || "Not Marked" })}
+                          />
+                        </div>
+                      </div>
+                    </div>
                   ))
                 ) : (
-                  <tr>
-                    <td colSpan={4} className="px-6 py-12 text-center">
-                      <div className={`flex flex-col items-center gap-2 ${isDark ? "text-zinc-500" : "text-gray-400"}`}>
-                        <Search size={32} strokeWidth={1.5} />
-                        <p className="text-sm">No students found matching your search</p>
-                      </div>
-                    </td>
-                  </tr>
+                  <div className="p-12 text-center text-gray-400">
+                    <Search className="mx-auto w-10 h-10 mb-2 opacity-20" />
+                    <p className="text-sm font-medium">No results found</p>
+                  </div>
                 )}
-              </tbody>
-            </table>
+              </div>
+
+              {/* Desktop Table View */}
+              <table className="hidden sm:table w-full text-left border-collapse">
+                <thead>
+                  <tr className={`border-b text-xs uppercase tracking-wider ${isDark ? "border-zinc-800 bg-zinc-900/50 text-zinc-400" : "border-gray-100 bg-gray-50/50 text-gray-500"}`}>
+                    <th className="px-6 py-4 font-medium w-16">#</th>
+                    <th className="px-6 py-4 font-medium">Student Name</th>
+                    <th className="px-6 py-4 font-medium text-center">Morning Session</th>
+                    <th className="px-6 py-4 font-medium text-center">Afternoon Session</th>
+                  </tr>
+                </thead>
+                <tbody className={`divide-y ${isDark ? "divide-zinc-800" : "divide-gray-100"}`}>
+                  {filteredStudents.length > 0 ? (
+                    filteredStudents.map((s, i) => (
+                      <tr key={s.studentId} className={`group transition-colors ${isDark ? "hover:bg-zinc-800/50" : "hover:bg-gray-50/80"}`}>
+                        <td className={`px-6 py-4 text-sm ${isDark ? "text-zinc-500" : "text-gray-400"}`}>
+                          {String(i + 1).padStart(2, '0')}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${isDark ? "bg-blue-500/10 text-blue-400" : "bg-blue-100 text-blue-700"
+                              }`}>
+                              {s.studentName.charAt(0)}
+                            </div>
+                            <span className={`font-medium ${isDark ? "text-zinc-200" : "text-gray-700"}`}>
+                              {s.studentName}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <StatusBadge
+                            status={s.Morning}
+                            onClick={() => setEdit({ studentId: s.studentId, session: "Morning", status: s.Morning || "Not Marked" })}
+                          />
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <StatusBadge
+                            status={s.Afternoon}
+                            onClick={() => setEdit({ studentId: s.studentId, session: "Afternoon", status: s.Afternoon || "Not Marked" })}
+                          />
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={4} className="px-6 py-12 text-center text-gray-400">
+                        <p className="text-sm font-medium">No results found</p>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </>
           )}
         </div>
       </div>
