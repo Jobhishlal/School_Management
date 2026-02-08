@@ -242,7 +242,8 @@ export const LeaveManagement: React.FC = () => {
         <div className={`p-4 border-b ${isDark ? "border-gray-700" : "border-gray-200"}`}>
           <h3 className={`text-lg font-bold ${isDark ? "text-white" : "text-gray-800"}`}>My Leave History</h3>
         </div>
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="min-w-full">
             <thead className={isDark ? "bg-[#161b22]" : "bg-gray-50"}>
               <tr>
@@ -281,6 +282,44 @@ export const LeaveManagement: React.FC = () => {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
+          {currentLeaves.map((leave) => (
+            <div key={leave.id} className={`p-4 space-y-3 ${isDark ? "bg-[#0d1117] hover:bg-[#161b22]" : "bg-white hover:bg-gray-50"}`}>
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className={`text-sm font-bold ${isDark ? "text-white" : "text-gray-900"}`}>{leave.leaveType}</p>
+                  <p className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                    {new Date(leave.startDate).toLocaleDateString()} - {new Date(leave.endDate).toLocaleDateString()}
+                  </p>
+                </div>
+                <span className={`px-2 py-1 rounded text-[10px] font-bold ${leave.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
+                  leave.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
+                    'bg-yellow-100 text-yellow-800'
+                  }`}>
+                  {leave.status}
+                </span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className={isDark ? "text-gray-400" : "text-gray-500"}>Total Days:</span>
+                <span className={`font-semibold ${isDark ? "text-gray-200" : "text-gray-800"}`}>{leave.totalDays}</span>
+              </div>
+              <div className="space-y-1">
+                <p className={`text-[10px] font-medium uppercase tracking-wider ${isDark ? "text-gray-500" : "text-gray-400"}`}>Reason</p>
+                <p className={`text-xs italic ${isDark ? "text-gray-300" : "text-gray-700"}`}>"{leave.reason}"</p>
+              </div>
+              {leave.adminRemark && (
+                <div className={`p-2 rounded-lg text-xs ${isDark ? "bg-gray-800 text-gray-400" : "bg-gray-50 text-gray-600"} border ${isDark ? "border-gray-700" : "border-gray-200"}`}>
+                  <span className="font-bold mr-1">Admin:</span> {leave.adminRemark}
+                </div>
+              )}
+            </div>
+          ))}
+          {leaves.length === 0 && (
+            <div className={`text-center py-8 ${isDark ? "text-gray-500" : "text-gray-500"}`}>No leave history found.</div>
+          )}
         </div>
         {/* Pagination */}
         <div className={`p-4 border-t ${isDark ? "border-gray-700" : "border-gray-200"}`}>

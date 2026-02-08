@@ -89,10 +89,10 @@ export const TeacherParentList: React.FC = () => {
     return (
         <div className={`min-h-screen p-6 ${bgPrimary}`}>
             {/* Header */}
-            <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
-                    <h1 className={`text-2xl font-bold ${textPrimary}`}>Parent Details</h1>
-                    <p className={textSecondary}>Contact information for student parents</p>
+                    <h1 className={`text-xl md:text-2xl font-bold ${textPrimary}`}>Parent Details</h1>
+                    <p className={`text-xs md:text-sm ${textSecondary}`}>Contact information for student parents</p>
                 </div>
 
                 <div className="relative w-full md:w-72">
@@ -102,14 +102,15 @@ export const TeacherParentList: React.FC = () => {
                         placeholder="Search student or parent..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className={`w-full rounded-xl border ${border} ${cardBg} py-2.5 pl-10 pr-4 text-sm ${textPrimary} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                        className={`w-full rounded-xl border ${border} ${cardBg} py-2 md:py-2.5 pl-10 pr-4 text-sm ${textPrimary} focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     />
                 </div>
             </div>
 
             {/* List / Table */}
             <div className={`overflow-hidden rounded-xl border ${border} ${cardBg} shadow-sm`}>
-                <div className="overflow-x-auto">
+                {/* Desktop view */}
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left text-sm">
                         <thead className={`border-b ${border} ${isDark ? "bg-slate-900/50" : "bg-slate-100"}`}>
                             <tr>
@@ -206,6 +207,65 @@ export const TeacherParentList: React.FC = () => {
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Mobile Card view */}
+                <div className="md:hidden divide-y divide-slate-700/30">
+                    {filteredStudents.length === 0 ? (
+                        <div className="p-12 text-center text-slate-500">No records found.</div>
+                    ) : (
+                        currentData.map((student) => (
+                            <div key={student.id} className="p-4 space-y-4">
+                                <div className="flex items-center gap-4">
+                                    {student.photos && student.photos.length > 0 ? (
+                                        <img
+                                            src={student.photos[0].url}
+                                            alt={student.fullName}
+                                            className="h-12 w-12 rounded-full object-cover border border-slate-600"
+                                        />
+                                    ) : (
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+                                            <span className="text-lg font-semibold">{student.fullName.charAt(0)}</span>
+                                        </div>
+                                    )}
+                                    <div>
+                                        <div className={`font-bold ${textPrimary}`}>{student.fullName}</div>
+                                        <div className="text-xs text-slate-500">Roll: {student.studentId}</div>
+                                        {student.classDetails && (
+                                            <div className={`mt-1 text-[10px] font-bold uppercase inline-block px-2 py-0.5 rounded ${isDark ? 'bg-slate-700 text-slate-400' : 'bg-slate-100 text-slate-600'}`}>
+                                                {student.classDetails.className} - {student.classDetails.division}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className={`grid grid-cols-1 gap-3 p-3 rounded-lg ${isDark ? 'bg-slate-900/40' : 'bg-slate-50'}`}>
+                                    <div className="flex items-center justify-between">
+                                        <span className={`text-xs font-medium ${textSecondary}`}>Parent</span>
+                                        <span className={`text-sm font-semibold ${textPrimary}`}>{student.parent?.name || '-'}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span className={`text-xs font-medium ${textSecondary}`}>Relationship</span>
+                                        <span className={`text-sm ${textPrimary}`}>{student.parent?.relationship || '-'}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between border-t border-dashed border-slate-700/50 pt-2">
+                                        <span className={`text-xs font-medium ${textSecondary}`}>Contact</span>
+                                        <div className="flex items-center gap-1.5 font-mono text-sm text-green-500">
+                                            <Phone size={12} />
+                                            {student.parent?.contactNumber || 'N/A'}
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span className={`text-xs font-medium ${textSecondary}`}>Email</span>
+                                        <div className="flex items-center gap-1.5 text-sm text-blue-500 truncate max-w-[180px]">
+                                            <Mail size={12} />
+                                            {student.parent?.email || 'N/A'}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                        ))}
                 </div>
 
                 {/* Pagination */}

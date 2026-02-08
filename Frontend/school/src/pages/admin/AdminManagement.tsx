@@ -269,72 +269,80 @@ export function AdminManagement() {
           </p>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-4 mb-6">
+        {/* Search and Filters Header */}
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" style={{ color: textSecondary }} />
+              <input
+                type="text"
+                placeholder="Search by name, email, or role..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm transition-all"
+                style={{
+                  backgroundColor: bgInput,
+                  borderColor: borderColor,
+                  color: textPrimary
+                }}
+              />
+            </div>
 
-          <div className="flex-1 relative">
-            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" style={{ color: textSecondary }} />
-            <input
-              type="text"
-              placeholder="Search by name, email, or role..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              style={{
-                backgroundColor: bgInput,
-                borderColor: borderColor,
-                color: textPrimary
-              }}
-            />
+            {superadmin === "super_admin" && (
+              <button
+                onClick={() => setShowModal(true)}
+                className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all text-sm whitespace-nowrap shadow-lg shadow-blue-500/20 active:scale-95"
+              >
+                <Plus size={18} />
+                Add New Staff
+              </button>
+            )}
           </div>
 
+          <div className="flex flex-wrap gap-2 sm:gap-4">
+            <div className="flex-1 min-w-[140px]">
+              <label className={`block text-[10px] font-bold uppercase tracking-wider mb-1.5 ml-1 ${isDark ? "text-slate-500" : "text-slate-400"}`}>
+                Filter by Role
+              </label>
+              <select
+                value={filterRole}
+                onChange={(e) => setFilterRole(e.target.value)}
+                className="w-full px-3 py-2.5 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm transition-all appearance-none cursor-pointer"
+                style={{
+                  backgroundColor: bgInput,
+                  borderColor: borderColor,
+                  color: textPrimary
+                }}
+              >
+                <option value="All">All Roles</option>
+                <option value="Finance">Finance</option>
+                <option value="Communication">Communication</option>
+                <option value="School_Management">School Management</option>
+                <option value="Student_Management">Student Management</option>
+                <option value="Parents_Management">Parents Management</option>
+              </select>
+            </div>
 
-          <div className="flex gap-2">
-            <select
-              value={filterRole}
-              onChange={(e) => setFilterRole(e.target.value)}
-              className="px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              style={{
-                backgroundColor: bgInput,
-                borderColor: borderColor,
-                color: textPrimary
-              }}
-            >
-              <option value="All">All Roles</option>
-              <option value="Finance">Finance</option>
-              <option value="Communication">Communication</option>
-              <option value="School_Management">School Management</option>
-              <option value="Student_Management">Student Management</option>
-              <option value="Parents_Management">Parents Management</option>
-
-            </select>
-
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-3 py-2.5 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              style={{
-                backgroundColor: bgInput,
-                borderColor: borderColor,
-                color: textPrimary
-              }}
-            >
-              <option value="All">All Status</option>
-              <option value="Active">Active</option>
-              <option value="Blocked">Blocked</option>
-            </select>
+            <div className="flex-1 min-w-[140px]">
+              <label className={`block text-[10px] font-bold uppercase tracking-wider mb-1.5 ml-1 ${isDark ? "text-slate-500" : "text-slate-400"}`}>
+                Filter by Status
+              </label>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="w-full px-3 py-2.5 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm transition-all appearance-none cursor-pointer"
+                style={{
+                  backgroundColor: bgInput,
+                  borderColor: borderColor,
+                  color: textPrimary
+                }}
+              >
+                <option value="All">All Status</option>
+                <option value="Active">Active</option>
+                <option value="Blocked">Blocked</option>
+              </select>
+            </div>
           </div>
-
-          {superadmin === "super_admin" && (
-            <button
-              onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm whitespace-nowrap"
-            >
-              <Plus size={16} />
-              Add New Staff
-            </button>
-          )
-          }
-
         </div>
 
 
@@ -385,58 +393,68 @@ export function AdminManagement() {
                 {currentAdmins.map((admin, index) => (
                   <div
                     key={admin.id || admin._id}
-                    className="p-4 rounded-lg border"
+                    className="p-5 rounded-2xl border transition-all duration-300 hover:shadow-lg"
                     style={{ backgroundColor: bgCard, borderColor: borderColor }}
                   >
-                    <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-white bg-gradient-to-r ${index % 4 === 0 ? 'from-blue-500 to-purple-500' :
-                          index % 4 === 1 ? 'from-green-500 to-teal-500' :
-                            index % 4 === 2 ? 'from-orange-500 to-red-500' :
-                              'from-pink-500 to-rose-500'
+                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-white text-lg bg-gradient-to-br shadow-lg ${index % 4 === 0 ? 'from-blue-500 to-indigo-600 shadow-blue-500/20' :
+                          index % 4 === 1 ? 'from-emerald-500 to-teal-600 shadow-emerald-500/20' :
+                            index % 4 === 2 ? 'from-orange-500 to-amber-600 shadow-orange-500/20' :
+                              'from-pink-500 to-rose-600 shadow-pink-500/20'
                           }`}>
                           {admin.name.charAt(0).toUpperCase()}
                         </div>
-                        <div>
-                          <h3 className="font-semibold">{admin.name}</h3>
-                          <p className="text-sm" style={{ color: textSecondary }}>
-                            {admin.email}
-                          </p>
-                          <p className="text-sm" style={{ color: textSecondary }}>
-                            {admin.phone}
-                          </p>
+                        <div className="min-w-0">
+                          <h3 className="font-bold text-base truncate">{admin.name}</h3>
+                          <div className={`px-2 py-0.5 mt-1 rounded text-[10px] font-black uppercase tracking-widest inline-block border ${getRoleColor(admin.role)}`}>
+                            {admin.role.replace(/_/g, ' ')}
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => handleView(admin)}
-                          className="p-2 rounded-lg hover:bg-blue-500/10 text-blue-500 transition-colors"
-                        >
-                          <Eye size={14} />
-                        </button>
-                        <button
-                          onClick={() => handleEdit(admin)}
-                          className="p-2 rounded-lg hover:bg-green-500/10 text-green-500 transition-colors"
-                        >
-                          <Edit size={14} />
-                        </button>
-                        <button
-                          onClick={() => handleToggleBlock(admin)}
-                          className="p-2 rounded-lg hover:bg-red-500/10 text-red-500 transition-colors"
-                        >
-                          <UserX size={14} />
-                        </button>
-                      </div>
-
-
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getRoleColor(admin.role)}`}>
-                        {admin.role.replace(/_/g, ' ')}
-                      </span>
-                      <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getStatusColor(admin.status || 'Active')}`}>
+                      <div className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border shadow-sm ${getStatusColor(admin.status || 'Active')}`}>
                         {admin.status || 'Active'}
-                      </span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-3 mb-5">
+                      <div className="flex items-center gap-2 group">
+                        <div className={`p-2 rounded-lg ${isDark ? "bg-slate-700/50" : "bg-slate-50"}`}>
+                          <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                        </div>
+                        <p className="text-sm font-medium truncate opacity-80">{admin.email}</p>
+                      </div>
+                      <div className="flex items-center gap-2 group">
+                        <div className={`p-2 rounded-lg ${isDark ? "bg-slate-700/50" : "bg-slate-50"}`}>
+                          <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                        </div>
+                        <p className="text-sm font-medium opacity-80">{admin.phone}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 pt-4 border-t border-dashed border-slate-700/30">
+                      <button
+                        onClick={() => handleView(admin)}
+                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all ${isDark ? "bg-blue-600/10 text-blue-400 hover:bg-blue-600/20" : "bg-blue-50 text-blue-600 hover:bg-blue-100"}`}
+                      >
+                        <Eye size={14} /> View
+                      </button>
+                      {superadmin === "super_admin" && (
+                        <>
+                          <button
+                            onClick={() => handleEdit(admin)}
+                            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all ${isDark ? "bg-amber-600/10 text-amber-400 hover:bg-amber-600/20" : "bg-amber-50 text-amber-600 hover:bg-amber-100"}`}
+                          >
+                            <Edit size={14} /> Edit
+                          </button>
+                          <button
+                            onClick={() => handleToggleBlock(admin)}
+                            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all ${isDark ? "bg-red-600/10 text-red-400 hover:bg-red-600/20" : "bg-red-50 text-red-600 hover:bg-red-100"}`}
+                          >
+                            <UserX size={14} /> {admin.blocked ? "Unblock" : "Block"}
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 ))}

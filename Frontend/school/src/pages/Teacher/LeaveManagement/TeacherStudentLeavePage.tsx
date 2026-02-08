@@ -92,65 +92,74 @@ const TeacherStudentLeavePage: React.FC = () => {
 
                 {/* List */}
                 <div className={`${cardBg} rounded-xl shadow-sm border ${borderColor} overflow-hidden`}>
-                    <div className={`p-6 border-b ${borderColor} flex justify-between items-center`}>
-                        <h2 className={`text-lg font-semibold ${textPrimary}`}>Pending Requests</h2>
-                        <span className={`px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium`}>
+                    <div className={`p-4 md:p-6 border-b ${borderColor} flex justify-between items-center`}>
+                        <h2 className={`text-base md:text-lg font-semibold ${textPrimary}`}>Pending Requests</h2>
+                        <span className={`px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-wider`}>
                             {leaves.length} Pending
                         </span>
                     </div>
 
                     {loading ? (
-                        <div className="p-8 flex justify-center text-gray-500">Loading...</div>
+                        <div className="p-8 flex justify-center text-gray-500 tracking-widest uppercase text-xs font-bold animate-pulse">Loading...</div>
                     ) : leaves.length === 0 ? (
-                        <div className="p-12 text-center flex flex-col items-center gap-3">
-                            <CheckCircle size={48} className="text-green-500 opacity-50" />
-                            <p className={textSecondary}>All caught up! No pending leave requests.</p>
+                        <div className="p-12 text-center flex flex-col items-center gap-4">
+                            <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-full">
+                                <CheckCircle size={32} className="text-green-500" />
+                            </div>
+                            <p className={`text-sm md:text-base font-medium ${textSecondary}`}>All caught up! No pending leave requests.</p>
                         </div>
                     ) : (
                         <div className="divide-y divide-gray-200 dark:divide-gray-700">
                             {leaves.map((leave) => (
-                                <div key={leave.id} className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
-                                    <div className="flex flex-col md:flex-row justify-between gap-4">
-                                        <div className="space-y-2 flex-1">
-                                            <div className="flex items-center gap-3">
-                                                <h3 className={`text-lg font-bold ${textPrimary}`}>
+                                <div key={leave.id} className="p-4 md:p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition duration-300">
+                                    <div className="flex flex-col md:flex-row justify-between gap-6">
+                                        <div className="space-y-4 flex-1">
+                                            <div className="flex flex-wrap items-center gap-2 md:gap-3">
+                                                <h3 className={`text-lg md:text-xl font-bold ${textPrimary}`}>
                                                     {leave.studentId?.fullName || "Student Name"}
                                                 </h3>
-                                                <span className={`px-2 py-0.5 rounded text-xs font-bold border ${borderColor} ${textSecondary}`}>
-                                                    {leave.studentId?.studentId}
-                                                </span>
-                                                <span className={`px-2 py-0.5 rounded text-xs font-bold bg-blue-100 text-blue-800`}>
-                                                    {leave.leaveType}
-                                                </span>
+                                                <div className="flex gap-2">
+                                                    <span className={`px-2 py-0.5 rounded text-[10px] md:text-xs font-bold border ${borderColor} ${textSecondary} bg-slate-50 dark:bg-slate-700`}>
+                                                        {leave.studentId?.studentId}
+                                                    </span>
+                                                    <span className={`px-2 py-0.5 rounded text-[10px] md:text-xs font-bold bg-blue-100 text-blue-800`}>
+                                                        {leave.leaveType}
+                                                    </span>
+                                                </div>
                                             </div>
 
-                                            <div className="flex items-center gap-6 text-sm">
-                                                <span className={`flex items-center gap-1 ${textSecondary}`}>
-                                                    <Clock size={16} />
-                                                    {new Date(leave.startDate).toLocaleDateString()} - {new Date(leave.endDate).toLocaleDateString()}
-                                                </span>
-                                                <span className={textSecondary}>
+                                            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-8 text-xs md:text-sm">
+                                                <div className={`flex items-center gap-2 ${textSecondary}`}>
+                                                    <div className="p-1.5 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
+                                                        <Clock size={16} className="text-indigo-500" />
+                                                    </div>
+                                                    <span className="font-semibold">{new Date(leave.startDate).toLocaleDateString()}</span>
+                                                    <span className="opacity-40 font-bold">→</span>
+                                                    <span className="font-semibold">{new Date(leave.endDate).toLocaleDateString()}</span>
+                                                </div>
+                                                <span className={`flex items-center gap-1.5 ${textSecondary} opacity-80 italic`}>
                                                     Applied: {new Date(leave.createdAt).toLocaleDateString()}
                                                 </span>
                                             </div>
 
-                                            <div className={`p-3 rounded-lg bg-gray-50 dark:bg-gray-700 border ${borderColor}`}>
-                                                <p className={`text-sm ${textPrimary} italic`}>"{leave.reason}"</p>
+                                            <div className={`p-4 rounded-xl bg-gray-50 dark:bg-gray-700/50 border border-dashed ${borderColor} relative group/reason`}>
+                                                <div className="absolute -top-2.5 left-4 px-2 bg-inherit text-[9px] font-bold uppercase tracking-widest text-slate-400">Reason</div>
+                                                <p className={`text-sm md:text-base ${textPrimary} italic leading-relaxed`}>"{leave.reason}"</p>
                                             </div>
                                         </div>
 
-                                        <div className="flex flex-row md:flex-col gap-2 justify-center">
+                                        <div className="flex flex-row md:flex-col gap-3 justify-center md:min-w-[140px]">
                                             <button
                                                 onClick={() => handleActionClick(leave, "APPROVED")}
-                                                className="flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition shadow-sm"
+                                                className="flex-1 flex items-center justify-center gap-2 px-5 md:px-4 py-3 md:py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-green-600/20 active:scale-95"
                                             >
-                                                <CheckCircle size={16} /> Approve
+                                                <CheckCircle size={18} /> Approve
                                             </button>
                                             <button
                                                 onClick={() => handleActionClick(leave, "REJECTED")}
-                                                className="flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition shadow-sm"
+                                                className="flex-1 flex items-center justify-center gap-2 px-5 md:px-4 py-3 md:py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-red-500/20 active:scale-95"
                                             >
-                                                <XCircle size={16} /> Reject
+                                                <XCircle size={18} /> Reject
                                             </button>
                                         </div>
                                     </div>

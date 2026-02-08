@@ -70,7 +70,7 @@ export default function TeacherChatSidebar({ conversations, selectedUser, onSele
     };
 
     return (
-        <div className={`w-80 border-r flex flex-col ${isDark ? 'border-slate-700 bg-slate-800/30' : 'border-slate-200 bg-slate-50/50'}`}>
+        <div className={`w-full flex flex-col h-full border-r ${isDark ? 'border-slate-700 bg-slate-800/30' : 'border-slate-200 bg-slate-50/50'}`}>
             <div className="p-4 border-b border-transparent">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>Messages</h2>

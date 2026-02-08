@@ -145,29 +145,40 @@ export const TeacherChat: React.FC = () => {
 
     return (
         <div className={`flex h-[calc(100vh-64px)] overflow-hidden ${isDark ? 'bg-[#0f151a]' : 'bg-white'}`}>
-            <TeacherChatSidebar
-                conversations={conversations}
-                selectedUser={selectedUser}
-                onSelectUser={setSelectedUser}
-                isDark={isDark}
-                currentUserId={currentUserId}
-                onCreateGroup={() => setShowCreateGroupModal(true)}
-            />
-            {selectedUser ? (
-                <TeacherChatWindow
-                    user={selectedUser}
+            {/* Sidebar - Hidden on mobile if a user is selected */}
+            <div className={`${selectedUser ? 'hidden md:flex' : 'flex w-full md:w-80'} h-full`}>
+                <TeacherChatSidebar
+                    conversations={conversations}
+                    selectedUser={selectedUser}
+                    onSelectUser={setSelectedUser}
                     isDark={isDark}
-                    socket={socket}
-                    startNew={false}
+                    currentUserId={currentUserId}
+                    onCreateGroup={() => setShowCreateGroupModal(true)}
                 />
-            ) : (
-                <div className={`flex-1 flex items-center justify-center ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
-                    <div className="text-center">
-                        <h3 className="text-xl font-semibold mb-2">Select a student to chat</h3>
-                        <p>Choose a conversation from the sidebar</p>
+            </div>
+
+            {/* Chat Window - Full screen on mobile if a user is selected, hidden otherwise */}
+            <div className={`${selectedUser ? 'flex' : 'hidden md:flex'} flex-1 h-full`}>
+                {selectedUser ? (
+                    <TeacherChatWindow
+                        user={selectedUser}
+                        isDark={isDark}
+                        socket={socket}
+                        startNew={false}
+                        onBack={() => setSelectedUser(null)}
+                    />
+                ) : (
+                    <div className={`flex-1 flex items-center justify-center ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                        <div className="text-center p-6">
+                            <div className={`w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
+                                <Loader2 className="h-10 w-10 opacity-20" />
+                            </div>
+                            <h3 className="text-xl font-semibold mb-2">Select a student to chat</h3>
+                            <p className="max-w-xs mx-auto">Choose a conversation from the sidebar to start messaging</p>
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
 
             <CreateGroupModal
                 isOpen={showCreateGroupModal}

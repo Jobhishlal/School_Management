@@ -756,9 +756,8 @@ const VideoMeeting: React.FC = () => {
             />
 
             {/* Main Stage Grid */}
-            <main className="flex-1 p-4 md:p-6 flex items-center justify-center relative">
-
-                <div className={`grid gap-2 md:gap-3 w-full h-full max-h-[calc(100vh-180px)] mx-auto transition-all duration-500 ease-in-out place-content-center 
+            <main className="flex-1 p-3 md:p-6 flex items-center justify-center relative overflow-hidden">
+                <div className={`grid gap-2 md:gap-3 w-full h-full max-h-[calc(100dvh-160px)] mx-auto transition-all duration-500 ease-in-out place-content-center 
                     ${pinnedUserId
                         ? 'grid-cols-1 md:grid-cols-4 grid-rows-6 md:grid-rows-4' // Pinned Layout
                         : (peersToShow.length + 1) <= 1 ? 'grid-cols-1 max-w-2xl' :

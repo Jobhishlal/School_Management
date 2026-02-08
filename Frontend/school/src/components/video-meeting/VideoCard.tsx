@@ -33,21 +33,34 @@ const VideoCard: React.FC<VideoCardProps> = ({ peer, userId, role, userData, isD
 
     useEffect(() => {
         const handleStream = (remoteStream: MediaStream) => {
-            if (ref.current) ref.current.srcObject = remoteStream;
+            console.log(`VideoCard: Received stream for ${userId}`, {
+                id: remoteStream.id,
+                videoTracks: remoteStream.getVideoTracks().length,
+                audioTracks: remoteStream.getAudioTracks().length
+            });
+
+            if (ref.current) {
+                ref.current.srcObject = remoteStream;
+                // Explicitly call play() to ensure rendering starts
+                ref.current.play().catch(err => {
+                    console.error("VideoCard: Playback error:", err);
+                });
+            }
             setStream(remoteStream);
         };
 
         // Initialize with existing stream if available
-        if ((peer as any)._remoteStreams && (peer as any)._remoteStreams.length > 0) {
-            handleStream((peer as any)._remoteStreams[0]);
+        const remoteStreams = (peer as any)._remoteStreams;
+        if (remoteStreams && remoteStreams.length > 0) {
+            handleStream(remoteStreams[0]);
         }
 
         peer.on("stream", handleStream);
 
         return () => {
-            // Cleanup handled by hook
+            peer.off("stream", handleStream);
         }
-    }, [peer]);
+    }, [peer, userId]);
 
     useEffect(() => { setImgError(false); }, [userData?.image]);
 
