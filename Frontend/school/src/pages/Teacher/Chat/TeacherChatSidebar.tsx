@@ -121,12 +121,9 @@ export default function TeacherChatSidebar({ conversations, selectedUser, onSele
                         </span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <p className={`text-xs truncate ${isSelected
-                            ? (isDark ? 'text-blue-300/70' : 'text-blue-600/70')
-                            : (isDark ? 'text-slate-500' : 'text-slate-400')
-                            }`}>
+                        <p className={`text-[13px] truncate ${isSelected ? (isDark ? 'text-blue-200/90' : 'text-blue-600/90') : (isDark ? 'text-slate-400' : 'text-slate-500')}`}>
                             {lastMsg?.type === 'audio' ? '🎤 Voice message'
-                                : lastMsg?.type === 'image' ? '📷 Photo'
+                                : lastMsg?.type === 'image' || lastMsg?.content?.match(/\.(jpg|jpeg|png|gif|webp)/i) ? '📷 Photo'
                                     : lastMsg?.type === 'file' ? '📎 Attachment'
                                         : lastMsg?.content || 'Tap to chat'}
                         </p>

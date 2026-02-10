@@ -34,7 +34,8 @@ export class ChatDTOMapper {
             })),
             lastMessage: conversation.lastMessageContent ? {
                 content: conversation.lastMessageContent,
-                timestamp: conversation.lastMessageTimestamp || conversation.updatedAt
+                timestamp: conversation.lastMessageTimestamp || conversation.updatedAt,
+                type: conversation.lastMessageType || 'text'
             } : undefined,
             updatedAt: conversation.updatedAt,
             isGroup: conversation.isGroup,

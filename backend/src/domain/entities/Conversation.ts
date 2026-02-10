@@ -16,6 +16,7 @@ export class Conversation {
         // Optional populated last message
         public readonly lastMessageContent?: string | null,
         public readonly lastMessageTimestamp?: Date | null,
+        public readonly lastMessageType?: string | null,
 
         public readonly updatedAt: Date = new Date(),
         public readonly isGroup: boolean = false,

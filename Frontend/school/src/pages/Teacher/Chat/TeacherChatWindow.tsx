@@ -21,7 +21,7 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const [currentUserId, setCurrentUserId] = useState<string>('');
 
-    // Recording State
+
     const [isRecording, setIsRecording] = useState(false);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
@@ -68,11 +68,16 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
         if (!socket || !user?._id) return;
 
         const handleReceiveMessage = (message: any) => {
+            console.log("📩 TeacherChatWindow received socket message:", message);
             const senderId = String(message.senderId?._id || message.senderId);
             const receiverId = String(message.receiverId?._id || message.receiverId);
 
+            console.log(`🔍 Comparing IDs: Sender=${senderId}, Receiver=${receiverId}, TargetUser=${user._id}, Me=${currentUserId}`);
+
             const isFromCurrentTarget = (message.receiverModel === 'Conversation' && String(message.receiverId) === String(user._id)) ||
                 (message.receiverModel !== 'Conversation' && (senderId === String(user._id) || (senderId === currentUserId && receiverId === String(user._id))));
+
+            console.log("✅ Is from current target?", isFromCurrentTarget);
 
             if (isFromCurrentTarget) {
                 setMessages(prev => {
@@ -276,14 +281,18 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
                                         )}
                                     </div>
                                 )}
-                                <div className={`max-w-[85%] md:max-w-[70%] lg:max-w-[65%] flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                                <div className={`max-w-[85%] md:max-w-[65%] lg:max-w-[60%] flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
                                     <div className={`relative px-3 py-2 rounded-xl text-[14px] shadow-sm transition-all hover:shadow-md ${isMe
-                                            ? 'bg-blue-600 text-white rounded-tr-none'
-                                            : isDark ? 'bg-[#1a2329] text-slate-100 rounded-tl-none border border-slate-700/30' : 'bg-white text-slate-800 rounded-tl-none border border-slate-200/50'
+                                        ? 'bg-blue-600 text-white rounded-tr-none'
+                                        : isDark ? 'bg-[#1a2329] text-slate-100 rounded-tl-none border border-slate-700/30' : 'bg-white text-slate-800 rounded-tl-none border border-slate-200/50'
                                         }`}>
                                         {msg.type === 'image' ? (
-                                            <div className="group relative rounded-xl overflow-hidden cursor-pointer" onClick={() => window.open(msg.content, '_blank')}>
-                                                <img src={msg.content} alt="attachment" className="max-w-full rounded-xl transition-transform group-hover:scale-[1.01]" />
+                                            <div className="group relative rounded-xl overflow-hidden cursor-pointer bg-slate-100/10" onClick={() => window.open(msg.content, '_blank')}>
+                                                <img
+                                                    src={msg.content}
+                                                    alt="attachment"
+                                                    className="max-w-full max-h-[300px] object-contain rounded-xl transition-transform group-hover:scale-[1.01]"
+                                                />
                                             </div>
                                         ) : msg.type === 'file' ? (
                                             <a href={msg.content} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-1">

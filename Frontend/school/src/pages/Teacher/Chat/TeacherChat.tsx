@@ -90,6 +90,7 @@ export const TeacherChat: React.FC = () => {
 
     useEffect(() => {
         if (socket && currentUserId) {
+            console.log("📡 Emitting join_chat for:", currentUserId);
             socket.emit('join_chat', currentUserId);
         }
     }, [socket, currentUserId]);
@@ -98,6 +99,7 @@ export const TeacherChat: React.FC = () => {
         if (!socket || !currentUserId) return;
 
         const handleReceiveMessage = (newMessage: any) => {
+            console.log("📩 TeacherChat received socket message:", newMessage);
             setConversations(prev => {
                 const isGroupMsg = newMessage.receiverModel === 'Conversation';
                 const msgSenderId = String(newMessage.senderId?._id || newMessage.senderId);

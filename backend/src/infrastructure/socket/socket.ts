@@ -54,16 +54,21 @@ export const initSocket = (httpServer: HttpServer) => {
       const userId = typeof data === 'string' ? data : data.userId;
       const role = typeof data === 'string' ? null : data.role;
 
+      if (!userId) {
+        console.error("❌ join_chat failed: No userId provided");
+        return;
+      }
+
       socket.join(userId);
-      console.log(`User ${userId} joined their personal chat room`);
+      console.log(`📡 User ${userId} joined room ${userId} (Role: ${role})`);
 
       if (role) {
         const normalizedRole = role.toLowerCase();
         if (['admin', 'super_admin', 'sub_admin', 'teacher'].includes(normalizedRole)) {
-          console.log(`User ${userId} (${role}) joining STAFF room`);
+          console.log(`📡 User ${userId} joining STAFF room`);
           socket.join("staff");
         } else if (normalizedRole === 'parent') {
-          console.log(`User ${userId} (${role}) joining PARENTS room`);
+          console.log(`📡 User ${userId} joining PARENTS room`);
           socket.join("parents");
         }
       }
@@ -81,12 +86,11 @@ export const initSocket = (httpServer: HttpServer) => {
     });
 
     socket.on('send_private_message', async (data: { senderId: string, receiverId: string, content: string, senderModel?: string, receiverModel?: string, type?: 'text' | 'image' | 'file' }) => {
-      console.log(`[SOCKET] send_private_message received:`, data);
+      console.log(`📩 [SOCKET] send_private_message received:`, JSON.stringify(data, null, 2));
       const { senderId, receiverId, content, senderModel = 'Students', receiverModel = 'Teacher', type = 'text' } = data;
 
       if (!receiverId || !senderId) {
-        console.error(`[SOCKET ERROR] Missing senderId or receiverId in send_private_message.`, data);
-        // Optionally emit error back to client?
+        console.error(`❌ [SOCKET ERROR] Missing senderId (${senderId}) or receiverId (${receiverId})`);
         return;
       }
 
@@ -109,29 +113,32 @@ export const initSocket = (httpServer: HttpServer) => {
           await chatRepo.createOrUpdateConversation(senderId, senderModel, receiverId, receiverModel, savedMessage.id as string);
         }
 
+        const messageDTO = ChatDTOMapper.toMessageDTO(savedMessage);
+
         // 3. Emit to receiver(s)
         if (receiverModel === 'Conversation') {
-          // If group, fetch participants and emit to each
           const conversation = await chatRepo.findConversationById(receiverId);
           if (conversation && conversation.participants) {
+            console.log(`📢 Emitting to group ${receiverId}, participants: ${conversation.participants.length}`);
             conversation.participants.forEach(participant => {
-              const participantId = participant.participantId; // Entity guarantees string
-
-              io.to(participantId).emit('receive_private_message', ChatDTOMapper.toMessageDTO(savedMessage));
-              io.to(participantId).emit('receive_message', ChatDTOMapper.toMessageDTO(savedMessage));
+              const participantId = participant.participantId.toString();
+              console.log(`  -> Emitting to participant room: ${participantId}`);
+              io.to(participantId).emit('receive_private_message', messageDTO);
+              io.to(participantId).emit('receive_message', messageDTO);
             });
           }
         } else {
-          // Single user message
-          io.to(receiverId).emit('receive_private_message', ChatDTOMapper.toMessageDTO(savedMessage));
-          io.to(receiverId).emit('receive_message', ChatDTOMapper.toMessageDTO(savedMessage));
+          console.log(`📢 Emitting to user room: ${receiverId}`);
+          io.to(receiverId.toString()).emit('receive_private_message', messageDTO);
+          io.to(receiverId.toString()).emit('receive_message', messageDTO);
         }
 
-        // 4. Emit to sender confirmation (for multi-device sync)
-        io.to(senderId).emit('message_sent_confirmation', ChatDTOMapper.toMessageDTO(savedMessage));
+        // 4. Emit to sender confirmation
+        console.log(`📢 Emitting confirmation to sender room: ${senderId}`);
+        io.to(senderId.toString()).emit('message_sent_confirmation', messageDTO);
 
       } catch (error) {
-        console.error("Error handling private message:", error);
+        console.error("❌ Error handling private message:", error);
       }
     });
 

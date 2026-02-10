@@ -30,7 +30,7 @@ export interface MessageResponseDTO {
 }
 
 export interface ConversationParticipantDTO {
-    participantId: any; // Nested object { _id, name, email ... }
+    participantId: any; 
     participantModel: string;
 }
 
@@ -40,6 +40,7 @@ export interface ConversationResponseDTO {
     lastMessage?: {
         content: string;
         timestamp: Date;
+        type: string;
     };
     updatedAt: Date;
     isGroup: boolean;

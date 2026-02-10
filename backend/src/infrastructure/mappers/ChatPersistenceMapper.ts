@@ -21,15 +21,15 @@ export class ChatPersistenceMapper {
     }
 
     static toDomainConversation(model: any): Conversation {
-     
+
         const participants: ConversationParticipant[] = model.participants.map((p: any) => {
- 
+
             const pId = p.participantId._id ? p.participantId._id.toString() : p.participantId.toString();
 
-       
+
             let details: Partial<ConversationParticipant> = {};
             if (p.participantId._id) {
-           
+
                 details = {
                     name: p.participantId.name || p.participantId.fullName,
                     email: p.participantId.email,
@@ -49,12 +49,14 @@ export class ChatPersistenceMapper {
             ? (model.lastMessage._id ? model.lastMessage._id.toString() : model.lastMessage.toString())
             : null;
 
-     
+
         let lastMsgContent = null;
         let lastMsgTime = null;
+        let lastMsgType = null;
         if (model.lastMessage && model.lastMessage.content) {
             lastMsgContent = model.lastMessage.content;
             lastMsgTime = model.lastMessage.timestamp;
+            lastMsgType = model.lastMessage.type;
         }
 
         return new Conversation(
@@ -63,6 +65,7 @@ export class ChatPersistenceMapper {
             lastMeasageId,
             lastMsgContent,
             lastMsgTime,
+            lastMsgType,
             model.updatedAt,
             model.isGroup,
             model.groupName,
