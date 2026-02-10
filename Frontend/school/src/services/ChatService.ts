@@ -88,3 +88,17 @@ export const searchUsers = async (query: string, role?: string): Promise<ChatUse
         return [];
     }
 }
+
+export const uploadFile = async (file: File): Promise<string> => {
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await api.post('/chat/upload', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        return response.data.data.url;
+    } catch (error) {
+        console.error("Error uploading file:", error);
+        throw error;
+    }
+}

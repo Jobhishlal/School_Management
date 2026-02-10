@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Image as ImageIcon, FileText, Paperclip, MoreVertical, Phone, Video, Check, CheckCheck, Smile, Mic, X, Download, Loader2, Trash2 } from 'lucide-react';
+import { Send, FileText, Paperclip, MoreVertical, Phone, Video, Check, CheckCheck, Smile, Mic, X, Trash2 } from 'lucide-react';
 import { type ChatMessage, type ChatUser, getChatHistory, markMessagesRead, uploadFile } from '../../../services/ChatService';
 import api from '../../../services/api';
-import { useTheme } from '../../../components/layout/ThemeContext';
-import { format } from 'date-fns';
+import dayjs from 'dayjs';
 import { jwtDecode } from 'jwt-decode';
 
 interface TeacherChatWindowProps {
@@ -18,8 +17,6 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const [otherUserTyping, setOtherUserTyping] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [uploading, setUploading] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const [currentUserId, setCurrentUserId] = useState<string>('');
@@ -60,13 +57,10 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
 
     const loadChatHistory = async () => {
         try {
-            setLoading(true);
             const history = await getChatHistory(user._id);
             setMessages(history);
         } catch (error) {
             console.error("Error loading history", error);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -138,7 +132,6 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
         if (!file || !user?._id) return;
 
         try {
-            setUploading(true);
             const fileUrl = await uploadFile(file);
             const response = await api.post('/chat/send', {
                 receiverId: user._id,
@@ -150,8 +143,6 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
             setMessages(prev => [...prev, savedMsg]);
         } catch (error) {
             console.error("Upload failed", error);
-        } finally {
-            setUploading(false);
         }
     };
 
@@ -211,7 +202,6 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
 
     const uploadAndSendAudio = async (file: File) => {
         try {
-            setUploading(true);
             const fileUrl = await uploadFile(file);
             const response = await api.post('/chat/send', {
                 receiverId: user._id,
@@ -223,7 +213,6 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
         } catch (error) {
             console.error("Audio failed", error);
         } finally {
-            setUploading(false);
             setRecordingDuration(0);
         }
     };
@@ -271,8 +260,8 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
             <div className="flex-1 overflow-y-auto p-6 scroll-smooth custom-scrollbar">
                 <div className="flex flex-col gap-4">
                     {messages.map((msg, idx) => {
-                        const isMe = String(msg.senderId?._id || msg.senderId) === currentUserId;
-                        const showAvatar = !isMe && (!messages[idx - 1] || String(messages[idx - 1].senderId?._id || messages[idx - 1].senderId) !== String(msg.senderId?._id || msg.senderId));
+                        const isMe = String((msg.senderId as any)?._id || msg.senderId) === currentUserId;
+                        const showAvatar = !isMe && (!messages[idx - 1] || String((messages[idx - 1].senderId as any)?._id || messages[idx - 1].senderId) !== String((msg.senderId as any)?._id || msg.senderId));
 
                         return (
                             <div key={msg._id || idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
@@ -293,11 +282,8 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
                                             : isDark ? 'bg-slate-800 text-slate-100 rounded-tl-none border border-slate-700/50' : 'bg-white text-slate-800 rounded-tl-none border border-slate-100'
                                         }`}>
                                         {msg.type === 'image' ? (
-                                            <div className="group relative rounded-2xl overflow-hidden cursor-pointer">
+                                            <div className="group relative rounded-2xl overflow-hidden cursor-pointer" onClick={() => window.open(msg.content, '_blank')}>
                                                 <img src={msg.content} alt="attachment" className="max-w-xs rounded-2xl transition-transform group-hover:scale-[1.02]" />
-                                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                                    <Download className="text-white" size={24} />
-                                                </div>
                                             </div>
                                         ) : msg.type === 'file' ? (
                                             <a href={msg.content} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-1">
@@ -316,7 +302,7 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
                                     </div>
                                     <div className="flex items-center gap-1.5 mt-1.5 px-1 opacity-60">
                                         <span className="text-[10px] font-semibold">
-                                            {msg.timestamp ? format(new Date(msg.timestamp), 'HH:mm') : ''}
+                                            {msg.timestamp ? dayjs(msg.timestamp).format('HH:mm') : ''}
                                         </span>
                                         {isMe && (
                                             <span className="flex">
