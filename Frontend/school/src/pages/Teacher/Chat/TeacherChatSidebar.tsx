@@ -76,7 +76,7 @@ export default function TeacherChatSidebar({ conversations, selectedUser, onSele
             <div
                 key={conv._id || index}
                 onClick={() => { onSelectUser(otherUser); setSearchQuery(''); }}
-                className={`group relative mx-3 my-1 p-3 rounded-2xl cursor-pointer transition-all duration-300 ease-out flex items-center gap-3 overflow-hidden ${isSelected
+                className={`group relative mx-2 my-0.5 p-2.5 rounded-xl cursor-pointer transition-all duration-300 ease-out flex items-center gap-2.5 overflow-hidden ${isSelected
                     ? (isDark ? 'bg-blue-600/15 ring-1 ring-blue-500/20' : 'bg-blue-50/80 ring-1 ring-blue-200/50')
                     : (isDark ? 'hover:bg-slate-800/60' : 'hover:bg-slate-100/80')
                     }`}
@@ -88,18 +88,18 @@ export default function TeacherChatSidebar({ conversations, selectedUser, onSele
 
                 <div className="relative flex-shrink-0">
                     {conv.isGroup ? (
-                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-105 shadow-sm ${isDark ? 'bg-emerald-500/10 text-emerald-500' : 'bg-emerald-50 text-emerald-600'}`}>
-                            <Users size={24} />
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shadow-sm ${isDark ? 'bg-emerald-500/10 text-emerald-500' : 'bg-emerald-50 text-emerald-600'}`}>
+                            <Users size={20} />
                         </div>
                     ) : (
                         <div className="relative">
                             <img
                                 src={otherUser.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(otherUser.name || (otherUser as any).fullName)}&background=random&bold=true`}
                                 alt={otherUser.name || (otherUser as any).fullName}
-                                className="w-12 h-12 rounded-2xl object-cover transition-transform group-hover:scale-105 border border-slate-200/10 shadow-sm"
+                                className="w-10 h-10 rounded-xl object-cover transition-transform group-hover:scale-105 border border-slate-200/10 shadow-sm"
                             />
                             {otherUser.isOnline && (
-                                <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 border-2 border-slate-900 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.4)]" />
+                                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-slate-900 rounded-full" />
                             )}
                         </div>
                     )}
@@ -146,26 +146,26 @@ export default function TeacherChatSidebar({ conversations, selectedUser, onSele
     return (
         <div className={`w-full flex flex-col h-full overflow-hidden ${isDark ? 'bg-[#0f151a] border-slate-800' : 'bg-[#f8fafc] border-slate-200'} border-r`}>
             {/* Sidebar Header */}
-            <div className={`p-4 md:p-6 pb-4 ${isDark ? 'bg-[#0f151a]/80' : 'bg-white/80'} backdrop-blur-xl z-10 space-y-4`}>
+            <div className={`p-4 pb-3 ${isDark ? 'bg-[#0f151a]/80' : 'bg-white/80'} backdrop-blur-xl z-10 space-y-3`}>
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className={`font-black text-2xl tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>Messages</h2>
-                        <p className={`text-[10px] font-bold uppercase tracking-widest opacity-40 mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Real-time Sync</p>
+                        <h2 className={`font-black text-lg tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>Messages</h2>
+                        <p className={`text-[9px] font-bold uppercase tracking-widest opacity-40 mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Real-time Sync</p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1.5">
                         <button
                             onClick={() => setShowNewChatModal(true)}
-                            className="w-10 h-10 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-600/20 flex items-center justify-center group"
+                            className="w-9 h-9 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-600/20 flex items-center justify-center group"
                             title="New Message"
                         >
-                            <MessageSquarePlus size={20} className="group-hover:rotate-6 transition-transform" />
+                            <MessageSquarePlus size={18} className="group-hover:rotate-6 transition-transform" />
                         </button>
                         <button
                             onClick={onCreateGroup}
-                            className={`w-10 h-10 rounded-xl transition-all active:scale-95 shadow-sm flex items-center justify-center group ${isDark ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'}`}
+                            className={`w-9 h-9 rounded-xl transition-all active:scale-95 shadow-sm flex items-center justify-center group ${isDark ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'}`}
                             title="Create Group"
                         >
-                            <Users size={20} className="group-hover:rotate-6 transition-transform" />
+                            <Users size={18} className="group-hover:rotate-6 transition-transform" />
                         </button>
                     </div>
                 </div>

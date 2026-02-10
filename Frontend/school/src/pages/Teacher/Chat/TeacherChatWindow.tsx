@@ -220,22 +220,22 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
     return (
         <div className={`flex flex-col h-full w-full relative ${isDark ? 'bg-[#0b1014]' : 'bg-[#f0f2f5]'}`}>
             {/* Redesigned Premium Header */}
-            <div className={`flex items-center justify-between px-6 py-4 z-20 shadow-sm border-b backdrop-blur-md ${isDark ? 'bg-[#0f151a]/90 border-slate-800' : 'bg-white/90 border-slate-200'}`}>
-                <div className="flex items-center gap-4">
+            <div className={`flex items-center justify-between px-4 py-3 z-20 shadow-sm border-b backdrop-blur-md ${isDark ? 'bg-[#0f151a]/90 border-slate-800' : 'bg-white/90 border-slate-200'}`}>
+                <div className="flex items-center gap-3">
                     <button onClick={onBack} className="md:hidden p-2 -ml-2 hover:bg-slate-200/50 rounded-full transition">
-                        <X size={20} />
+                        <X size={18} />
                     </button>
                     <div className="relative">
                         <img
                             src={user.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random&bold=true`}
                             alt={user.name}
-                            className="w-11 h-11 rounded-2xl object-cover shadow-sm ring-2 ring-blue-500/10"
+                            className="w-9 h-9 rounded-xl object-cover shadow-sm ring-2 ring-blue-500/10"
                         />
-                        <div className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 ${isDark ? 'border-[#0f151a]' : 'border-white'} ${user.isOnline ? 'bg-green-500' : 'bg-slate-400'}`} />
+                        <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 ${isDark ? 'border-[#0f151a]' : 'border-white'} ${user.isOnline ? 'bg-green-500' : 'bg-slate-400'}`} />
                     </div>
                     <div>
-                        <h3 className={`font-bold text-base leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{user.name}</h3>
-                        <p className={`text-[11px] font-medium ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                        <h3 className={`font-bold text-[15px] leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{user.name}</h3>
+                        <p className={`text-[10px] font-medium ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
                             {otherUserTyping ? (
                                 <span className="text-blue-500 animate-pulse font-bold tracking-wide italic">typing...</span>
                             ) : user.isOnline ? 'Active Now' : 'Last seen recently'}
@@ -266,18 +266,18 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
                         return (
                             <div key={msg._id || idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-1 duration-300`}>
                                 {!isMe && (
-                                    <div className="w-9 mr-2 flex-shrink-0 self-end mb-6">
+                                    <div className="w-8 mr-2 flex-shrink-0 self-end mb-4">
                                         {showAvatar && (
                                             <img
                                                 src={user.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`}
-                                                className="w-9 h-9 rounded-2xl object-cover shadow-sm ring-2 ring-white/10"
+                                                className="w-8 h-8 rounded-xl object-cover shadow-sm ring-2 ring-white/10"
                                                 alt="avatar"
                                             />
                                         )}
                                     </div>
                                 )}
                                 <div className={`max-w-[85%] md:max-w-[70%] lg:max-w-[65%] flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
-                                    <div className={`relative px-4 py-3 rounded-2xl text-[15px] shadow-sm transition-all hover:shadow-md ${isMe
+                                    <div className={`relative px-3 py-2 rounded-xl text-[14px] shadow-sm transition-all hover:shadow-md ${isMe
                                             ? 'bg-blue-600 text-white rounded-tr-none'
                                             : isDark ? 'bg-[#1a2329] text-slate-100 rounded-tl-none border border-slate-700/30' : 'bg-white text-slate-800 rounded-tl-none border border-slate-200/50'
                                         }`}>
@@ -347,8 +347,8 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
 
             {/* Standard Input Area */}
             {!isRecording && (
-                <div className={`px-4 md:px-6 py-4 z-20 ${isDark ? 'bg-[#0f151a]/95' : 'bg-white/95'} backdrop-blur-md border-t ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
-                    <form onSubmit={handleSendMessage} className="flex items-end gap-3 max-w-5xl mx-auto">
+                <div className={`px-4 md:px-5 py-3 z-20 ${isDark ? 'bg-[#0f151a]/95' : 'bg-white/95'} backdrop-blur-md border-t ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+                    <form onSubmit={handleSendMessage} className="flex items-end gap-2.5 max-w-5xl mx-auto">
                         <div className="flex items-center gap-1 pb-1 flex-shrink-0">
                             <label className={`p-2.5 rounded-xl cursor-pointer transition-all hover:bg-slate-100 group ${isDark ? 'hover:bg-slate-800 text-slate-500' : 'text-slate-400'}`}>
                                 <Paperclip size={22} className="group-hover:rotate-12 transition-transform" />
@@ -360,8 +360,8 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
                         </div>
 
                         <div className={`flex-1 relative rounded-2xl transition-all border group shadow-sm ${isDark
-                                ? 'bg-[#1a2329] border-slate-800 focus-within:border-blue-500/30'
-                                : 'bg-slate-50 border-slate-200 focus-within:border-blue-400/30 focus-within:bg-white'
+                            ? 'bg-[#1a2329] border-slate-800 focus-within:border-blue-500/30'
+                            : 'bg-slate-50 border-slate-200 focus-within:border-blue-400/30 focus-within:bg-white'
                             }`}>
                             <textarea
                                 ref={inputRef}

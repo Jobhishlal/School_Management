@@ -171,7 +171,7 @@ export const TeacherChat: React.FC = () => {
     return (
         <div className={`flex h-[calc(100vh-64px)] overflow-hidden ${isDark ? 'bg-[#0f151a]' : 'bg-white'}`}>
             {/* Sidebar - Hidden on mobile if a user is selected */}
-            <div className={`${selectedUser ? 'hidden md:flex' : 'flex w-full md:w-80'} h-full`}>
+            <div className={`${selectedUser ? 'hidden md:flex' : 'flex w-full md:w-72'} h-full`}>
                 <TeacherChatSidebar
                     conversations={conversations}
                     selectedUser={selectedUser}
