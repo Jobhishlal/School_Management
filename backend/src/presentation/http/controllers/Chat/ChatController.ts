@@ -11,6 +11,8 @@ import { IEditMessageUseCase } from "../../../../domain/interfaces/useCases/Chat
 import { ICreateClassGroupChatUseCase } from "../../../../domain/interfaces/useCases/Chat/ICreateClassGroupChatUseCase";
 import { IChatRepository } from "../../../../domain/repositories/Chat/IChatRepository";
 import { ISearchChatUsersUseCase } from "../../../../domain/interfaces/useCases/Chat/ISearchChatUsersUseCase";
+import { ChatDTOMapper } from "../../../../infrastructure/mappers/ChatDTOMapper";
+
 export class ChatController {
     constructor(
         private sendMessageUseCase: ISendMessageUseCase,
@@ -21,7 +23,7 @@ export class ChatController {
         private createClassGroupChatUseCase: ICreateClassGroupChatUseCase,
         private chatRepo: IChatRepository,
         private editMessageUseCase: IEditMessageUseCase,
-        private searchchatUsecase : ISearchChatUsersUseCase
+        private searchchatUsecase: ISearchChatUsersUseCase
     ) { }
 
 
@@ -32,7 +34,7 @@ export class ChatController {
                 _id: t.id,
                 name: t.name,
                 email: t.email,
-                profileImage: '', 
+                profileImage: '',
                 role: 'teacher'
             }));
             res.status(StatusCodes.OK).json({ success: true, data: formattedTeachers });
@@ -57,7 +59,7 @@ export class ChatController {
                 if (role.toLowerCase() === 'student') return 'Students';
                 if (role.toLowerCase() === 'teacher') return 'Teacher';
                 if (role === 'Conversation') return 'Conversation';
-                return 'Students'; 
+                return 'Students';
             };
 
             const senderModel = mapRoleToModel(senderRole) as 'Students' | 'Teacher';
@@ -65,7 +67,7 @@ export class ChatController {
 
             const message = await this.sendMessageUseCase.execute(senderId, senderModel, receiverId, receiverModel, content, type);
 
-           
+
             try {
                 const io = getIO();
 
@@ -73,23 +75,21 @@ export class ChatController {
                     const conversation = await this.chatRepo.findConversationById(receiverId);
                     if (conversation && conversation.participants) {
                         conversation.participants.forEach(participant => {
-                    
+
                             const participantId = (participant.participantId as any)._id
                                 ? (participant.participantId as any)._id.toString()
                                 : participant.participantId.toString();
 
-                        
-                            io.to(participantId).emit('receive_private_message', message);
 
-                     
-                            io.to(participantId).emit('receive_message', message);
+                            io.to(participantId).emit('receive_private_message', ChatDTOMapper.toMessageDTO(message));
+                            io.to(participantId).emit('receive_message', ChatDTOMapper.toMessageDTO(message));
                         });
                     }
                 } else {
-                    io.to(receiverId).emit('receive_message', message);
-                    io.to(receiverId).emit('receive_private_message', message);
+                    io.to(receiverId).emit('receive_message', ChatDTOMapper.toMessageDTO(message));
+                    io.to(receiverId).emit('receive_private_message', ChatDTOMapper.toMessageDTO(message));
 
-                    io.to(senderId).emit('receive_private_message', message);
+                    io.to(senderId).emit('receive_private_message', ChatDTOMapper.toMessageDTO(message));
                 }
             } catch (e) {
                 console.error("Socket emit failed", e);
@@ -162,7 +162,7 @@ export class ChatController {
             if (!req.file) {
                 return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "No file uploaded" });
             }
-   
+
             const fileUrl = req.file.path;
             const fileType = req.file.mimetype.startsWith('image/') ? 'image' : 'file';
 
@@ -217,9 +217,9 @@ export class ChatController {
 
             try {
                 const io = getIO();
-                
+
                 if (updatedMessage.receiverModel === 'Conversation') {
-        
+
                     const convId = updatedMessage.receiverId.toString();
                     const conversation = await this.chatRepo.findConversationById(convId);
                     if (conversation && conversation.participants) {

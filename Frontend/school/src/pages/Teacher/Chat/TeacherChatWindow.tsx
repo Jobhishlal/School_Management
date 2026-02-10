@@ -19,6 +19,9 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
     const [newMessage, setNewMessage] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const [currentUserId, setCurrentUserId] = useState<string>('');
+    const [isStudentTyping, setIsStudentTyping] = useState(false);
+    const isTypingRef = useRef(false);
+    const typingTimeoutRef = useRef<any>(null);
 
     // Recording State
     const [isRecording, setIsRecording] = useState(false);
@@ -74,7 +77,14 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
                 return;
             }
 
-            if (message.senderId === user._id || message.receiverId === user._id || (user.isGroup && message.receiverId === user._id)) {
+            // Check if message should be added to this window
+            const receiverIdStr = typeof message.receiverId === 'object' ? (message.receiverId as any)._id : message.receiverId;
+            const isTargetedMessage =
+                String(msgSenderId) === String(user._id) ||
+                String(receiverIdStr) === String(user._id) ||
+                (user.isGroup && String(receiverIdStr) === String(user._id));
+
+            if (isTargetedMessage) {
                 setMessages(prev => {
                     if (prev.some(m => m._id === message._id)) return prev;
                     return [...prev, message];
@@ -105,16 +115,28 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
             ));
         };
 
+        const handleTypingStarted = (data: { from: string }) => {
+            if (data.from === user._id) setIsStudentTyping(true);
+        };
+
+        const handleTypingStopped = (data: { from: string }) => {
+            if (data.from === user._id) setIsStudentTyping(false);
+        };
+
         socket.on('receive_message', handleReceiveMessage);
         socket.on('messages_read', handleMessagesRead);
         socket.on('message_updated', handleMessageUpdated);
         socket.on('message_deleted', handleMessageDeleted);
+        socket.on('typing_started', handleTypingStarted);
+        socket.on('typing_stopped', handleTypingStopped);
 
         return () => {
             socket.off('receive_message', handleReceiveMessage);
             socket.off('messages_read', handleMessagesRead);
             socket.off('message_updated', handleMessageUpdated);
             socket.off('message_deleted', handleMessageDeleted);
+            socket.off('typing_started', handleTypingStarted);
+            socket.off('typing_stopped', handleTypingStopped);
         };
     }, [socket, user._id, currentUserId]);
 
@@ -475,6 +497,13 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
                         </div>
                     );
                 })}
+                {isStudentTyping && (
+                    <div className="flex justify-start mb-4">
+                        <div className={`px-4 py-2 rounded-2xl text-xs italic ${isDark ? 'bg-slate-700/50 text-slate-400' : 'bg-slate-100 text-slate-500'}`}>
+                            Student is typing...
+                        </div>
+                    </div>
+                )}
                 <div ref={messagesEndRef} />
             </div>
 
@@ -541,7 +570,20 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
                         <div className="flex-1 min-w-0 relative">
                             <textarea
                                 value={newMessage}
-                                onChange={(e) => setNewMessage(e.target.value)}
+                                onChange={(e) => {
+                                    setNewMessage(e.target.value);
+                                    if (socket && !editingMessageId) {
+                                        if (!isTypingRef.current) {
+                                            isTypingRef.current = true;
+                                            socket.emit('typing_start', { to: user._id });
+                                        }
+                                        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+                                        typingTimeoutRef.current = setTimeout(() => {
+                                            isTypingRef.current = false;
+                                            socket.emit('typing_stop', { to: user._id });
+                                        }, 2000);
+                                    }
+                                }}
                                 placeholder={editingMessageId ? "Edit your message..." : "Type your message..."}
                                 rows={1}
                                 onKeyDown={(e) => {

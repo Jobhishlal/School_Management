@@ -5,6 +5,7 @@ let io: Server;
 
 
 import { ChatRepositoryMongo } from '../repositories/Chat/ChatRepositoryMongo';
+import { ChatDTOMapper } from '../mappers/ChatDTOMapper';
 
 const chatRepo = new ChatRepositoryMongo();
 const meetingParticipants = new Map<string, Map<string, any>>();
@@ -116,18 +117,18 @@ export const initSocket = (httpServer: HttpServer) => {
             conversation.participants.forEach(participant => {
               const participantId = participant.participantId; // Entity guarantees string
 
-              io.to(participantId).emit('receive_private_message', savedMessage);
-              io.to(participantId).emit('receive_message', savedMessage);
+              io.to(participantId).emit('receive_private_message', ChatDTOMapper.toMessageDTO(savedMessage));
+              io.to(participantId).emit('receive_message', ChatDTOMapper.toMessageDTO(savedMessage));
             });
           }
         } else {
           // Single user message
-          io.to(receiverId).emit('receive_private_message', savedMessage);
-          io.to(receiverId).emit('receive_message', savedMessage);
+          io.to(receiverId).emit('receive_private_message', ChatDTOMapper.toMessageDTO(savedMessage));
+          io.to(receiverId).emit('receive_message', ChatDTOMapper.toMessageDTO(savedMessage));
         }
 
         // 4. Emit to sender confirmation (for multi-device sync)
-        io.to(senderId).emit('message_sent_confirmation', savedMessage);
+        io.to(senderId).emit('message_sent_confirmation', ChatDTOMapper.toMessageDTO(savedMessage));
 
       } catch (error) {
         console.error("Error handling private message:", error);
