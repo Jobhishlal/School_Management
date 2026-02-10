@@ -133,9 +133,9 @@ export default function TeacherChatSidebar({ conversations, selectedUser, onSele
                     </div>
                 </div>
 
-                {/* Unread Count Badge (placeholder if needed) */}
+                {/* Unread Count Badge */}
                 {conv.unreadCount !== undefined && conv.unreadCount > 0 && (
-                    <div className="flex-shrink-0 bg-blue-600 text-white text-[10px] font-bold min-w-[20px] h-5 px-1.5 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/30">
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 flex-shrink-0 bg-blue-600 text-white text-[10px] font-bold min-w-[20px] h-5 px-1.5 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/40 animate-in zoom-in-50 duration-300">
                         {conv.unreadCount}
                     </div>
                 )}
@@ -146,23 +146,23 @@ export default function TeacherChatSidebar({ conversations, selectedUser, onSele
     return (
         <div className={`w-full flex flex-col h-full overflow-hidden ${isDark ? 'bg-[#0f151a] border-slate-800' : 'bg-[#f8fafc] border-slate-200'} border-r`}>
             {/* Sidebar Header */}
-            <div className={`p-6 pb-4 ${isDark ? 'bg-[#0f151a]/80' : 'bg-white/80'} backdrop-blur-xl z-10 space-y-5`}>
+            <div className={`p-4 md:p-6 pb-4 ${isDark ? 'bg-[#0f151a]/80' : 'bg-white/80'} backdrop-blur-xl z-10 space-y-4`}>
                 <div className="flex items-center justify-between">
                     <div>
                         <h2 className={`font-black text-2xl tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>Messages</h2>
-                        <p className={`text-[11px] font-medium uppercase tracking-widest opacity-50 mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Channels & Direct</p>
+                        <p className={`text-[10px] font-bold uppercase tracking-widest opacity-40 mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Real-time Sync</p>
                     </div>
                     <div className="flex gap-2">
                         <button
                             onClick={() => setShowNewChatModal(true)}
-                            className="w-10 h-10 rounded-2xl bg-blue-600 text-white hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-600/20 flex items-center justify-center group"
+                            className="w-10 h-10 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-600/20 flex items-center justify-center group"
                             title="New Message"
                         >
                             <MessageSquarePlus size={20} className="group-hover:rotate-6 transition-transform" />
                         </button>
                         <button
                             onClick={onCreateGroup}
-                            className="w-10 h-10 rounded-2xl bg-slate-800 text-white hover:bg-slate-700 transition-all active:scale-95 shadow-lg shadow-black/10 flex items-center justify-center group"
+                            className={`w-10 h-10 rounded-xl transition-all active:scale-95 shadow-sm flex items-center justify-center group ${isDark ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'}`}
                             title="Create Group"
                         >
                             <Users size={20} className="group-hover:rotate-6 transition-transform" />
@@ -172,22 +172,22 @@ export default function TeacherChatSidebar({ conversations, selectedUser, onSele
 
                 {/* Search Bar */}
                 <div className="relative group">
-                    <Search size={18} className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isDark ? 'text-slate-500 group-focus-within:text-blue-500' : 'text-slate-400 group-focus-within:text-blue-500'}`} />
+                    <Search size={18} className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${isDark ? 'text-slate-600 group-focus-within:text-blue-500' : 'text-slate-400 group-focus-within:text-blue-500'}`} />
                     <input
                         type="text"
-                        placeholder="Search for students..."
+                        placeholder="Search students..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className={`w-full pl-11 pr-4 py-3 rounded-2xl text-sm font-medium outline-none transition-all ${isDark
-                            ? 'bg-slate-800/50 focus:bg-slate-800 text-white placeholder-slate-600 ring-1 ring-transparent focus:ring-blue-500/30'
-                            : 'bg-slate-100 focus:bg-white text-slate-800 placeholder-slate-400 ring-1 ring-transparent focus:ring-blue-400/20'
+                        className={`w-full pl-11 pr-4 py-3 rounded-xl text-sm font-medium outline-none transition-all ${isDark
+                            ? 'bg-slate-800/40 focus:bg-slate-800 text-white placeholder-slate-600 border border-transparent focus:border-blue-500/20'
+                            : 'bg-slate-100 focus:bg-white text-slate-800 placeholder-slate-400 border border-transparent focus:border-blue-400/20 focus:shadow-sm'
                             }`}
                     />
                 </div>
             </div>
 
             {/* List Content */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar pt-2">
+            <div className="flex-1 overflow-y-auto custom-scrollbar pt-1">
                 {searchQuery ? (
                     <div className="space-y-6">
                         {/* Search Sections */}
@@ -195,8 +195,8 @@ export default function TeacherChatSidebar({ conversations, selectedUser, onSele
                             const other = getOtherParticipant(c);
                             return (other?.name || (other as any)?.fullName || '').toLowerCase().includes(searchQuery.toLowerCase());
                         }) && (
-                                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                                    <p className={`px-6 mb-2 text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>Active Chats</p>
+                                <div className="animate-in fade-in slide-in-from-top-1 duration-300">
+                                    <p className={`px-6 mb-2 text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>Active Conversations</p>
                                     {conversations
                                         .filter(c => {
                                             const other = getOtherParticipant(c);
@@ -207,22 +207,27 @@ export default function TeacherChatSidebar({ conversations, selectedUser, onSele
                             )}
 
                         {searchResults.length > 0 && (
-                            <div className="animate-in fade-in slide-in-from-top-4 duration-500">
+                            <div className="animate-in fade-in slide-in-from-top-2 duration-500 pb-6">
                                 <p className={`px-6 mb-2 text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>Discovery</p>
                                 {searchResults.map(user => (
                                     <div
                                         key={user._id}
                                         onClick={() => { onSelectUser(user); setSearchQuery(''); }}
-                                        className={`group mx-3 my-1 p-3 rounded-2xl cursor-pointer transition-all flex items-center gap-3 ${isDark ? 'hover:bg-slate-800/60' : 'hover:bg-slate-100/80'}`}
+                                        className={`group mx-3 my-1 p-3 rounded-2xl cursor-pointer transition-all flex items-center gap-3 ${isDark ? 'hover:bg-slate-800/60' : 'hover:bg-slate-100/80 border border-transparent hover:border-slate-200/50'}`}
                                     >
-                                        <img
-                                            src={user.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random&bold=true`}
-                                            alt={user.name}
-                                            className="w-12 h-12 rounded-2xl object-cover border border-slate-200/10 shadow-sm"
-                                        />
+                                        <div className="relative">
+                                            <img
+                                                src={user.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random&bold=true`}
+                                                alt={user.name}
+                                                className="w-12 h-12 rounded-2xl object-cover border border-slate-200/10 shadow-sm"
+                                            />
+                                            {user.isOnline && (
+                                                <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 border-2 border-slate-900 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.4)]" />
+                                            )}
+                                        </div>
                                         <div className="min-w-0">
                                             <h4 className={`font-bold text-[15px] ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{user.name}</h4>
-                                            <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                                            <p className="text-[11px] text-slate-500 truncate">{user.email || 'Student'}</p>
                                         </div>
                                     </div>
                                 ))}
@@ -234,8 +239,8 @@ export default function TeacherChatSidebar({ conversations, selectedUser, onSele
                                 <div className={`w-16 h-16 rounded-3xl mx-auto mb-4 flex items-center justify-center ${isDark ? 'bg-slate-800/50 text-slate-700' : 'bg-slate-50 text-slate-300'}`}>
                                     <Search size={32} />
                                 </div>
-                                <h5 className={`font-bold mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>No results found</h5>
-                                <p className="text-xs text-slate-500">We couldn't find anyone matching your search.</p>
+                                <h5 className={`font-bold mb-1 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>No matches found</h5>
+                                <p className="text-xs text-slate-500 font-medium">Try searching for a different name.</p>
                             </div>
                         )}
                     </div>

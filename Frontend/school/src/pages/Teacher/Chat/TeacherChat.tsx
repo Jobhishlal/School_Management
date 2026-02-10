@@ -39,27 +39,28 @@ export const TeacherChat: React.FC = () => {
             setLoading(true);
             const data = await getConversations();
 
-            // Deduplicate conversations (hide existing DB duplicates)
-            const uniqueMap = new Map();
+            // Strengthened Deduplication: Use a consistent key for private chats and group IDs
+            const uniqueMap = new Map<string, Conversation>();
             data.forEach(c => {
                 let key;
                 if (c.isGroup) {
-                    key = c._id;
+                    key = `group-${c._id}`;
                 } else {
-                    // For private chat, key is the Other User ID
                     const other = c.participants.find((p: any) => {
                         const pId = p.participantId._id || p.participantId;
                         return String(pId) !== String(currentUserId);
                     });
-                    key = other ? String((other.participantId._id || other.participantId)) : c._id;
+                    const otherId = other ? String((other.participantId._id || other.participantId)) : c._id;
+                    key = `private-${otherId}`;
                 }
 
-                if (!uniqueMap.has(key)) {
+                // If duplicate found, keep the one with the latest updatedAt
+                if (!uniqueMap.has(key) || new Date(c.updatedAt) > new Date(uniqueMap.get(key)!.updatedAt)) {
                     uniqueMap.set(key, c);
                 }
             });
 
-            setConversations(Array.from(uniqueMap.values()).sort((a: any, b: any) => {
+            setConversations(Array.from(uniqueMap.values()).sort((a, b) => {
                 return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
             }));
         } catch (error) {
@@ -68,6 +69,24 @@ export const TeacherChat: React.FC = () => {
             setLoading(false);
         }
     };
+
+    // Clear unread count when selection changes
+    useEffect(() => {
+        if (selectedUser?._id) {
+            setConversations(prev => prev.map(c => {
+                const other = c.participants.find((p: any) => {
+                    const pId = p.participantId._id || p.participantId;
+                    return String(pId) !== String(currentUserId);
+                });
+                const otherId = other ? String((other.participantId._id || other.participantId)) : c._id;
+
+                if ((c.isGroup && String(c._id) === String(selectedUser._id)) || (!c.isGroup && String(otherId) === String(selectedUser._id))) {
+                    return { ...c, unreadCount: 0 };
+                }
+                return c;
+            }));
+        }
+    }, [selectedUser?._id, currentUserId]);
 
     useEffect(() => {
         if (socket && currentUserId) {
@@ -81,10 +100,10 @@ export const TeacherChat: React.FC = () => {
         const handleReceiveMessage = (newMessage: any) => {
             setConversations(prev => {
                 const isGroupMsg = newMessage.receiverModel === 'Conversation';
-                const msgSenderId = typeof newMessage.senderId === 'object' ? newMessage.senderId._id : newMessage.senderId;
-                const msgReceiverId = typeof newMessage.receiverId === 'object' ? newMessage.receiverId._id : newMessage.receiverId;
+                const msgSenderId = String(newMessage.senderId?._id || newMessage.senderId);
+                const msgReceiverId = String(newMessage.receiverId?._id || newMessage.receiverId);
 
-                const otherUserId = String(msgSenderId) === String(currentUserId) ? String(msgReceiverId) : String(msgSenderId);
+                const otherUserId = msgSenderId === currentUserId ? msgReceiverId : msgSenderId;
 
                 let existingConvIndex = -1;
 
@@ -103,16 +122,29 @@ export const TeacherChat: React.FC = () => {
                 if (existingConvIndex !== -1) {
                     const updatedConversations = [...prev];
                     const conversation = updatedConversations[existingConvIndex];
+
+                    // Update unreadCount if not currently selected and message is NOT from me
+                    const isCurrentlySelected = selectedUser && (
+                        (isGroupMsg && String(selectedUser._id) === String(newMessage.receiverId)) ||
+                        (!isGroupMsg && String(selectedUser._id) === String(otherUserId))
+                    );
+
+                    const newUnreadCount = (!isCurrentlySelected && msgSenderId !== currentUserId)
+                        ? (conversation.unreadCount || 0) + 1
+                        : (conversation.unreadCount || 0);
+
                     updatedConversations[existingConvIndex] = {
                         ...conversation,
                         lastMessage: newMessage,
-                        updatedAt: new Date().toISOString()
+                        updatedAt: new Date().toISOString(),
+                        unreadCount: newUnreadCount
                     };
 
                     const movedConv = updatedConversations.splice(existingConvIndex, 1)[0];
                     updatedConversations.unshift(movedConv);
                     return updatedConversations;
                 } else {
+                    // Refresh if conversation doesn't exist yet
                     loadConversations();
                     return prev;
                 }

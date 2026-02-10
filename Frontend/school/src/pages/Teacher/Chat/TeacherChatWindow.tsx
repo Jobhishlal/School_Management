@@ -257,51 +257,51 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
             </div>
 
             {/* Chat Messages Area */}
-            <div className="flex-1 overflow-y-auto p-6 scroll-smooth custom-scrollbar">
-                <div className="flex flex-col gap-4">
+            <div className={`flex-1 overflow-y-auto p-4 md:p-6 scroll-smooth custom-scrollbar ${isDark ? 'bg-[#0b1014]' : 'bg-[#f4f7f9]'} relative`}>
+                <div className="flex flex-col gap-3 max-w-5xl mx-auto">
                     {messages.map((msg, idx) => {
                         const isMe = String((msg.senderId as any)?._id || msg.senderId) === currentUserId;
                         const showAvatar = !isMe && (!messages[idx - 1] || String((messages[idx - 1].senderId as any)?._id || messages[idx - 1].senderId) !== String((msg.senderId as any)?._id || msg.senderId));
 
                         return (
-                            <div key={msg._id || idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+                            <div key={msg._id || idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-1 duration-300`}>
                                 {!isMe && (
-                                    <div className="w-8 mr-2 flex-shrink-0 self-end">
+                                    <div className="w-9 mr-2 flex-shrink-0 self-end mb-6">
                                         {showAvatar && (
                                             <img
                                                 src={user.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`}
-                                                className="w-8 h-8 rounded-xl object-cover"
+                                                className="w-9 h-9 rounded-2xl object-cover shadow-sm ring-2 ring-white/10"
                                                 alt="avatar"
                                             />
                                         )}
                                     </div>
                                 )}
-                                <div className={`max-w-[75%] md:max-w-[60%] flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
-                                    <div className={`relative px-4 py-3 rounded-3xl text-[15px] shadow-sm transition-all hover:shadow-md ${isMe
+                                <div className={`max-w-[85%] md:max-w-[70%] lg:max-w-[65%] flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                                    <div className={`relative px-4 py-3 rounded-2xl text-[15px] shadow-sm transition-all hover:shadow-md ${isMe
                                             ? 'bg-blue-600 text-white rounded-tr-none'
-                                            : isDark ? 'bg-slate-800 text-slate-100 rounded-tl-none border border-slate-700/50' : 'bg-white text-slate-800 rounded-tl-none border border-slate-100'
+                                            : isDark ? 'bg-[#1a2329] text-slate-100 rounded-tl-none border border-slate-700/30' : 'bg-white text-slate-800 rounded-tl-none border border-slate-200/50'
                                         }`}>
                                         {msg.type === 'image' ? (
-                                            <div className="group relative rounded-2xl overflow-hidden cursor-pointer" onClick={() => window.open(msg.content, '_blank')}>
-                                                <img src={msg.content} alt="attachment" className="max-w-xs rounded-2xl transition-transform group-hover:scale-[1.02]" />
+                                            <div className="group relative rounded-xl overflow-hidden cursor-pointer" onClick={() => window.open(msg.content, '_blank')}>
+                                                <img src={msg.content} alt="attachment" className="max-w-full rounded-xl transition-transform group-hover:scale-[1.01]" />
                                             </div>
                                         ) : msg.type === 'file' ? (
                                             <a href={msg.content} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-1">
-                                                <div className="w-10 h-10 rounded-xl bg-slate-500/20 flex items-center justify-center">
+                                                <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
                                                     <FileText size={20} />
                                                 </div>
-                                                <div className="text-sm font-medium">Document Attachment</div>
+                                                <div className="text-sm font-medium pr-2">Document Attachment</div>
                                             </a>
                                         ) : msg.type === 'audio' ? (
-                                            <div className="min-w-[200px] py-1">
+                                            <div className="min-w-[220px] py-1">
                                                 <audio controls src={msg.content} className="w-full h-8" />
                                             </div>
                                         ) : (
-                                            <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                                            <p className="whitespace-pre-wrap leading-relaxed break-words">{msg.content}</p>
                                         )}
                                     </div>
-                                    <div className="flex items-center gap-1.5 mt-1.5 px-1 opacity-60">
-                                        <span className="text-[10px] font-semibold">
+                                    <div className="flex items-center gap-1.5 mt-1.5 px-1 opacity-50">
+                                        <span className="text-[10px] font-medium tracking-tight">
                                             {msg.timestamp ? dayjs(msg.timestamp).format('HH:mm') : ''}
                                         </span>
                                         {isMe && (
@@ -320,24 +320,24 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
 
             {/* Input Overlay for Recording */}
             {isRecording && (
-                <div className={`px-6 py-5 z-20 ${isDark ? 'bg-[#0f151a]/95' : 'bg-white/95'} backdrop-blur-md border-t ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
-                    <div className="flex items-center gap-3 max-w-6xl mx-auto">
-                        <div className="flex-1 flex items-center justify-between px-5 py-3 bg-red-500/10 rounded-3xl text-red-500 border border-red-500/20">
+                <div className={`px-4 md:px-6 py-4 z-20 ${isDark ? 'bg-[#0f151a]/95' : 'bg-white/95'} backdrop-blur-md border-t ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+                    <div className="flex items-center gap-3 max-w-5xl mx-auto">
+                        <div className="flex-1 flex items-center justify-between px-5 py-3 bg-red-500/5 rounded-2xl text-red-500 border border-red-500/10">
                             <div className="flex items-center gap-3">
                                 <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
-                                <span className="text-sm font-bold tracking-tight">RECORDING</span>
+                                <span className="text-xs font-bold tracking-widest uppercase">Recording</span>
                             </div>
                             <span className="text-sm font-mono font-bold">{formatDuration(recordingDuration)}</span>
                         </div>
                         <button
                             onClick={handleCancelRecording}
-                            className={`p-3.5 rounded-2xl transition-all active:scale-90 ${isDark ? 'bg-slate-800 text-slate-400 hover:text-red-400' : 'bg-slate-100 text-slate-500 hover:text-red-500'}`}
+                            className={`p-3 rounded-xl transition-all active:scale-90 ${isDark ? 'bg-slate-800 text-slate-400 hover:text-red-400' : 'bg-slate-100 text-slate-500 hover:text-red-500'}`}
                         >
                             <Trash2 size={24} />
                         </button>
                         <button
                             onClick={handleStopRecording}
-                            className="w-14 h-14 rounded-3xl bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-all active:scale-90 shadow-lg shadow-red-500/30"
+                            className="w-14 h-14 rounded-2xl bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-all active:scale-90 shadow-lg shadow-red-500/20"
                         >
                             <Send size={24} />
                         </button>
@@ -347,21 +347,21 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
 
             {/* Standard Input Area */}
             {!isRecording && (
-                <div className={`px-6 py-5 z-20 ${isDark ? 'bg-[#0f151a]/95' : 'bg-white/95'} backdrop-blur-md border-t ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
-                    <form onSubmit={handleSendMessage} className="flex items-end gap-3 max-w-6xl mx-auto">
+                <div className={`px-4 md:px-6 py-4 z-20 ${isDark ? 'bg-[#0f151a]/95' : 'bg-white/95'} backdrop-blur-md border-t ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+                    <form onSubmit={handleSendMessage} className="flex items-end gap-3 max-w-5xl mx-auto">
                         <div className="flex items-center gap-1 pb-1 flex-shrink-0">
-                            <label className={`p-2.5 rounded-xl cursor-pointer transition-all hover:rotate-12 ${isDark ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-slate-100 text-slate-500'}`}>
-                                <Paperclip size={22} />
+                            <label className={`p-2.5 rounded-xl cursor-pointer transition-all hover:bg-slate-100 group ${isDark ? 'hover:bg-slate-800 text-slate-500' : 'text-slate-400'}`}>
+                                <Paperclip size={22} className="group-hover:rotate-12 transition-transform" />
                                 <input type="file" className="hidden" onChange={handleFileUpload} />
                             </label>
-                            <button type="button" className={`p-2.5 rounded-xl transition-all hover:scale-110 ${isDark ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-slate-100 text-slate-500'}`}>
+                            <button type="button" className={`p-2.5 rounded-xl transition-all hover:bg-slate-100 ${isDark ? 'hover:bg-slate-800 text-slate-500' : 'text-slate-400'}`}>
                                 <Smile size={22} />
                             </button>
                         </div>
 
-                        <div className={`flex-1 relative rounded-3xl transition-all border-2 group shadow-sm ${isDark
-                                ? 'bg-[#1a2329] border-transparent focus-within:border-blue-500/30 focus-within:bg-[#1e2830]'
-                                : 'bg-slate-100 border-transparent focus-within:border-blue-400/20 focus-within:bg-white focus-within:shadow-blue-500/5'
+                        <div className={`flex-1 relative rounded-2xl transition-all border group shadow-sm ${isDark
+                                ? 'bg-[#1a2329] border-slate-800 focus-within:border-blue-500/30'
+                                : 'bg-slate-50 border-slate-200 focus-within:border-blue-400/30 focus-within:bg-white'
                             }`}>
                             <textarea
                                 ref={inputRef}
@@ -369,7 +369,7 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
                                 value={newMessage}
                                 onChange={(e) => {
                                     setNewMessage(e.target.value);
-                                    if (socket) socket.emit('typing_started', { receiverId: user._id });
+                                    if (socket) socket.emit('typing_start', { to: user._id });
                                 }}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter' && !e.shiftKey) {
@@ -377,8 +377,8 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
                                         handleSendMessage();
                                     }
                                 }}
-                                placeholder="Type a message..."
-                                className="w-full bg-transparent px-5 py-4 text-[15px] outline-none resize-none max-h-32 min-h-[52px]"
+                                placeholder="Write a message..."
+                                className="w-full bg-transparent px-5 py-3.5 text-[15px] outline-none resize-none max-h-32 min-h-[52px]"
                             />
                         </div>
 
@@ -386,7 +386,7 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
                             {newMessage.trim() ? (
                                 <button
                                     type="submit"
-                                    className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition-all active:scale-90 shadow-lg shadow-blue-600/30"
+                                    className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition-all active:scale-90 shadow-lg shadow-blue-600/20"
                                 >
                                     <Send size={20} className="-rotate-12 translate-x-0.5" />
                                 </button>
@@ -394,7 +394,7 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
                                 <button
                                     type="button"
                                     onClick={handleStartRecording}
-                                    className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all active:scale-90 ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-500'}`}
+                                    className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all active:scale-90 ${isDark ? 'bg-slate-800 text-slate-500' : 'bg-slate-100 text-slate-400 hover:text-blue-500'}`}
                                 >
                                     <Mic size={22} />
                                 </button>
@@ -403,6 +403,7 @@ export default function TeacherChatWindow({ user, isDark, socket, onBack }: Teac
                     </form>
                 </div>
             )}
+
         </div>
     );
 }
