@@ -1,6 +1,6 @@
 
-import { ITokenService } from "../../interfaces/ITokenService";
-import { IEmailService } from "../../interfaces/IEmailService";
+import { ITokenService } from "../../../infrastructure/services/interfaces/ITokenService";
+import { IEmailService } from "../../../infrastructure/services/interfaces/IEmailService";
 import { OtpError } from "../../../domain/enums/OtpErrorMessage";
 import { GenarateOtp } from "../../../shared/constants/utils/Otpgenarator";
 

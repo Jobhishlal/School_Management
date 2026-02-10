@@ -1,7 +1,7 @@
 
-import { ITokenService } from "../../interfaces/ITokenService";
-import { IPasswordService } from "../../interfaces/IPasswordService";
-import { IEmailService } from "../../interfaces/IEmailService";
+import { ITokenService } from "../../../infrastructure/services/interfaces/ITokenService";
+import { IPasswordService } from "../../../infrastructure/services/interfaces/IPasswordService";
+import { IEmailService } from "../../../infrastructure/services/interfaces/IEmailService";
 import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
 import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";
 import { ISubadminLogin } from "../../../domain/repositories/IAdminRepoLogin";

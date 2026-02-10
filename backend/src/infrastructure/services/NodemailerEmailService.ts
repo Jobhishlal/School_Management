@@ -1,5 +1,5 @@
 
-import { IEmailService } from "../../applications/interfaces/IEmailService";
+import { IEmailService } from "./interfaces/IEmailService";
 import { SendEMail } from "../providers/EmailService";
 
 export class NodemailerEmailService implements IEmailService {

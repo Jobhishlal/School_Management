@@ -8,7 +8,7 @@ import { CreateValidationFeeStructure } from "../../validators/FeeStructureValid
 import { calculateExpiryDate } from "../../../shared/constants/utils/dateUtils";
 import { SendEMail } from "../../../infrastructure/providers/EmailService";
 import { feeExpiredTemplate } from "../../../shared/constants/utils/templates/FeeExpiredTemplate";
-import { NotificationPort } from "../../ports/NotificationPort";
+import { NotificationPort } from "../../../infrastructure/services/ports/NotificationPort";
 
 export class CreateFeeStructureUseCase implements ICreateFeeStructureUseCase {
   constructor(

@@ -1,28 +1,41 @@
 import { Types } from "mongoose";
-import { CreateExamDTO } from "../../../applications/dto/Exam/CreateExamDTO";
 import { ExamEntity } from "../../../domain/entities/Exam/ExamEntity";
-import { toExamEntity } from "../../../domain/Mapper/ExamCreateMapper";
+import { toExamEntity } from "../../mappers/ExamMapper";
 import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
 import { ExamModel } from "../../database/models/ExamModel";
-import { UpdateExamDTO } from "../../../applications/dto/Exam/UpdateExamDTO";
-import { StudentModel } from "../../database/models/StudentModel";
-
 
 export class ExamMongoRepo implements IExamRepository {
-  async createExam(data: CreateExamDTO): Promise<ExamEntity> {
+  async createExam(data: ExamEntity): Promise<ExamEntity> {
     const examData = {
-      ...data,
+      examId: data.examId,
+      title: data.title,
+      type: data.type,
       classId: new Types.ObjectId(data.classId),
-      teacherId: new Types.ObjectId(data.teacherId)
+      className: data.className,
+      division: data.division,
+      subject: data.subject,
+      teacherId: new Types.ObjectId(data.teacherId),
+      teacherName: data.teacherName,
+      examDate: data.examDate,
+      startTime: data.startTime,
+      endTime: data.endTime,
+      maxMarks: data.maxMarks,
+      passMarks: data.passMarks,
+      description: data.description,
+      status: data.status
     };
     const createdExam = await ExamModel.create(examData);
     return toExamEntity(createdExam);
   }
 
-  async updateexam(id: string, data: UpdateExamDTO): Promise<ExamEntity | null> {
+  async updateexam(id: string, data: Partial<ExamEntity>): Promise<ExamEntity | null> {
+    const updateData: any = { ...data };
+    if (data.classId) updateData.classId = new Types.ObjectId(data.classId);
+    if (data.teacherId) updateData.teacherId = new Types.ObjectId(data.teacherId);
+
     const updatedExamDoc = await ExamModel.findByIdAndUpdate(
       id,
-      { $set: data },
+      { $set: updateData },
       { new: true }
     );
     return updatedExamDoc ? toExamEntity(updatedExamDoc) : null;

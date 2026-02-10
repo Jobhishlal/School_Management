@@ -1,5 +1,5 @@
-import { ExamDocument } from "../../infrastructure/database/models/ExamModel";
-import { ExamEntity } from "../entities/Exam/ExamEntity";
+import { ExamDocument } from "../database/models/ExamModel";
+import { ExamEntity } from "../../domain/entities/Exam/ExamEntity";
 
 export const toExamEntity = (doc: ExamDocument): ExamEntity => {
   return new ExamEntity(
@@ -9,13 +9,13 @@ export const toExamEntity = (doc: ExamDocument): ExamEntity => {
     doc.title,
     doc.type,
 
-    doc.classId,
+    doc.classId.toString(),
     doc.className,
     doc.division,
 
     doc.subject,
 
-    doc.teacherId,
+    doc.teacherId.toString(),
     doc.teacherName,
 
     doc.examDate,

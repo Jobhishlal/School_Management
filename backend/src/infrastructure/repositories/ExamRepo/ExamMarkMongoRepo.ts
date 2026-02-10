@@ -1,22 +1,40 @@
 import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMarkRepoInterface";
 import { ExamMarkModel } from "../../database/models/ExamMarkModel";
 import { ExamMarkEntity } from "../../../domain/entities/Exam/ExamMarkEntity";
-import { CreateExamMarkDTO } from "../../../applications/dto/Exam/CreateExamMarkDTO";
-import { toExamMarkEntity } from "../../../domain/Mapper/ExamMarkMapper";
-import { UpdateExamMarkDTO } from "../../../applications/dto/Exam/UpdateExamMarkDTO";
+import { toExamMarkEntity } from "../../mappers/ExamMarkMapper";
 import { Types } from "mongoose";
 
 
 export class ExamMarkMongoRepository implements IExamMarkRepository {
 
-  async create(data: CreateExamMarkDTO): Promise<ExamMarkEntity> {
-    const create = await ExamMarkModel.create(data)
-    return toExamMarkEntity(create)
+  async create(data: ExamMarkEntity): Promise<ExamMarkEntity> {
+    const markData = {
+      examId: new Types.ObjectId(data.examId),
+      studentId: new Types.ObjectId(data.studentId),
+      teacherId: new Types.ObjectId(data.teacherId),
+      marksObtained: data.marksObtained,
+      progress: ExamMarkEntity.calculateProgress(data.marksObtained),
+      remarks: data.remarks,
+      concern: data.concern,
+      concernStatus: data.concernStatus,
+      concernResponse: data.concernResponse
+    };
+    const created = await ExamMarkModel.create(markData);
+    return toExamMarkEntity(created);
   }
-  async update(id: string, data: UpdateExamMarkDTO): Promise<ExamMarkEntity | null> {
+  async update(id: string, data: Partial<ExamMarkEntity>): Promise<ExamMarkEntity | null> {
+    const updateData: any = { ...data };
+    if (data.examId) updateData.examId = new Types.ObjectId(data.examId);
+    if (data.studentId) updateData.studentId = new Types.ObjectId(data.studentId);
+    if (data.teacherId) updateData.teacherId = new Types.ObjectId(data.teacherId);
+
+    if (data.marksObtained !== undefined) {
+      updateData.progress = ExamMarkEntity.calculateProgress(data.marksObtained);
+    }
+
     const updated = await ExamMarkModel.findByIdAndUpdate(
       id,
-      { $set: data },
+      { $set: updateData },
       { new: true }
     );
 
@@ -126,7 +144,7 @@ export class ExamMarkMongoRepository implements IExamMarkRepository {
     if (newMarks !== undefined) {
       updateQuery.marksObtained = newMarks;
 
-      updateQuery.progress = newMarks >= 90 ? "EXCELLENT" : newMarks >= 70 ? "GOOD" : newMarks >= 40 ? "NEEDS_IMPROVEMENT" : "POOR";
+      updateQuery.progress = ExamMarkEntity.calculateProgress(newMarks);
     }
 
     const result = await ExamMarkModel.updateOne(

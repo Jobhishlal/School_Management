@@ -1,4 +1,4 @@
-import { getRoom } from "../../applications/rooms/roomManager";
+import { getRoom } from "../services/rooms/roomManager";
 import { WebRtcTransport } from "mediasoup/node/lib/WebRtcTransportTypes";
 
 

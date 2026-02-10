@@ -1,4 +1,4 @@
-import { Message } from "../../entities/Message";
+import { Message } from "../../domain/entities/Message";
 
 export interface IChatSocketService {
     emitMessageToUser(userId: string, event: string, data: any): void;

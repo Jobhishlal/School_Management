@@ -1,6 +1,6 @@
 
 import jwt from "jsonwebtoken";
-import { ITokenService } from "../../applications/interfaces/ITokenService";
+import { ITokenService } from "./interfaces/ITokenService";
 import { genarateotptoken, verifiedOtptoken, decodedOtptoken } from "../security/otpJwtService";
 
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret";

@@ -1,6 +1,6 @@
 
 import bcrypt from "bcrypt";
-import { IPasswordService } from "../../applications/interfaces/IPasswordService";
+import { IPasswordService } from "./interfaces/IPasswordService";
 
 export class BcryptPasswordService implements IPasswordService {
     async compare(plain: string, hashed: string): Promise<boolean> {

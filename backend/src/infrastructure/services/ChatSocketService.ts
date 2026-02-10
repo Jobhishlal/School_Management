@@ -1,5 +1,5 @@
 import { getIO } from "../socket/socket";
-import { IChatSocketService } from "../../domain/interfaces/services/IChatSocketService";
+import { IChatSocketService } from "./IChatSocketService";
 import { Message } from "../../domain/entities/Message";
 
 export class ChatSocketService implements IChatSocketService {

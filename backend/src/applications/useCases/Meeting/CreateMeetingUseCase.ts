@@ -1,7 +1,7 @@
 import { Meeting } from "../../../domain/entities/Meeting";
 import { IMeetingRepository } from "../../../domain/repositories/IMeetingRepository";
 import { ICreateMeetingUseCase } from "../../../domain/UseCaseInterface/Meeting/ICreateMeetingUseCase";
-import { NotificationPort } from "../../ports/NotificationPort";
+import { NotificationPort } from "../../../infrastructure/services/ports/NotificationPort";
 
 export class CreateMeetingUseCase implements ICreateMeetingUseCase {
     constructor(

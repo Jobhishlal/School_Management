@@ -2,7 +2,7 @@ import { Announcement } from "../../../domain/entities/Announcement/Announcement
 import { CreateAnnouncementDTO } from "../../dto/AnnouncementDTO";
 import { IAnnouncementRepository } from "../../../domain/repositories/Announcement/IAnnouncement";
 import { IAnnoucementUseCase } from "../../../domain/UseCaseInterface/Announcement/IAnnouncementUseCase";
-import { NotificationPort } from "../../ports/NotificationPort";
+import { NotificationPort } from "../../../infrastructure/services/ports/NotificationPort";
 import { AnnouncementNotificationDTO } from "../../dto/AnnouncementNotificationDTO";
 import { ValidateAnnouncementCreate } from "../../validators/AnnouncementValidation";
 export class AnnouncementUseCase implements IAnnoucementUseCase {

@@ -1,5 +1,5 @@
 
-import { ITokenService } from "../../interfaces/ITokenService";
+import { ITokenService } from "../../../infrastructure/services/interfaces/ITokenService";
 
 import { IRefreshTokenUseCase } from "../../../domain/UseCaseInterface/IRefreshTokenUseCase";
 

@@ -1,6 +1,7 @@
 import { CreateExamMarkDTO } from "../../dto/Exam/CreateExamMarkDTO";
 import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMarkRepoInterface";
 import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
+import { ExamMarkEntity } from "../../../domain/entities/Exam/ExamMarkEntity";
 
 export class UpdateExamMarkUseCase {
     constructor(
@@ -30,8 +31,8 @@ export class UpdateExamMarkUseCase {
 
         return await this.examMarkRepo.updateMark(existing.id, {
             marksObtained: data.marksObtained,
-            progress: data.progress,
+            progress: ExamMarkEntity.calculateProgress(data.marksObtained),
             remarks: data.remarks
-        });
+        } as Partial<ExamMarkEntity>);
     }
 }

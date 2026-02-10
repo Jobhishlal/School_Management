@@ -1,5 +1,5 @@
 import { NotificationDTO } from "../../applications/dto/AnnouncementNotificationDTO";
-import { NotificationPort } from "../../applications/ports/NotificationPort";
+import { NotificationPort } from "../services/ports/NotificationPort";
 import { getIO } from "./socket";
 
 export class SocketNotification implements NotificationPort {

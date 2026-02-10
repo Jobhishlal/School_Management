@@ -15,17 +15,15 @@ export class GetTeacherExamsUseCase implements IGetTeacherExamsUseCase {
 
     const exams = await this.examRepo.getExamsByTeacher(teacherId);
 
-    
+
     const examIds = exams.map(e => e.id);
     const concernInfo = await this.examMarkRepo.getPendingConcernsInfoByExamIds(examIds);
 
     return exams.map(exam => {
       const details = concernInfo[exam.id] || [];
-      return {
-        ...exam,
-        pendingConcerns: details.length,
-        concerns: details
-      };
+      exam.pendingConcerns = details.length;
+      exam.concerns = details;
+      return exam;
     });
   }
 }

@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { CreateExamDTO } from "../../dto/Exam/CreateExamDTO";
+import { CreateExamDTO } from "../../../applications/dto/Exam/CreateExamDTO";
 import { ExamErrors } from "../../../domain/enums/ExamErrorMessages/ExamError";
 
 const EXAM_TYPES = ["UNIT_TEST", "MIDTERM", "FINAL"];
@@ -12,7 +12,7 @@ export function ValidateExamCreate(data: CreateExamDTO) {
     !data.classId ||
     !data.teacherId ||
     !data.subject ||
-    !data.examDate || 
+    !data.examDate ||
     !data.startTime ||
     !data.endTime ||
     data.maxMarks === undefined

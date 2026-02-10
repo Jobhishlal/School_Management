@@ -1,5 +1,5 @@
 import { FeeStructureModel } from "../../database/models/FeeManagement/FeeStructure";
-import { FeeStructureMapper } from "../../../domain/Mapper/FeeStructureMapper";
+import { FeeStructureMapper } from "../../mappers/FeeStructureMapper";
 import { FeeStructure } from "../../../domain/entities/FeeType/FeeStructure";
 import { BaseRepository } from "../BASEREPOSITORIES/Baserepository";
 import { IFeeStructureRepository } from "../../../domain/repositories/FeeDetails/IFeeStructureRepository";

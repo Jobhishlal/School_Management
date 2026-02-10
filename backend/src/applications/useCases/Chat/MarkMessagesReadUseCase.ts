@@ -1,6 +1,6 @@
 import { IChatRepository } from "../../../domain/repositories/Chat/IChatRepository";
 import { IMarkMessagesReadUseCase } from "../../../domain/interfaces/useCases/Chat/IMarkMessagesReadUseCase";
-import { IChatSocketService } from "../../../domain/interfaces/services/IChatSocketService";
+import { IChatSocketService } from "../../../infrastructure/services/IChatSocketService";
 
 export class MarkMessagesReadUseCase implements IMarkMessagesReadUseCase {
     constructor(

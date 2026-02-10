@@ -1,4 +1,4 @@
-import { getRoom } from "../../applications/rooms/roomManager";
+import { getRoom } from "../services/rooms/roomManager";
 
 export async function connectWebRtcTransport(
      roomId: string,

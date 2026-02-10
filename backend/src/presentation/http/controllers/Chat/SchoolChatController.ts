@@ -12,7 +12,7 @@ import { ICreateClassGroupChatUseCase } from "../../../../domain/interfaces/useC
 import { IDeleteMessageUseCase } from "../../../../domain/interfaces/useCases/Chat/IDeleteMessageUseCase";
 import { IGetTeachersForChatUseCase } from "../../../../domain/interfaces/useCases/Chat/IGetTeachersForChatUseCase";
 import { ISearchChatUsersUseCase } from "../../../../domain/interfaces/useCases/Chat/ISearchChatUsersUseCase";
-import { ChatDTOMapper } from "../../../../domain/Mapper/ChatDTOMapper";
+import { ChatDTOMapper } from "../../../../infrastructure/mappers/ChatDTOMapper";
 
 export class SchoolChatController {
     constructor(
