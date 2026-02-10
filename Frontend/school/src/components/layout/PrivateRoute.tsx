@@ -32,11 +32,13 @@ export default function PrivateRoute({ children }: { children: React.ReactElemen
     const token = localStorage.getItem("teacherAccessToken");
     if (token) isAuthenticated = true;
   } else if (path.startsWith("/student")) {
-    const token = localStorage.getItem("studentAccessToken");
-    if (token) isAuthenticated = true;
+    const token = localStorage.getItem("studentAccessToken") || localStorage.getItem("accessToken");
+    const role = localStorage.getItem("role");
+    if (token && role === "students") isAuthenticated = true;
   } else if (path.startsWith("/parent")) {
-    const token = localStorage.getItem("parentAccessToken");
-    if (token) isAuthenticated = true;
+    const token = localStorage.getItem("parentAccessToken") || localStorage.getItem("accessToken");
+    const role = localStorage.getItem("role");
+    if (token && role === "parent") isAuthenticated = true;
   } else if (path.startsWith("/meeting")) {
     const token = localStorage.getItem('adminAccessToken') ||
       localStorage.getItem('teacherAccessToken') ||
@@ -55,17 +57,6 @@ export default function PrivateRoute({ children }: { children: React.ReactElemen
   }
 
 
-  if (path === "/login") {
-    const role = localStorage.getItem("role");
-    switch (role) {
-      case "students":
-        return <Navigate to="/student/dashboard" replace />;
-      case "parent":
-        return <Navigate to="/parent/dashboard" replace />;
-      default:
-        return <Navigate to="/dashboard" replace />;
-    }
-  }
 
   return children;
 }

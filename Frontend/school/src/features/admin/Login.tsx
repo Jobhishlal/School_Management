@@ -1,7 +1,7 @@
 
 
 import { MainAdminLogin } from "../../services/Auth/Auth";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { showToast } from "../../utils/toast";
 import { useNavigate } from "react-router-dom";
 
@@ -18,22 +18,6 @@ export default function MainAdminLogincheck() {
   const [loginType, setLoginType] = useState<LoginType>("staff");
 
 
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    const role = localStorage.getItem("role");
-    if (token && role) {
-      switch (role) {
-        case "students":
-          navigate("/student/dashboard", { replace: true });
-          break;
-        case "parent":
-          navigate("/parent/dashboard", { replace: true });
-          break;
-        default:
-          navigate("/dashboard", { replace: true });
-      }
-    }
-  }, []);
 
 
 
@@ -113,7 +97,7 @@ export default function MainAdminLogincheck() {
   }
 
 
-  
+
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-black text-white px-4 font-inter">
@@ -222,7 +206,7 @@ export default function MainAdminLogincheck() {
                 </div>
               </div>
 
-             
+
             </>
           )}
 
