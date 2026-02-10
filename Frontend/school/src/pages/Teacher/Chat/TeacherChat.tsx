@@ -17,13 +17,12 @@ export const TeacherChat: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
     const [currentUserId, setCurrentUserId] = useState<string>('');
-
     useEffect(() => {
-        const token = localStorage.getItem('teacherAccessToken');
+        const token = localStorage.getItem('teacherAccessToken') || localStorage.getItem('accessToken');
         if (token) {
             try {
                 const decoded: any = jwtDecode(token);
-                setCurrentUserId(decoded.id || decoded.userId || decoded._id || '');
+                setCurrentUserId(String(decoded.id || decoded.userId || decoded._id || ''));
             } catch (error) {
                 console.error("Invalid token", error);
             }
@@ -32,9 +31,10 @@ export const TeacherChat: React.FC = () => {
 
     useEffect(() => {
         loadConversations();
-    }, []);
+    }, [currentUserId]);
 
     const loadConversations = async () => {
+        if (!currentUserId) return;
         try {
             setLoading(true);
             const data = await getConversations();
@@ -51,10 +51,9 @@ export const TeacherChat: React.FC = () => {
                         const pId = p.participantId._id || p.participantId;
                         return String(pId) !== String(currentUserId);
                     });
-                    key = other ? (other.participantId._id || other.participantId) : c._id;
+                    key = other ? String((other.participantId._id || other.participantId)) : c._id;
                 }
 
-                // Keep the one with the latest message or update (assuming data is sorted by latest first)
                 if (!uniqueMap.has(key)) {
                     uniqueMap.set(key, c);
                 }
@@ -77,24 +76,21 @@ export const TeacherChat: React.FC = () => {
     }, [socket, currentUserId]);
 
     useEffect(() => {
-        if (!socket) return;
+        if (!socket || !currentUserId) return;
 
         const handleReceiveMessage = (newMessage: any) => {
             setConversations(prev => {
-                // Logic to identify which conversation to update.
-                // For group chat: receiverId is the Group ID.
-                // For private chat: senderId is the Other User ID (if I am receiver).
-                // Or if I am sender (e.g. multi-device), receiverId is Other User.
-
                 const isGroupMsg = newMessage.receiverModel === 'Conversation';
-                const otherUserId = newMessage.senderId === currentUserId ? newMessage.receiverId : newMessage.senderId;
+                const msgSenderId = typeof newMessage.senderId === 'object' ? newMessage.senderId._id : newMessage.senderId;
+                const msgReceiverId = typeof newMessage.receiverId === 'object' ? newMessage.receiverId._id : newMessage.receiverId;
+
+                const otherUserId = String(msgSenderId) === String(currentUserId) ? String(msgReceiverId) : String(msgSenderId);
 
                 let existingConvIndex = -1;
 
                 if (isGroupMsg) {
-                    existingConvIndex = prev.findIndex(c => c._id === newMessage.receiverId);
+                    existingConvIndex = prev.findIndex(c => String(c._id) === String(newMessage.receiverId));
                 } else {
-                    // For 1-on-1, Conversation ID != User ID. Must match by Participants.
                     existingConvIndex = prev.findIndex(c =>
                         !c.isGroup &&
                         c.participants.some(p => {
@@ -105,7 +101,6 @@ export const TeacherChat: React.FC = () => {
                 }
 
                 if (existingConvIndex !== -1) {
-                    // ... same logic ...
                     const updatedConversations = [...prev];
                     const conversation = updatedConversations[existingConvIndex];
                     updatedConversations[existingConvIndex] = {
@@ -118,7 +113,6 @@ export const TeacherChat: React.FC = () => {
                     updatedConversations.unshift(movedConv);
                     return updatedConversations;
                 } else {
-                    // New conversation found, reload strictly
                     loadConversations();
                     return prev;
                 }
@@ -126,7 +120,6 @@ export const TeacherChat: React.FC = () => {
         };
 
         socket.on('receive_message', handleReceiveMessage);
-        // Also listen for private messages to ensure self-updates (sent message) works
         socket.on('receive_private_message', handleReceiveMessage);
 
         return () => {
