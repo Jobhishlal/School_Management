@@ -1,5 +1,5 @@
 import { IStudentFullFeePaymentStatusUseCase } from "../../interface/UseCaseInterface/FeeStructure/IStudentFeePaidDetails";
-import { IFeeStructureRepository } from "../../../domain/repositories/FeeDetails/IFeeStructureRepository";
+import { IFeeStructureRepository } from "../../interface/RepositoryInterface/FeeDetails/IFeeStructureRepository";
 
 export class StudentPaymentDetailList implements IStudentFullFeePaymentStatusUseCase {
     constructor(private readonly repo: IFeeStructureRepository) { }

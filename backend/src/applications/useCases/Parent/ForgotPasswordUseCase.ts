@@ -1,4 +1,4 @@
-import { IParentRepositorySign } from "../../../domain/repositories/Auth/IParentRepository";
+import { IParentRepositorySign } from "../../interface/RepositoryInterface/Auth/IParentRepository";
 import { GenarateOtp } from "../../../shared/constants/utils/Otpgenarator";
 import { SendEMail } from "../../../infrastructure/providers/EmailService";
 import { genarateotptoken } from "../../../infrastructure/security/otpJwtService";

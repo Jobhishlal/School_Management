@@ -1,4 +1,4 @@
-import { IChatRepository } from "../../../domain/repositories/Chat/IChatRepository";
+import { IChatRepository } from "../../interface/RepositoryInterface/Chat/IChatRepository";
 import { Message } from "../../../domain/entities/Message";
 import { IChatSocketService } from "../../../infrastructure/services/IChatSocketService";
 import { ISendMessageUseCase } from "../../interface/UseCaseInterface/Chat/ISendMessageUseCase";
@@ -40,8 +40,8 @@ export class SendMessageUseCase implements ISendMessageUseCase {
 
             const conversation = await this.chatRepo.findConversationById(receiverId);
             if (conversation && conversation.participants) {
-                participants = conversation.participants.map(p =>
-                    p.participantId // In domain entity, participantId is a string ID
+                participants = conversation.participants.map((p: ConversationParticipant) =>
+                    p.participantId
                 );
             }
         } else {

@@ -1,5 +1,5 @@
 import { AttendanceModel } from "../../database/models/AttandanceModel";
-import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
+import { IAttandanceRepository } from "../../../applications/interface/RepositoryInterface/Attandance/IAttendanceRepository";
 import { TakeAttendance } from "../../../applications/dto/Attendance/TakeAttendanceDTO";
 import { AttendanceEntity, AttendanceSession } from "../../../domain/entities/AttandanceEntity";
 import { ClassModel } from "../../database/models/ClassModel";

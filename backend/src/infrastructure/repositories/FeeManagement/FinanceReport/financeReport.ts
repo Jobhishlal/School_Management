@@ -1,5 +1,5 @@
 import { PaymentModel } from "../../../database/models/FeeManagement/Payment";
-import { IRevenueGenerateRepository } from "../../../../domain/repositories/FeeDetails/FinanceReport/IRevanueReport";
+import { IRevenueGenerateRepository } from "../../../../applications/interface/RepositoryInterface/FeeDetails/FinanceReport/IRevanueReport";
 import { RevanueReport } from "../../../../applications/dto/FeeDTO/financeReport/RevenueReport";
 
 

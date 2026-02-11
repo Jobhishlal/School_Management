@@ -1,5 +1,5 @@
 import { IApprovalUsecase } from "../../interface/UseCaseInterface/FeeStructure/IApprovel";
-import { IExpenseRepository } from "../../../domain/repositories/FeeDetails/IExpesnseRepositoy";
+import { IExpenseRepository } from "../../interface/RepositoryInterface/FeeDetails/IExpesnseRepositoy";
 import { Expense } from "../../../domain/entities/FeeType/Expense";
 import { ExpenseApproveDTO } from "../../dto/FeeDTO/ExpenseApproveDTO";
 

@@ -1,5 +1,5 @@
 import { IGETALLCLASSTEACHER } from "../../interface/UseCaseInterface/ClassBase/IGetAllTeacherstClass";
-import { IClassDivisionRepository } from "../../../domain/repositories/Classrepo/IClassDivisionview";
+import { IClassDivisionRepository } from "../../interface/RepositoryInterface/Classrepo/IClassDivisionview";
 
 
 export class GetAssignClassTeacher implements IGETALLCLASSTEACHER{

@@ -1,5 +1,5 @@
 import { IAssignTeacherOnClass } from "../../interface/UseCaseInterface/ClassBase/IClassAssignTeacher";
-import { IClassDivisionRepository } from "../../../domain/repositories/Classrepo/IClassDivisionview";
+import { IClassDivisionRepository } from "../../interface/RepositoryInterface/Classrepo/IClassDivisionview";
 
 export class TeacherAssignClassUseCase implements IAssignTeacherOnClass {
   constructor(private readonly classRepo: IClassDivisionRepository) {}

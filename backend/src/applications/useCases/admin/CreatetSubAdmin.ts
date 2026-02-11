@@ -1,6 +1,6 @@
 import { SubAdminEntities } from "../../../domain/entities/SubAdmin";
 import { AdminRole } from "../../../domain/enums/AdminRole";
-import { SubAdminRepository } from "../../../domain/repositories/SubAdminCreate";
+import { SubAdminRepository } from "../../interface/RepositoryInterface/SubAdminCreate";
 import { ICreateAdmin } from "../../interface/UseCaseInterface/ICreateSubAdmin";
 import { ICheckSubAdminDuplicate } from "../../interface/UseCaseInterface/SubAdmin/ICheckSubAdminDuplicate";
 import { IPasswordsubadmin } from "../../interface/UseCaseInterface/SubAdmin/IPasswordHash";

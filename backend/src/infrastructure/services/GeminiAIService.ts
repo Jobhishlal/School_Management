@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { IAIService } from "../../domain/repositories/AI/IAIService";
+import { IAIService } from "../../applications/interface/RepositoryInterface/AI/IAIService";
 
 export class GeminiAIService implements IAIService {
   private model: any;

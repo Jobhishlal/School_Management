@@ -1,4 +1,4 @@
-import { IYouTubeVideo } from "../repositories/AI/IYouTubeService";
+import { IYouTubeVideo } from "../../applications/interface/RepositoryInterface/AI/IYouTubeService";
 
 export interface AIChatMessage {
     id: string;

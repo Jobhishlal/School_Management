@@ -1,8 +1,8 @@
 import { CreateLeaveDTO } from "../../dto/LeaveManagement/CreateLeaveManagementDTO";
-import { InterfaceLeaveManagement } from "../../../domain/repositories/ILeaveManagement/ILeaveManagement";
+import { InterfaceLeaveManagement } from "../../interface/RepositoryInterface/ILeaveManagement/ILeaveManagement";
 import { LeaveManagementEntity } from "../../../domain/entities/LeaveManagement/LeaveManagementEntity";
 import { ValidateLeaveCreate } from "../../validators/LeaveValidation/LeaveCreateValidation";
-import { SubAdminRepository } from "../../../domain/repositories/SubAdminCreate";
+import { SubAdminRepository } from "../../interface/RepositoryInterface/SubAdminCreate";
 
 export interface ICreateSubAdminLeaveUseCase {
     execute(subAdminId: string, data: CreateLeaveDTO): Promise<LeaveManagementEntity>;

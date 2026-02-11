@@ -1,6 +1,6 @@
 import { AdminRole } from "../../../domain/enums/AdminRole";
 import { SubAdminEntities } from "../../../domain/entities/SubAdmin";
-import { SubAdminRepository } from "../../../domain/repositories/SubAdminCreate";
+import { SubAdminRepository } from "../../interface/RepositoryInterface/SubAdminCreate";
 import { IUpdateadmin } from "../../interface/UseCaseInterface/IAdminUpdate";
 
 export class UpdateDetails implements IUpdateadmin {

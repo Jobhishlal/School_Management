@@ -1,4 +1,4 @@
-import { IAddrressRepository } from "../../domain/repositories/IAddresssRepository";
+import { IAddrressRepository } from "../../applications/interface/RepositoryInterface/IAddresssRepository";
 import { AddressEntity } from "../../domain/entities/Address";
 import { AddressInterface, AddressModel } from "../database/models/AddressModel";
 import mongoose from "mongoose";

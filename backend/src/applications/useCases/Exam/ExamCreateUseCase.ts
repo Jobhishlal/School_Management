@@ -1,9 +1,9 @@
 import { IExamCreateRepository } from "../../interface/UseCaseInterface/Exam/IExamCreateUseCase";
 import { CreateExamDTO } from "../../dto/Exam/CreateExamDTO";
 import { ExamEntity } from "../../../domain/entities/Exam/ExamEntity";
-import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
-import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
-import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";
+import { IExamRepository } from "../../interface/RepositoryInterface/Exam/IExamRepoInterface";
+import { IClassRepository } from "../../interface/RepositoryInterface/Classrepo/IClassRepository";
+import { ITeacherCreate } from "../../interface/RepositoryInterface/TeacherCreate";
 import { ExamErrorMessages } from "../../../shared/constants/ExamErrorMessages";
 
 export class ExamCreateUseCase implements IExamCreateRepository {

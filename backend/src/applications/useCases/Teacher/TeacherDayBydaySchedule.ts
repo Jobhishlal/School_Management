@@ -1,5 +1,5 @@
 import { IGetTeacherDailySchedule } from "../../interface/UseCaseInterface/TimeTable/IGetTeacherDailySchedule";
-import { ITimeTableRepository } from "../../../domain/repositories/Admin/ITimeTableCreate";
+import { ITimeTableRepository } from "../../interface/RepositoryInterface/Admin/ITimeTableCreate";
 import { TeacherDailyScheduleDTO } from "../../dto/TeacherDailyScheduleDTO";
 
 export class TeacherDaybydayschedule implements IGetTeacherDailySchedule{

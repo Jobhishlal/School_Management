@@ -1,5 +1,5 @@
 import { IUpdateSubAdminPasswordUseCase } from "../../interface/UseCaseInterface/IUpdateSubAdminPasswordUseCase";
-import { SubAdminRepository } from "../../../domain/repositories/SubAdminCreate";
+import { SubAdminRepository } from "../../interface/RepositoryInterface/SubAdminCreate";
 import { SubAdminEntities } from "../../../domain/entities/SubAdmin";
 import {ValidateSubAdminPassword } from '../../validators/PasswordValidation'
 import bcrypt from "bcryptjs";

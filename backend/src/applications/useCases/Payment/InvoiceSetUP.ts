@@ -1,5 +1,5 @@
 import { IDownloadInvoicePDF } from "../../interface/UseCaseInterface/FeeStructure/IInvoiceDownloadUseCase";
-import { IPaymentTransactionRepository } from "../../../domain/repositories/FeeDetails/IPaymentTransactionRepository";
+import { IPaymentTransactionRepository } from "../../interface/RepositoryInterface/FeeDetails/IPaymentTransactionRepository";
 import { generateAndUploadInvoice } from "../../../shared/constants/utils/generateInvoice";
 import { InvoiceData } from "../../../presentation/http/interface/InvoiceData";
 

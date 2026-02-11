@@ -1,8 +1,8 @@
 import { CreateLeaveDTO } from "../../dto/LeaveManagement/CreateLeaveManagementDTO";
 import { ICreateLeaveusecase } from "../../interface/UseCaseInterface/LeaveManagement/ICreateLeaveUseCase";
-import { InterfaceLeaveManagement } from "../../../domain/repositories/ILeaveManagement/ILeaveManagement";
+import { InterfaceLeaveManagement } from "../../interface/RepositoryInterface/ILeaveManagement/ILeaveManagement";
 import { LeaveManagementEntity } from "../../../domain/entities/LeaveManagement/LeaveManagementEntity";
-import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";
+import { ITeacherCreate } from "../../interface/RepositoryInterface/TeacherCreate";
 import { ValidateLeaveCreate } from "../../validators/LeaveValidation/LeaveCreateValidation";
 
 export class CreateLeaveUseCase implements ICreateLeaveusecase {

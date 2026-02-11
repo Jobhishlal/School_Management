@@ -1,5 +1,5 @@
 import { IGetStudentAttendanceHistoryUseCase } from "../../interface/UseCaseInterface/Attandance/IGetStudentAttendanceHistoryUseCase";
-import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
+import { IAttandanceRepository } from "../../interface/RepositoryInterface/Attandance/IAttendanceRepository";
 
 export class GetStudentAttendanceHistoryUseCase implements IGetStudentAttendanceHistoryUseCase {
     constructor(private repo: IAttandanceRepository) { }

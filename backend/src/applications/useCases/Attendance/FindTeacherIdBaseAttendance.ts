@@ -1,6 +1,6 @@
 import { IFindStudentsByTeacherUseCase } from "../../interface/UseCaseInterface/IFindStudentsByTeacherUseCase";
-import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
-import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
+import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudnetRepository";
+import { IAttandanceRepository } from "../../interface/RepositoryInterface/Attandance/IAttendanceRepository";
 import { Students } from "../../../domain/entities/Students";
 
 export class FindStudentsByTeacherUseCase implements IFindStudentsByTeacherUseCase {

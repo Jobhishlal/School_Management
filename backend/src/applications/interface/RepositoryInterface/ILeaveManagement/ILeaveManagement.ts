@@ -1,0 +1,29 @@
+import { ObjectId } from "mongoose";
+import { LeaveManagementEntity } from "../../../../domain/entities/LeaveManagement/LeaveManagementEntity";
+
+export interface InterfaceLeaveManagement {
+  create(leave: LeaveManagementEntity): Promise<LeaveManagementEntity>
+  findOverlappingLeave(
+    teacherId: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<LeaveManagementEntity | null>;
+  countLeavesByTypeAndMonth(
+    teacherId: string,
+    leaveType: string,
+    month: number,
+    year: number
+  ): Promise<number>;
+  getLeavesByTeacherId(teacherId: string): Promise<LeaveManagementEntity[]>;
+  getLeavesBySubAdminId(subAdminId: string): Promise<LeaveManagementEntity[]>;
+  getAllLeaves(): Promise<LeaveManagementEntity[]>;
+  updateStatus(
+    leaveId: string,
+    status: string,
+    actionBy: string,
+    adminRemark?: string
+  ): Promise<LeaveManagementEntity | null>;
+  findById(id: string): Promise<LeaveManagementEntity | null>;
+  countPendingRequests(): Promise<number>;
+  countStaffOnLeave(date: Date): Promise<number>;
+}

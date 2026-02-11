@@ -1,6 +1,6 @@
 
 import { IValidateAssignment } from "../../interface/UseCaseInterface/Assignment/IValidateAssignment";
-import { IAssignmentRepository } from "../../../domain/repositories/Assignment/IAssignmentRepository ";
+import { IAssignmentRepository } from "../../interface/RepositoryInterface/Assignment/IAssignmentRepository ";
 import { ValidationDTO } from "../../dto/AssignmentDTO ";
 import { AssignmentEntity } from "../../../domain/entities/Assignment";
 

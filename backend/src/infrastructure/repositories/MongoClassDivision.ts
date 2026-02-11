@@ -1,5 +1,5 @@
 import { StudentModel } from "../database/models/StudentModel";
-import { IClassDivisionRepository } from "../../domain/repositories/Classrepo/IClassDivisionview";
+import { IClassDivisionRepository } from "../../applications/interface/RepositoryInterface/Classrepo/IClassDivisionview";
 import { ClassModel } from "../database/models/ClassModel";
 import { TeacherModel } from "../database/models/Teachers";
 import { Class } from "../../domain/entities/Class";

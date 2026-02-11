@@ -1,7 +1,7 @@
 import { ParentSignUpEntity } from "../../domain/entities/ParentSignupEntity";
 import { ParentSignupModel } from "../database/models/ParentSignupModel";
 import { StudentModel } from "../database/models/StudentModel";
-import { IParentRepositorySign } from "../../domain/repositories/Auth/IParentRepository";
+import { IParentRepositorySign } from "../../applications/interface/RepositoryInterface/Auth/IParentRepository";
 import bcrypt from 'bcrypt'
 
 export class MongoParentSignUp implements IParentRepositorySign {

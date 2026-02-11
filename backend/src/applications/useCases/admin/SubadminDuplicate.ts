@@ -1,5 +1,5 @@
 import { ICheckSubAdminDuplicate } from "../../interface/UseCaseInterface/SubAdmin/ICheckSubAdminDuplicate";
-import { SubAdminRepository } from "../../../domain/repositories/SubAdminCreate";
+import { SubAdminRepository } from "../../interface/RepositoryInterface/SubAdminCreate";
 
 export class SubAdminDuplicate implements ICheckSubAdminDuplicate{
     constructor(private readonly sudadminrepo:SubAdminRepository){}

@@ -1,5 +1,5 @@
-import { IFeeStructureRepository } from "../../../domain/repositories/FeeDetails/IFeeStructureRepository";
-import { IFeeTypeRepository } from "../../../domain/repositories/FeeDetails/IFeeTypeRepository";
+import { IFeeStructureRepository } from "../../interface/RepositoryInterface/FeeDetails/IFeeStructureRepository";
+import { IFeeTypeRepository } from "../../interface/RepositoryInterface/FeeDetails/IFeeTypeRepository";
 import { FeeStructure } from "../../../domain/entities/FeeType/FeeStructure";
 import { FeeStructureItem } from "../../../domain/entities/FeeType/FeeStructure";
 import { CreateFeeStructureDTO } from "../../dto/FeeDTO/CreateFeeStructureDTO ";

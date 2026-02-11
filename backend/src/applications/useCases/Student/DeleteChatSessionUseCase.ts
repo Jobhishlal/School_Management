@@ -1,4 +1,4 @@
-import { IAISessionRepository } from "../../../domain/repositories/AI/IAISessionRepository";
+import { IAISessionRepository } from "../../interface/RepositoryInterface/AI/IAISessionRepository";
 
 import { IDeleteChatSessionUseCase } from "./interfaces/IDeleteChatSessionUseCase";
 

@@ -1,4 +1,4 @@
-import { IPaymentTransactionRepository } from "../../../domain/repositories/FeeDetails/IPaymentTransactionRepository";
+import { IPaymentTransactionRepository } from "../../interface/RepositoryInterface/FeeDetails/IPaymentTransactionRepository";
 import { PeymentTransactrion } from "../../../domain/entities/FeeType/PaymentTransaction";
 import { IPaymentStatusUpdateFeID } from "../../interface/UseCaseInterface/Payment/IPaymentStatusUpdatefeeIdbase";
 

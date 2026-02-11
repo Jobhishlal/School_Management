@@ -1,5 +1,5 @@
 import axios from "axios";
-import { IYouTubeService, IYouTubeVideo } from "../../domain/repositories/AI/IYouTubeService";
+import { IYouTubeService, IYouTubeVideo } from "../../applications/interface/RepositoryInterface/AI/IYouTubeService";
 
 export class YouTubeService implements IYouTubeService {
     private apiKey: string;

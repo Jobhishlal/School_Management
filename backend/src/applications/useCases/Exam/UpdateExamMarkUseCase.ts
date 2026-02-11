@@ -1,6 +1,6 @@
 import { CreateExamMarkDTO } from "../../dto/Exam/CreateExamMarkDTO";
-import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMarkRepoInterface";
-import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
+import { IExamMarkRepository } from "../../interface/RepositoryInterface/Exam/IExamMarkRepoInterface";
+import { IExamRepository } from "../../interface/RepositoryInterface/Exam/IExamRepoInterface";
 import { ExamMarkEntity } from "../../../domain/entities/Exam/ExamMarkEntity";
 
 export class UpdateExamMarkUseCase {

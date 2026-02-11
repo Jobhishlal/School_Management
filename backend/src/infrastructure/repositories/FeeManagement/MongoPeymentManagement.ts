@@ -1,6 +1,6 @@
 import { PeymentTransactrion } from "../../../domain/entities/FeeType/PaymentTransaction";
 import { PaymentModel, IPayment } from "../../database/models/FeeManagement/Payment";
-import { IPaymentTransactionRepository } from "../../../domain/repositories/FeeDetails/IPaymentTransactionRepository";
+import { IPaymentTransactionRepository } from "../../../applications/interface/RepositoryInterface/FeeDetails/IPaymentTransactionRepository";
 import "../../database/models/FeeManagement/StudentFee";
 import { InstituteModel } from "../../database/models/InstituteProfile";
 import { FeeStructureModel } from "../../database/models/FeeManagement/FeeStructure";

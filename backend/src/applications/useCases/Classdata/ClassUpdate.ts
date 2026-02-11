@@ -1,6 +1,6 @@
 
 import { IClassUpdateUseCase } from "../../interface/UseCaseInterface/IClassUpdateUseCase";
-import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
+import { IClassRepository } from "../../interface/RepositoryInterface/Classrepo/IClassRepository";
 import { Class } from "../../../domain/entities/Class";
 import { validateClassUpdate } from '../../validators/ClassValidate';
 export class UpdateClassUseCase implements IClassUpdateUseCase {

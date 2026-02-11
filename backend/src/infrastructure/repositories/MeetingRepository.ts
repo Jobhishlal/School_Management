@@ -1,7 +1,7 @@
 import { MeetingModel, IMeetingDocument } from "../database/mongoDB/models/MeetingModel";
 import { Meeting } from "../../domain/entities/Meeting";
 
-import { IMeetingRepository } from "../../domain/repositories/IMeetingRepository";
+import { IMeetingRepository } from "../../applications/interface/RepositoryInterface/IMeetingRepository";
 
 export class MeetingRepository implements IMeetingRepository {
 

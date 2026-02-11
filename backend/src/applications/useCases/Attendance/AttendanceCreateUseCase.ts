@@ -1,12 +1,12 @@
 import { TakeAttendance } from "../../dto/Attendance/TakeAttendanceDTO";
 import { AttendanceEntity } from "../../../domain/entities/AttandanceEntity";
 import { IAttendanceCreateUseCase } from "../../interface/UseCaseInterface/Attandance/ITakeAttendanceUseCase";
-import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
-import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
-import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
+import { IAttandanceRepository } from "../../interface/RepositoryInterface/Attandance/IAttendanceRepository";
+import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudnetRepository";
+import { IClassRepository } from "../../interface/RepositoryInterface/Classrepo/IClassRepository";
 import { ValidateAttendanceCreate } from "../../validators/AttendanceValidation/AttendanceValidation";
 import { SendEMail } from "../../../infrastructure/providers/EmailService";
-import { IParentRepository } from "../../../domain/repositories/IParentsRepository";
+import { IParentRepository } from "../../interface/RepositoryInterface/IParentsRepository";
 import { EMAIL_SUBJECTS, EmailTemplates } from "../../../shared/constants/utils/Email/emailTemplates";
 
 export class AttendanceCreateUseCase implements IAttendanceCreateUseCase {

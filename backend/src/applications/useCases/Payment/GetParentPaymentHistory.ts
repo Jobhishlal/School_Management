@@ -1,5 +1,5 @@
 import { IGetParentPaymentHistory } from "../../interface/UseCaseInterface/Payment/IGetParentPaymentHistory";
-import { IPaymentTransactionRepository } from "../../../domain/repositories/FeeDetails/IPaymentTransactionRepository";
+import { IPaymentTransactionRepository } from "../../interface/RepositoryInterface/FeeDetails/IPaymentTransactionRepository";
 
 export class GetParentPaymentHistory implements IGetParentPaymentHistory {
     constructor(private readonly paymentRepo: IPaymentTransactionRepository) { }

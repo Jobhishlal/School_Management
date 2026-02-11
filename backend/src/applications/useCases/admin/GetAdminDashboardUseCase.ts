@@ -1,13 +1,13 @@
-import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
-import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";
-import { ISubadminLogin } from "../../../domain/repositories/IAdminRepoLogin";
-import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
-import { IAnnouncementRepository } from "../../../domain/repositories/Announcement/IAnnouncement";
-import { IFeeStructureRepository } from "../../../domain/repositories/FeeDetails/IFeeStructureRepository";
-import { IPaymentTransactionRepository } from "../../../domain/repositories/FeeDetails/IPaymentTransactionRepository";
-import { IExpenseRepository } from "../../../domain/repositories/FeeDetails/IExpesnseRepositoy";
-import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
-import { InterfaceLeaveManagement } from "../../../domain/repositories/ILeaveManagement/ILeaveManagement";
+import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudnetRepository";
+import { ITeacherCreate } from "../../interface/RepositoryInterface/TeacherCreate";
+import { ISubadminLogin } from "../../interface/RepositoryInterface/IAdminRepoLogin";
+import { IClassRepository } from "../../interface/RepositoryInterface/Classrepo/IClassRepository";
+import { IAnnouncementRepository } from "../../interface/RepositoryInterface/Announcement/IAnnouncement";
+import { IFeeStructureRepository } from "../../interface/RepositoryInterface/FeeDetails/IFeeStructureRepository";
+import { IPaymentTransactionRepository } from "../../interface/RepositoryInterface/FeeDetails/IPaymentTransactionRepository";
+import { IExpenseRepository } from "../../interface/RepositoryInterface/FeeDetails/IExpesnseRepositoy";
+import { IAttandanceRepository } from "../../interface/RepositoryInterface/Attandance/IAttendanceRepository";
+import { InterfaceLeaveManagement } from "../../interface/RepositoryInterface/ILeaveManagement/ILeaveManagement";
 import { AdminDashboardDTO } from "../../dto/AdminDashboardDTO";
 
 import { IGetAdminDashboardUseCase } from "../../interface/UseCaseInterface/IGetAdminDashboardUseCase";

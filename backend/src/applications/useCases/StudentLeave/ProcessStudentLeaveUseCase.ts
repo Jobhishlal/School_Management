@@ -1,7 +1,7 @@
 import { IProcessStudentLeaveUseCase } from "../../interface/UseCaseInterface/StudentLeave/IProcessStudentLeaveUseCase";
-import { IStudentLeaveRepository } from "../../../domain/repositories/StudentLeave/IStudentLeaveRepository";
+import { IStudentLeaveRepository } from "../../interface/RepositoryInterface/StudentLeave/IStudentLeaveRepository";
 import { StudentLeaveEntity } from "../../../domain/entities/StudentLeave/StudentLeaveEntity";
-import { IParentRepositorySign } from "../../../domain/repositories/Auth/IParentRepository";
+import { IParentRepositorySign } from "../../interface/RepositoryInterface/Auth/IParentRepository";
 import { SendEMail } from "../../../infrastructure/providers/EmailService";
 import { studentLeaveStatusTemplate } from "../../../shared/constants/utils/Email/studentLeaveStatus.template";
 

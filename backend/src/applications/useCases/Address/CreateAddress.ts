@@ -1,4 +1,4 @@
-import { IAddrressRepository } from "../../../domain/repositories/IAddresssRepository";
+import { IAddrressRepository } from "../../interface/RepositoryInterface/IAddresssRepository";
 import { AddressEntity } from "../../../domain/entities/Address";
 import { validateAddress } from "../../validators/AddressValidate";
 

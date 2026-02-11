@@ -1,6 +1,6 @@
 import { InstituteModel,InstituteProfileInterface } from "../database/models/InstituteProfile";
 import { Institute } from "../../domain/entities/Institute";
-import { IInstituterepo } from "../../domain/repositories/SchoolProfile.ts/IInstituteRepo";
+import { IInstituterepo } from '../../applications/interface/RepositoryInterface/SchoolProfile.ts/IInstituteRepo'
 import mongoose from "mongoose";
 
 

@@ -1,4 +1,4 @@
-import { IParentComplaintsRepositroy } from "../../../domain/repositories/ParentComplaints/IParentComplaints";
+import { IParentComplaintsRepositroy } from "../../interface/RepositoryInterface/ParentComplaints/IParentComplaints";
 import { ParentComplaints } from "../../../domain/entities/ParentComplaints/ParentComplaints";
 import { IGetAllParentComplaintsUseCase } from "./IGetAllParentComplaintsUseCase";
 

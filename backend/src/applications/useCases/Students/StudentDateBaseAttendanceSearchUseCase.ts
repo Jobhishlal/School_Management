@@ -1,5 +1,5 @@
 
-import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
+import { IAttandanceRepository } from "../../interface/RepositoryInterface/Attandance/IAttendanceRepository";
 import { ParentAttendanceHistory } from "../../dto/Attendance/ParentAttendanceHistory";
 
 import { ValidateParentAttendanceFilter } from "../../validators/AttendanceValidation/ParentAttendanceFilterValidation";

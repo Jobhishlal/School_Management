@@ -1,6 +1,6 @@
-import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
-import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
-import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMarkRepoInterface";
+import { IExamRepository } from "../../interface/RepositoryInterface/Exam/IExamRepoInterface";
+import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudnetRepository";
+import { IExamMarkRepository } from "../../interface/RepositoryInterface/Exam/IExamMarkRepoInterface";
 
 export class GetStudentsByExamUseCase {
   constructor(

@@ -1,5 +1,5 @@
 
-import { IParentRepository } from "../../../domain/repositories/IParentsRepository";
+import { IParentRepository } from "../../interface/RepositoryInterface/IParentsRepository";
 import { IGetAllParentsUseCase } from "../../interface/UseCaseInterface/ParentuseCase/IparentGetUseCase";
 import { ParentResponseDTO } from "../../dto/ParentResponse";
 

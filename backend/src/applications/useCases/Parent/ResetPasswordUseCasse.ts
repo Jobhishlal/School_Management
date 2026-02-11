@@ -1,5 +1,5 @@
 
-import {IParentRepositorySign} from '../../../domain/repositories/Auth/IParentRepository'
+import { IParentRepositorySign } from "../../interface/RepositoryInterface/Auth/IParentRepository";
 export class ResetParentPasswordUseCase {
   constructor(private parentRepo: IParentRepositorySign) {}
 

@@ -5,7 +5,7 @@ import {
 } from "../../database/models/Leavemanagement/LeaveManagement";
 import { Types } from "mongoose";
 
-import { InterfaceLeaveManagement } from "../../../domain/repositories/ILeaveManagement/ILeaveManagement";
+import { InterfaceLeaveManagement } from "../../../applications/interface/RepositoryInterface/ILeaveManagement/ILeaveManagement";
 import { LeaveManagementEntity } from "../../../domain/entities/LeaveManagement/LeaveManagementEntity";
 import { toLeaveManagementEntity } from "../../mappers/toLeaveManagementEntity";
 import { BaseRepository } from "../BASEREPOSITORIES/Baserepository";

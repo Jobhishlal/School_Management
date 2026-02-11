@@ -1,4 +1,4 @@
-import { IChatRepository } from "../../../domain/repositories/Chat/IChatRepository";
+import { IChatRepository } from "../../interface/RepositoryInterface/Chat/IChatRepository";
 import { Message } from "../../../domain/entities/Message";
 import { IGetMessagesUseCase } from "../../interface/UseCaseInterface/Chat/IGetMessagesUseCase";
 

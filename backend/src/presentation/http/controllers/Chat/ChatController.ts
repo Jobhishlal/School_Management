@@ -9,9 +9,10 @@ import { IMarkMessagesReadUseCase } from "../../../../applications/interface/Use
 import { MongoTeacher } from "../../../../infrastructure/repositories/MongoTeacherRepo";
 import { IEditMessageUseCase } from "../../../../applications/interface/UseCaseInterface/Chat/IEditMessageUseCase";
 import { ICreateClassGroupChatUseCase } from "../../../../applications/interface/UseCaseInterface/Chat/ICreateClassGroupChatUseCase";
-import { IChatRepository } from "../../../../domain/repositories/Chat/IChatRepository";
+import { IChatRepository } from "../../../../applications/interface/RepositoryInterface/Chat/IChatRepository";
 import { ISearchChatUsersUseCase } from "../../../../applications/interface/UseCaseInterface/Chat/ISearchChatUsersUseCase";
 import { ChatDTOMapper } from "../../../../infrastructure/mappers/ChatDTOMapper";
+import { ConversationParticipant } from "../../../../domain/entities/Conversation";
 
 export class ChatController {
     constructor(
@@ -74,7 +75,7 @@ export class ChatController {
                 if (receiverModel === 'Conversation') {
                     const conversation = await this.chatRepo.findConversationById(receiverId);
                     if (conversation && conversation.participants) {
-                        conversation.participants.forEach(participant => {
+                        conversation.participants.forEach((participant: ConversationParticipant) => {
 
                             const participantId = (participant.participantId as any)._id
                                 ? (participant.participantId as any)._id.toString()
@@ -223,7 +224,7 @@ export class ChatController {
                     const convId = updatedMessage.receiverId.toString();
                     const conversation = await this.chatRepo.findConversationById(convId);
                     if (conversation && conversation.participants) {
-                        conversation.participants.forEach(p => {
+                        conversation.participants.forEach((p: ConversationParticipant) => {
                             const pId = (p.participantId as any)._id
                                 ? (p.participantId as any)._id.toString()
                                 : p.participantId.toString();

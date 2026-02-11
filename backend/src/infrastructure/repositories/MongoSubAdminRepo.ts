@@ -1,5 +1,5 @@
 
-import { SubAdminRepository } from "../../domain/repositories/SubAdminCreate";
+import { SubAdminRepository } from "../../applications/interface/RepositoryInterface/SubAdminCreate";
 import { SubAdminModel } from "../database/models/SubAdmin";
 import { SubAdminEntities } from "../../domain/entities/SubAdmin";
 import { AdminRole } from "../../domain/enums/AdminRole";

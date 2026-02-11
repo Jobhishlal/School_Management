@@ -1,6 +1,6 @@
 import { IRevenueGenarateUseCase } from "../../../interface/UseCaseInterface/FeeStructure/FinanceReport/IfinanceReport.RevanueUseCase";
 import { RevanueReport } from "../../../dto/FeeDTO/financeReport/RevenueReport";
-import { IRevenueGenerateRepository } from "../../../../domain/repositories/FeeDetails/FinanceReport/IRevanueReport";
+import { IRevenueGenerateRepository } from "../../../interface/RepositoryInterface/FeeDetails/FinanceReport/IRevanueReport";
 
 export class FinanceReportUseCase implements IRevenueGenarateUseCase {
 

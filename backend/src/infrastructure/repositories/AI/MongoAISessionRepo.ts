@@ -1,4 +1,4 @@
-import { IAISessionRepository } from "../../../domain/repositories/AI/IAISessionRepository";
+import { IAISessionRepository } from "../../../applications/interface/RepositoryInterface/AI/IAISessionRepository";
 import { AISession, AIChatMessage } from "../../../domain/entities/AISession";
 import { AISessionModel } from "../../database/models/AISessionModel";
 

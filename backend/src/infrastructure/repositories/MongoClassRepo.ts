@@ -1,6 +1,6 @@
 import { throwDeprecation } from "process";
 import { Class } from "../../domain/entities/Class";
-import { IClassRepository } from "../../domain/repositories/Classrepo/IClassRepository";
+import { IClassRepository } from "../../applications/interface/RepositoryInterface/Classrepo/IClassRepository";
 
 import { ClassModel } from "../database/models/ClassModel";
 

@@ -1,6 +1,6 @@
 import { ICreateRazorpayOrder } from "../../interface/UseCaseInterface/Payment/RazorpayUseCase";
 import { RazorpayServices } from "../../../infrastructure/providers/RazorpayService"; 
-import { IPaymentTransactionRepository } from "../../../domain/repositories/FeeDetails/IPaymentTransactionRepository";
+import { IPaymentTransactionRepository } from "../../interface/RepositoryInterface/FeeDetails/IPaymentTransactionRepository";
 import { PeymentTransactrion } from "../../../domain/entities/FeeType/PaymentTransaction";
 
 export class CreateRazorpayOrder implements ICreateRazorpayOrder {

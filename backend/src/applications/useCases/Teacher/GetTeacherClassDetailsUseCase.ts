@@ -1,11 +1,11 @@
-import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
-import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
+import { IClassRepository } from "../../interface/RepositoryInterface/Classrepo/IClassRepository";
+import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudnetRepository";
 
 import { IGetTeacherClassDetailsUseCase } from "../../interface/UseCaseInterface/Teacher/IGetTeacherClassDetailsUseCase";
-import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";
+import { ITeacherCreate } from "../../interface/RepositoryInterface/TeacherCreate";
 
-import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMarkRepoInterface";
-import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
+import { IExamMarkRepository } from "../../interface/RepositoryInterface/Exam/IExamMarkRepoInterface";
+import { IAttandanceRepository } from "../../interface/RepositoryInterface/Attandance/IAttendanceRepository";
 import { ClassDetailsDTO } from "../../dto/ClassDetailsDTO";
 
 export class GetTeacherClassDetailsUseCase implements IGetTeacherClassDetailsUseCase {

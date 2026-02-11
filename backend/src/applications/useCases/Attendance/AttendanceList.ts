@@ -1,5 +1,5 @@
 import { IAttendanceList } from "../../interface/UseCaseInterface/Attandance/IAttendanceTeacherList";
-import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
+import { IAttandanceRepository } from "../../interface/RepositoryInterface/Attandance/IAttendanceRepository";
 import { TodayAttendanceResponse, TodayAttendanceItemDTO } from "../../dto/Attendance/TodayAttendanceDTO";
 
 export class AttendanceListUseCase implements IAttendanceList {

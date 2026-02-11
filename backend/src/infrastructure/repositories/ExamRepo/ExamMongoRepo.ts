@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import { ExamEntity } from "../../../domain/entities/Exam/ExamEntity";
 import { toExamEntity } from "../../mappers/ExamMapper";
-import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
+import { IExamRepository } from "../../../applications/interface/RepositoryInterface/Exam/IExamRepoInterface";
 import { ExamModel } from "../../database/models/ExamModel";
 
 export class ExamMongoRepo implements IExamRepository {

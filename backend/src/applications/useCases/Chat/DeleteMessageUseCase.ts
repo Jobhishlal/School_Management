@@ -1,7 +1,8 @@
-import { IChatRepository } from "../../../domain/repositories/Chat/IChatRepository";
+import { IChatRepository } from "../../interface/RepositoryInterface/Chat/IChatRepository";
 import { Message } from "../../../domain/entities/Message";
 import { IChatSocketService } from "../../../infrastructure/services/IChatSocketService";
 import { IDeleteMessageUseCase } from "../../interface/UseCaseInterface/Chat/IDeleteMessageUseCase";
+import { ConversationParticipant } from "../../../domain/entities/Conversation";
 
 export class DeleteMessageUseCase implements IDeleteMessageUseCase {
     constructor(
@@ -35,7 +36,7 @@ export class DeleteMessageUseCase implements IDeleteMessageUseCase {
         if (deletedMessage.receiverModel === 'Conversation') {
             const conversation = await this.chatRepo.findConversationById(deletedMessage.receiverId.toString());
             if (conversation && conversation.participants) {
-                participants = conversation.participants.map(p => p.participantId);
+                participants = conversation.participants.map((p: ConversationParticipant) => p.participantId);
             }
         }
 

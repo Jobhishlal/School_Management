@@ -1,5 +1,5 @@
 import { IParentDateBaseAttendance } from "../../interface/UseCaseInterface/Attandance/IParentDateBaseAttendance";
-import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
+import { IAttandanceRepository } from "../../interface/RepositoryInterface/Attandance/IAttendanceRepository";
 
 import { ValidateParentAttendanceFilter } from "../../validators/AttendanceValidation/ParentAttendanceFilterValidation";
 

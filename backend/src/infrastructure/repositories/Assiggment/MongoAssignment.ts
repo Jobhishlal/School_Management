@@ -2,7 +2,7 @@ import { BaseRepository } from "../BASEREPOSITORIES/Baserepository";
 import { AssignmentEntity } from "../../../domain/entities/Assignment";
 import { AssignmentModel, AssignmentDocument } from "../../database/models/Teacher/Assignment";
 import mongoose, { Types } from "mongoose";
-import { IAssignmentRepository, TeacherTimetableInfo } from "../../../domain/repositories/Assignment/IAssignmentRepository ";
+import { IAssignmentRepository, TeacherTimetableInfo } from "../../../applications/interface/RepositoryInterface/Assignment/IAssignmentRepository ";
 import { TeacherModel } from "../../database/models/Teachers";
 import { TimetableModel } from "../../database/models/Admin/TimeTableCraete";
 import { AssignmentDTO } from "../../../applications/dto/AssignmentDTO ";

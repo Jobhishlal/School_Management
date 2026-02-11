@@ -1,6 +1,6 @@
 import { StudentModel, StudentInterface } from "../database/models/StudentModel";
 import { Students } from "../../domain/entities/Students";
-import { StudentDetails } from "../../domain/repositories/Admin/IStudnetRepository";
+import { StudentDetails } from "../../applications/interface/RepositoryInterface/Admin/IStudnetRepository";
 import mongoose from "mongoose";
 import { ClassModel } from "../database/models/ClassModel";
 

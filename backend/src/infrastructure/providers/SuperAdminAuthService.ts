@@ -6,7 +6,7 @@ import { SendEMail } from "./EmailService";
 import { genarateotptoken, verifiedOtptoken, decodedOtptoken } from "../security/otpJwtService";
 import { GenarateOtp } from "../../shared/constants/utils/Otpgenarator";
 import { AdminSubAdminCompaign } from "../repositories/AdminAndSubAdminLogin";
-import { IUnifiedAuthService } from "../../domain/repositories/IUnifiedAuthService";
+import { IUnifiedAuthService } from "../../applications/interface/RepositoryInterface/IUnifiedAuthService";
 import { OtpError } from "../../domain/enums/OtpErrorMessage";
 import { AdminError } from "../../domain/enums/Adminsinguperror";
 import { MongoTeacher } from "../repositories/MongoTeacherRepo";

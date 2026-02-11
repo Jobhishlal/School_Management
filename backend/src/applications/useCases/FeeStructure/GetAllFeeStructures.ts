@@ -1,5 +1,5 @@
 import { IGetAllFeeStructures } from "../../interface/UseCaseInterface/FeeStructure/IGetAllFeeStructures";
-import { IFeeStructureRepository } from "../../../domain/repositories/FeeDetails/IFeeStructureRepository";
+import { IFeeStructureRepository } from "../../interface/RepositoryInterface/FeeDetails/IFeeStructureRepository";
 import { FeeStructure } from "../../../domain/entities/FeeType/FeeStructure";
 
 export class GetAllFeeStructures implements IGetAllFeeStructures {

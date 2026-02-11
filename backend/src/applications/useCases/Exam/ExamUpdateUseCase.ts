@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import { IExamUpdateTeacherUseCase } from "../../interface/UseCaseInterface/Exam/IExamUpdateUseCase";
-import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
-import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";
+import { IExamRepository } from "../../interface/RepositoryInterface/Exam/IExamRepoInterface";
+import { ITeacherCreate } from "../../interface/RepositoryInterface/TeacherCreate";
 import { ExamEntity } from "../../../domain/entities/Exam/ExamEntity";
 import { UpdateExamDTO } from "../../dto/Exam/UpdateExamDTO";
 

@@ -1,8 +1,8 @@
-import { IChatRepository } from "../../../domain/repositories/Chat/IChatRepository";
+import { IChatRepository } from "../../interface/RepositoryInterface/Chat/IChatRepository";
 import { ICreateClassGroupChatUseCase } from "../../interface/UseCaseInterface/Chat/ICreateClassGroupChatUseCase";
-import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
-import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
-import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";
+import { IClassRepository } from "../../interface/RepositoryInterface/Classrepo/IClassRepository";
+import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudnetRepository";
+import { ITeacherCreate } from "../../interface/RepositoryInterface/TeacherCreate";
 import { Conversation } from "../../../domain/entities/Conversation";
 
 export class CreateClassGroupChatUseCase implements ICreateClassGroupChatUseCase {

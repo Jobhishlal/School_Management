@@ -1,6 +1,6 @@
 import { Announcement } from "../../../domain/entities/Announcement/Announcement";
 import { AnnouncementModel } from "../../database/models/Announcement/Announcement";
-import { IAnnouncementRepository } from "../../../domain/repositories/Announcement/IAnnouncement";
+import { IAnnouncementRepository } from "../../../applications/interface/RepositoryInterface/Announcement/IAnnouncement";
 import { AnnouncementMapper } from "../../mappers/AnnouncementMapper";
 
 

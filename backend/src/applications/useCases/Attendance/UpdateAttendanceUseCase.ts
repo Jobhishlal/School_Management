@@ -1,5 +1,5 @@
 import { IUpdateAttendanceUseCase } from "../../interface/UseCaseInterface/Attandance/IUpdateAttendanceUseCase";
-import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
+import { IAttandanceRepository } from "../../interface/RepositoryInterface/Attandance/IAttendanceRepository";
 
 export class UpdateAttendanceUseCase implements IUpdateAttendanceUseCase {
     constructor(private attendanceRepo: IAttandanceRepository) { }

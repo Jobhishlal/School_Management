@@ -1,5 +1,5 @@
-import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
-import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";
+import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudnetRepository";
+import { ITeacherCreate } from "../../interface/RepositoryInterface/TeacherCreate";
 import { ISearchChatUsersUseCase } from "../../interface/UseCaseInterface/Chat/ISearchChatUsersUseCase";
 
 export class SearchChatUsersUseCase implements ISearchChatUsersUseCase {

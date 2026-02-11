@@ -1,6 +1,6 @@
 import { ApplyStudentLeaveDTO } from "../../dto/StudentLeave/ApplyStudentLeaveDTO";
 import { IApplyStudentLeaveUseCase } from "../../interface/UseCaseInterface/StudentLeave/IApplyStudentLeaveUseCase";
-import { IStudentLeaveRepository } from "../../../domain/repositories/StudentLeave/IStudentLeaveRepository";
+import { IStudentLeaveRepository } from "../../interface/RepositoryInterface/StudentLeave/IStudentLeaveRepository";
 import { StudentLeaveEntity } from "../../../domain/entities/StudentLeave/StudentLeaveEntity";
 
 export class ApplyStudentLeaveUseCase implements IApplyStudentLeaveUseCase {

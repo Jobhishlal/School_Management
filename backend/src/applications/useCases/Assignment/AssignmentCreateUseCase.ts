@@ -2,7 +2,7 @@
 import { AssignmentEntity } from "../../../domain/entities/Assignment";
 import { AssignmentDTO, IAssignmentDTO } from "../../dto/AssignmentDTO ";
 
-import { IAssignmentRepository } from "../../../domain/repositories/Assignment/IAssignmentRepository ";
+import { IAssignmentRepository } from "../../interface/RepositoryInterface/Assignment/IAssignmentRepository ";
 import { ICreateAssignment } from "../../interface/UseCaseInterface/Assignment/ICreateUseCase";
 import { ValidationAssignment } from "../../validators/Assignment/AssignmentValidation";
 

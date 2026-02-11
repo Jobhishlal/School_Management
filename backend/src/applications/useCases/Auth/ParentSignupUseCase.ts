@@ -1,5 +1,5 @@
 import { ParentSignUpEntity } from "../../../domain/entities/ParentSignupEntity";
-import { IParentRepositorySign } from "../../../domain/repositories/Auth/IParentRepository";
+import { IParentRepositorySign } from '../../interface/RepositoryInterface/Auth/IParentRepository'
 import bcrypt from "bcrypt";
 import { IParentSignupUseCase } from "../../interface/UseCaseInterface/IParentSignupUseCase";
 

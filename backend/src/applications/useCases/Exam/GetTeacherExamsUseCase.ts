@@ -1,8 +1,8 @@
 import { IGetTeacherExamsUseCase } from "../../interface/UseCaseInterface/Exam/IExamFindTeacherIdbase";
-import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
+import { IExamRepository } from "../../interface/RepositoryInterface/Exam/IExamRepoInterface";
 import { ExamEntity } from "../../../domain/entities/Exam/ExamEntity";
 
-import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMarkRepoInterface";
+import { IExamMarkRepository } from "../../interface/RepositoryInterface/Exam/IExamMarkRepoInterface";
 
 export class GetTeacherExamsUseCase implements IGetTeacherExamsUseCase {
   constructor(

@@ -1,6 +1,6 @@
 import { FindAllaanouncement } from "../../interface/UseCaseInterface/Announcement/IAnnouncementFindAll";
 import { Announcement } from "../../../domain/entities/Announcement/Announcement";
-import { IAnnouncementRepository } from "../../../domain/repositories/Announcement/IAnnouncement";
+import { IAnnouncementRepository } from "../../interface/RepositoryInterface/Announcement/IAnnouncement";
 
 
 

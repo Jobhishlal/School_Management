@@ -1,4 +1,4 @@
-import { SubAdminRepository } from "../../../domain/repositories/SubAdminCreate";
+import { SubAdminRepository } from "../../interface/RepositoryInterface/SubAdminCreate";
 import { SubAdminEntities } from "../../../domain/entities/SubAdmin";
 import { ISubAdminProfileUpdateUseCase} from '../../../applications/interface/UseCaseInterface/ISubAdminUpdateUseCase'
 import bcrypt from "bcryptjs";

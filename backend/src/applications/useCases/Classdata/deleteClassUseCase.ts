@@ -1,4 +1,4 @@
-import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
+import { IClassRepository } from "../../interface/RepositoryInterface/Classrepo/IClassRepository";
 import { IDeleteClassUseCase } from "../../interface/UseCaseInterface/ClassBase/IDeleteClassorDivisionUseCase";
 export class DeleteClassUseCase implements IDeleteClassUseCase{
     constructor(private readonly classRepo: IClassRepository) { }

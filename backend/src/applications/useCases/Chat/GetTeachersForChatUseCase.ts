@@ -1,4 +1,4 @@
-import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";
+import { ITeacherCreate } from "../../interface/RepositoryInterface/TeacherCreate";
 import { IGetTeachersForChatUseCase } from "../../interface/UseCaseInterface/Chat/IGetTeachersForChatUseCase";
 
 export class GetTeachersForChatUseCase implements IGetTeachersForChatUseCase {

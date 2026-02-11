@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { IYouTubeVideo } from "../../../domain/repositories/AI/IYouTubeService";
+import { IYouTubeVideo } from "../../../applications/interface/RepositoryInterface/AI/IYouTubeService";
 
 export interface IAISessionDocument extends Document {
     studentId: string;

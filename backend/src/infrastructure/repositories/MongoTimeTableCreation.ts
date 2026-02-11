@@ -1,5 +1,5 @@
 import { TimetableModel } from "../database/models/Admin/TimeTableCraete";
-import { ITimeTableRepository } from "../../domain/repositories/Admin/ITimeTableCreate";
+import { ITimeTableRepository } from "../../applications/interface/RepositoryInterface/Admin/ITimeTableCreate";
 import { TimetableEntity, DayScheduleEntity, PeriodEntity } from "../../domain/entities/TimeTableEntity";
 import { TeacherModel } from "../database/models/Teachers";
 import { ClassModel } from "../database/models/ClassModel";

@@ -1,5 +1,5 @@
 import { IGetAttendanceReportUseCase } from "../../interface/UseCaseInterface/Attandance/IGetAttendanceReportUseCase";
-import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
+import { IAttandanceRepository } from "../../interface/RepositoryInterface/Attandance/IAttendanceRepository";
 
 export class GetAttendanceReportUseCase implements IGetAttendanceReportUseCase {
     constructor(private repo: IAttandanceRepository) { }

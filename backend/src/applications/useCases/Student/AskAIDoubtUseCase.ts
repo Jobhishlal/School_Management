@@ -1,6 +1,6 @@
-import { IAIService } from "../../../domain/repositories/AI/IAIService";
-import { IYouTubeService, IYouTubeVideo } from "../../../domain/repositories/AI/IYouTubeService";
-import { IAISessionRepository } from "../../../domain/repositories/AI/IAISessionRepository";
+import { IAIService } from "../../interface/RepositoryInterface/AI/IAIService";
+import { IYouTubeService, IYouTubeVideo } from "../../interface/RepositoryInterface/AI/IYouTubeService";
+import { IAISessionRepository } from "../../interface/RepositoryInterface/AI/IAISessionRepository";
 import { AISession, AIChatMessage } from "../../../domain/entities/AISession";
 import { v4 as uuidv4 } from 'uuid';
 import { IAskAIDoubtUseCase } from "./interfaces/IAskAIDoubtUseCase";

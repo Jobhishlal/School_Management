@@ -1,5 +1,5 @@
 import { IParentAttendanceUseCase } from "../../interface/UseCaseInterface/Attandance/IParentAttendanceListUseCase";
-import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
+import { IAttandanceRepository } from "../../interface/RepositoryInterface/Attandance/IAttendanceRepository";
 import { ParentAttendanceDashboardDTO } from "../../dto/Attendance/ParentAttendanceDashboardDTO";
 export class ParentAttendanceListUseCase implements IParentAttendanceUseCase {
 

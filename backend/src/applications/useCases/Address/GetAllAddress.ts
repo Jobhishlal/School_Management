@@ -1,5 +1,5 @@
 import { AddressEntity } from "../../../domain/entities/Address";
-import { IAddrressRepository } from "../../../domain/repositories/IAddresssRepository";
+import { IAddrressRepository } from "../../interface/RepositoryInterface/IAddresssRepository";
 
 export class AddressGetAll{
     constructor (private readonly getAll:IAddrressRepository){}

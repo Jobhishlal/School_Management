@@ -1,6 +1,6 @@
 import { Institute } from "../../../domain/entities/Institute";
 import { IIInstituteProfileUpdate } from "../../interface/UseCaseInterface/IInstProfileUpdateUseCase";
-import { IInstituterepo } from "../../../domain/repositories/SchoolProfile.ts/IInstituteRepo";
+import { IInstituterepo } from '../../interface/RepositoryInterface/SchoolProfile.ts/IInstituteRepo'
 import { InstituteErrorMessageValidate } from "../../validators/InstitutProfileValidate";
 
 export class UpdateInstituteProfile implements IIInstituteProfileUpdate {

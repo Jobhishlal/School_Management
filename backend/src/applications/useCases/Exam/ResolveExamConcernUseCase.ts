@@ -1,5 +1,5 @@
 
-import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMarkRepoInterface";
+import { IExamMarkRepository } from "../../interface/RepositoryInterface/Exam/IExamMarkRepoInterface";
 
 export class ResolveExamConcernUseCase {
     constructor(private examMarkRepo: IExamMarkRepository) { }

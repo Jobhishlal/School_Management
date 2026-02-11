@@ -1,5 +1,5 @@
 import { IClassDivision } from "../../interface/UseCaseInterface/ClassBase/ClassAndDivision";
-import { IClassDivisionRepository } from "../../../domain/repositories/Classrepo/IClassDivisionview";
+import { IClassDivisionRepository } from "../../interface/RepositoryInterface/Classrepo/IClassDivisionview";
 
 
 export class ClassAndDivision implements IClassDivision {

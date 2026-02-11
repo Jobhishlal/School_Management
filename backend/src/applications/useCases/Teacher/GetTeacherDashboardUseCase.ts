@@ -1,11 +1,11 @@
 
 import { TeacherDashboardDTO } from "../../dto/TeacherDashboardDTO";
-import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
-import { IAssignmentRepository } from "../../../domain/repositories/Assignment/IAssignmentRepository ";
-import { ITimeTableRepository } from "../../../domain/repositories/Admin/ITimeTableCreate";
-import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
-import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMarkRepoInterface";
-import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
+import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudnetRepository";
+import { IAssignmentRepository } from "../../interface/RepositoryInterface/Assignment/IAssignmentRepository ";
+import { ITimeTableRepository } from "../../interface/RepositoryInterface/Admin/ITimeTableCreate";
+import { IExamRepository } from "../../interface/RepositoryInterface/Exam/IExamRepoInterface";
+import { IExamMarkRepository } from "../../interface/RepositoryInterface/Exam/IExamMarkRepoInterface";
+import { IClassRepository } from "../../interface/RepositoryInterface/Classrepo/IClassRepository";
 import { IGetTeacherDashboardUseCase } from "../../interface/UseCaseInterface/Teacher/IGetTeacherDashboardUseCase";
 
 export class GetTeacherDashboardUseCase implements IGetTeacherDashboardUseCase {

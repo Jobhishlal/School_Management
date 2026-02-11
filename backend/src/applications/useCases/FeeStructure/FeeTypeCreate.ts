@@ -1,5 +1,5 @@
 import { FeeType } from "../../../domain/entities/FeeType/FeeType";
-import { IFeeTypeRepository } from "../../../domain/repositories/FeeDetails/IFeeTypeRepository";
+import { IFeeTypeRepository } from "../../interface/RepositoryInterface/FeeDetails/IFeeTypeRepository";
 import { CreateFeeTypeDTO } from "../../dto/FeeDTO/CreateFeeTypeDTO";
 import { ITypeCreateUseCase } from "../../interface/UseCaseInterface/FeeStructure/IFeeTypeCreate";
 import { CalculateAmount } from "../../../shared/constants/utils/FeeCalculate";

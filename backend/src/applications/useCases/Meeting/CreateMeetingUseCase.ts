@@ -1,5 +1,5 @@
 import { Meeting } from "../../../domain/entities/Meeting";
-import { IMeetingRepository } from "../../../domain/repositories/IMeetingRepository";
+import { IMeetingRepository } from "../../interface/RepositoryInterface/IMeetingRepository";
 import { ICreateMeetingUseCase } from "../../interface/UseCaseInterface/Meeting/ICreateMeetingUseCase";
 import { NotificationPort } from "../../../infrastructure/services/ports/NotificationPort";
 

@@ -1,7 +1,8 @@
-import { IChatRepository } from "../../../domain/repositories/Chat/IChatRepository";
+import { IChatRepository } from "../../interface/RepositoryInterface/Chat/IChatRepository";
 import { Message } from "../../../domain/entities/Message";
 import { IChatSocketService } from "../../../infrastructure/services/IChatSocketService";
 import { IEditMessageUseCase } from "../../interface/UseCaseInterface/Chat/IEditMessageUseCase";
+import { ConversationParticipant } from "../../../domain/entities/Conversation";
 export class EditMessageUseCase implements IEditMessageUseCase {
     constructor(
         private chatRepo: IChatRepository,
@@ -34,7 +35,7 @@ export class EditMessageUseCase implements IEditMessageUseCase {
         if (updatedMessage.receiverModel === 'Conversation') {
             const conversation = await this.chatRepo.findConversationById(updatedMessage.receiverId.toString());
             if (conversation && conversation.participants) {
-                participants = conversation.participants.map(p => p.participantId);
+                participants = conversation.participants.map((p: ConversationParticipant) => p.participantId);
             }
         }
 

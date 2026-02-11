@@ -1,7 +1,7 @@
 import { ParentStudentFetchDTO } from "../../dto/FeeDTO/ParentStudentFinanceDTO";
 import { IParentStudentList } from "../../interface/UseCaseInterface/FeeStructure/IParentStudentList";
 import { ParentEntity } from "../../../domain/entities/Parents";
-import { IParentFeeInterface } from "../../../domain/repositories/IParentFeeList";
+import { IParentFeeInterface } from "../../interface/RepositoryInterface/IParentFeeList";
 
 
 export class ParentListTheStudents implements IParentStudentList{

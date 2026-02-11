@@ -1,4 +1,4 @@
-import { IChatRepository } from "../../../domain/repositories/Chat/IChatRepository";
+import { IChatRepository } from "../../../applications/interface/RepositoryInterface/Chat/IChatRepository";
 import { MessageModel, IMessage } from "../../database/mongoDB/models/MessageModel";
 import { ConversationModel, IConversation } from "../../database/mongoDB/models/ConversationModel";
 import { StudentModel } from "../../database/models/StudentModel";

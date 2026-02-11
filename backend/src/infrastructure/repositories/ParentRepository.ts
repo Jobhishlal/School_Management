@@ -1,4 +1,4 @@
-import { IParentRepository } from "../../domain/repositories/IParentsRepository";
+import { IParentRepository } from "../../applications/interface/RepositoryInterface/IParentsRepository";
 import { ParentEntity } from "../../domain/entities/Parents";
 import { ParentInterface, ParentModel } from "../database/models/ParentsModel";
 import mongoose from "mongoose";

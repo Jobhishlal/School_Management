@@ -1,6 +1,6 @@
 import { IGetParentProfileUseCase } from "../../interface/UseCaseInterface/Parent/IGetParentProfileUseCase";
 import { ParentProfileDTO } from "../../dto/Parent/ParentProfileDTO";
-import { IParentProfileRepository } from "../../../domain/repositories/ParentProfile/IParentProfile";
+import { IParentProfileRepository } from "../../interface/RepositoryInterface/ParentProfile/IParentProfile";
 
 export class GetParentProfileUseCase implements IGetParentProfileUseCase {
     constructor(private repo: IParentProfileRepository) { }

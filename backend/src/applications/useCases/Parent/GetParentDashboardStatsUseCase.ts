@@ -1,8 +1,8 @@
-import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
-import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMarkRepoInterface";
-import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
+import { IAttandanceRepository } from "../../interface/RepositoryInterface/Attandance/IAttendanceRepository";
+import { IExamMarkRepository } from "../../interface/RepositoryInterface/Exam/IExamMarkRepoInterface";
+import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudnetRepository";
 import { ParentDashboardStatsDTO } from "../../dto/Parent/ParentDashboardStatsDTO";
-import { IParentRepositorySign } from "../../../domain/repositories/Auth/IParentRepository";
+import { IParentRepositorySign } from "../../interface/RepositoryInterface/Auth/IParentRepository";
 
 export class GetParentDashboardStatsUseCase {
     constructor(

@@ -1,9 +1,9 @@
 import { IGetStudentExamResultsUseCase } from "../../interface/UseCaseInterface/Exam/StudentSeeExamMarks";
-import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
-import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMarkRepoInterface";
-import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
+import { IExamRepository } from "../../interface/RepositoryInterface/Exam/IExamRepoInterface";
+import { IExamMarkRepository } from "../../interface/RepositoryInterface/Exam/IExamMarkRepoInterface";
+import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudnetRepository";
 import { StudentExamResultResponse } from "../../dto/Exam/IGetStudentExamResultsUseCase";
-import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
+import { IClassRepository } from "../../interface/RepositoryInterface/Classrepo/IClassRepository";
 
 
 export class GetStudentExamResultsUseCase

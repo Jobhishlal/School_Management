@@ -1,6 +1,6 @@
 import { Institute } from "../../../domain/entities/Institute";
 import { IGetInstituteInterface } from "../../interface/UseCaseInterface/IGetInstituteProfile";
-import { IInstituterepo } from "../../../domain/repositories/SchoolProfile.ts/IInstituteRepo";
+import { IInstituterepo } from '../../interface/RepositoryInterface/SchoolProfile.ts/IInstituteRepo'
 
 
 export class InstituteGetUseCase implements IGetInstituteInterface{

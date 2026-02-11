@@ -1,5 +1,5 @@
 import { IStudentSubmit } from "../../interface/UseCaseInterface/Assignment/IStudentSubmit";
-import { IAssignmentRepository } from "../../../domain/repositories/Assignment/IAssignmentRepository ";
+import { IAssignmentRepository } from "../../interface/RepositoryInterface/Assignment/IAssignmentRepository ";
 import { SubmitDTO } from "../../dto/AssignmentDTO ";
 import { AssignmentEntity } from "../../../domain/entities/Assignment";
 

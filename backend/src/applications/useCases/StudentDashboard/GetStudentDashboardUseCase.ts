@@ -1,11 +1,14 @@
 import { IStudentDashboardUseCase } from "../../interface/UseCaseInterface/StudentDashboard/IStudentDashboardUseCase";
 import { StudentDashboardDTO } from "../../dto/StudentDashboard/StudentDashboardDTO";
-import { ITimeTableRepository } from "../../../domain/repositories/Admin/ITimeTableCreate";
-import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
-import { IAssignmentRepository } from "../../../domain/repositories/Assignment/IAssignmentRepository ";
-import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
-import { IAnnouncementRepository } from "../../../domain/repositories/Announcement/IAnnouncement";
-import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
+import { ITimeTableRepository } from "../../interface/RepositoryInterface/Admin/ITimeTableCreate";
+import { IAttandanceRepository } from "../../interface/RepositoryInterface/Attandance/IAttendanceRepository";
+import { IAssignmentRepository } from "../../interface/RepositoryInterface/Assignment/IAssignmentRepository ";
+import { IExamRepository } from "../../interface/RepositoryInterface/Exam/IExamRepoInterface";
+import { IAnnouncementRepository } from "../../interface/RepositoryInterface/Announcement/IAnnouncement";
+import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudnetRepository";
+import { DayScheduleEntity } from "../../../domain/entities/TimeTableEntity";
+import { AssignmentEntity } from "../../../domain/entities/Assignment";
+import { ExamEntity } from "../../../domain/entities/Exam/ExamEntity";
 
 export class GetStudentDashboardUseCase implements IStudentDashboardUseCase {
     constructor(
@@ -24,7 +27,7 @@ export class GetStudentDashboardUseCase implements IStudentDashboardUseCase {
         try {
             const student = await this.studentRepo.findById(studentId);
             if (student) {
-               
+
 
                 classId = student.classId;
                 if (student.classDetails) {
@@ -38,7 +41,7 @@ export class GetStudentDashboardUseCase implements IStudentDashboardUseCase {
 
         if (!classId) {
             console.error("Student has no class assigned");
-           
+
         }
 
         const today = new Date();
@@ -49,7 +52,7 @@ export class GetStudentDashboardUseCase implements IStudentDashboardUseCase {
             try {
                 const timeTable = await this.timeTableRepo.getByClass(classId, division);
                 if (timeTable) {
-                    const daySchedule = timeTable.days.find(d => d.day === dayName);
+                    const daySchedule = timeTable.days.find((d: DayScheduleEntity) => d.day === dayName);
                     if (daySchedule) {
                         todayClasses = daySchedule.periods;
                     }
@@ -73,7 +76,7 @@ export class GetStudentDashboardUseCase implements IStudentDashboardUseCase {
         let pendingAssignments: any[] = [];
         try {
             const allAssignments = await this.assignmentRepo.getAssignmetEachStudent(studentId);
-            pendingAssignments = allAssignments.filter(a => {
+            pendingAssignments = allAssignments.filter((a: AssignmentEntity) => {
                 const dueDate = new Date(a.Assignment_Due_Date);
                 return dueDate >= today;
             });
@@ -81,12 +84,12 @@ export class GetStudentDashboardUseCase implements IStudentDashboardUseCase {
             console.error("Error fetching assignments:", error);
         }
 
-     
+
         let upcomingExams: any[] = [];
         if (classId) {
             try {
                 const exams = await this.examRepo.findPublishedExamsByClass(classId);
-                upcomingExams = exams.filter(e => {
+                upcomingExams = exams.filter((e: ExamEntity) => {
                     const examDate = new Date(e.examDate);
                     return examDate >= today;
                 });

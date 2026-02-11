@@ -1,4 +1,4 @@
-import { IParentComplaintsRepositroy } from "../../../domain/repositories/ParentComplaints/IParentComplaints";
+import { IParentComplaintsRepositroy } from "../../../applications/interface/RepositoryInterface/ParentComplaints/IParentComplaints";
 import { ParentComplaints } from "../../../domain/entities/ParentComplaints/ParentComplaints";
 import { ParentComplaintsSchema, IParentsComplaints } from "../../database/models/Parents/Complaints";
 import { CreateParentComplaintsDTO } from "../../../applications/dto/Parentcomplaints/CreateParentComplaints";

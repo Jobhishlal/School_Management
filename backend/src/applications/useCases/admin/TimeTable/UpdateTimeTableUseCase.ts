@@ -1,6 +1,6 @@
 
 import { TimetableEntity } from "../../../../domain/entities/TimeTableEntity";
-import { ITimeTableRepository } from "../../../../domain/repositories/Admin/ITimeTableCreate";
+import { ITimeTableRepository } from "../../../interface/RepositoryInterface/Admin/ITimeTableCreate";
 import { IUPDATETIMETABLE } from "../../../interface/UseCaseInterface/TimeTable/IUpdateTimeTable";
 import { CreateTimetableDTO } from "../../../dto/CreateTImeTableDTO";
 

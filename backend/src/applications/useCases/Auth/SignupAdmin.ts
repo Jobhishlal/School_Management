@@ -1,4 +1,4 @@
-import { IAdminRepository } from '../../../domain/repositories/AdminRepository';
+import { IAdminRepository } from '../../interface/RepositoryInterface/AdminRepository';
 import { Passwordservices } from '../../../infrastructure/security/PasswordService';
 import { CreateAdminDTO, AdminResponseDTO } from '../../dto/Admin';
 import { AdminError } from '../../../domain/enums/Adminsinguperror';

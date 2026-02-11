@@ -1,5 +1,5 @@
 import { IDeleteTimeTable } from "../../../interface/UseCaseInterface/TimeTable/IDeleteTimeTableUseCase";
-import { ITimeTableRepository } from "../../../../domain/repositories/Admin/ITimeTableCreate";
+import { ITimeTableRepository } from "../../../interface/RepositoryInterface/Admin/ITimeTableCreate";
 
 export class DeleteTimeTableUseCase implements IDeleteTimeTable {
   constructor(private readonly timetablerepo: ITimeTableRepository) {}

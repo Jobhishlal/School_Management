@@ -1,7 +1,7 @@
 import { Students } from "../../../domain/entities/Students";
 import { IStudentAddUsecase } from "../../interface/UseCaseInterface/IAddStudents";
-import { IParentRepository } from "../../../domain/repositories/IParentsRepository";
-import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
+import { IParentRepository } from "../../interface/RepositoryInterface/IParentsRepository";
+import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudnetRepository";
 import { IEmailServiceShare } from "../../interface/UseCaseInterface/StudentCreate/IEmailSendUsecase";
 import { IGenarateTempPassword } from "../../interface/UseCaseInterface/StudentCreate/GenaratePassword";
 import { IStudentIdGenarate } from "../../interface/UseCaseInterface/StudentCreate/GenarateStudentId";

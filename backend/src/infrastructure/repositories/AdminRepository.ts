@@ -1,4 +1,4 @@
-import { IAdminRepository } from "../../domain/repositories/AdminRepository";
+import { IAdminRepository } from "../../applications/interface/RepositoryInterface/AdminRepository";
 import { Admin } from "../../domain/entities/Admin";
 import { AdminModel } from "../database/models/AdminModel";
 import { AdminResponseDTO } from '../../applications/dto/Admin';

@@ -1,5 +1,5 @@
 import { SubAdminEntities } from "../../../domain/entities/SubAdmin";
-import { SubAdminRepository } from "../../../domain/repositories/SubAdminCreate";
+import { SubAdminRepository } from "../../interface/RepositoryInterface/SubAdminCreate";
 import { IAdminBlock } from "../../interface/UseCaseInterface/IBlockSubAdmin";
 
 export class SubAdminBlock implements IAdminBlock{

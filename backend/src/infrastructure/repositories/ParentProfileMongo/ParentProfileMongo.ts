@@ -1,4 +1,4 @@
-import { IParentProfileRepository } from "../../../domain/repositories/ParentProfile/IParentProfile";
+import { IParentProfileRepository } from "../../../applications/interface/RepositoryInterface/ParentProfile/IParentProfile";
 import { ParentModel } from "../../database/models/ParentsModel";
 import { ParentSignupModel } from "../../database/models/ParentSignupModel";
 import { StudentModel } from "../../database/models/StudentModel";

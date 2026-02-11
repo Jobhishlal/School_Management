@@ -1,7 +1,7 @@
 import { IGetStudentsByClassUseCase } from "../../interface/UseCaseInterface/StudentCreate/IStudentFindClassBase";
 import { Students } from "../../../domain/entities/Students";
-import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
-import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
+import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudnetRepository";
+import { IClassRepository } from "../../interface/RepositoryInterface/Classrepo/IClassRepository";
 
 export class StudentFindClassBaseUseCase implements IGetStudentsByClassUseCase{
     constructor(

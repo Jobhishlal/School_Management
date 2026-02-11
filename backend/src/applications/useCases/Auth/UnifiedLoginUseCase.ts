@@ -2,10 +2,10 @@
 import { ITokenService } from "../../../infrastructure/services/interfaces/ITokenService";
 import { IPasswordService } from "../../../infrastructure/services/interfaces/IPasswordService";
 import { IEmailService } from "../../../infrastructure/services/interfaces/IEmailService";
-import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
-import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";
-import { ISubadminLogin } from "../../../domain/repositories/IAdminRepoLogin";
-import { IParentAuthRepository } from "../../../domain/repositories/IParentAuthRepository";
+import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudnetRepository";
+import { ITeacherCreate } from "../../interface/RepositoryInterface/TeacherCreate";
+import { ISubadminLogin } from "../../interface/RepositoryInterface/IAdminRepoLogin";
+import { IParentAuthRepository } from "../../interface/RepositoryInterface/IParentAuthRepository";
 import { AdminError } from "../../../domain/enums/Adminsinguperror";
 import { GenarateOtp } from "../../../shared/constants/utils/Otpgenarator";
 

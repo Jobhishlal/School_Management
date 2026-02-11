@@ -1,5 +1,5 @@
 import { IAnnoucementfindclassBase } from "../../interface/UseCaseInterface/Announcement/IAnnouncementReadUseCase";
-import { IAnnouncementRepository } from "../../../domain/repositories/Announcement/IAnnouncement";
+import { IAnnouncementRepository } from "../../interface/RepositoryInterface/Announcement/IAnnouncement";
 import { Announcement } from "../../../domain/entities/Announcement/Announcement";
 import { CreateAnnouncementInput } from "../../dto/CreateAnnouncementInput";
 

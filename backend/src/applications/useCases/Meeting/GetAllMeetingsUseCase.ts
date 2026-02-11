@@ -1,4 +1,4 @@
-import { IMeetingRepository } from "../../../domain/repositories/IMeetingRepository";
+import { IMeetingRepository } from "../../interface/RepositoryInterface/IMeetingRepository";
 import { IGetAllMeetingsUseCase } from "../../interface/UseCaseInterface/Meeting/IGetAllMeetingsUseCase";
 import { Meeting } from "../../../domain/entities/Meeting";
 

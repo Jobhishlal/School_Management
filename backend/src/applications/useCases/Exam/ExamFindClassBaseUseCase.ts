@@ -1,4 +1,4 @@
-import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
+import { IExamRepository } from "../../interface/RepositoryInterface/Exam/IExamRepoInterface";
 import { IExamFindByClassUseCase } from "../../interface/UseCaseInterface/Exam/IExamFindClassBase";
 import { ExamEntity } from "../../../domain/entities/Exam/ExamEntity";
 

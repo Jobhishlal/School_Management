@@ -1,7 +1,7 @@
 import { CreateExamMarkDTO } from "../../dto/Exam/CreateExamMarkDTO";
-import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMarkRepoInterface";
-import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
-import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
+import { IExamMarkRepository } from "../../interface/RepositoryInterface/Exam/IExamMarkRepoInterface";
+import { IExamRepository } from "../../interface/RepositoryInterface/Exam/IExamRepoInterface";
+import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudnetRepository";
 import { ExamMarkEntity } from "../../../domain/entities/Exam/ExamMarkEntity";
 
 export class ExamMarkCreateUseCase {

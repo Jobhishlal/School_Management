@@ -1,5 +1,5 @@
 import { Class } from "../../../domain/entities/Class";
-import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
+import { IClassRepository } from "../../interface/RepositoryInterface/Classrepo/IClassRepository";
 
 
 export class GetAllClass{

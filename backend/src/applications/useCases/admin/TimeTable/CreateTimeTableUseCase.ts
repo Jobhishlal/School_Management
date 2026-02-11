@@ -1,6 +1,6 @@
 import { ICreateTimeTable } from "../../../interface/UseCaseInterface/TimeTable/ICreateTimeTable";
 import { TimetableEntity, DayScheduleEntity, PeriodEntity } from "../../../../domain/entities/TimeTableEntity";
-import { ITimeTableRepository } from "../../../../domain/repositories/Admin/ITimeTableCreate";
+import { ITimeTableRepository } from "../../../interface/RepositoryInterface/Admin/ITimeTableCreate";
 import { CreateTimetableDTO } from "../../../dto/CreateTImeTableDTO";
 
 export class CreateTimeTable implements ICreateTimeTable {

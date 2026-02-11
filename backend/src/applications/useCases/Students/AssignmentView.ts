@@ -2,7 +2,7 @@
 
 import { IAssignmentGetstudent } from "../../interface/UseCaseInterface/Assignment/IGetAssignmentStudent";
 import { AssignmentEntity } from "../../../domain/entities/Assignment";
-import { IAssignmentRepository } from "../../../domain/repositories/Assignment/IAssignmentRepository ";
+import { IAssignmentRepository } from "../../interface/RepositoryInterface/Assignment/IAssignmentRepository ";
 import { AssignmentDTO } from "../../dto/AssignmentDTO ";
 
 

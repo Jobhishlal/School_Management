@@ -1,4 +1,4 @@
-import {IParentRepositorySign} from '../../../domain/repositories/Auth/IParentRepository'
+import { IParentRepositorySign } from '../../interface/RepositoryInterface/Auth/IParentRepository';
 import { verifiedOtptoken } from '../../../infrastructure/security/otpJwtService'
 import { IVerifyPasswordOtpUseCase } from '../../interface/UseCaseInterface/IVerifyParentForgot'
 

@@ -1,6 +1,6 @@
-import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMarkRepoInterface";
-import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
-import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
+import { IExamMarkRepository } from "../../interface/RepositoryInterface/Exam/IExamMarkRepoInterface";
+import { IExamRepository } from "../../interface/RepositoryInterface/Exam/IExamRepoInterface";
+import { IAttandanceRepository } from "../../interface/RepositoryInterface/Attandance/IAttendanceRepository";
 import { IGetStudentPerformanceUseCase } from "../../interface/UseCaseInterface/Teacher/IGetStudentPerformanceUseCase";
 import { StudentPerformanceDTO } from "../../dto/StudentPerformanceDTO";
 

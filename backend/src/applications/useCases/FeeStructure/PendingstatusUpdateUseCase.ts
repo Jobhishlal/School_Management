@@ -1,7 +1,7 @@
 import { Expense } from "../../../domain/entities/FeeType/Expense";
 import { UpdatePendingExpenseDTO } from "../../dto/FeeDTO/UpdatePendingExpenseDTO";
 import { IUpdatePendingExpense } from "../../interface/UseCaseInterface/FeeStructure/IUpdatePendingUseCase";
-import { IExpenseRepository } from "../../../domain/repositories/FeeDetails/IExpesnseRepositoy";
+import { IExpenseRepository } from "../../interface/RepositoryInterface/FeeDetails/IExpesnseRepositoy";
 
 
 

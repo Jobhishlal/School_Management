@@ -1,7 +1,7 @@
 import { SendEMail } from "../../../infrastructure/providers/EmailService";
 import { genaratePassword } from "../../../shared/constants/utils/TempPassGenarator";
 import { Teeacher } from "../../../domain/entities/Teacher";
-import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";
+import { ITeacherCreate } from "../../interface/RepositoryInterface/TeacherCreate";
 import { CreateTeacherDTO, TeacherResponseDTO } from '../../dto/TeacherDto';
 import { generateSubjectCode } from '../../../shared/constants/utils/SubejctCode'
 import bcrypt from "bcrypt";

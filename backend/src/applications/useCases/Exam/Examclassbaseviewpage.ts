@@ -1,7 +1,7 @@
 import { IStudentExamListUseCase } from "../../interface/UseCaseInterface/Exam/IExamClassbaseviewusecase";
-import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
+import { IExamRepository } from "../../interface/RepositoryInterface/Exam/IExamRepoInterface";
 import { ExamEntity } from "../../../domain/entities/Exam/ExamEntity";
-import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
+import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudnetRepository";
 
 export class Examclassbaseviewusecase implements IStudentExamListUseCase {
   constructor(

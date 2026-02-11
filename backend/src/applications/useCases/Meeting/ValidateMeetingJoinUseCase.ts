@@ -1,5 +1,5 @@
-import { IMeetingRepository } from "../../../domain/repositories/IMeetingRepository";
-import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
+import { IMeetingRepository } from "../../interface/RepositoryInterface/IMeetingRepository";
+import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudnetRepository";
 import { IValidateMeetingJoinUseCase } from "../../interface/UseCaseInterface/Meeting/IValidateMeetingJoinUseCase";
 import { Meeting } from "../../../domain/entities/Meeting";
 

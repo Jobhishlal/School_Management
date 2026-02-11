@@ -2,7 +2,7 @@
 import { Expense } from "../../../domain/entities/FeeType/Expense";
 import { ExpenseCreateDTO } from "../../dto/FeeDTO/ExpenseDto";
 import { IExpenseCreateUseCase } from "../../interface/UseCaseInterface/FeeStructure/IExpenseCreate";
-import { IExpenseRepository } from "../../../domain/repositories/FeeDetails/IExpesnseRepositoy";
+import { IExpenseRepository } from "../../interface/RepositoryInterface/FeeDetails/IExpesnseRepositoy";
 
 
 

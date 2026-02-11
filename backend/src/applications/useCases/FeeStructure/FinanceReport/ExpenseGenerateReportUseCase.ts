@@ -1,5 +1,5 @@
 import { IExpenseReportGenarate } from "../../../interface/UseCaseInterface/FeeStructure/FinanceReport/IExpenseReportRevenueUseCase";
-import { ExpenseReportInterface } from "../../../../domain/repositories/FeeDetails/FinanceReport/IExpenseReport";
+import { ExpenseReportInterface } from "../../../interface/RepositoryInterface/FeeDetails/FinanceReport/IExpenseReport";
 import { ExpenseReport } from "../../../dto/FeeDTO/financeReport/ExpenseReport";
 
 

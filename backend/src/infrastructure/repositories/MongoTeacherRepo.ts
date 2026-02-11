@@ -1,4 +1,4 @@
-import { ITeacherCreate } from "../../domain/repositories/TeacherCreate";
+import { ITeacherCreate } from "../../applications/interface/RepositoryInterface/TeacherCreate";
 import { TeacherModel } from "../database/models/Teachers";
 import { Teeacher } from "../../domain/entities/Teacher";
 import logger from "../../shared/constants/Logger";

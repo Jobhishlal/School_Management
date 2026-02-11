@@ -1,6 +1,6 @@
 
 import { IStudentPaymentHistorySeeAdmin } from "../../interface/UseCaseInterface/FeeStructure/StudentBasePaymentHistorSee";
-import { IFeeStructureRepository } from "../../../domain/repositories/FeeDetails/IFeeStructureRepository";
+import { IFeeStructureRepository } from "../../interface/RepositoryInterface/FeeDetails/IFeeStructureRepository";
 
 export class SearchStudentName implements IStudentPaymentHistorySeeAdmin {
   constructor(private repo: IFeeStructureRepository) {}

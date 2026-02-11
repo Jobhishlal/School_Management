@@ -1,6 +1,6 @@
 import { Students } from "../../../domain/entities/Students";
 import { IGetStudentSInterface } from "../../interface/UseCaseInterface/IStudentGetUseCase";
-import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
+import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudnetRepository";
 
 
 export class StudentList implements IGetStudentSInterface{

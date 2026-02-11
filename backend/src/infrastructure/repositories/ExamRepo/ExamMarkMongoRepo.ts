@@ -1,4 +1,4 @@
-import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMarkRepoInterface";
+import { IExamMarkRepository } from "../../../applications/interface/RepositoryInterface/Exam/IExamMarkRepoInterface";
 import { ExamMarkModel } from "../../database/models/ExamMarkModel";
 import { ExamMarkEntity } from "../../../domain/entities/Exam/ExamMarkEntity";
 import { toExamMarkEntity } from "../../mappers/ExamMarkMapper";

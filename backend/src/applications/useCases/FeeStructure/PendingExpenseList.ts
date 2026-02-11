@@ -1,4 +1,4 @@
-import { IExpenseRepository } from "../../../domain/repositories/FeeDetails/IExpesnseRepositoy";
+import { IExpenseRepository } from "../../interface/RepositoryInterface/FeeDetails/IExpesnseRepositoy";
 import { IGetAllPendingStatus } from "../../interface/UseCaseInterface/FeeStructure/IListPendingStatus";
 import { Expense } from "../../../domain/entities/FeeType/Expense";
 

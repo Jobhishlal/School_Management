@@ -1,4 +1,4 @@
-import { IAnnouncementRepository } from "../../../domain/repositories/Announcement/IAnnouncement";
+import { IAnnouncementRepository } from "../../interface/RepositoryInterface/Announcement/IAnnouncement";
 
 export class DeleteAnnouncementUseCase {
     constructor(private announcementRepo: IAnnouncementRepository) { }

@@ -1,4 +1,4 @@
-import { IFeeTypeRepository } from "../../../domain/repositories/FeeDetails/IFeeTypeRepository";
+import { IFeeTypeRepository } from "../../../applications/interface/RepositoryInterface/FeeDetails/IFeeTypeRepository";
 import { FeeType } from "../../../domain/entities/FeeType/FeeType";
 import { FeeTypeModel } from "../../database/models/FeeManagement/FeeType";
 

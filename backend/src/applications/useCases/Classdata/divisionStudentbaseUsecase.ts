@@ -1,5 +1,5 @@
 import { IAssignStudentToClassDivision } from "../../interface/UseCaseInterface/ClassBase/IAssignStudentToClassDivision";
-import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
+import { IClassRepository } from "../../interface/RepositoryInterface/Classrepo/IClassRepository";
 
 export class DivisionStudentUseCase implements IAssignStudentToClassDivision {
     constructor(private repo: IClassRepository) { }

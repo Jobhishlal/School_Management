@@ -1,4 +1,4 @@
-import { ISubadminLogin } from "../../domain/repositories/IAdminRepoLogin";
+import { ISubadminLogin } from "../../applications/interface/RepositoryInterface/IAdminRepoLogin";
 import { SubAdminModel } from "../database/models/SubAdmin";
 import { SubAdminEntities } from "../../domain/entities/SubAdmin";
 import { AdminRole } from "../../domain/enums/AdminRole";

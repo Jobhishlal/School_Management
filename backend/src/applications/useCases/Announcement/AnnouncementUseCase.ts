@@ -1,6 +1,6 @@
 import { Announcement } from "../../../domain/entities/Announcement/Announcement";
 import { CreateAnnouncementDTO } from "../../dto/Announcement/AnnouncementDTO";
-import { IAnnouncementRepository } from "../../../domain/repositories/Announcement/IAnnouncement";
+import { IAnnouncementRepository } from "../../interface/RepositoryInterface/Announcement/IAnnouncement";
 import { IAnnoucementUseCase } from "../../interface/UseCaseInterface/Announcement/IAnnouncementUseCase";
 import { NotificationPort } from "../../../infrastructure/services/ports/NotificationPort";
 import { AnnouncementNotificationDTO } from "../../dto/AnnouncementNotificationDTO";

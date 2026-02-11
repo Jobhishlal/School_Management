@@ -1,4 +1,4 @@
-import { IAISessionRepository } from "../../../domain/repositories/AI/IAISessionRepository";
+import { IAISessionRepository } from "../../interface/RepositoryInterface/AI/IAISessionRepository";
 import { AISession } from "../../../domain/entities/AISession";
 
 import { IGetStudentChatHistoryUseCase } from "./interfaces/IGetStudentChatHistoryUseCase";

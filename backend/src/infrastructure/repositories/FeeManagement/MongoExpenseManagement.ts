@@ -1,5 +1,5 @@
 import { ExpenseModel, IExpense } from "../../database/models/FeeManagement/Expense";
-import { IExpenseRepository } from "../../../domain/repositories/FeeDetails/IExpesnseRepositoy";
+import { IExpenseRepository } from "../../../applications/interface/RepositoryInterface/FeeDetails/IExpesnseRepositoy";
 import { Expense } from "../../../domain/entities/FeeType/Expense";
 
 export class MongoExpenseManagement implements IExpenseRepository {

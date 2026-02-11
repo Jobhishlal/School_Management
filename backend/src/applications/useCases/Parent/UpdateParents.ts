@@ -1,5 +1,5 @@
 import { ParentEntity } from "../../../domain/entities/Parents";
-import { IParentRepository } from "../../../domain/repositories/IParentsRepository";
+import { IParentRepository } from "../../interface/RepositoryInterface/IParentsRepository";
 import { Iupdatparentusecase } from "../../interface/UseCaseInterface/IParentUseCase";
 import { validateParentUpdate } from "../../validators/ParentValidate";
 

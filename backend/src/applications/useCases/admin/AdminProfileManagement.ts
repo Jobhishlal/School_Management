@@ -1,5 +1,5 @@
 
-import {SubAdminRepository} from "../../../domain/repositories/SubAdminCreate";
+import {SubAdminRepository} from "../../interface/RepositoryInterface/SubAdminCreate";
 import { ISubAdminProfileGetUseCase } from "../../interface/UseCaseInterface/ISubAdminProfile";
 import { SubAdminEntities } from "../../../domain/entities/SubAdmin";
 

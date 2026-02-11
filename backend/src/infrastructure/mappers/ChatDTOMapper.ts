@@ -1,5 +1,5 @@
 import { Message } from "../../domain/entities/Message";
-import { Conversation } from "../../domain/entities/Conversation";
+import { Conversation, ConversationParticipant } from "../../domain/entities/Conversation";
 import { MessageResponseDTO, ConversationResponseDTO } from "../../applications/dto/ChatDTOs";
 
 export class ChatDTOMapper {
@@ -22,7 +22,7 @@ export class ChatDTOMapper {
     static toConversationDTO(conversation: Conversation): ConversationResponseDTO {
         return {
             _id: conversation.id,
-            participants: conversation.participants.map(p => ({
+            participants: conversation.participants.map((p: ConversationParticipant) => ({
                 participantId: {
                     _id: p.participantId,
                     name: p.name,

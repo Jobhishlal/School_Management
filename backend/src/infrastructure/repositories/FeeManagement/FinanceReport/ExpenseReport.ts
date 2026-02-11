@@ -1,5 +1,5 @@
 import { ExpenseModel } from "../../../database/models/FeeManagement/Expense";
-import { ExpenseReportInterface } from "../../../../domain/repositories/FeeDetails/FinanceReport/IExpenseReport";
+import { ExpenseReportInterface } from "../../../../applications/interface/RepositoryInterface/FeeDetails/FinanceReport/IExpenseReport";
 import { ExpenseReport } from "../../../../applications/dto/FeeDTO/financeReport/ExpenseReport";
 
 

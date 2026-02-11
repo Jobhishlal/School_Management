@@ -1,4 +1,4 @@
-import { InterfaceLeaveManagement } from "../../../domain/repositories/ILeaveManagement/ILeaveManagement";
+import { InterfaceLeaveManagement } from "../../interface/RepositoryInterface/ILeaveManagement/ILeaveManagement";
 import { LeaveManagementEntity } from "../../../domain/entities/LeaveManagement/LeaveManagementEntity";
 import { IGetAllLeavesUseCase } from "../../interface/UseCaseInterface/LeaveManagement/IGetAllLeavesUseCase";
 

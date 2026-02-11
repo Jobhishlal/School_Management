@@ -1,7 +1,7 @@
 
 import { ParentSignupModel } from "../database/models/ParentSignupModel";
 
-import { IParentAuthRepository } from "../../domain/repositories/IParentAuthRepository";
+import { IParentAuthRepository } from "../../applications/interface/RepositoryInterface/IParentAuthRepository";
 
 export class ParentAuthRepository implements IParentAuthRepository {
   async findByEmailAndStudentId(email: string, studentId: string) {

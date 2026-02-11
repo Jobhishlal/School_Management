@@ -2,7 +2,7 @@ import { FeeStructureModel } from "../../database/models/FeeManagement/FeeStruct
 import { FeeStructureMapper } from "../../mappers/FeeStructureMapper";
 import { FeeStructure } from "../../../domain/entities/FeeType/FeeStructure";
 import { BaseRepository } from "../BASEREPOSITORIES/Baserepository";
-import { IFeeStructureRepository } from "../../../domain/repositories/FeeDetails/IFeeStructureRepository";
+import { IFeeStructureRepository } from "../../../applications/interface/RepositoryInterface/FeeDetails/IFeeStructureRepository";
 import { PaymentModel } from "../../database/models/FeeManagement/Payment";
 import { StudentModel } from "../../database/models/StudentModel";
 

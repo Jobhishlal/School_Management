@@ -1,11 +1,11 @@
-import { InterfaceLeaveManagement } from "../../../domain/repositories/ILeaveManagement/ILeaveManagement";
-import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";
+import { InterfaceLeaveManagement } from "../../interface/RepositoryInterface/ILeaveManagement/ILeaveManagement";
+import { ITeacherCreate } from "../../interface/RepositoryInterface/TeacherCreate";
 import { LeaveManagementEntity } from "../../../domain/entities/LeaveManagement/LeaveManagementEntity";
-import { IInstituterepo } from "../../../domain/repositories/SchoolProfile.ts/IInstituteRepo";
+import { IInstituterepo } from "../../interface/RepositoryInterface/SchoolProfile.ts/IInstituteRepo";
 import { SendEMail } from "../../../infrastructure/providers/EmailService";
 import { EmailTemplates } from "../../../shared/constants/utils/Email/emailTemplates";
 import { IUpdateLeaveStatusUseCase } from "../../interface/UseCaseInterface/LeaveManagement/IUpdateLeaveStatusUseCase";
-import { SubAdminRepository } from "../../../domain/repositories/SubAdminCreate";
+import { SubAdminRepository } from "../../interface/RepositoryInterface/SubAdminCreate";
 
 export class UpdateLeaveStatusUseCase implements IUpdateLeaveStatusUseCase {
     constructor(

@@ -1,4 +1,4 @@
-import { SubAdminRepository } from "../../../domain/repositories/SubAdminCreate";
+import { SubAdminRepository } from "../../interface/RepositoryInterface/SubAdminCreate";
 import { GenarateOtp } from "../../../shared/constants/utils/Otpgenarator";
 import { SendEMail } from "../../../infrastructure/providers/EmailService";
 import { genarateotptoken } from "../../../infrastructure/security/otpJwtService";

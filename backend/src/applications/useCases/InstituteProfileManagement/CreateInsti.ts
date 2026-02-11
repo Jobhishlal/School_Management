@@ -1,5 +1,5 @@
 import { Institute } from "../../../domain/entities/Institute";
-import { IInstituterepo } from "../../../domain/repositories/SchoolProfile.ts/IInstituteRepo";
+import { IInstituterepo } from '../../interface/RepositoryInterface/SchoolProfile.ts/IInstituteRepo'
 import { IInstituteUsecase } from "../../interface/UseCaseInterface/IInstituteProfileUseCase";
 
 

@@ -1,6 +1,6 @@
 import { ParentSignupModel } from "../../database/models/ParentSignupModel";
 import { ParentEntity } from "../../../domain/entities/Parents";
-import { IParentFeeInterface } from "../../../domain/repositories/IParentFeeList";
+import { IParentFeeInterface } from "../../../applications/interface/RepositoryInterface/IParentFeeList";
 import { FeeStructureModel } from "../../database/models/FeeManagement/FeeStructure";
 import { StudentModel } from "../../database/models/StudentModel";
 import { PaymentModel } from "../../database/models/FeeManagement/Payment";

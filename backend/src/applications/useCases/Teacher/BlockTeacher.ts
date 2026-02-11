@@ -1,5 +1,5 @@
 import { Teeacher } from "../../../domain/entities/Teacher";
-import {ITeacherCreate} from '../../../domain/repositories/TeacherCreate'
+import {ITeacherCreate} from '../../interface/RepositoryInterface/TeacherCreate'
 
 export class BlockTeacher{
     constructor(private teacherblock:ITeacherCreate){}

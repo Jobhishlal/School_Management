@@ -1,4 +1,4 @@
-import { Conversation } from "../../../entities/Conversation";
+import { Conversation } from "../../../../domain/entities/Conversation";
 
 export interface ICreateClassGroupChatUseCase {
     execute(classId: string, creatorId: string, customName?: string): Promise<Conversation>;

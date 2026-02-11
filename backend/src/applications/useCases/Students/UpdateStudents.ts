@@ -1,4 +1,4 @@
-import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
+import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudnetRepository";
 import { Students } from "../../../domain/entities/Students";
 import { IStudentUpdateUseCase } from "../../interface/UseCaseInterface/IStudentupdate";
 import {validateStudentUpdate} from '../../validators/StudentValidate'
