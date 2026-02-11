@@ -1,4 +1,4 @@
-import { IFindStudentsByTeacherUseCase } from "../../../domain/UseCaseInterface/IFindStudentsByTeacherUseCase";
+import { IFindStudentsByTeacherUseCase } from "../../interface/UseCaseInterface/IFindStudentsByTeacherUseCase";
 import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
 import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
 import { Students } from "../../../domain/entities/Students";

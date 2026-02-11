@@ -8,7 +8,7 @@ export interface IAnnouncementRepository {
   findForClass(classId: string): Promise<Announcement[]>;
   update(
     id: string,
-    data: Partial<Announcement>
+    data: Announcement
   ): Promise<Announcement>;
   delete(id: string): Promise<void>;
   findLatest(limit: number): Promise<Announcement[]>;

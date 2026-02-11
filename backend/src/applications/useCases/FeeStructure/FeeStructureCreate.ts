@@ -3,11 +3,8 @@ import { IFeeTypeRepository } from "../../../domain/repositories/FeeDetails/IFee
 import { FeeStructure } from "../../../domain/entities/FeeType/FeeStructure";
 import { FeeStructureItem } from "../../../domain/entities/FeeType/FeeStructure";
 import { CreateFeeStructureDTO } from "../../dto/FeeDTO/CreateFeeStructureDTO ";
-import { ICreateFeeStructureUseCase } from "../../../domain/UseCaseInterface/FeeStructure/IFeeCreateInterFace";
-import { CreateValidationFeeStructure } from "../../validators/FeeStructureValidation/FeeStructurevalidation";
+import { ICreateFeeStructureUseCase } from "../../interface/UseCaseInterface/IFeeCreateInterFace";
 import { calculateExpiryDate } from "../../../shared/constants/utils/dateUtils";
-import { SendEMail } from "../../../infrastructure/providers/EmailService";
-import { feeExpiredTemplate } from "../../../shared/constants/utils/templates/FeeExpiredTemplate";
 import { NotificationPort } from "../../../infrastructure/services/ports/NotificationPort";
 
 export class CreateFeeStructureUseCase implements ICreateFeeStructureUseCase {
@@ -19,7 +16,7 @@ export class CreateFeeStructureUseCase implements ICreateFeeStructureUseCase {
   ) { }
 
   async execute(request: CreateFeeStructureDTO): Promise<FeeStructure> {
-    CreateValidationFeeStructure(request);
+
 
     const feeItems: FeeStructureItem[] = [];
 
@@ -39,7 +36,11 @@ export class CreateFeeStructureUseCase implements ICreateFeeStructureUseCase {
     }
 
     const startDate = new Date();
-    const expiryDate = calculateExpiryDate(startDate, 4);
+
+    const effectiveStartDate = request.startDate ? new Date(request.startDate) : new Date();
+    const effectiveExpiryDate = request.expiryDate ? new Date(request.expiryDate) : calculateExpiryDate(effectiveStartDate, 4);
+
+    FeeStructure.validateDate(effectiveStartDate, effectiveExpiryDate);
 
     const feeStructure = new FeeStructure(
       "",
@@ -48,16 +49,15 @@ export class CreateFeeStructureUseCase implements ICreateFeeStructureUseCase {
       request.academicYear,
       feeItems,
       request.notes,
-      startDate,
-      startDate,
-      startDate,
-      expiryDate
+      new Date(),
+      new Date(), 
+      effectiveStartDate,
+      effectiveExpiryDate
     );
 
 
     const createdFee = await this.feeStructureRepo.create(feeStructure);
 
-    // Emit Notification
     await this.notificationPort.send({
       title: "New Fee Structure: " + request.name,
       content: `New fee payment details available for ${request.name}`,

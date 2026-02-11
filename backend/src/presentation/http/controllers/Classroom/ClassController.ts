@@ -3,10 +3,10 @@ import { CreateClassUseCase } from "../../../../applications/useCases/Classdata/
 import { GetAllClass } from "../../../../applications/useCases/Classdata/GeallClass";
 import { Class } from "../../../../domain/entities/Class";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
-import { IClassUpdateUseCase } from "../../../../domain/UseCaseInterface/IClassUpdateUseCase";
-import { IAssignClassUseCase } from '../../../../domain/UseCaseInterface/AssignClassUseCase'
+import { IClassUpdateUseCase } from "../../../../applications/interface/UseCaseInterface/IClassUpdateUseCase";
+import { IAssignClassUseCase } from "../../../../applications/interface/UseCaseInterface/AssignClassUseCase";
 
-import { IDeleteClassUseCase } from "../../../../domain/UseCaseInterface/ClassBase/IDeleteClassorDivisionUseCase";
+import { IDeleteClassUseCase } from "../../../../applications/interface/UseCaseInterface/ClassBase/IDeleteClassorDivisionUseCase";
 
 export class ClassManagementController {
   constructor(

@@ -1,6 +1,6 @@
 import { IPaymentTransactionRepository } from "../../../domain/repositories/FeeDetails/IPaymentTransactionRepository";
 import { PeymentTransactrion } from "../../../domain/entities/FeeType/PaymentTransaction";
-import { IPaymentStatusUpdateFeID } from "../../../domain/UseCaseInterface/Payment/IPaymentStatusUpdatefeeIdbase";
+import { IPaymentStatusUpdateFeID } from "../../interface/UseCaseInterface/Payment/IPaymentStatusUpdatefeeIdbase";
 
 export class VerifyPaymentByFeeId implements IPaymentStatusUpdateFeID{
   constructor(private readonly paymentRepo: IPaymentTransactionRepository) {}

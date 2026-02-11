@@ -1,14 +1,14 @@
 import { Request, Response } from "express";
-import { ICreateAssignment } from "../../../../domain/UseCaseInterface/Assignment/ICreateUseCase";
+import { ICreateAssignment } from "../../../../applications/interface/UseCaseInterface/Assignment/ICreateUseCase";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { CreateAssignmentDTO } from "../../../../applications/dto/AssignmentDTO ";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
-import { IGetAssignmentTeacher } from "../../../../domain/UseCaseInterface/Assignment/IgetTimeTableTeacher";
-import { IAssignmentupdate } from "../../../../domain/UseCaseInterface/Assignment/IUpdateUseCase";
-import { IGetTeacherAssignment } from "../../../../domain/UseCaseInterface/Assignment/IGetAssigmentTeacher";
+import { IGetAssignmentTeacher } from "../../../../applications/interface/UseCaseInterface/Assignment/IgetTimeTableTeacher";
+import { IAssignmentupdate } from "../../../../applications/interface/UseCaseInterface/Assignment/IUpdateUseCase";
+import { IGetTeacherAssignment } from "../../../../applications/interface/UseCaseInterface/Assignment/IGetAssigmentTeacher";
 
-import { IValidateAssignment } from "../../../../domain/UseCaseInterface/Assignment/IValidateAssignment";
-import { IGetAssignmentSubmissions } from "../../../../domain/UseCaseInterface/Assignment/IGetAssignmentSubmissions";
+import { IValidateAssignment } from "../../../../applications/interface/UseCaseInterface/Assignment/IValidateAssignment";
+import { IGetAssignmentSubmissions } from "../../../../applications/interface/UseCaseInterface/Assignment/IGetAssignmentSubmissions";
 import { ValidationDTO } from "../../../../applications/dto/AssignmentDTO ";
 
 export class AssignmentManageController {

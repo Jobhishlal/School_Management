@@ -1,7 +1,7 @@
 import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMarkRepoInterface";
 import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
 import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
-import { IGetStudentPerformanceUseCase } from "../../../domain/UseCaseInterface/Teacher/IGetStudentPerformanceUseCase";
+import { IGetStudentPerformanceUseCase } from "../../interface/UseCaseInterface/Teacher/IGetStudentPerformanceUseCase";
 import { StudentPerformanceDTO } from "../../dto/StudentPerformanceDTO";
 
 export class GetStudentPerformanceUseCase implements IGetStudentPerformanceUseCase {

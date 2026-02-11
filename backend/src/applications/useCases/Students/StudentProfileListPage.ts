@@ -1,6 +1,6 @@
 import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
 import { Students } from "../../../domain/entities/Students";
-import { IStudentProfileUseCase } from "../../../domain/UseCaseInterface/StudentCreate/IStudentProfile";
+import { IStudentProfileUseCase } from "../../interface/UseCaseInterface/StudentCreate/IStudentProfile";
 
 
 export class StudentProfilePageview implements IStudentProfileUseCase{

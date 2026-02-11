@@ -1,30 +1,30 @@
 import { IAnnouncementRepository } from "../../../domain/repositories/Announcement/IAnnouncement";
 import { Announcement } from "../../../domain/entities/Announcement/Announcement";
-import { IAnnouncementUpdateUseCase } from "../../../domain/UseCaseInterface/Announcement/IUpdateUseCaseInterface";
-import { validateAnnouncementUpdate } from "../../validators/ValidateAnnouncementUpdate";
+import { IAnnouncementUpdateUseCase } from "../../interface/UseCaseInterface/Announcement/IUpdateUseCaseInterface";
+import { UpdateAnnouncementDTO } from "../../dto/Announcement/UpdateAnnouncementDTO";
 
-export class UpdateAnnouncementUseCase implements IAnnouncementUpdateUseCase
-{
+export class UpdateAnnouncementUseCase implements IAnnouncementUpdateUseCase {
   constructor(
     private readonly repo: IAnnouncementRepository
-  ) {}
+  ) { }
 
-  async execute( id: string,data: Partial<Announcement>): Promise<Announcement> {
+  async execute(id: string, data: UpdateAnnouncementDTO): Promise<Announcement> {
 
-    validateAnnouncementUpdate(data)
+    const announcement = await this.repo.findById(id);
+    if (!announcement) {
+      throw new Error("Announcement not found");
+    }
 
-    const domainData: Partial<Announcement> = {
-      title: data.title,
-      content: data.content,
-      scope: data.scope,
-      classes: data.classes,
-      division: data.division,
-      attachment: data.attachment ?? undefined,
-      activeTime: data.activeTime,
-      endTime: data.endTime,
-      status: data.status,
-    };
+    if (data.title !== undefined) announcement.title = data.title;
+    if (data.content !== undefined) announcement.content = data.content;
+    if (data.scope !== undefined) announcement.scope = data.scope;
+    if (data.classes !== undefined) announcement.classes = data.classes;
+    if (data.division !== undefined) announcement.division = data.division;
+    if (data.attachment !== undefined) announcement.attachment = data.attachment;
+    if (data.activeTime !== undefined) announcement.activeTime = data.activeTime;
+    if (data.endTime !== undefined) announcement.endTime = data.endTime;
+    if (data.status !== undefined) announcement.status = data.status;
 
-    return this.repo.update(id, domainData);
+    return this.repo.update(id, announcement);
   }
 }

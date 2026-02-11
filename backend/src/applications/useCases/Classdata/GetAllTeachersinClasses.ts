@@ -1,4 +1,4 @@
-import { IGetClassTeacher } from "../../../domain/UseCaseInterface/ClassBase/IGetAllTeachers";
+import { IGetClassTeacher } from "../../interface/UseCaseInterface/ClassBase/IGetAllTeachers";
 import { IClassDivisionRepository } from "../../../domain/repositories/Classrepo/IClassDivisionview";
 
 

@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt'
 import { genaratePassword } from '../../../shared/constants/utils/TempPassGenarator'
-import { IPasswordsubadmin } from '../../../domain/UseCaseInterface/SubAdmin/IPasswordHash'
+import { IPasswordsubadmin } from '../../interface/UseCaseInterface/SubAdmin/IPasswordHash'
 
 export class GenaratePasswordSubAdmin implements IPasswordsubadmin{
     async execute(): Promise<{ plain: string; hashed: string; }> {

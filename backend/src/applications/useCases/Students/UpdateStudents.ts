@@ -1,6 +1,6 @@
 import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
 import { Students } from "../../../domain/entities/Students";
-import { IStudentUpdateUseCase } from "../../../domain/UseCaseInterface/IStudentupdate";
+import { IStudentUpdateUseCase } from "../../interface/UseCaseInterface/IStudentupdate";
 import {validateStudentUpdate} from '../../validators/StudentValidate'
 
 

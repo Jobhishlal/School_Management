@@ -1,5 +1,5 @@
 import { CreateLeaveDTO } from "../../dto/LeaveManagement/CreateLeaveManagementDTO";
-import { ICreateLeaveusecase } from "../../../domain/UseCaseInterface/LeaveManagement/ICreateLeaveUseCase";
+import { ICreateLeaveusecase } from "../../interface/UseCaseInterface/LeaveManagement/ICreateLeaveUseCase";
 import { InterfaceLeaveManagement } from "../../../domain/repositories/ILeaveManagement/ILeaveManagement";
 import { LeaveManagementEntity } from "../../../domain/entities/LeaveManagement/LeaveManagementEntity";
 import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";

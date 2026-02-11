@@ -1,7 +1,7 @@
 import { Request,Response } from "express";
-import { IRevenueGenarateUseCase } from "../../../../../../domain/UseCaseInterface/FeeStructure/FinanceReport/IfinanceReport.RevanueUseCase";
+import { IRevenueGenarateUseCase } from "../../../../../../applications/interface/UseCaseInterface/FeeStructure/FinanceReport/IfinanceReport.RevanueUseCase";
 import { StatusCodes } from "../../../../../../shared/constants/statusCodes";
-import { IExpenseReportGenarate } from "../../../../../../domain/UseCaseInterface/FeeStructure/FinanceReport/IExpenseReportRevenueUseCase";
+import { IExpenseReportGenarate } from "../../../../../../applications/interface/UseCaseInterface/FeeStructure/FinanceReport/IExpenseReportRevenueUseCase";
 
 
 export class FinanceReportManagementController {

@@ -1,4 +1,4 @@
-import { IGetParentPaymentHistory } from "../../../domain/UseCaseInterface/Payment/IGetParentPaymentHistory";
+import { IGetParentPaymentHistory } from "../../interface/UseCaseInterface/Payment/IGetParentPaymentHistory";
 import { IPaymentTransactionRepository } from "../../../domain/repositories/FeeDetails/IPaymentTransactionRepository";
 
 export class GetParentPaymentHistory implements IGetParentPaymentHistory {

@@ -9,7 +9,7 @@ import { IParentAuthRepository } from "../../../domain/repositories/IParentAuthR
 import { AdminError } from "../../../domain/enums/Adminsinguperror";
 import { GenarateOtp } from "../../../shared/constants/utils/Otpgenarator";
 
-import { IUnifiedLoginUseCase } from "../../../domain/UseCaseInterface/IUnifiedLoginUseCase";
+import { IUnifiedLoginUseCase } from "../../interface/UseCaseInterface/IUnifiedLoginUseCase";
 
 export class UnifiedLoginUseCase implements IUnifiedLoginUseCase {
     constructor(

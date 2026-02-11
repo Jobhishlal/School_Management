@@ -1,4 +1,4 @@
-import { IStudentBlock } from "../../../domain/UseCaseInterface/IStudentBlock";
+import { IStudentBlock } from "../../interface/UseCaseInterface/IStudentBlock";
 import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
 import { Students } from "../../../domain/entities/Students";
 

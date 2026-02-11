@@ -1,4 +1,4 @@
-import { IExamCreateRepository } from "../../../domain/UseCaseInterface/Exam/IExamCreateUseCase";
+import { IExamCreateRepository } from "../../interface/UseCaseInterface/Exam/IExamCreateUseCase";
 import { CreateExamDTO } from "../../dto/Exam/CreateExamDTO";
 import { ExamEntity } from "../../../domain/entities/Exam/ExamEntity";
 import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";

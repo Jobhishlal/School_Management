@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { ICreateLeaveusecase } from "../../../../domain/UseCaseInterface/LeaveManagement/ICreateLeaveUseCase";
+import { ICreateLeaveusecase } from "../../../../applications/interface/UseCaseInterface/LeaveManagement/ICreateLeaveUseCase";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 import { CreateLeaveDTO } from "../../../../applications/dto/LeaveManagement/CreateLeaveManagementDTO";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
-import { IGetTeacherUseCase } from "../../../../domain/UseCaseInterface/LeaveManagement/IGetTeacherUseCase";
-import { IGetAllLeavesUseCase } from "../../../../domain/UseCaseInterface/LeaveManagement/IGetAllLeavesUseCase";
-import { IUpdateLeaveStatusUseCase } from "../../../../domain/UseCaseInterface/LeaveManagement/IUpdateLeaveStatusUseCase";
+import { IGetTeacherUseCase } from "../../../../applications/interface/UseCaseInterface/LeaveManagement/IGetTeacherUseCase";
+import { IGetAllLeavesUseCase } from "../../../../applications/interface/UseCaseInterface/LeaveManagement/IGetAllLeavesUseCase";
+import { IUpdateLeaveStatusUseCase } from "../../../../applications/interface/UseCaseInterface/LeaveManagement/IUpdateLeaveStatusUseCase";
 import { LeaveError } from "../../../../domain/enums/LeaveError";
 import { ICreateSubAdminLeaveUseCase } from "../../../../applications/useCases/LeavemanagementUseCase.ts/SubAdminLeaveCreateUseCase";
 import { IGetSubAdminLeavesUseCase } from "../../../../applications/useCases/LeavemanagementUseCase.ts/GetSubAdminLeavesUseCase";

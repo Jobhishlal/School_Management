@@ -1,5 +1,5 @@
 import { IMeetingRepository } from "../../../domain/repositories/IMeetingRepository";
-import { IGetMeetingByLinkUseCase } from "../../../domain/UseCaseInterface/Meeting/IGetMeetingByLinkUseCase";
+import { IGetMeetingByLinkUseCase } from "../../interface/UseCaseInterface/Meeting/IGetMeetingByLinkUseCase";
 import { Meeting } from "../../../domain/entities/Meeting";
 
 export class GetMeetingByLinkUseCase implements IGetMeetingByLinkUseCase {

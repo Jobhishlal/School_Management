@@ -2,7 +2,7 @@
 import { ITokenService } from "../../../infrastructure/services/interfaces/ITokenService";
 import { OtpError } from "../../../domain/enums/OtpErrorMessage";
 
-import { IVerifyOtpUseCase } from "../../../domain/UseCaseInterface/IVerifyOtpUseCase";
+import { IVerifyOtpUseCase } from "../../interface/UseCaseInterface/IVerifyOtpUseCase";
 
 export class VerifyOtpUseCase implements IVerifyOtpUseCase {
     constructor(

@@ -1,6 +1,6 @@
 import { SendEMail } from "../../../infrastructure/providers/EmailService";
 import { EmailMessages } from "../../../shared/constants/utils/messages";
-import { IEmailServiceShare } from "../../../domain/UseCaseInterface/StudentCreate/IEmailSendUsecase";
+import { IEmailServiceShare } from "../../interface/UseCaseInterface/StudentCreate/IEmailSendUsecase";
 
 export class SendEMailServiceStudent implements IEmailServiceShare{
     async execute(parentName: string, parentEmail: string, studentName: string, studentId: string, tempPassword: string): Promise<void> {

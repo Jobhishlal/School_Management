@@ -1,4 +1,4 @@
-import { IAttendanceList } from "../../../domain/UseCaseInterface/Attandance/IAttendanceTeacherList";
+import { IAttendanceList } from "../../interface/UseCaseInterface/Attandance/IAttendanceTeacherList";
 import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
 import { TodayAttendanceResponse, TodayAttendanceItemDTO } from "../../dto/Attendance/TodayAttendanceDTO";
 

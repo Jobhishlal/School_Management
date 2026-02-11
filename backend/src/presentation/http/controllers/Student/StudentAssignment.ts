@@ -1,7 +1,7 @@
 import { Request,Response } from "express";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
-import { IAssignmentGetstudent } from "../../../../domain/UseCaseInterface/Assignment/IGetAssignmentStudent";
-import { IStudentSubmit } from "../../../../domain/UseCaseInterface/Assignment/IStudentSubmit";
+import { IAssignmentGetstudent } from "../../../../applications/interface/UseCaseInterface/Assignment/IGetAssignmentStudent";
+import { IStudentSubmit } from "../../../../applications/interface/UseCaseInterface/Assignment/IStudentSubmit";
 import { SubmitDTO } from "../../../../applications/dto/AssignmentDTO ";
 
 

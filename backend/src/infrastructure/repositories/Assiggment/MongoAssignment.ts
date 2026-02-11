@@ -8,7 +8,7 @@ import { TimetableModel } from "../../database/models/Admin/TimeTableCraete";
 import { AssignmentDTO } from "../../../applications/dto/AssignmentDTO ";
 import { StudentModel } from "../../database/models/StudentModel";
 import { SubmitDTO, ValidationDTO } from "../../../applications/dto/AssignmentDTO ";
-import { SubmissionResult } from "../../../domain/UseCaseInterface/Assignment/IGetAssignmentSubmissions";
+import { SubmissionResult } from "../../../applications/interface/UseCaseInterface/Assignment/IGetAssignmentSubmissions";
 
 
 

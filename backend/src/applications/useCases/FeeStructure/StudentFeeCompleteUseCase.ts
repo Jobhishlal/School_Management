@@ -1,4 +1,4 @@
-import { IStudentFullFeePaymentStatusUseCase } from "../../../domain/UseCaseInterface/FeeStructure/IStudentFeePaidDetails";
+import { IStudentFullFeePaymentStatusUseCase } from "../../interface/UseCaseInterface/FeeStructure/IStudentFeePaidDetails";
 import { IFeeStructureRepository } from "../../../domain/repositories/FeeDetails/IFeeStructureRepository";
 
 export class StudentPaymentDetailList implements IStudentFullFeePaymentStatusUseCase {

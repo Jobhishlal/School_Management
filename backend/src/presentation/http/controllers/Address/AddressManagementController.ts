@@ -3,7 +3,7 @@ import { AddressGetAll } from "../../../../applications/useCases/Address/GetAllA
 import { AddressEntity } from "../../../../domain/entities/Address";
 import { CreatAddressUseCase } from "../../../../applications/useCases/Address/CreateAddress";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
-import { IAddressUpdateUseCase } from "../../../../domain/UseCaseInterface/IAddressUpdateUseCase";
+import { IAddressUpdateUseCase } from "../../../../applications/interface/UseCaseInterface/IAddressUpdateUseCase";
 
 export class AddressManagementController  {
     constructor(

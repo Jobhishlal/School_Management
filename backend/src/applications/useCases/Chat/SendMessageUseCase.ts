@@ -1,7 +1,7 @@
 import { IChatRepository } from "../../../domain/repositories/Chat/IChatRepository";
 import { Message } from "../../../domain/entities/Message";
 import { IChatSocketService } from "../../../infrastructure/services/IChatSocketService";
-import { ISendMessageUseCase } from "../../../domain/interfaces/useCases/Chat/ISendMessageUseCase";
+import { ISendMessageUseCase } from "../../interface/UseCaseInterface/Chat/ISendMessageUseCase";
 import { ConversationParticipant } from "../../../domain/entities/Conversation";
 
 export class SendMessageUseCase implements ISendMessageUseCase {

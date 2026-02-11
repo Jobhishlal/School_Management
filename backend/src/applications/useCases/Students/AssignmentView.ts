@@ -1,6 +1,6 @@
 
 
-import { IAssignmentGetstudent } from "../../../domain/UseCaseInterface/Assignment/IGetAssignmentStudent";
+import { IAssignmentGetstudent } from "../../interface/UseCaseInterface/Assignment/IGetAssignmentStudent";
 import { AssignmentEntity } from "../../../domain/entities/Assignment";
 import { IAssignmentRepository } from "../../../domain/repositories/Assignment/IAssignmentRepository ";
 import { AssignmentDTO } from "../../dto/AssignmentDTO ";

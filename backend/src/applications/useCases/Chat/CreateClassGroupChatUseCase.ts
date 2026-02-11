@@ -1,5 +1,5 @@
 import { IChatRepository } from "../../../domain/repositories/Chat/IChatRepository";
-import { ICreateClassGroupChatUseCase } from "../../../domain/interfaces/useCases/Chat/ICreateClassGroupChatUseCase";
+import { ICreateClassGroupChatUseCase } from "../../interface/UseCaseInterface/Chat/ICreateClassGroupChatUseCase";
 import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
 import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
 import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";

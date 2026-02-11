@@ -4,10 +4,10 @@ import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { OtpError } from "../../../../domain/enums/OtpErrorMessage";
 import logger from "../../../../shared/constants/Logger";
 import { AdminError } from "../../../../domain/enums/Adminsinguperror";
-import { IUnifiedLoginUseCase } from "../../../../domain/UseCaseInterface/IUnifiedLoginUseCase";
-import { IVerifyOtpUseCase } from "../../../../domain/UseCaseInterface/IVerifyOtpUseCase";
-import { IRefreshTokenUseCase } from "../../../../domain/UseCaseInterface/IRefreshTokenUseCase";
-import { IResendOtpUseCase } from "../../../../domain/UseCaseInterface/IResendOtpUseCase";
+import { IUnifiedLoginUseCase } from "../../../../applications/interface/UseCaseInterface/IUnifiedLoginUseCase";
+import { IVerifyOtpUseCase } from "../../../../applications/interface/UseCaseInterface/IVerifyOtpUseCase";
+import { IRefreshTokenUseCase } from "../../../../applications/interface/UseCaseInterface/IRefreshTokenUseCase";
+import { IResendOtpUseCase } from "../../../../applications/interface/UseCaseInterface/IResendOtpUseCase";
 
 export class AdminLoginController {
   constructor(

@@ -1,4 +1,4 @@
-import { IUpdateAttendanceUseCase } from "../../../domain/UseCaseInterface/Attandance/IUpdateAttendanceUseCase";
+import { IUpdateAttendanceUseCase } from "../../interface/UseCaseInterface/Attandance/IUpdateAttendanceUseCase";
 import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
 
 export class UpdateAttendanceUseCase implements IUpdateAttendanceUseCase {

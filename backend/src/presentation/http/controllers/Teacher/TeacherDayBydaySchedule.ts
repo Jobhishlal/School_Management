@@ -1,4 +1,4 @@
-import { IGetTeacherDailySchedule } from "../../../../domain/UseCaseInterface/TimeTable/IGetTeacherDailySchedule";
+import { IGetTeacherDailySchedule } from "../../../../applications/interface/UseCaseInterface/TimeTable/IGetTeacherDailySchedule";
 import { Request, Response } from "express";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";

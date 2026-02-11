@@ -1,14 +1,14 @@
-import { IAttendanceCreateUseCase } from "../../../../domain/UseCaseInterface/Attandance/ITakeAttendanceUseCase";
+import { IAttendanceCreateUseCase } from "../../../../applications/interface/UseCaseInterface/Attandance/ITakeAttendanceUseCase";
 import { Response } from "express";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { TakeAttendance } from "../../../../applications/dto/Attendance/TakeAttendanceDTO";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
-import { IGetStudentsByClassUseCase } from "../../../../domain/UseCaseInterface/StudentCreate/IStudentFindClassBase";
-import { IFindStudentsByTeacherUseCase } from "../../../../domain/UseCaseInterface/IFindStudentsByTeacherUseCase";
-import { IAttendanceList } from "../../../../domain/UseCaseInterface/Attandance/IAttendanceTeacherList";
-import { IGetAttendanceReportUseCase } from "../../../../domain/UseCaseInterface/Attandance/IGetAttendanceReportUseCase";
-import { IGetStudentAttendanceHistoryUseCase } from "../../../../domain/UseCaseInterface/Attandance/IGetStudentAttendanceHistoryUseCase";
-import { IUpdateAttendanceUseCase } from "../../../../domain/UseCaseInterface/Attandance/IUpdateAttendanceUseCase";
+import { IGetStudentsByClassUseCase } from "../../../../applications/interface/UseCaseInterface/StudentCreate/IStudentFindClassBase";
+import { IFindStudentsByTeacherUseCase } from "../../../../applications/interface/UseCaseInterface/IFindStudentsByTeacherUseCase";
+import { IAttendanceList } from "../../../../applications/interface/UseCaseInterface/Attandance/IAttendanceTeacherList";
+import { IGetAttendanceReportUseCase } from "../../../../applications/interface/UseCaseInterface/Attandance/IGetAttendanceReportUseCase";
+import { IGetStudentAttendanceHistoryUseCase } from "../../../../applications/interface/UseCaseInterface/Attandance/IGetStudentAttendanceHistoryUseCase";
+import { IUpdateAttendanceUseCase } from "../../../../applications/interface/UseCaseInterface/Attandance/IUpdateAttendanceUseCase";
 
 
 

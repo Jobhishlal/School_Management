@@ -1,4 +1,4 @@
-import { IUpdateSubAdminPasswordUseCase } from "../../../domain/UseCaseInterface/IUpdateSubAdminPasswordUseCase";
+import { IUpdateSubAdminPasswordUseCase } from "../../interface/UseCaseInterface/IUpdateSubAdminPasswordUseCase";
 import { SubAdminRepository } from "../../../domain/repositories/SubAdminCreate";
 import { SubAdminEntities } from "../../../domain/entities/SubAdmin";
 import {ValidateSubAdminPassword } from '../../validators/PasswordValidation'

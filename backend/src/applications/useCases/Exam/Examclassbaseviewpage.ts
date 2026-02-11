@@ -1,4 +1,4 @@
-import { IStudentExamListUseCase } from "../../../domain/UseCaseInterface/Exam/IExamClassbaseviewusecase";
+import { IStudentExamListUseCase } from "../../interface/UseCaseInterface/Exam/IExamClassbaseviewusecase";
 import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
 import { ExamEntity } from "../../../domain/entities/Exam/ExamEntity";
 import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";

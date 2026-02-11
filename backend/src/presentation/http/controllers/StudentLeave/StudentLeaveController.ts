@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { IApplyStudentLeaveUseCase } from "../../../../domain/UseCaseInterface/StudentLeave/IApplyStudentLeaveUseCase";
-import { IGetStudentLeaveHistoryUseCase } from "../../../../domain/UseCaseInterface/StudentLeave/IGetStudentLeaveHistoryUseCase";
-import { IGetClassStudentLeavesUseCase } from "../../../../domain/UseCaseInterface/StudentLeave/IGetClassStudentLeavesUseCase";
-import { IProcessStudentLeaveUseCase } from "../../../../domain/UseCaseInterface/StudentLeave/IProcessStudentLeaveUseCase";
+import { IApplyStudentLeaveUseCase } from "../../../../applications/interface/UseCaseInterface/StudentLeave/IApplyStudentLeaveUseCase";
+import { IGetStudentLeaveHistoryUseCase } from "../../../../applications/interface/UseCaseInterface/StudentLeave/IGetStudentLeaveHistoryUseCase";
+import { IGetClassStudentLeavesUseCase } from "../../../../applications/interface/UseCaseInterface/StudentLeave/IGetClassStudentLeavesUseCase";
+import { IProcessStudentLeaveUseCase } from "../../../../applications/interface/UseCaseInterface/StudentLeave/IProcessStudentLeaveUseCase";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 import { ValidateLeaveCreate } from "../../../../applications/validators/LeaveValidation/LeaveCreateValidation";

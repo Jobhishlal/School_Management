@@ -1,4 +1,4 @@
-import { IDeleteTimeTable } from "../../../../domain/UseCaseInterface/TimeTable/IDeleteTimeTableUseCase";
+import { IDeleteTimeTable } from "../../../interface/UseCaseInterface/TimeTable/IDeleteTimeTableUseCase";
 import { ITimeTableRepository } from "../../../../domain/repositories/Admin/ITimeTableCreate";
 
 export class DeleteTimeTableUseCase implements IDeleteTimeTable {

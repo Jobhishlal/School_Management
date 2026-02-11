@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { IStudentExamListUseCase } from "../../../../domain/UseCaseInterface/Exam/IExamClassbaseviewusecase";
+import { IStudentExamListUseCase } from "../../../../applications/interface/UseCaseInterface/Exam/IExamClassbaseviewusecase";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
-import { IGetStudentExamResultsUseCase } from "../../../../domain/UseCaseInterface/Exam/StudentSeeExamMarks";
+import { IGetStudentExamResultsUseCase } from "../../../../applications/interface/UseCaseInterface/Exam/StudentSeeExamMarks";
 import { RaiseExamConcernUseCase } from "../../../../applications/useCases/Exam/RaiseExamConcernUseCase";
 
 export class StudentviewExamController {

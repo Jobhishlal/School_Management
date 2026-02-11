@@ -1,6 +1,6 @@
 
 import { IAssignmentRepository, TeacherTimetableInfo } from "../../../domain/repositories/Assignment/IAssignmentRepository ";
-import { IGetAssignmentTeacher } from "../../../domain/UseCaseInterface/Assignment/IgetTimeTableTeacher";
+import { IGetAssignmentTeacher } from "../../interface/UseCaseInterface/Assignment/IgetTimeTableTeacher";
 
 
 

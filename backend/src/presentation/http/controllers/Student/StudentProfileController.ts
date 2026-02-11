@@ -1,4 +1,4 @@
-import {IStudentProfileUseCase} from '../../../../domain/UseCaseInterface/StudentCreate/IStudentProfile';
+import { IStudentProfileUseCase } from '../../../../applications/interface/UseCaseInterface/StudentCreate/IStudentProfile';
 import { Request,Response } from 'express';
 import { StatusCodes } from '../../../../shared/constants/statusCodes';
 import { StudentProfile } from '../../../../domain/enums/Student/StudentProfile';

@@ -1,4 +1,4 @@
-import { ICheckSubAdminDuplicate } from "../../../domain/UseCaseInterface/SubAdmin/ICheckSubAdminDuplicate";
+import { ICheckSubAdminDuplicate } from "../../interface/UseCaseInterface/SubAdmin/ICheckSubAdminDuplicate";
 import { SubAdminRepository } from "../../../domain/repositories/SubAdminCreate";
 
 export class SubAdminDuplicate implements ICheckSubAdminDuplicate{

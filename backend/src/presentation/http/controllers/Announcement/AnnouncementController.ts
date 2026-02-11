@@ -1,13 +1,15 @@
 import { Request, Response } from "express";
-import { IAnnoucementUseCase } from "../../../../domain/UseCaseInterface/Announcement/IAnnouncementUseCase";
+import { IAnnoucementUseCase } from "../../../../applications/interface/UseCaseInterface/Announcement/IAnnouncementUseCase";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
-import { CreateAnnouncementDTO } from "../../../../applications/dto/AnnouncementDTO";
-import { IAnnouncementUpdateUseCase } from "../../../../domain/UseCaseInterface/Announcement/IUpdateUseCaseInterface";
-import { UpdateAnnouncementDTO } from "../../../../applications/dto/UpdateAnnouncementDTO";
-import { Announcement } from "../../../../domain/entities/Announcement/Announcement";
-import { FindAllaanouncement } from "../../../../domain/UseCaseInterface/Announcement/IAnnouncementFindAll";
+import { CreateAnnouncementDTO } from "../../../../applications/dto/Announcement/AnnouncementDTO";
+import { IAnnouncementUpdateUseCase } from "../../../../applications/interface/UseCaseInterface/Announcement/IUpdateUseCaseInterface";
+import { UpdateAnnouncementDTO } from "../../../../applications/dto/Announcement/UpdateAnnouncementDTO";
+
+import { FindAllaanouncement } from "../../../../applications/interface/UseCaseInterface/Announcement/IAnnouncementFindAll";
 import mongoose from "mongoose";
 import { DeleteAnnouncementUseCase } from "../../../../applications/useCases/Announcement/DeleteAnnouncementUseCase";
+import { ValidateAnnouncementCreate } from "../../../validators/AnnouncementValidation/AnnouncementCreateValidation";
+import { validateAnnouncementUpdate } from "../../../validators/AnnouncementValidation/AnnouncementUpdateValidation";
 
 export class AnnouncementController {
   constructor(
@@ -22,6 +24,7 @@ export class AnnouncementController {
     try {
       const values: CreateAnnouncementDTO = req.body;
 
+      ValidateAnnouncementCreate(values);
       let attachment: CreateAnnouncementDTO["attachment"] = undefined;
 
       if (req.file) {
@@ -46,7 +49,7 @@ export class AnnouncementController {
         endTime: new Date(values.endTime),
       });
 
-     
+
 
       res.status(StatusCodes.OK).json({ success: true, data, message: "Announcement created" });
 
@@ -70,7 +73,7 @@ export class AnnouncementController {
 
       const data: UpdateAnnouncementDTO = req.body;
 
-     
+
 
       if (req.file) {
         const file = req.file as any;
@@ -82,6 +85,8 @@ export class AnnouncementController {
       } else {
         delete data.attachment;
       }
+
+      validateAnnouncementUpdate(data);
 
       const update = await this.updaterepo.execute(id, data);
 

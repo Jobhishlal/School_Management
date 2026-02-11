@@ -1,6 +1,6 @@
 
 import { IParentRepository } from "../../../domain/repositories/IParentsRepository";
-import { IGetAllParentsUseCase } from "../../../domain/UseCaseInterface/ParentuseCase/IparentGetUseCase";
+import { IGetAllParentsUseCase } from "../../interface/UseCaseInterface/ParentuseCase/IparentGetUseCase";
 import { ParentResponseDTO } from "../../dto/ParentResponse";
 
 export class GetAllParentsUseCase implements IGetAllParentsUseCase {

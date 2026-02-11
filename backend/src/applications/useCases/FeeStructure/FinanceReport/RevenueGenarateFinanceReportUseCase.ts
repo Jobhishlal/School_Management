@@ -1,4 +1,4 @@
-import { IRevenueGenarateUseCase } from "../../../../domain/UseCaseInterface/FeeStructure/FinanceReport/IfinanceReport.RevanueUseCase";
+import { IRevenueGenarateUseCase } from "../../../interface/UseCaseInterface/FeeStructure/FinanceReport/IfinanceReport.RevanueUseCase";
 import { RevanueReport } from "../../../dto/FeeDTO/financeReport/RevenueReport";
 import { IRevenueGenerateRepository } from "../../../../domain/repositories/FeeDetails/FinanceReport/IRevanueReport";
 

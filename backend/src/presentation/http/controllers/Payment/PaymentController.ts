@@ -1,14 +1,14 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
-import { ICreateRazorpayOrder } from "../../../../domain/UseCaseInterface/Payment/RazorpayUseCase";
-import { IVerifyStatusChange } from "../../../../domain/UseCaseInterface/Payment/VerifyStatus";
+import { ICreateRazorpayOrder } from "../../../../applications/interface/UseCaseInterface/Payment/RazorpayUseCase";
+import { IVerifyStatusChange } from "../../../../applications/interface/UseCaseInterface/Payment/VerifyStatus";
 import { PeymentTransactrion } from "../../../../domain/entities/FeeType/PaymentTransaction";
-import { IPaymentStatusUpdateFeID } from "../../../../domain/UseCaseInterface/Payment/IPaymentStatusUpdatefeeIdbase";
-import { IDownloadInvoicePDF } from "../../../../domain/UseCaseInterface/FeeStructure/IInvoiceDownloadUseCase";
+import { IPaymentStatusUpdateFeID } from "../../../../applications/interface/UseCaseInterface/Payment/IPaymentStatusUpdatefeeIdbase";
+import { IDownloadInvoicePDF } from "../../../../applications/interface/UseCaseInterface/FeeStructure/IInvoiceDownloadUseCase";
 
 
-import { IGetPaymentHistory } from "../../../../domain/UseCaseInterface/Payment/IGetPaymentHistory";
-import { IGetParentPaymentHistory } from "../../../../domain/UseCaseInterface/Payment/IGetParentPaymentHistory";
+import { IGetPaymentHistory } from "../../../../applications/interface/UseCaseInterface/Payment/IGetPaymentHistory";
+import { IGetParentPaymentHistory } from "../../../../applications/interface/UseCaseInterface/Payment/IGetParentPaymentHistory";
 
 
 export class PeymentController {

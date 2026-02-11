@@ -1,4 +1,4 @@
-import { IGetAllFeeType } from "../../../domain/UseCaseInterface/FeeStructure/IGetAllFeeType";
+import { IGetAllFeeType } from "../../interface/UseCaseInterface/FeeStructure/IGetAllFeeType";
 import { FeeType } from "../../../domain/entities/FeeType/FeeType";
 import { IFeeTypeRepository } from "../../../domain/repositories/FeeDetails/IFeeTypeRepository";
 

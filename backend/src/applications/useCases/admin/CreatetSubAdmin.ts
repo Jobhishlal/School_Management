@@ -1,10 +1,10 @@
 import { SubAdminEntities } from "../../../domain/entities/SubAdmin";
 import { AdminRole } from "../../../domain/enums/AdminRole";
 import { SubAdminRepository } from "../../../domain/repositories/SubAdminCreate";
-import { ICreateAdmin } from "../../../domain/UseCaseInterface/ICreateSubAdmin";
-import { ICheckSubAdminDuplicate } from "../../../domain/UseCaseInterface/SubAdmin/ICheckSubAdminDuplicate";
-import { IPasswordsubadmin } from "../../../domain/UseCaseInterface/SubAdmin/IPasswordHash";
-import { ISendEmailService } from "../../../domain/UseCaseInterface/SubAdmin/ISendEmailService";
+import { ICreateAdmin } from "../../interface/UseCaseInterface/ICreateSubAdmin";
+import { ICheckSubAdminDuplicate } from "../../interface/UseCaseInterface/SubAdmin/ICheckSubAdminDuplicate";
+import { IPasswordsubadmin } from "../../interface/UseCaseInterface/SubAdmin/IPasswordHash";
+import { ISendEmailService } from "../../interface/UseCaseInterface/SubAdmin/ISendEmailService";
 
 
 export class CreateSubAdmin implements ICreateAdmin {

@@ -1,4 +1,4 @@
-import { IProcessStudentLeaveUseCase } from "../../../domain/UseCaseInterface/StudentLeave/IProcessStudentLeaveUseCase";
+import { IProcessStudentLeaveUseCase } from "../../interface/UseCaseInterface/StudentLeave/IProcessStudentLeaveUseCase";
 import { IStudentLeaveRepository } from "../../../domain/repositories/StudentLeave/IStudentLeaveRepository";
 import { StudentLeaveEntity } from "../../../domain/entities/StudentLeave/StudentLeaveEntity";
 import { IParentRepositorySign } from "../../../domain/repositories/Auth/IParentRepository";

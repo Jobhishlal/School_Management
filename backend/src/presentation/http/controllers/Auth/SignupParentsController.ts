@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { IParentSignupUseCase } from "../../../../domain/UseCaseInterface/IParentSignupUseCase";
+import { IParentSignupUseCase } from "../../../../applications/interface/UseCaseInterface/IParentSignupUseCase";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 
 export class SignupParentController {

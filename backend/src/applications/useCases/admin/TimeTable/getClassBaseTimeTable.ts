@@ -1,7 +1,7 @@
 
 import { TimetableEntity } from "../../../../domain/entities/TimeTableEntity";
 import { ITimeTableRepository } from "../../../../domain/repositories/Admin/ITimeTableCreate";
-import { IGETTIMETABLECLASS } from "../../../../domain/UseCaseInterface/TimeTable/IGetTimeTableClassUseCase";
+import { IGETTIMETABLECLASS } from "../../../interface/UseCaseInterface/TimeTable/IGetTimeTableClassUseCase";
 
 export class GetClassbaseTimeTable implements IGETTIMETABLECLASS{
     constructor(private readonly timetablerepo:ITimeTableRepository){}

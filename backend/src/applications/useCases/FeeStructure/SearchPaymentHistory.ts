@@ -1,5 +1,5 @@
 
-import { IStudentPaymentHistorySeeAdmin } from "../../../domain/UseCaseInterface/FeeStructure/StudentBasePaymentHistorSee";
+import { IStudentPaymentHistorySeeAdmin } from "../../interface/UseCaseInterface/FeeStructure/StudentBasePaymentHistorSee";
 import { IFeeStructureRepository } from "../../../domain/repositories/FeeDetails/IFeeStructureRepository";
 
 export class SearchStudentName implements IStudentPaymentHistorySeeAdmin {

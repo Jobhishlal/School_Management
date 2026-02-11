@@ -1,5 +1,5 @@
 
-import { IGetAssignmentSubmissions, SubmissionResult } from "../../../domain/UseCaseInterface/Assignment/IGetAssignmentSubmissions";
+import { IGetAssignmentSubmissions, SubmissionResult } from "../../interface/UseCaseInterface/Assignment/IGetAssignmentSubmissions";
 import { IAssignmentRepository } from "../../../domain/repositories/Assignment/IAssignmentRepository ";
 
 export class GetAssignmentSubmissions implements IGetAssignmentSubmissions {

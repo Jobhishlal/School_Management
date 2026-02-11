@@ -1,4 +1,4 @@
-import { IGetTeacherDailySchedule } from "../../../domain/UseCaseInterface/TimeTable/IGetTeacherDailySchedule";
+import { IGetTeacherDailySchedule } from "../../interface/UseCaseInterface/TimeTable/IGetTeacherDailySchedule";
 import { ITimeTableRepository } from "../../../domain/repositories/Admin/ITimeTableCreate";
 import { TeacherDailyScheduleDTO } from "../../dto/TeacherDailyScheduleDTO";
 

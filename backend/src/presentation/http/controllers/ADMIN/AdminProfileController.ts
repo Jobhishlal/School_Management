@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
-import { ISubAdminProfileGetUseCase } from "../../../../domain/UseCaseInterface/ISubAdminProfile";
-import { ISubAdminProfileUpdateUseCase } from "../../../../domain/UseCaseInterface/ISubAdminUpdateUseCase";
+import { ISubAdminProfileGetUseCase } from "../../../../applications/interface/UseCaseInterface/ISubAdminProfile";
+import { ISubAdminProfileUpdateUseCase } from "../../../../applications/interface/UseCaseInterface/ISubAdminUpdateUseCase";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 import { SubAdminEntities } from "../../../../domain/entities/SubAdmin";
-import { IRequestPasswordOtpUseCase } from "../../../../domain/UseCaseInterface/IPasswordUpdateUseCase";
-import { IUpdateSubAdminPasswordUseCase } from "../../../../domain/UseCaseInterface/IUpdateSubAdminPasswordUseCase";
-import {IVerifySubAdminPasswordOtpUseCase} from '../../../../domain/UseCaseInterface/IVerifySubAdminPasswordOtpUseCase'
+import { IRequestPasswordOtpUseCase } from "../../../../applications/interface/UseCaseInterface/IPasswordUpdateUseCase";
+import { IUpdateSubAdminPasswordUseCase } from "../../../../applications/interface/UseCaseInterface/IUpdateSubAdminPasswordUseCase";
+import {IVerifySubAdminPasswordOtpUseCase} from '../../../../applications/interface/UseCaseInterface/IVerifySubAdminPasswordOtpUseCase'
 
 export class AdminOwnProfileManagement {
   constructor(

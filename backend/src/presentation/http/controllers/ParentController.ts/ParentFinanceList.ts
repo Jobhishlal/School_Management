@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { IParentStudentList } from "../../../../domain/UseCaseInterface/FeeStructure/IParentStudentList";
+import { IParentStudentList } from "../../../../applications/interface/UseCaseInterface/FeeStructure/IParentStudentList";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 
 export class ParentFinanceList {

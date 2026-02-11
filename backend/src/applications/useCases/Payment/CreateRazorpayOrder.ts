@@ -1,4 +1,4 @@
-import { ICreateRazorpayOrder } from "../../../domain/UseCaseInterface/Payment/RazorpayUseCase";
+import { ICreateRazorpayOrder } from "../../interface/UseCaseInterface/Payment/RazorpayUseCase";
 import { RazorpayServices } from "../../../infrastructure/providers/RazorpayService"; 
 import { IPaymentTransactionRepository } from "../../../domain/repositories/FeeDetails/IPaymentTransactionRepository";
 import { PeymentTransactrion } from "../../../domain/entities/FeeType/PaymentTransaction";

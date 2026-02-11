@@ -2,15 +2,15 @@ import { Request, Response } from "express";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { getIO } from "../../../../infrastructure/socket/socket";
-import { ISendMessageUseCase } from "../../../../domain/interfaces/useCases/Chat/ISendMessageUseCase";
-import { IGetConversationsUseCase } from "../../../../domain/interfaces/useCases/Chat/IGetConversationsUseCase";
-import { IGetMessagesUseCase } from "../../../../domain/interfaces/useCases/Chat/IGetMessagesUseCase";
-import { IMarkMessagesReadUseCase } from "../../../../domain/interfaces/useCases/Chat/IMarkMessagesReadUseCase";
+import { ISendMessageUseCase } from "../../../../applications/interface/UseCaseInterface/Chat/ISendMessageUseCase";
+import { IGetConversationsUseCase } from "../../../../applications/interface/UseCaseInterface/Chat/IGetConversationsUseCase";
+import { IGetMessagesUseCase } from "../../../../applications/interface/UseCaseInterface/Chat/IGetMessagesUseCase";
+import { IMarkMessagesReadUseCase } from "../../../../applications/interface/UseCaseInterface/Chat/IMarkMessagesReadUseCase";
 import { MongoTeacher } from "../../../../infrastructure/repositories/MongoTeacherRepo";
-import { IEditMessageUseCase } from "../../../../domain/interfaces/useCases/Chat/IEditMessageUseCase";
-import { ICreateClassGroupChatUseCase } from "../../../../domain/interfaces/useCases/Chat/ICreateClassGroupChatUseCase";
+import { IEditMessageUseCase } from "../../../../applications/interface/UseCaseInterface/Chat/IEditMessageUseCase";
+import { ICreateClassGroupChatUseCase } from "../../../../applications/interface/UseCaseInterface/Chat/ICreateClassGroupChatUseCase";
 import { IChatRepository } from "../../../../domain/repositories/Chat/IChatRepository";
-import { ISearchChatUsersUseCase } from "../../../../domain/interfaces/useCases/Chat/ISearchChatUsersUseCase";
+import { ISearchChatUsersUseCase } from "../../../../applications/interface/UseCaseInterface/Chat/ISearchChatUsersUseCase";
 import { ChatDTOMapper } from "../../../../infrastructure/mappers/ChatDTOMapper";
 
 export class ChatController {

@@ -1,5 +1,5 @@
 import { hashedPassword,genaratePassword } from "../../../shared/constants/utils/TempPassGenarator";
-import { IGenarateTempPassword } from "../../../domain/UseCaseInterface/StudentCreate/GenaratePassword";
+import { IGenarateTempPassword } from "../../interface/UseCaseInterface/StudentCreate/GenaratePassword";
 
 
 export class GenarateTempPassword implements IGenarateTempPassword{

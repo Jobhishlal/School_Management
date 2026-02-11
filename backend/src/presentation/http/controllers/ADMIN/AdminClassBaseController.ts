@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import { IClassDivision } from "../../../../domain/UseCaseInterface/ClassBase/ClassAndDivision";
-import { IAssignTeacherOnClass } from "../../../../domain/UseCaseInterface/ClassBase/IClassAssignTeacher";
-import { IGetClassTeacher } from "../../../../domain/UseCaseInterface/ClassBase/IGetAllTeachers";
+import { IClassDivision } from "../../../../applications/interface/UseCaseInterface/ClassBase/ClassAndDivision";
+import { IAssignTeacherOnClass } from "../../../../applications/interface/UseCaseInterface/ClassBase/IClassAssignTeacher";
+import { IGetClassTeacher } from "../../../../applications/interface/UseCaseInterface/ClassBase/IGetAllTeachers";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
-import { IGETALLCLASSTEACHER } from "../../../../domain/UseCaseInterface/ClassBase/IGetAllTeacherstClass";
-import { IAssignStudentToClassDivision } from "../../../../domain/UseCaseInterface/ClassBase/IAssignStudentToClassDivision";
+import { IGETALLCLASSTEACHER } from "../../../../applications/interface/UseCaseInterface/ClassBase/IGetAllTeacherstClass";
+import { IAssignStudentToClassDivision } from "../../../../applications/interface/UseCaseInterface/ClassBase/IAssignStudentToClassDivision";
 import logger from "../../../../shared/constants/Logger";
 
 export class AdminClassController {

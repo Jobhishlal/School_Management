@@ -1,6 +1,6 @@
 import {IParentRepositorySign} from '../../../domain/repositories/Auth/IParentRepository'
 import { verifiedOtptoken } from '../../../infrastructure/security/otpJwtService'
-import { IVerifyPasswordOtpUseCase } from '../../../domain/UseCaseInterface/IVerifyParentForgot'
+import { IVerifyPasswordOtpUseCase } from '../../interface/UseCaseInterface/IVerifyParentForgot'
 
 
 export class VerifyParentPasswordOtpUseCase implements IVerifyPasswordOtpUseCase {

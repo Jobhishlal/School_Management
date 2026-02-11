@@ -1,5 +1,5 @@
 import { AddressEntity } from "../../../domain/entities/Address";
-import { IAddressUpdateUseCase } from "../../../domain/UseCaseInterface/IAddressUpdateUseCase";
+import { IAddressUpdateUseCase } from "../../interface/UseCaseInterface/IAddressUpdateUseCase";
 import { IAddrressRepository } from "../../../domain/repositories/IAddresssRepository";
 import { validateAddressUpdate } from "../../validators/AddressValidate";
 

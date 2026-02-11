@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
-import { ITimeTableStudentview } from "../../../../domain/UseCaseInterface/TimeTable/ITimeTableviewSTD";
+import { ITimeTableStudentview } from "../../../../applications/interface/UseCaseInterface/TimeTable/ITimeTableviewSTD";
 import { StudentTimeTableViewUseCase } from "../../../../applications/useCases/admin/TimeTable/StudentTimetableview";
 
 export class StudentTimetableController {

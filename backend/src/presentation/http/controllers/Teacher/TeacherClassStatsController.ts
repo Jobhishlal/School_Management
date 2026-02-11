@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { IGetTeacherClassDetailsUseCase } from "../../../../domain/UseCaseInterface/Teacher/IGetTeacherClassDetailsUseCase";
-import { IGetStudentPerformanceUseCase } from "../../../../domain/UseCaseInterface/Teacher/IGetStudentPerformanceUseCase";
+import { IGetTeacherClassDetailsUseCase } from "../../../../applications/interface/UseCaseInterface/Teacher/IGetTeacherClassDetailsUseCase";
+import { IGetStudentPerformanceUseCase } from "../../../../applications/interface/UseCaseInterface/Teacher/IGetStudentPerformanceUseCase";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 

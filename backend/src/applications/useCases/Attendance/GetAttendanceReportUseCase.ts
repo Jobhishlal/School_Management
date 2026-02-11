@@ -1,4 +1,4 @@
-import { IGetAttendanceReportUseCase } from "../../../domain/UseCaseInterface/Attandance/IGetAttendanceReportUseCase";
+import { IGetAttendanceReportUseCase } from "../../interface/UseCaseInterface/Attandance/IGetAttendanceReportUseCase";
 import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
 
 export class GetAttendanceReportUseCase implements IGetAttendanceReportUseCase {

@@ -4,11 +4,11 @@ import { MongoStudentRepo } from "../../../../infrastructure/repositories/MongoS
 import { Students } from "../../../../domain/entities/Students";
 
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
-import { IGetStudentSInterface } from "../../../../domain/UseCaseInterface/IStudentGetUseCase";
-import { IStudentBlock } from "../../../../domain/UseCaseInterface/IStudentBlock";
+import { IGetStudentSInterface } from "../../../../applications/interface/UseCaseInterface/IStudentGetUseCase";
+import { IStudentBlock } from '../../../../applications/interface/UseCaseInterface/IStudentBlock'
 import logger from "../../../../shared/constants/Logger";
-import { IStudentUpdateUseCase } from "../../../../domain/UseCaseInterface/IStudentupdate";
-import { IGetStudentsByClassUseCase } from "../../../../domain/UseCaseInterface/StudentCreate/IStudentFindClassBase";
+import { IStudentUpdateUseCase } from "../../../../applications/interface/UseCaseInterface/IStudentupdate";
+import { IGetStudentsByClassUseCase } from "../../../../applications/interface/UseCaseInterface/StudentCreate/IStudentFindClassBase";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 
 export class StudentCreateController {

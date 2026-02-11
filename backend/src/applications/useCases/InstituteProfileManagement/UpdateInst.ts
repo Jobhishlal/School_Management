@@ -1,5 +1,5 @@
 import { Institute } from "../../../domain/entities/Institute";
-import { IIInstituteProfileUpdate } from "../../../domain/UseCaseInterface/IInstProfileUpdateUseCase";
+import { IIInstituteProfileUpdate } from "../../interface/UseCaseInterface/IInstProfileUpdateUseCase";
 import { IInstituterepo } from "../../../domain/repositories/SchoolProfile.ts/IInstituteRepo";
 import { InstituteErrorMessageValidate } from "../../validators/InstitutProfileValidate";
 

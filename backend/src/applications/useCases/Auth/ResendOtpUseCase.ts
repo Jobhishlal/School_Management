@@ -4,7 +4,7 @@ import { IEmailService } from "../../../infrastructure/services/interfaces/IEmai
 import { OtpError } from "../../../domain/enums/OtpErrorMessage";
 import { GenarateOtp } from "../../../shared/constants/utils/Otpgenarator";
 
-import { IResendOtpUseCase } from "../../../domain/UseCaseInterface/IResendOtpUseCase";
+import { IResendOtpUseCase } from "../../interface/UseCaseInterface/IResendOtpUseCase";
 
 export class ResendOtpUseCase implements IResendOtpUseCase {
     constructor(

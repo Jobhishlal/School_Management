@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { ICreateMeetingUseCase } from '../../../../domain/UseCaseInterface/Meeting/ICreateMeetingUseCase';
-import { IGetScheduledMeetingsUseCase } from '../../../../domain/UseCaseInterface/Meeting/IGetScheduledMeetingsUseCase';
-import { IValidateMeetingJoinUseCase } from '../../../../domain/UseCaseInterface/Meeting/IValidateMeetingJoinUseCase';
+import { ICreateMeetingUseCase } from '../../../../applications/interface/UseCaseInterface/Meeting/ICreateMeetingUseCase';
+import { IGetScheduledMeetingsUseCase } from '../../../../applications/interface/UseCaseInterface/Meeting/IGetScheduledMeetingsUseCase';
+import { IValidateMeetingJoinUseCase } from '../../../../applications/interface/UseCaseInterface/Meeting/IValidateMeetingJoinUseCase';
 import { StatusCodes } from '../../../../shared/constants/statusCodes';
 
 export class MeetingController {

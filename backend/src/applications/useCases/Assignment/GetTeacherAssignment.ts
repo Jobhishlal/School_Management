@@ -1,4 +1,4 @@
-import { IGetTeacherAssignment } from "../../../domain/UseCaseInterface/Assignment/IGetAssigmentTeacher";
+import { IGetTeacherAssignment } from "../../interface/UseCaseInterface/Assignment/IGetAssigmentTeacher";
 import { AssignmentEntity } from "../../../domain/entities/Assignment";
 import { IAssignmentRepository } from "../../../domain/repositories/Assignment/IAssignmentRepository ";
 

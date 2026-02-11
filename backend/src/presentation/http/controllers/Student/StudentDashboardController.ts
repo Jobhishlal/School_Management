@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { IStudentDashboardUseCase } from "../../../../domain/UseCaseInterface/StudentDashboard/IStudentDashboardUseCase";
+import { IStudentDashboardUseCase } from "../../../../applications/interface/UseCaseInterface/StudentDashboard/IStudentDashboardUseCase";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 

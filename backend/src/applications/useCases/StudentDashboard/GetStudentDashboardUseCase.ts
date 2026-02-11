@@ -1,4 +1,4 @@
-import { IStudentDashboardUseCase } from "../../../domain/UseCaseInterface/StudentDashboard/IStudentDashboardUseCase";
+import { IStudentDashboardUseCase } from "../../interface/UseCaseInterface/StudentDashboard/IStudentDashboardUseCase";
 import { StudentDashboardDTO } from "../../dto/StudentDashboard/StudentDashboardDTO";
 import { ITimeTableRepository } from "../../../domain/repositories/Admin/ITimeTableCreate";
 import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";

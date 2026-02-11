@@ -1,8 +1,8 @@
 import { StatusCodes } from "../../../../../shared/constants/statusCodes";
-import { ICreateTimeTable } from "../../../../../domain/UseCaseInterface/TimeTable/ICreateTimeTable";
-import { IGETTIMETABLECLASS } from "../../../../../domain/UseCaseInterface/TimeTable/IGetTimeTableClassUseCase";
-import { IDeleteTimeTable } from "../../../../../domain/UseCaseInterface/TimeTable/IDeleteTimeTableUseCase";
-import { IUPDATETIMETABLE } from "../../../../../domain/UseCaseInterface/TimeTable/IUpdateTimeTable";
+import { ICreateTimeTable } from "../../../../../applications/interface/UseCaseInterface/TimeTable/ICreateTimeTable";
+import { IGETTIMETABLECLASS } from "../../../../../applications/interface/UseCaseInterface/TimeTable/IGetTimeTableClassUseCase";
+import { IDeleteTimeTable } from "../../../../../applications/interface/UseCaseInterface/TimeTable/IDeleteTimeTableUseCase";
+import { IUPDATETIMETABLE } from "../../../../../applications/interface/UseCaseInterface/TimeTable/IUpdateTimeTable";
 
 
 import { CreateTimetableDTO } from "../../../../../applications/dto/CreateTImeTableDTO";

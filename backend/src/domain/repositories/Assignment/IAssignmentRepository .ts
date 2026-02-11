@@ -1,7 +1,7 @@
 import { AssignmentEntity } from "../../entities/Assignment";
 import { AssignmentDTO, ValidationDTO } from "../../../applications/dto/AssignmentDTO ";
 import { SubmitDTO } from "../../../applications/dto/AssignmentDTO ";
-import { SubmissionResult } from "../../UseCaseInterface/Assignment/IGetAssignmentSubmissions";
+import { SubmissionResult } from "../../../applications/interface/UseCaseInterface/Assignment/IGetAssignmentSubmissions";
 export interface TeacherTimetableInfo {
   classId: string;
   divisions: string[];

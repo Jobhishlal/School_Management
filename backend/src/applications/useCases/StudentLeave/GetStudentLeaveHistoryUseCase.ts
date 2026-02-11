@@ -1,4 +1,4 @@
-import { IGetStudentLeaveHistoryUseCase } from "../../../domain/UseCaseInterface/StudentLeave/IGetStudentLeaveHistoryUseCase";
+import { IGetStudentLeaveHistoryUseCase } from "../../interface/UseCaseInterface/StudentLeave/IGetStudentLeaveHistoryUseCase";
 import { IStudentLeaveRepository } from "../../../domain/repositories/StudentLeave/IStudentLeaveRepository";
 import { StudentLeaveEntity } from "../../../domain/entities/StudentLeave/StudentLeaveEntity";
 

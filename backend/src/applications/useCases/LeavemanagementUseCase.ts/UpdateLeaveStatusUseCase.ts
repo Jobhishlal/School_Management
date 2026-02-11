@@ -4,7 +4,7 @@ import { LeaveManagementEntity } from "../../../domain/entities/LeaveManagement/
 import { IInstituterepo } from "../../../domain/repositories/SchoolProfile.ts/IInstituteRepo";
 import { SendEMail } from "../../../infrastructure/providers/EmailService";
 import { EmailTemplates } from "../../../shared/constants/utils/Email/emailTemplates";
-import { IUpdateLeaveStatusUseCase } from "../../../domain/UseCaseInterface/LeaveManagement/IUpdateLeaveStatusUseCase";
+import { IUpdateLeaveStatusUseCase } from "../../interface/UseCaseInterface/LeaveManagement/IUpdateLeaveStatusUseCase";
 import { SubAdminRepository } from "../../../domain/repositories/SubAdminCreate";
 
 export class UpdateLeaveStatusUseCase implements IUpdateLeaveStatusUseCase {
@@ -27,7 +27,7 @@ export class UpdateLeaveStatusUseCase implements IUpdateLeaveStatusUseCase {
             return null;
         }
 
-        // Check validation before update
+      
         if (status === "APPROVED" && (existingLeave.leaveType === "SICK" || existingLeave.leaveType === "CASUAL")) {
             if (existingLeave.teacherId) {
                 const teacher = await this.teacherRepo.findById(existingLeave.teacherId);
@@ -43,7 +43,7 @@ export class UpdateLeaveStatusUseCase implements IUpdateLeaveStatusUseCase {
             } else if (existingLeave.subAdminId) {
                 const subAdmin = await this.subAdminRepo.findById(existingLeave.subAdminId);
                 if (subAdmin) {
-                    // Check balance using defaults if undefined
+                  
                     const sickBalance = subAdmin.leaveBalance?.sickLeave ?? 5;
                     const casualBalance = subAdmin.leaveBalance?.casualLeave ?? 5;
 
@@ -95,12 +95,12 @@ export class UpdateLeaveStatusUseCase implements IUpdateLeaveStatusUseCase {
                 console.log("SubAdmin found:", subAdmin ? "yes" : "no", subAdmin?.leaveBalance);
 
                 if (subAdmin) {
-                    // Initialize leaveBalance if it doesn't exist (e.g. for old records)
+                    
                     if (!subAdmin.leaveBalance) {
                         console.log("Initializing missing leaveBalance for SubAdmin");
                         subAdmin.leaveBalance = {
-                            sickLeave: 5, // Default annual sick leave (corrected to 5)
-                            casualLeave: 5 // Default annual casual leave (corrected to 5)
+                            sickLeave: 5,
+                            casualLeave: 5 
                         };
                     }
 

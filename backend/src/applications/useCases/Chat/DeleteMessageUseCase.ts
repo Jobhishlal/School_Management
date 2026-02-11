@@ -1,7 +1,7 @@
 import { IChatRepository } from "../../../domain/repositories/Chat/IChatRepository";
 import { Message } from "../../../domain/entities/Message";
 import { IChatSocketService } from "../../../infrastructure/services/IChatSocketService";
-import { IDeleteMessageUseCase } from "../../../domain/interfaces/useCases/Chat/IDeleteMessageUseCase";
+import { IDeleteMessageUseCase } from "../../interface/UseCaseInterface/Chat/IDeleteMessageUseCase";
 
 export class DeleteMessageUseCase implements IDeleteMessageUseCase {
     constructor(

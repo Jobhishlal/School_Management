@@ -1,12 +1,12 @@
 
 import { Request,Response } from "express";
-import { IInstituteUsecase } from "../../../../domain/UseCaseInterface/IInstituteProfileUseCase";
+import { IInstituteUsecase } from "../../../../applications/interface/UseCaseInterface/IInstituteProfileUseCase";
 import { CreateInstituteDTO,DocumentDTO } from "../../../../applications/dto/InstituteProfilet";
 import { Institute } from "../../../../domain/entities/Institute";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
-import { IGetInstituteInterface } from "../../../../domain/UseCaseInterface/IGetInstituteProfile";
+import { IGetInstituteInterface} from  '../../../../applications/interface/UseCaseInterface/IGetInstituteProfile'
 import logger from "../../../../shared/constants/Logger";
-import {IIInstituteProfileUpdate} from '../../../../domain/UseCaseInterface/IInstProfileUpdateUseCase'
+import {IIInstituteProfileUpdate} from '../../../../applications/interface/UseCaseInterface/IInstProfileUpdateUseCase'
 import mongoose from "mongoose";
 
 

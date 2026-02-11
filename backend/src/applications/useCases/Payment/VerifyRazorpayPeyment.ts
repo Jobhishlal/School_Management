@@ -1,4 +1,4 @@
-import { IVerifyStatusChange } from "../../../domain/UseCaseInterface/Payment/VerifyStatus";
+import { IVerifyStatusChange } from "../../interface/UseCaseInterface/Payment/VerifyStatus";
 import { IPaymentTransactionRepository } from "../../../domain/repositories/FeeDetails/IPaymentTransactionRepository";
 import { PeymentTransactrion } from "../../../domain/entities/FeeType/PaymentTransaction";
 import { NotificationPort } from "../../../infrastructure/services/ports/NotificationPort";

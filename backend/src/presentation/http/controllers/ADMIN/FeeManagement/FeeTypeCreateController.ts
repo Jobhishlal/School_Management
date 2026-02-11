@@ -1,19 +1,23 @@
 import { Request, Response } from "express";
-import { ITypeCreateUseCase } from "../../../../../domain/UseCaseInterface/FeeStructure/IFeeTypeCreate";
+import { ITypeCreateUseCase } from "../../../../../applications/interface/UseCaseInterface/FeeStructure/IFeeTypeCreate";
 import { CreateFeeTypeDTO } from "../../../../../applications/dto/FeeDTO/CreateFeeTypeDTO";
-import { IGetAllFeeType } from "../../../../../domain/UseCaseInterface/FeeStructure/IGetAllFeeType";
+import { IGetAllFeeType } from "../../../../../applications/interface/UseCaseInterface/FeeStructure/IGetAllFeeType";
 import { StatusCodes } from "../../../../../shared/constants/statusCodes";
+
+import { FeeTypeValidationfunction } from "../../../../validators/FeeStructureValidation/CreateValidationFeeStructure";
 
 export class FeeTypeCreateController {
   constructor(
     private createFeeTypeUseCase: ITypeCreateUseCase,
     private getAllFeeTypeUseCase: IGetAllFeeType
-  ) {}
+  ) { }
 
   async create(req: Request, res: Response): Promise<void> {
     try {
       const payload: CreateFeeTypeDTO = req.body;
       console.log("FeeType creation request received:", payload);
+
+      FeeTypeValidationfunction(payload);
 
       const createdFeeType = await this.createFeeTypeUseCase.execute(payload);
 
@@ -25,10 +29,10 @@ export class FeeTypeCreateController {
 
       console.log("FeeType created successfully:", createdFeeType.name);
     } catch (error: any) {
-      console.log("error",error)
+      console.log("error", error)
       res.status(StatusCodes.BAD_REQUEST).json({
-       success: false,
-      message: error.message, 
+        success: false,
+        message: error.message,
       });
     }
   }
@@ -51,7 +55,7 @@ export class FeeTypeCreateController {
         data,
       });
     } catch (error: any) {
-     
+
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: "Failed to get fee types",

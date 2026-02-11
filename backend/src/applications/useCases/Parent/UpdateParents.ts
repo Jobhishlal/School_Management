@@ -1,6 +1,6 @@
 import { ParentEntity } from "../../../domain/entities/Parents";
 import { IParentRepository } from "../../../domain/repositories/IParentsRepository";
-import { Iupdatparentusecase } from "../../../domain/UseCaseInterface/IParentUseCase";
+import { Iupdatparentusecase } from "../../interface/UseCaseInterface/IParentUseCase";
 import { validateParentUpdate } from "../../validators/ParentValidate";
 
 export class UpdateParentUseCase implements Iupdatparentusecase{

@@ -6,7 +6,7 @@ import { ITimeTableRepository } from "../../../domain/repositories/Admin/ITimeTa
 import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
 import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMarkRepoInterface";
 import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
-import { IGetTeacherDashboardUseCase } from "../../../domain/UseCaseInterface/Teacher/IGetTeacherDashboardUseCase";
+import { IGetTeacherDashboardUseCase } from "../../interface/UseCaseInterface/Teacher/IGetTeacherDashboardUseCase";
 
 export class GetTeacherDashboardUseCase implements IGetTeacherDashboardUseCase {
     constructor(

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { IGetAdminDashboardUseCase } from "../../../../domain/UseCaseInterface/IGetAdminDashboardUseCase";
+import { IGetAdminDashboardUseCase } from "../../../../applications/interface/UseCaseInterface/IGetAdminDashboardUseCase";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 export class AdminDashboardController {
     constructor(private getAdminDashboardUseCase: IGetAdminDashboardUseCase) { }

@@ -1,5 +1,5 @@
 import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";
-import { IGetTeachersForChatUseCase } from "../../../domain/interfaces/useCases/Chat/IGetTeachersForChatUseCase";
+import { IGetTeachersForChatUseCase } from "../../interface/UseCaseInterface/Chat/IGetTeachersForChatUseCase";
 
 export class GetTeachersForChatUseCase implements IGetTeachersForChatUseCase {
     constructor(private teacherRepo: ITeacherCreate) { }

@@ -1,5 +1,5 @@
 import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
-import { IExamFindByClassUseCase } from "../../../domain/UseCaseInterface/Exam/IExamFindClassBase";
+import { IExamFindByClassUseCase } from "../../interface/UseCaseInterface/Exam/IExamFindClassBase";
 import { ExamEntity } from "../../../domain/entities/Exam/ExamEntity";
 
 

@@ -1,4 +1,4 @@
-import { IClassDivision } from "../../../domain/UseCaseInterface/ClassBase/ClassAndDivision";
+import { IClassDivision } from "../../interface/UseCaseInterface/ClassBase/ClassAndDivision";
 import { IClassDivisionRepository } from "../../../domain/repositories/Classrepo/IClassDivisionview";
 
 

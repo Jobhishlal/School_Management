@@ -1,6 +1,6 @@
 
 import {SubAdminRepository} from "../../../domain/repositories/SubAdminCreate";
-import {ISubAdminProfileGetUseCase} from '../../../domain/UseCaseInterface/ISubAdminProfile'
+import { ISubAdminProfileGetUseCase } from "../../interface/UseCaseInterface/ISubAdminProfile";
 import { SubAdminEntities } from "../../../domain/entities/SubAdmin";
 
 export class SubAdminProfileGetUseCase implements ISubAdminProfileGetUseCase {

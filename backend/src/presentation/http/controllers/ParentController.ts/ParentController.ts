@@ -4,8 +4,8 @@ import { ParentAddUseCase } from "../../../../applications/useCases/Parent/Paren
 import { Request, Response } from "express";
 import { ParentEntity } from "../../../../domain/entities/Parents";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
-import { Iupdatparentusecase } from "../../../../domain/UseCaseInterface/IParentUseCase";
-import { IGetParentProfileUseCase } from "../../../../domain/UseCaseInterface/Parent/IGetParentProfileUseCase";
+import { Iupdatparentusecase } from "../../../../applications/interface/UseCaseInterface/IParentUseCase";
+import { IGetParentProfileUseCase } from "../../../../applications/interface/UseCaseInterface/Parent/IGetParentProfileUseCase";
 
 
 export class ParentManagementCOntroller {

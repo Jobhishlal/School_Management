@@ -1,6 +1,6 @@
 import { IMeetingRepository } from "../../../domain/repositories/IMeetingRepository";
 import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
-import { IValidateMeetingJoinUseCase } from "../../../domain/UseCaseInterface/Meeting/IValidateMeetingJoinUseCase";
+import { IValidateMeetingJoinUseCase } from "../../interface/UseCaseInterface/Meeting/IValidateMeetingJoinUseCase";
 import { Meeting } from "../../../domain/entities/Meeting";
 
 export class ValidateMeetingJoinUseCase implements IValidateMeetingJoinUseCase {

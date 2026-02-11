@@ -1,8 +1,8 @@
 import { Response } from "express";
-import { IAnnoucementfindclassBase } from "../../../../domain/UseCaseInterface/Announcement/IAnnouncementReadUseCase";
+import { IAnnoucementfindclassBase } from "../../../../applications/interface/UseCaseInterface/Announcement/IAnnouncementReadUseCase";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
-import { IStudentProfileUseCase } from "../../../../domain/UseCaseInterface/StudentCreate/IStudentProfile";
+import { IStudentProfileUseCase } from "../../../../applications/interface/UseCaseInterface/StudentCreate/IStudentProfile";
 
 
 

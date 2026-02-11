@@ -2,7 +2,7 @@ import { SubAdminRepository } from "../../../domain/repositories/SubAdminCreate"
 import { GenarateOtp } from "../../../shared/constants/utils/Otpgenarator";
 import { SendEMail } from "../../../infrastructure/providers/EmailService";
 import { genarateotptoken } from "../../../infrastructure/security/otpJwtService";
-import { IRequestPasswordOtpUseCase } from "../../../domain/UseCaseInterface/IPasswordUpdateUseCase";
+import { IRequestPasswordOtpUseCase } from "../../interface/UseCaseInterface/IPasswordUpdateUseCase";
 
 export class RequestSubAdminPasswordOtpUseCase  implements IRequestPasswordOtpUseCase{
   constructor(private subAdminRepo: SubAdminRepository) {}

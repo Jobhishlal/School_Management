@@ -1,5 +1,5 @@
 
-import { IClassUpdateUseCase } from '../../../domain/UseCaseInterface/IClassUpdateUseCase'
+import { IClassUpdateUseCase } from "../../interface/UseCaseInterface/IClassUpdateUseCase";
 import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
 import { Class } from "../../../domain/entities/Class";
 import { validateClassUpdate } from '../../validators/ClassValidate';

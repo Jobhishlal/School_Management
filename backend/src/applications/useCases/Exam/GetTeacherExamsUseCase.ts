@@ -1,4 +1,4 @@
-import { IGetTeacherExamsUseCase } from "../../../domain/UseCaseInterface/Exam/IExamFindTeacherIdbase";
+import { IGetTeacherExamsUseCase } from "../../interface/UseCaseInterface/Exam/IExamFindTeacherIdbase";
 import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
 import { ExamEntity } from "../../../domain/entities/Exam/ExamEntity";
 

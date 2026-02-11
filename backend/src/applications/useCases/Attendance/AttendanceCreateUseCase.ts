@@ -1,6 +1,6 @@
 import { TakeAttendance } from "../../dto/Attendance/TakeAttendanceDTO";
 import { AttendanceEntity } from "../../../domain/entities/AttandanceEntity";
-import { IAttendanceCreateUseCase } from "../../../domain/UseCaseInterface/Attandance/ITakeAttendanceUseCase";
+import { IAttendanceCreateUseCase } from "../../interface/UseCaseInterface/Attandance/ITakeAttendanceUseCase";
 import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
 import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
 import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";

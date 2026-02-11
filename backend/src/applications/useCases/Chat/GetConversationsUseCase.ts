@@ -1,6 +1,6 @@
 import { IChatRepository } from "../../../domain/repositories/Chat/IChatRepository";
 import { Conversation } from "../../../domain/entities/Conversation";
-import { IGetConversationsUseCase } from "../../../domain/interfaces/useCases/Chat/IGetConversationsUseCase";
+import { IGetConversationsUseCase } from "../../interface/UseCaseInterface/Chat/IGetConversationsUseCase";
 
 export class GetConversationsUseCase implements IGetConversationsUseCase {
     constructor(private chatRepo: IChatRepository) { }

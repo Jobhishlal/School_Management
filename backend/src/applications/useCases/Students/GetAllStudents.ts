@@ -1,5 +1,5 @@
 import { Students } from "../../../domain/entities/Students";
-import { IGetStudentSInterface } from "../../../domain/UseCaseInterface/IStudentGetUseCase";
+import { IGetStudentSInterface } from "../../interface/UseCaseInterface/IStudentGetUseCase";
 import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
 
 

@@ -10,7 +10,7 @@ import { IAttandanceRepository } from "../../../domain/repositories/Attandance/I
 import { InterfaceLeaveManagement } from "../../../domain/repositories/ILeaveManagement/ILeaveManagement";
 import { AdminDashboardDTO } from "../../dto/AdminDashboardDTO";
 
-import { IGetAdminDashboardUseCase } from "../../../domain/UseCaseInterface/IGetAdminDashboardUseCase";
+import { IGetAdminDashboardUseCase } from "../../interface/UseCaseInterface/IGetAdminDashboardUseCase";
 
 export class GetAdminDashboardUseCase implements IGetAdminDashboardUseCase {
     constructor(

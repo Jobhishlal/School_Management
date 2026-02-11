@@ -1,6 +1,6 @@
 import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
 import { Class } from "../../../domain/entities/Class";
-import {IAssignClassUseCase} from '../../../domain/UseCaseInterface/AssignClassUseCase'
+import { IAssignClassUseCase } from "../../interface/UseCaseInterface/AssignClassUseCase";
 
 
 export class AssignClass implements IAssignClassUseCase{

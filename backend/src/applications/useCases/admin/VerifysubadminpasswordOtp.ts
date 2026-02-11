@@ -1,5 +1,5 @@
 import { verifiedOtptoken } from "../../../infrastructure/security/otpJwtService";
-import {IVerifySubAdminPasswordOtpUseCase} from '../../../domain/UseCaseInterface/IVerifySubAdminPasswordOtpUseCase'
+import {IVerifySubAdminPasswordOtpUseCase} from '../../interface/UseCaseInterface/IVerifySubAdminPasswordOtpUseCase'
 
 export class VerifySubAdminPasswordOtpUseCase implements IVerifySubAdminPasswordOtpUseCase{
   async execute(otpToken: string, otp: string) {

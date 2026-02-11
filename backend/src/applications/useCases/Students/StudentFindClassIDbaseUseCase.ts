@@ -1,4 +1,4 @@
-import { IGetStudentsByClassUseCase } from "../../../domain/UseCaseInterface/StudentCreate/IStudentFindClassBase";
+import { IGetStudentsByClassUseCase } from "../../interface/UseCaseInterface/StudentCreate/IStudentFindClassBase";
 import { Students } from "../../../domain/entities/Students";
 import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
 import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";

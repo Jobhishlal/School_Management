@@ -1,5 +1,5 @@
 import { ParentStudentFetchDTO } from "../../dto/FeeDTO/ParentStudentFinanceDTO";
-import { IParentStudentList } from "../../../domain/UseCaseInterface/FeeStructure/IParentStudentList";
+import { IParentStudentList } from "../../interface/UseCaseInterface/FeeStructure/IParentStudentList";
 import { ParentEntity } from "../../../domain/entities/Parents";
 import { IParentFeeInterface } from "../../../domain/repositories/IParentFeeList";
 

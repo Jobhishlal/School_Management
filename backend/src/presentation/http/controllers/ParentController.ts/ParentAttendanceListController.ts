@@ -1,8 +1,8 @@
-import { IParentAttendanceUseCase } from "../../../../domain/UseCaseInterface/Attandance/IParentAttendanceListUseCase";
+import { IParentAttendanceUseCase } from "../../../../applications/interface/UseCaseInterface/Attandance/IParentAttendanceListUseCase";
 import { Request, Response } from "express";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
-import { IParentDateBaseAttendance } from "../../../../domain/UseCaseInterface/Attandance/IParentDateBaseAttendance";
+import { IParentDateBaseAttendance } from "../../../../applications/interface/UseCaseInterface/Attandance/IParentDateBaseAttendance";
 import { AttendanceErrorEnums } from "../../../../shared/constants/AttendanceErrorEnums";
 
 export class ParentAttendanceListController {

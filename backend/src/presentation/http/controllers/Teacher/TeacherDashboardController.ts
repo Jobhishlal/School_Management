@@ -1,7 +1,7 @@
 import { GetTeacherDashboardUseCase } from "../../../../applications/useCases/Teacher/GetTeacherDashboardUseCase";
 import { Response } from "express";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
-import { IGetTeacherDashboardUseCase } from "../../../../domain/UseCaseInterface/Teacher/IGetTeacherDashboardUseCase";
+import { IGetTeacherDashboardUseCase } from "../../../../applications/interface/UseCaseInterface/Teacher/IGetTeacherDashboardUseCase";
 
 export class TeacherDashboardController {
     constructor(private useCase: IGetTeacherDashboardUseCase) { }

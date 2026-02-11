@@ -1,5 +1,5 @@
 import { IMeetingRepository } from "../../../domain/repositories/IMeetingRepository";
-import { IGetAllMeetingsUseCase } from "../../../domain/UseCaseInterface/Meeting/IGetAllMeetingsUseCase";
+import { IGetAllMeetingsUseCase } from "../../interface/UseCaseInterface/Meeting/IGetAllMeetingsUseCase";
 import { Meeting } from "../../../domain/entities/Meeting";
 
 export class GetAllMeetingsUseCase implements IGetAllMeetingsUseCase {

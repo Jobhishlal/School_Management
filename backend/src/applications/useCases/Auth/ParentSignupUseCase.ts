@@ -1,7 +1,7 @@
 import { ParentSignUpEntity } from "../../../domain/entities/ParentSignupEntity";
 import { IParentRepositorySign } from "../../../domain/repositories/Auth/IParentRepository";
 import bcrypt from "bcrypt";
-import { IParentSignupUseCase } from "../../../domain/UseCaseInterface/IParentSignupUseCase";
+import { IParentSignupUseCase } from "../../interface/UseCaseInterface/IParentSignupUseCase";
 
 
 export class SignupParentUseCase implements IParentSignupUseCase {

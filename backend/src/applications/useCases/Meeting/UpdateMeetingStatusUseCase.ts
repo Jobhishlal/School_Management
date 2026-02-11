@@ -1,5 +1,5 @@
 import { IMeetingRepository } from "../../../domain/repositories/IMeetingRepository";
-import { IUpdateMeetingStatusUseCase } from "../../../domain/UseCaseInterface/Meeting/IUpdateMeetingStatusUseCase";
+import { IUpdateMeetingStatusUseCase } from "../../interface/UseCaseInterface/Meeting/IUpdateMeetingStatusUseCase";
 import { Meeting } from "../../../domain/entities/Meeting";
 
 export class UpdateMeetingStatusUseCase implements IUpdateMeetingStatusUseCase {

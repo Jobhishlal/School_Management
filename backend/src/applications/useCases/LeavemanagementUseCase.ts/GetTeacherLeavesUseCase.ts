@@ -1,6 +1,6 @@
 import { InterfaceLeaveManagement } from "../../../domain/repositories/ILeaveManagement/ILeaveManagement";
 import { LeaveManagementEntity } from "../../../domain/entities/LeaveManagement/LeaveManagementEntity";
-import { IGetTeacherUseCase } from "../../../domain/UseCaseInterface/LeaveManagement/IGetTeacherUseCase";
+import { IGetTeacherUseCase } from "../../interface/UseCaseInterface/LeaveManagement/IGetTeacherUseCase";
 
 export class GetTeacherLeavesUseCase  implements IGetTeacherUseCase{
     constructor(private leaveRepo: InterfaceLeaveManagement) { }

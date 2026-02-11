@@ -1,4 +1,4 @@
-import { IGetParentProfileUseCase } from "../../../domain/UseCaseInterface/Parent/IGetParentProfileUseCase";
+import { IGetParentProfileUseCase } from "../../interface/UseCaseInterface/Parent/IGetParentProfileUseCase";
 import { ParentProfileDTO } from "../../dto/Parent/ParentProfileDTO";
 import { IParentProfileRepository } from "../../../domain/repositories/ParentProfile/IParentProfile";
 

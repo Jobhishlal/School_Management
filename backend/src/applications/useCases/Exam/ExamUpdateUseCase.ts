@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { IExamUpdateTeacherUseCase } from "../../../domain/UseCaseInterface/Exam/IExamUpdateUseCase";
+import { IExamUpdateTeacherUseCase } from "../../interface/UseCaseInterface/Exam/IExamUpdateUseCase";
 import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
 import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";
 import { ExamEntity } from "../../../domain/entities/Exam/ExamEntity";

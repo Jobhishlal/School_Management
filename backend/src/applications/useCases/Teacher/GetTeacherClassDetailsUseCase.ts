@@ -1,7 +1,7 @@
 import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
 import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
 
-import { IGetTeacherClassDetailsUseCase } from "../../../domain/UseCaseInterface/Teacher/IGetTeacherClassDetailsUseCase";
+import { IGetTeacherClassDetailsUseCase } from "../../interface/UseCaseInterface/Teacher/IGetTeacherClassDetailsUseCase";
 import { ITeacherCreate } from "../../../domain/repositories/TeacherCreate";
 
 import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMarkRepoInterface";

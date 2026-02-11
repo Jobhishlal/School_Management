@@ -1,4 +1,4 @@
-import { IAnnoucementfindclassBase } from "../../../domain/UseCaseInterface/Announcement/IAnnouncementReadUseCase";
+import { IAnnoucementfindclassBase } from "../../interface/UseCaseInterface/Announcement/IAnnouncementReadUseCase";
 import { IAnnouncementRepository } from "../../../domain/repositories/Announcement/IAnnouncement";
 import { Announcement } from "../../../domain/entities/Announcement/Announcement";
 import { CreateAnnouncementInput } from "../../dto/CreateAnnouncementInput";

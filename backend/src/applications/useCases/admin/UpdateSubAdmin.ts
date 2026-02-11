@@ -1,7 +1,7 @@
 import { AdminRole } from "../../../domain/enums/AdminRole";
 import { SubAdminEntities } from "../../../domain/entities/SubAdmin";
 import { SubAdminRepository } from "../../../domain/repositories/SubAdminCreate";
-import { IUpdateadmin } from "../../../domain/UseCaseInterface/IAdminUpdate";
+import { IUpdateadmin } from "../../interface/UseCaseInterface/IAdminUpdate";
 
 export class UpdateDetails implements IUpdateadmin {
   constructor(private subadminrepo: SubAdminRepository) {}

@@ -1,7 +1,7 @@
 
 import { Expense } from "../../../domain/entities/FeeType/Expense";
 import { IExpenseRepository } from "../../../domain/repositories/FeeDetails/IExpesnseRepositoy";
-import { IExpenseFUllListout } from "../../../domain/UseCaseInterface/FeeStructure/IListFullExpense";
+import { IExpenseFUllListout } from "../../interface/UseCaseInterface/FeeStructure/IListFullExpense";
 
 
 export class ListOutFullExpense implements IExpenseFUllListout{

@@ -1,4 +1,4 @@
-import { IGetStudentAttendanceHistoryUseCase } from "../../../domain/UseCaseInterface/Attandance/IGetStudentAttendanceHistoryUseCase";
+import { IGetStudentAttendanceHistoryUseCase } from "../../interface/UseCaseInterface/Attandance/IGetStudentAttendanceHistoryUseCase";
 import { IAttandanceRepository } from "../../../domain/repositories/Attandance/IAttendanceRepository";
 
 export class GetStudentAttendanceHistoryUseCase implements IGetStudentAttendanceHistoryUseCase {

@@ -3,15 +3,15 @@ import { Request, Response } from "express";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { CHAT_ERRORS } from "../../../../shared/constants/errorMessages";
-import { ISendMessageUseCase } from "../../../../domain/interfaces/useCases/Chat/ISendMessageUseCase";
-import { IGetConversationsUseCase } from "../../../../domain/interfaces/useCases/Chat/IGetConversationsUseCase";
-import { IGetMessagesUseCase } from "../../../../domain/interfaces/useCases/Chat/IGetMessagesUseCase";
-import { IMarkMessagesReadUseCase } from "../../../../domain/interfaces/useCases/Chat/IMarkMessagesReadUseCase";
-import { IEditMessageUseCase } from "../../../../domain/interfaces/useCases/Chat/IEditMessageUseCase";
-import { ICreateClassGroupChatUseCase } from "../../../../domain/interfaces/useCases/Chat/ICreateClassGroupChatUseCase";
-import { IDeleteMessageUseCase } from "../../../../domain/interfaces/useCases/Chat/IDeleteMessageUseCase";
-import { IGetTeachersForChatUseCase } from "../../../../domain/interfaces/useCases/Chat/IGetTeachersForChatUseCase";
-import { ISearchChatUsersUseCase } from "../../../../domain/interfaces/useCases/Chat/ISearchChatUsersUseCase";
+import { ISendMessageUseCase } from "../../../../applications/interface/UseCaseInterface/Chat/ISendMessageUseCase";
+import { IGetConversationsUseCase } from "../../../../applications/interface/UseCaseInterface/Chat/IGetConversationsUseCase";
+import { IGetMessagesUseCase } from "../../../../applications/interface/UseCaseInterface/Chat/IGetMessagesUseCase";
+import { IMarkMessagesReadUseCase } from "../../../../applications/interface/UseCaseInterface/Chat/IMarkMessagesReadUseCase";
+import { IEditMessageUseCase } from "../../../../applications/interface/UseCaseInterface/Chat/IEditMessageUseCase";
+import { ICreateClassGroupChatUseCase } from "../../../../applications/interface/UseCaseInterface/Chat/ICreateClassGroupChatUseCase";
+import { IDeleteMessageUseCase } from "../../../../applications/interface/UseCaseInterface/Chat/IDeleteMessageUseCase";
+import { IGetTeachersForChatUseCase } from "../../../../applications/interface/UseCaseInterface/Chat/IGetTeachersForChatUseCase";
+import { ISearchChatUsersUseCase } from "../../../../applications/interface/UseCaseInterface/Chat/ISearchChatUsersUseCase";
 import { ChatDTOMapper } from "../../../../infrastructure/mappers/ChatDTOMapper";
 
 export class SchoolChatController {
@@ -30,7 +30,7 @@ export class SchoolChatController {
     getTeachersForStudent = async (req: Request, res: Response) => {
         try {
             const teachers = await this.teachersForChatUseCase.execute();
-
+           
             res.status(StatusCodes.OK).json({ success: true, data: teachers });
         } catch (error) {
             console.error("Error fetching teachers for chat:", error);
@@ -43,7 +43,7 @@ export class SchoolChatController {
             const authReq = req as AuthRequest;
             const senderId = authReq.user?.id;
             const senderRole = authReq.user?.role;
-            const { receiverId, receiverRole, content, type } = req.body;
+            const { receiverId, receiverRole, content, type } = req.body; 
 
             if (!senderId || !senderRole) {
                 return res.status(StatusCodes.UNAUTHORIZED).json({ message: CHAT_ERRORS.UNAUTHORIZED });
@@ -185,7 +185,7 @@ export class SchoolChatController {
             const authReq = req as AuthRequest;
             const userId = authReq.user?.id;
             const { messageId } = req.body;
-            console.log(`[SchoolChatController] deleteMessage called. Body:`, req.body);
+
             if (!userId) {
                 return res.status(StatusCodes.UNAUTHORIZED).json({ message: CHAT_ERRORS.UNAUTHORIZED });
             }

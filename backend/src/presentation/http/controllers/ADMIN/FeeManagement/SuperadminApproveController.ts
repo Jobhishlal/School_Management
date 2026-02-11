@@ -1,8 +1,8 @@
-import { IApprovalUsecase } from "../../../../../domain/UseCaseInterface/FeeStructure/IApprovel";
+import { IApprovalUsecase } from "../../../../../applications/interface/UseCaseInterface/FeeStructure/IApprovel";
 import { Request,Response } from "express";
 import { AuthRequest } from "../../../../../infrastructure/types/AuthRequest";
 import { StatusCodes } from "../../../../../shared/constants/statusCodes";
-import { IGetAllPendingStatus } from "../../../../../domain/UseCaseInterface/FeeStructure/IListPendingStatus";
+import { IGetAllPendingStatus } from "../../../../../applications/interface/UseCaseInterface/FeeStructure/IListPendingStatus";
 
 
 export class SuperadminApprovalController {

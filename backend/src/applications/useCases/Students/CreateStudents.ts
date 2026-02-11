@@ -1,10 +1,10 @@
 import { Students } from "../../../domain/entities/Students";
-import { IStudentAddUsecase } from "../../../domain/UseCaseInterface/IAddStudents";
+import { IStudentAddUsecase } from "../../interface/UseCaseInterface/IAddStudents";
 import { IParentRepository } from "../../../domain/repositories/IParentsRepository";
 import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";
-import { IEmailServiceShare } from "../../../domain/UseCaseInterface/StudentCreate/IEmailSendUsecase";
-import { IGenarateTempPassword } from "../../../domain/UseCaseInterface/StudentCreate/GenaratePassword";
-import { IStudentIdGenarate } from "../../../domain/UseCaseInterface/StudentCreate/GenarateStudentId";
+import { IEmailServiceShare } from "../../interface/UseCaseInterface/StudentCreate/IEmailSendUsecase";
+import { IGenarateTempPassword } from "../../interface/UseCaseInterface/StudentCreate/GenaratePassword";
+import { IStudentIdGenarate } from "../../interface/UseCaseInterface/StudentCreate/GenarateStudentId";
 import { validateStudent } from "../../validators/StudentValidate";
 
 export class StudentAddUseCase implements IStudentAddUsecase {

@@ -1,4 +1,4 @@
-import { IAssignTeacherOnClass } from "../../../domain/UseCaseInterface/ClassBase/IClassAssignTeacher";
+import { IAssignTeacherOnClass } from "../../interface/UseCaseInterface/ClassBase/IClassAssignTeacher";
 import { IClassDivisionRepository } from "../../../domain/repositories/Classrepo/IClassDivisionview";
 
 export class TeacherAssignClassUseCase implements IAssignTeacherOnClass {

@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
-import { ICreateFeeStructureUseCase } from "../../../../../domain/UseCaseInterface/FeeStructure/IFeeCreateInterFace";
+import { ICreateFeeStructureUseCase } from "../../../../../applications/interface/UseCaseInterface/IFeeCreateInterFace";
 import { StatusCodes } from "../../../../../shared/constants/statusCodes";
-import { IStudentFullFeePaymentStatusUseCase } from "../../../../../domain/UseCaseInterface/FeeStructure/IStudentFeePaidDetails";
-import { IStudentPaymentHistorySeeAdmin } from "../../../../../domain/UseCaseInterface/FeeStructure/StudentBasePaymentHistorSee";
-import { IGetAllFeeStructures } from "../../../../../domain/UseCaseInterface/FeeStructure/IGetAllFeeStructures";
+import { IStudentFullFeePaymentStatusUseCase } from "../../../../../applications/interface/UseCaseInterface/FeeStructure/IStudentFeePaidDetails";
+import { IStudentPaymentHistorySeeAdmin } from "../../../../../applications/interface/UseCaseInterface/FeeStructure/StudentBasePaymentHistorSee";
+import { IGetAllFeeStructures } from "../../../../../applications/interface/UseCaseInterface/FeeStructure/IGetAllFeeStructures";
+import { CreateValidationFeeStructure } from "../../../../validators/FeeStructureValidation/FeeStructurevalidation";
 
 export class FeeStructureManageController {
   constructor(
@@ -13,7 +14,7 @@ export class FeeStructureManageController {
     private getAllFeeStructuresUseCase: IGetAllFeeStructures
   ) { }
 
-  // ... (existing create method)
+ 
 
   async getAll(req: Request, res: Response): Promise<void> {
     try {
@@ -36,8 +37,7 @@ export class FeeStructureManageController {
     try {
       const { name, classId, academicYear, feeItems, notes, startDate, expiryDate } = req.body;
 
-
-
+      CreateValidationFeeStructure(req.body);
 
       const result = await this.createFeeUseCase.execute({
         name,

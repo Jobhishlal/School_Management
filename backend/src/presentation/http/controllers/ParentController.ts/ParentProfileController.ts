@@ -1,4 +1,4 @@
-import { IGetParentProfileUseCase } from "../../../../domain/UseCaseInterface/Parent/IGetParentProfileUseCase";
+import { IGetParentProfileUseCase } from "../../../../applications/interface/UseCaseInterface/Parent/IGetParentProfileUseCase";
 import { Request, Response } from "express";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 export class ParentProfileController {

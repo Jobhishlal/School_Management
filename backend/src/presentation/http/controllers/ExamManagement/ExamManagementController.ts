@@ -1,13 +1,13 @@
 import { Response } from "express";
-import { IExamCreateRepository } from "../../../../domain/UseCaseInterface/Exam/IExamCreateUseCase";
+import { IExamCreateRepository } from "../../../../applications/interface/UseCaseInterface/Exam/IExamCreateUseCase";
 import { CreateExamDTO } from "../../../../applications/dto/Exam/CreateExamDTO";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { ExamErrorMessages } from "../../../../shared/constants/ExamErrorMessages";
-import { IExamUpdateTeacherUseCase } from "../../../../domain/UseCaseInterface/Exam/IExamUpdateUseCase";
+import { IExamUpdateTeacherUseCase } from "../../../../applications/interface/UseCaseInterface/Exam/IExamUpdateUseCase";
 import { UpdateExamDTO } from "../../../../applications/dto/Exam/UpdateExamDTO";
-import { IGetTeacherExamsUseCase } from "../../../../domain/UseCaseInterface/Exam/IExamFindTeacherIdbase";
-import { IExamFindByClassUseCase } from "../../../../domain/UseCaseInterface/Exam/IExamFindClassBase";
+import { IGetTeacherExamsUseCase } from "../../../../applications/interface/UseCaseInterface/Exam/IExamFindTeacherIdbase";
+import { IExamFindByClassUseCase } from "../../../../applications/interface/UseCaseInterface/Exam/IExamFindClassBase";
 import { ValidateExamCreate } from "../../../validators/Examvalidation/ExamCreateValidation";
 import { ValidateExamUpdate } from "../../../validators/Examvalidation/ExamUpdateValidation";
 

@@ -1,4 +1,4 @@
-import { ParentUseCase } from "../../../domain/UseCaseInterface/IParentCreate";
+import { ParentUseCase } from "../../interface/UseCaseInterface/IParentCreate";
 import { IParentRepository } from "../../../domain/repositories/IParentsRepository";
 import { ParentEntity } from "../../../domain/entities/Parents";
 import { ParentValidate } from "../../validators/ParentValidate";

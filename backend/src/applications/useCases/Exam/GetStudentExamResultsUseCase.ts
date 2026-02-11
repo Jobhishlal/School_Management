@@ -1,4 +1,4 @@
-import { IGetStudentExamResultsUseCase } from "../../../domain/UseCaseInterface/Exam/StudentSeeExamMarks";
+import { IGetStudentExamResultsUseCase } from "../../interface/UseCaseInterface/Exam/StudentSeeExamMarks";
 import { IExamRepository } from "../../../domain/repositories/Exam/IExamRepoInterface";
 import { IExamMarkRepository } from "../../../domain/repositories/Exam/IExamMarkRepoInterface";
 import { StudentDetails } from "../../../domain/repositories/Admin/IStudnetRepository";

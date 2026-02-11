@@ -1,4 +1,4 @@
-import { IAssignStudentToClassDivision } from "../../../domain/UseCaseInterface/ClassBase/IAssignStudentToClassDivision";
+import { IAssignStudentToClassDivision } from "../../interface/UseCaseInterface/ClassBase/IAssignStudentToClassDivision";
 import { IClassRepository } from "../../../domain/repositories/Classrepo/IClassRepository";
 
 export class DivisionStudentUseCase implements IAssignStudentToClassDivision {
