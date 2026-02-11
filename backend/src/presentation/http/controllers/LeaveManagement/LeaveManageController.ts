@@ -9,7 +9,7 @@ import { IUpdateLeaveStatusUseCase } from "../../../../applications/interface/Us
 import { LeaveError } from "../../../../domain/enums/LeaveError";
 import { ICreateSubAdminLeaveUseCase } from "../../../../applications/useCases/LeavemanagementUseCase.ts/SubAdminLeaveCreateUseCase";
 import { IGetSubAdminLeavesUseCase } from "../../../../applications/useCases/LeavemanagementUseCase.ts/GetSubAdminLeavesUseCase";
-import { ValidateLeaveCreate } from "../../../../applications/validators/LeaveValidation/LeaveCreateValidation";
+import { validateLeaveCreate } from '../../../validators/LeaveValidation/LeaveValidators';
 
 
 
@@ -33,6 +33,8 @@ export class LeaveManagementController {
         return;
       }
       const data: CreateLeaveDTO = req.body;
+
+      validateLeaveCreate(data);
 
       const leave = await this._leavecreate.execute(
         teacherId,
@@ -75,12 +77,7 @@ export class LeaveManagementController {
 
       const data: CreateLeaveDTO = req.body;
 
-      try {
-        ValidateLeaveCreate(data);
-      } catch (error: any) {
-        res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
-        return;
-      }
+      validateLeaveCreate(data);
 
 
       const leave = await this._subAdminLeaveCreate.execute(subAdminId, data);

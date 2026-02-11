@@ -2,7 +2,7 @@
 import { IClassUpdateUseCase } from "../../interface/UseCaseInterface/IClassUpdateUseCase";
 import { IClassRepository } from "../../interface/RepositoryInterface/Classrepo/IClassRepository";
 import { Class } from "../../../domain/entities/Class";
-import { validateClassUpdate } from '../../validators/ClassValidate';
+import { validateClassUpdate } from "../../../presentation/validators/ClassValidation/ClassValidators";
 export class UpdateClassUseCase implements IClassUpdateUseCase {
   constructor(private classRepo: IClassRepository) {}
 

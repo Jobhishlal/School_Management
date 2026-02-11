@@ -4,7 +4,7 @@ import { IGetParentComplaintsUseCase } from "../../../../applications/useCases/P
 import { IUpdateParentComplaintUseCase } from "../../../../applications/useCases/Parent/IUpdateParentComplaintUseCase";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
-import { ValidateComplaint } from "../../../../applications/validators/ParentComplaint/ComplaintValidation";
+import { validateComplaintCreate } from '../../../validators/ParentComplaintValidation/ComplaintValidators';
 
 export class ParentComplaintController {
     constructor(
@@ -24,12 +24,7 @@ export class ParentComplaintController {
                 return;
             }
 
-            try {
-                ValidateComplaint({ concernTitle, description });
-            } catch (error: any) {
-                res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
-                return;
-            }
+            validateComplaintCreate({ concernTitle, description });
 
             const complaint = await this.createParentComplaintUseCase.execute({
                 parentId: parentId,
@@ -76,12 +71,7 @@ export class ParentComplaintController {
                 return;
             }
 
-            try {
-                ValidateComplaint({ concernTitle, description });
-            } catch (error: any) {
-                res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
-                return;
-            }
+            validateComplaintCreate({ concernTitle, description });
 
             const updatedComplaint = await this.updateParentComplaintUseCase.execute(id, {
                 concernTitle,

@@ -1,10 +1,10 @@
 import { IFeeTypeRepository } from "../../../applications/interface/RepositoryInterface/FeeDetails/IFeeTypeRepository";
-import { FeeType } from "../../../domain/entities/FeeType/FeeType";
+import { FeeType, OfferEntity } from "../../../domain/entities/FeeType/FeeType";
 import { FeeTypeModel } from "../../database/models/FeeManagement/FeeType";
 
 
 export class FeeTypeManagemnt implements IFeeTypeRepository {
-  
+
   async create(feeType: FeeType): Promise<FeeType> {
     const created = await FeeTypeModel.create({
       name: feeType.name,
@@ -13,7 +13,13 @@ export class FeeTypeManagemnt implements IFeeTypeRepository {
       frequency: feeType.frequency,
       isOptional: feeType.isOptional,
       isActive: feeType.isActive,
-      Offers:feeType.offers
+      Offers: feeType.offers?.map(o => ({
+        type: o.type,
+        discountPercentage: o.discountPercentage,
+        discountAmount: o.discountAmount,
+        finalAmount: o.finalAmount,
+        validUntil: o.validUntil
+      }))
     });
 
     return new FeeType(
@@ -24,7 +30,7 @@ export class FeeTypeManagemnt implements IFeeTypeRepository {
       created.frequency,
       created.isOptional,
       created.isActive,
-      created.Offers
+      created.Offers.map(o => new OfferEntity(o.type, o.discountPercentage, o.discountAmount, o.finalAmount, o.validUntil))
     );
   }
 
@@ -40,7 +46,7 @@ export class FeeTypeManagemnt implements IFeeTypeRepository {
       found.frequency,
       found.isOptional,
       found.isActive,
-      found.Offers
+      found.Offers.map(o => new OfferEntity(o.type, o.discountPercentage, o.discountAmount, o.finalAmount, o.validUntil))
     );
   }
 
@@ -56,7 +62,7 @@ export class FeeTypeManagemnt implements IFeeTypeRepository {
       found.frequency,
       found.isOptional,
       found.isActive,
-      found.Offers
+      found.Offers.map(o => new OfferEntity(o.type, o.discountPercentage, o.discountAmount, o.finalAmount, o.validUntil))
     );
   }
 
@@ -72,13 +78,24 @@ export class FeeTypeManagemnt implements IFeeTypeRepository {
           r.frequency,
           r.isOptional,
           r.isActive,
-          r.Offers
+          r.Offers.map(o => new OfferEntity(o.type, o.discountPercentage, o.discountAmount, o.finalAmount, o.validUntil))
         )
     );
   }
 
   async update(id: string, feeType: Partial<FeeType>): Promise<FeeType | null> {
-    const updated = await FeeTypeModel.findByIdAndUpdate(id, feeType, { new: true });
+    const updateData: any = { ...feeType };
+    if (feeType.offers) {
+      updateData.Offers = feeType.offers.map(o => ({
+        type: o.type,
+        discountPercentage: o.discountPercentage,
+        discountAmount: o.discountAmount,
+        finalAmount: o.finalAmount,
+        validUntil: o.validUntil
+      }));
+      delete updateData.offers;
+    }
+    const updated = await FeeTypeModel.findByIdAndUpdate(id, updateData, { new: true });
     if (!updated) return null;
 
     return new FeeType(
@@ -89,7 +106,7 @@ export class FeeTypeManagemnt implements IFeeTypeRepository {
       updated.frequency,
       updated.isOptional,
       updated.isActive,
-      updated.Offers
+      updated.Offers.map(o => new OfferEntity(o.type, o.discountPercentage, o.discountAmount, o.finalAmount, o.validUntil))
     );
   }
 

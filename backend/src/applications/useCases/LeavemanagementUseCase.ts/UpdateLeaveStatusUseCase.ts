@@ -119,7 +119,7 @@ export class UpdateLeaveStatusUseCase implements IUpdateLeaveStatusUseCase {
 
                      
 
-                        const updateResult = await this.subAdminRepo.update(subAdmin._id, {
+                        const updateResult = await this.subAdminRepo.update(subAdmin.id, {
                             leaveBalance: subAdmin.leaveBalance
                         });
                         console.log("Update Result:", updateResult?.leaveBalance);

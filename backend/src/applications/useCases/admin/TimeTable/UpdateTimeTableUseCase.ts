@@ -1,5 +1,4 @@
-
-import { TimetableEntity } from "../../../../domain/entities/TimeTableEntity";
+import { TimetableEntity, DayScheduleEntity, PeriodEntity, BreakEntity } from "../../../../domain/entities/TimeTableEntity";
 import { ITimeTableRepository } from "../../../interface/RepositoryInterface/Admin/ITimeTableCreate";
 import { IUPDATETIMETABLE } from "../../../interface/UseCaseInterface/TimeTable/IUpdateTimeTable";
 import { CreateTimetableDTO } from "../../../dto/CreateTImeTableDTO";
@@ -18,20 +17,20 @@ export class UpdateTimeTableUseCase implements IUPDATETIMETABLE {
             dto.classId,
             dto.className,
             dto.division,
-            dto.days.map(d => ({
-                day: d.day,
-                periods: d.periods.map(p => ({
-                    startTime: p.startTime,
-                    endTime: p.endTime,
-                    subject: p.subject,
-                    teacherId: p.teacherId
-                })),
-                breaks: (d.breaks || []).map(b => ({
-                    startTime: b.startTime,
-                    endTime: b.endTime,
-                    name: b.name
-                }))
-            }))
+            dto.days.map(d => new DayScheduleEntity(
+                d.day,
+                d.periods.map(p => new PeriodEntity(
+                    p.startTime,
+                    p.endTime,
+                    p.subject,
+                    p.teacherId
+                )),
+                (d.breaks || []).map(b => new BreakEntity(
+                    b.startTime,
+                    b.endTime,
+                    b.name
+                ))
+            ))
         );
 
         return this.timetableRepo.update(updatedEntity);

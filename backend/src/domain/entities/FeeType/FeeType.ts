@@ -1,4 +1,39 @@
-import { OfferInterface } from "../../../infrastructure/database/models/FeeManagement/FeeType";
+export class OfferEntity {
+  private _type: string;
+  private _discountPercentage?: number;
+  private _discountAmount?: number;
+  private _finalAmount?: number;
+  private _validUntil?: Date;
+
+  constructor(
+    type: string,
+    discountPercentage?: number,
+    discountAmount?: number,
+    finalAmount?: number,
+    validUntil?: Date
+  ) {
+    this._type = type;
+    this._discountPercentage = discountPercentage;
+    this._discountAmount = discountAmount;
+    this._finalAmount = finalAmount;
+    this._validUntil = validUntil;
+  }
+
+  get type(): string { return this._type; }
+  set type(value: string) { this._type = value; }
+
+  get discountPercentage(): number | undefined { return this._discountPercentage; }
+  set discountPercentage(value: number | undefined) { this._discountPercentage = value; }
+
+  get discountAmount(): number | undefined { return this._discountAmount; }
+  set discountAmount(value: number | undefined) { this._discountAmount = value; }
+
+  get finalAmount(): number | undefined { return this._finalAmount; }
+  set finalAmount(value: number | undefined) { this._finalAmount = value; }
+
+  get validUntil(): Date | undefined { return this._validUntil; }
+  set validUntil(value: Date | undefined) { this._validUntil = value; }
+}
 
 export class FeeType {
   private _id: string;
@@ -8,7 +43,7 @@ export class FeeType {
   private _frequency: "ONCE" | "MONTHLY" | "YEARLY";
   private _isOptional: boolean;
   private _isActive: boolean;
-  private _offers: OfferInterface[] | undefined;
+  private _offers: OfferEntity[] | undefined;
 
   constructor(
     id: string,
@@ -18,7 +53,7 @@ export class FeeType {
     frequency: "ONCE" | "MONTHLY" | "YEARLY",
     isOptional: boolean,
     isActive: boolean,
-    offers?: OfferInterface[]
+    offers?: OfferEntity[]
   ) {
     this._id = id;
     this._name = name;
@@ -51,6 +86,32 @@ export class FeeType {
   get isActive(): boolean { return this._isActive; }
   set isActive(value: boolean) { this._isActive = value; }
 
-  get offers(): OfferInterface[] | undefined { return this._offers; }
-  set offers(value: OfferInterface[] | undefined) { this._offers = value; }
+  get offers(): OfferEntity[] | undefined { return this._offers; }
+  set offers(value: OfferEntity[] | undefined) { this._offers = value; }
+
+  public static validate(data: {
+    name?: string;
+    description?: string;
+    defaultAmount?: number;
+    frequency?: string;
+  }): void {
+    if (data.name !== undefined) {
+      if (!data.name.trim()) {
+        throw new Error("Fee type name is required");
+      }
+    }
+
+    if (data.defaultAmount !== undefined) {
+      if (data.defaultAmount < 0) {
+        throw new Error("Default amount cannot be negative");
+      }
+    }
+
+    if (data.frequency !== undefined) {
+      const validFrequencies = ["ONCE", "MONTHLY", "YEARLY"];
+      if (!validFrequencies.includes(data.frequency)) {
+        throw new Error("Invalid frequency");
+      }
+    }
+  }
 }

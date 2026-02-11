@@ -4,7 +4,7 @@ import { CreateFeeTypeDTO } from "../../../../../applications/dto/FeeDTO/CreateF
 import { IGetAllFeeType } from "../../../../../applications/interface/UseCaseInterface/FeeStructure/IGetAllFeeType";
 import { StatusCodes } from "../../../../../shared/constants/statusCodes";
 
-import { FeeTypeValidationfunction } from "../../../../validators/FeeStructureValidation/CreateValidationFeeStructure";
+import { validateFeeTypeCreate } from "../../../../validators/FinanceValidation/FinanceValidators";
 
 export class FeeTypeCreateController {
   constructor(
@@ -17,7 +17,7 @@ export class FeeTypeCreateController {
       const payload: CreateFeeTypeDTO = req.body;
       console.log("FeeType creation request received:", payload);
 
-      FeeTypeValidationfunction(payload);
+      validateFeeTypeCreate(payload);
 
       const createdFeeType = await this.createFeeTypeUseCase.execute(payload);
 

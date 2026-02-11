@@ -7,6 +7,7 @@ import { IClassUpdateUseCase } from "../../../../applications/interface/UseCaseI
 import { IAssignClassUseCase } from "../../../../applications/interface/UseCaseInterface/AssignClassUseCase";
 
 import { IDeleteClassUseCase } from "../../../../applications/interface/UseCaseInterface/ClassBase/IDeleteClassorDivisionUseCase";
+import { validateClassCreate, validateClassUpdate } from '../../../validators/ClassValidation/ClassValidators';
 
 export class ClassManagementController {
   constructor(
@@ -20,6 +21,8 @@ export class ClassManagementController {
   async create(req: Request, res: Response): Promise<void> {
     try {
       const { className, division, department, rollNumber, subjects } = req.body;
+
+      validateClassCreate(req.body);
 
       console.log("req.body in class create:", req.body);
 
@@ -74,6 +77,8 @@ export class ClassManagementController {
       const { id } = req.params
       const update = req.body
 
+      validateClassUpdate(update);
+
       const updatedClass = await this.classupdate.execute(id, update)
 
       if (!updatedClass) {
@@ -116,7 +121,7 @@ export class ClassManagementController {
       await this.deleteClassUseCase.execute(id);
       res.status(StatusCodes.OK).json({ success: true, message: "Class deleted successfully" });
     } catch (error: any) {
-     
+
       res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: error.message });
     }
   }

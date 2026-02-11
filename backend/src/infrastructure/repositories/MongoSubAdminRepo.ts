@@ -189,10 +189,18 @@ export class MongoSubAdminRepo implements SubAdminRepository {
     const doc = await SubAdminModel.findByIdAndUpdate(
       id,
       {
-        ...updates,
-        address: updates.address ? updates.address : undefined,
-        documents: updates.documents ?? undefined,
-        photo: updates.photo ?? undefined,
+        name: updates.name,
+        email: updates.email,
+        phone: updates.phone,
+        role: updates.role,
+        major_role: updates.major_role,
+        blocked: updates.blocked,
+        dateOfBirth: updates.dateOfBirth,
+        gender: updates.gender,
+        address: updates.address,
+        documents: updates.documents,
+        photo: updates.photo,
+        leaveBalance: updates.leaveBalance
       },
       { new: true }
     ).populate<{ address: AddressDocument }>("address");

@@ -10,6 +10,7 @@ import { IGetTeacherAssignment } from "../../../../applications/interface/UseCas
 import { IValidateAssignment } from "../../../../applications/interface/UseCaseInterface/Assignment/IValidateAssignment";
 import { IGetAssignmentSubmissions } from "../../../../applications/interface/UseCaseInterface/Assignment/IGetAssignmentSubmissions";
 import { ValidationDTO } from "../../../../applications/dto/AssignmentDTO ";
+import { validateAssignmentCreate, validateAssignmentUpdate } from '../../../validators/AssignmentValidation/AssignmentValidators';
 
 export class AssignmentManageController {
   constructor(
@@ -35,6 +36,8 @@ export class AssignmentManageController {
           uploadedAt: new Date()
         }));
       }
+
+      validateAssignmentCreate(dto);
 
       const data = await this.createrepo.execute(dto);
 
@@ -103,6 +106,8 @@ export class AssignmentManageController {
           uploadedAt: new Date(),
         }));
       }
+
+      validateAssignmentUpdate(update);
 
       const data = await this.updateassignment.execute(id, update);
 

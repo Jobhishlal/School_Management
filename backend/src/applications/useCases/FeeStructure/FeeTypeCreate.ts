@@ -1,4 +1,4 @@
-import { FeeType } from "../../../domain/entities/FeeType/FeeType";
+import { FeeType, OfferEntity } from "../../../domain/entities/FeeType/FeeType";
 import { IFeeTypeRepository } from "../../interface/RepositoryInterface/FeeDetails/IFeeTypeRepository";
 import { CreateFeeTypeDTO } from "../../dto/FeeDTO/CreateFeeTypeDTO";
 import { ITypeCreateUseCase } from "../../interface/UseCaseInterface/FeeStructure/IFeeTypeCreate";
@@ -11,6 +11,14 @@ export class CreateFeeTypeUseCase implements ITypeCreateUseCase {
   async execute(request: CreateFeeTypeDTO): Promise<FeeType> {
     const { name, description, defaultAmount, frequency, isOptional, isActive, offers } = request;
 
+    const offerEntities = (offers || []).map(offer => new OfferEntity(
+      offer.type,
+      offer.discountPercentage,
+      offer.discountAmount,
+      offer.finalAmount,
+      offer.validUntil
+    ));
+
     const feeType = new FeeType(
       "",
       name,
@@ -19,16 +27,19 @@ export class CreateFeeTypeUseCase implements ITypeCreateUseCase {
       frequency,
       isOptional ?? false,
       isActive ?? true,
-      offers || []
+      offerEntities
     );
 
     if (feeType.offers && feeType.offers.length > 0) {
       feeType.offers = feeType.offers.map(offer => {
         const calculatedAmount = CalculateAmount(feeType, offer.type);
-        return {
-          ...offer,
-          finalAmount: calculatedAmount,
-        };
+        return new OfferEntity(
+          offer.type,
+          offer.discountPercentage,
+          offer.discountAmount,
+          calculatedAmount, // Set the calculated amount
+          offer.validUntil
+        );
       });
     }
 

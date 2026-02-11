@@ -1,11 +1,40 @@
+import { FeeStructureError } from "../../enums/FeeStructure/FeeStructure";
+
 export class FeeStructureItem {
+  private _feeTypeId: string;
+  private _name: string | undefined;
+  private _amount: number;
+  private _frequency: string;
+  private _isOptional: boolean;
+
   constructor(
-    public feeTypeId: string,
-    public name: string | undefined,
-    public amount: number,
-    public frequency: string,
-    public isOptional: boolean
-  ) { }
+    feeTypeId: string,
+    name: string | undefined,
+    amount: number,
+    frequency: string,
+    isOptional: boolean
+  ) {
+    this._feeTypeId = feeTypeId;
+    this._name = name;
+    this._amount = amount;
+    this._frequency = frequency;
+    this._isOptional = isOptional;
+  }
+
+  get feeTypeId(): string { return this._feeTypeId; }
+  set feeTypeId(value: string) { this._feeTypeId = value; }
+
+  get name(): string | undefined { return this._name; }
+  set name(value: string | undefined) { this._name = value; }
+
+  get amount(): number { return this._amount; }
+  set amount(value: number) { this._amount = value; }
+
+  get frequency(): string { return this._frequency; }
+  set frequency(value: string) { this._frequency = value; }
+
+  get isOptional(): boolean { return this._isOptional; }
+  set isOptional(value: boolean) { this._isOptional = value; }
 }
 
 export class FeeStructure {
@@ -74,15 +103,59 @@ export class FeeStructure {
   get expiryDate(): Date { return this._expiryDate; }
   set expiryDate(value: Date) { this._expiryDate = value; }
 
+  public static validate(data: {
+    name?: string;
+    classId?: string;
+    academicYear?: string;
+    feeItems?: any[];
+    startDate?: string | Date;
+    expiryDate?: string | Date;
+  }): void {
+    if (data.name !== undefined) {
+      if (data.name.trim() === "") {
+        throw new Error(FeeStructureError.EMPTY_NAME);
+      }
+    }
+
+    if (data.academicYear !== undefined) {
+      if (!/^\d{4}-\d{4}$/.test(data.academicYear)) {
+        throw new Error(FeeStructureError.INVALID_ACADEMIC_YEAR);
+      }
+    }
+
+    if (data.feeItems !== undefined) {
+      if (data.feeItems.length === 0) {
+        throw new Error(FeeStructureError.EMPTY_FEE_ITEMS);
+      }
+
+      const seenFeeTypes = new Set<string>();
+      data.feeItems.forEach((item, index) => {
+        if (!item.feeTypeId) {
+          throw new Error(`${FeeStructureError.INVALID_FEE_TYPE_ID} at index ${index}`);
+        }
+        if (seenFeeTypes.has(item.feeTypeId)) {
+          throw new Error(FeeStructureError.DUPLICATE_FEE_TYPE);
+        }
+        seenFeeTypes.add(item.feeTypeId);
+
+        if (Number(item.amount) <= 0) {
+          throw new Error(FeeStructureError.INVALID_AMOUNT);
+        }
+      });
+    }
+
+    if (data.startDate !== undefined && data.expiryDate !== undefined) {
+      this.validateDate(new Date(data.startDate), new Date(data.expiryDate));
+    }
+  }
+
   public static validateDate(startDate: Date, expiryDate: Date): void {
     const start = new Date(startDate);
     const end = new Date(expiryDate);
-    const now = new Date();
-
-   
-
+    if (isNaN(start.getTime())) throw new Error(FeeStructureError.INVALID_START_DATE);
+    if (isNaN(end.getTime())) throw new Error(FeeStructureError.INVALID_EXPIRY_DATE);
     if (end <= start) {
-      throw new Error("Expiry date must be after start date");
+      throw new Error(FeeStructureError.EXPIRY_BEFORE_START);
     }
   }
 
@@ -90,4 +163,3 @@ export class FeeStructure {
     return this._feeItems.reduce((sum, item) => sum + item.amount, 0);
   }
 }
-

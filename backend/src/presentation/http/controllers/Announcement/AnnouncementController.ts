@@ -8,8 +8,7 @@ import { UpdateAnnouncementDTO } from "../../../../applications/dto/Announcement
 import { FindAllaanouncement } from "../../../../applications/interface/UseCaseInterface/Announcement/IAnnouncementFindAll";
 import mongoose from "mongoose";
 import { DeleteAnnouncementUseCase } from "../../../../applications/useCases/Announcement/DeleteAnnouncementUseCase";
-import { ValidateAnnouncementCreate } from "../../../validators/AnnouncementValidation/AnnouncementCreateValidation";
-import { validateAnnouncementUpdate } from "../../../validators/AnnouncementValidation/AnnouncementUpdateValidation";
+import { validateAnnouncementCreate, validateAnnouncementUpdate } from "../../../validators/AnnouncementValidation/AnnouncementValidators";
 
 export class AnnouncementController {
   constructor(
@@ -24,7 +23,7 @@ export class AnnouncementController {
     try {
       const values: CreateAnnouncementDTO = req.body;
 
-      ValidateAnnouncementCreate(values);
+      validateAnnouncementCreate(values);
       let attachment: CreateAnnouncementDTO["attachment"] = undefined;
 
       if (req.file) {

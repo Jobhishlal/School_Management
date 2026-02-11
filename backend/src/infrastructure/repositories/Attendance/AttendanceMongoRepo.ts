@@ -1,7 +1,7 @@
 import { AttendanceModel } from "../../database/models/AttandanceModel";
 import { IAttandanceRepository } from "../../../applications/interface/RepositoryInterface/Attandance/IAttendanceRepository";
 import { TakeAttendance } from "../../../applications/dto/Attendance/TakeAttendanceDTO";
-import { AttendanceEntity, AttendanceSession } from "../../../domain/entities/AttandanceEntity";
+import { AttendanceEntity, AttendanceSession, AttendanceItemEntity } from "../../../domain/entities/AttandanceEntity";
 import { ClassModel } from "../../database/models/ClassModel";
 import { Types } from "mongoose";
 import { Class } from "../../../domain/entities/Class";
@@ -32,7 +32,11 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
       doc.teacherId.toString(),
       doc.date,
       doc.session,
-      doc.attendance,
+      doc.attendance.map((a: any) => new AttendanceItemEntity(
+        a.studentId.toString(),
+        a.status as any,
+        a.remarks
+      )),
       doc.createdAt,
       doc.updatedAt
     );
@@ -54,7 +58,11 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
       existing.teacherId.toString(),
       existing.date,
       existing.session,
-      existing.attendance,
+      existing.attendance.map((a: any) => new AttendanceItemEntity(
+        a.studentId.toString(),
+        a.status as any,
+        a.remarks
+      )),
       existing.createdAt,
       existing.updatedAt
     );
@@ -334,8 +342,8 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
       ? Math.round((result[0].present / result[0].total) * 100)
       : 0;
 
-    // Mock trend for now
-    const trend = 2; // +2%
+
+    const trend = 2;
 
     return { percentage, trend };
   }

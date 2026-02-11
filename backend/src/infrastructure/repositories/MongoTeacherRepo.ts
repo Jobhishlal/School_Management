@@ -113,7 +113,19 @@ export class MongoTeacher implements ITeacherCreate {
   }
 
   async update(id: string, update: Partial<Teeacher>): Promise<Teeacher | null> {
-    const teacher = await TeacherModel.findByIdAndUpdate(id, update, { new: true })
+    const teacher = await TeacherModel.findByIdAndUpdate(id, {
+      name: update.name,
+      email: update.email,
+      phone: update.phone,
+      gender: update.gender,
+      role: update.role,
+      blocked: update.blocked,
+      Password: update.Password,
+      documents: update.documents,
+      subjects: update.subjects,
+      department: update.department,
+      leaveBalance: update.leaveBalance
+    }, { new: true })
     if (!teacher) return null
     return new Teeacher(
       teacher.id.toString(),

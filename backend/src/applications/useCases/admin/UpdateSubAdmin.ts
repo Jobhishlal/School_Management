@@ -24,7 +24,7 @@ export class UpdateDetails implements IUpdateadmin {
    
     if (updates.email) {
       const existingEmail = await this.subadminrepo.findByEmail(updates.email);
-      if (existingEmail && existingEmail._id.toString() !== id.toString()) {
+      if (existingEmail && existingEmail.id.toString() !== id.toString()) {
         throw new Error("Email already exists");
       }
     }
@@ -32,7 +32,7 @@ export class UpdateDetails implements IUpdateadmin {
    
     if (updates.phone) {
       const existingPhone = await this.subadminrepo.findByPhone(updates.phone);
-      if (existingPhone && existingPhone._id.toString() !== id.toString()) {
+      if (existingPhone && existingPhone.id.toString() !== id.toString()) {
         throw new Error("Phone number already exists");
       }
     }

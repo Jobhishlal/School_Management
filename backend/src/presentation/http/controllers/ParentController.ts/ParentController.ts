@@ -6,6 +6,7 @@ import { ParentEntity } from "../../../../domain/entities/Parents";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { Iupdatparentusecase } from "../../../../applications/interface/UseCaseInterface/IParentUseCase";
 import { IGetParentProfileUseCase } from "../../../../applications/interface/UseCaseInterface/Parent/IGetParentProfileUseCase";
+import { validateParentCreate, validateParentUpdate } from '../../../validators/ParentValidation/ParentValidators';
 
 
 export class ParentManagementCOntroller {
@@ -19,6 +20,8 @@ export class ParentManagementCOntroller {
     async create(req: Request, res: Response): Promise<void> {
         try {
             const { name, contactNumber, whatsappNumber, email, relationship } = req.body;
+
+            validateParentCreate(req.body);
             const Parent = new ParentEntity(
                 "",
                 name,
@@ -64,6 +67,8 @@ export class ParentManagementCOntroller {
             const { id } = req.params;
             const update = req.body;
 
+            validateParentUpdate(update);
+
             const updateparent = await this.updateParents.execute(id, update);
 
             if (!updateparent) {
@@ -90,8 +95,9 @@ export class ParentManagementCOntroller {
 
     async getProfile(req: Request, res: Response): Promise<void> {
         try {
-            const { id } = req.params; 
-       
+            const { id } = req.params;
+
+
 
             const profile = await this.getParentProfile.execute(id);
             res.status(StatusCodes.OK).json(profile);

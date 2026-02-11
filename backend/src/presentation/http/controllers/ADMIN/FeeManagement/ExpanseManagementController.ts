@@ -10,8 +10,7 @@ import { IExpenseFUllListout } from "../../../../../applications/interface/UseCa
 import { IUpdatePendingExpense } from "../../../../../applications/interface/UseCaseInterface/FeeStructure/IUpdatePendingUseCase";
 import { UpdatePendingExpenseDTO } from "../../../../../applications/dto/FeeDTO/UpdatePendingExpenseDTO";
 
-import { ExpenceReletedvalidation } from "../../../../validators/FeeStructureValidation/ExpanceCreateValidation";
-import { UpdateExpenseReletedValidation } from "../../../../validators/FeeStructureValidation/ExpenceUpdateReletedvalidaion";
+import { validateExpenseCreate, validateExpenseUpdate } from "../../../../validators/FinanceValidation/FinanceValidators";
 
 export class ExpenseManagementController {
 
@@ -24,7 +23,7 @@ export class ExpenseManagementController {
   async create(req: Request, res: Response): Promise<void> {
 
     try {
-      ExpenceReletedvalidation(req.body);
+      validateExpenseCreate(req.body);
       const expense = await this.Createexpenseuse.execute(req.body)
 
       console.log("expense full details", expense)
@@ -66,7 +65,7 @@ export class ExpenseManagementController {
         console.log("user", req.user)
         res.status(StatusCodes.FORBIDDEN).json({ message: "does not have user" })
       }
-      UpdateExpenseReletedValidation(req.body);
+      validateExpenseUpdate(req.body);
       const dto = {
         expenseId: req.params.id,
         data: req.body

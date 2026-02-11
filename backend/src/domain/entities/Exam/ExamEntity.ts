@@ -1,3 +1,5 @@
+import { ExamErrors } from "../../enums/ExamErrorMessages/ExamError";
+
 export type ExamType = "UNIT_TEST" | "MIDTERM" | "FINAL";
 export type ExamStatus = "DRAFT" | "PUBLISHED";
 
@@ -121,13 +123,79 @@ export class ExamEntity {
   get concerns(): Array<{ studentName: string, concern: string, studentId: string }> { return this._concerns; }
   set concerns(value: Array<{ studentName: string, concern: string, studentId: string }>) { this._concerns = value; }
 
+  public static validate(data: {
+    title?: string;
+    type?: string;
+    subject?: string;
+    examDate?: string | Date;
+    startTime?: string;
+    endTime?: string;
+    maxMarks?: number;
+    passMarks?: number;
+    description?: string;
+  }): void {
+    if (data.type) {
+      const EXAM_TYPES = ["UNIT_TEST", "MIDTERM", "FINAL"];
+      if (!EXAM_TYPES.includes(data.type)) {
+        throw new Error(ExamErrors.INVALID_EXAM_TYPE);
+      }
+    }
+
+    if (data.examDate) {
+      const examDate = new Date(data.examDate);
+      if (isNaN(examDate.getTime())) {
+        throw new Error(ExamErrors.INVALID_DATE);
+      }
+      this.validateDate(examDate);
+    }
+
+    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    if (data.startTime && !timeRegex.test(data.startTime)) {
+      throw new Error(ExamErrors.INVALID_TIME);
+    }
+    if (data.endTime && !timeRegex.test(data.endTime)) {
+      throw new Error(ExamErrors.INVALID_TIME);
+    }
+
+    if (data.startTime && data.endTime) {
+      const [sh, sm] = data.startTime.split(":").map(Number);
+      const [eh, em] = data.endTime.split(":").map(Number);
+      if (eh * 60 + em <= sh * 60 + sm) {
+        throw new Error(ExamErrors.INVALID_TIME_RANGE);
+      }
+    }
+
+    if (data.maxMarks !== undefined) {
+      if (typeof data.maxMarks !== "number" || data.maxMarks <= 0) {
+        throw new Error(ExamErrors.INVALID_MARKS);
+      }
+    }
+
+    if (data.passMarks !== undefined) {
+      if (typeof data.passMarks !== "number" || data.passMarks <= 0) {
+        throw new Error("Pass marks must be a positive number.");
+      }
+      if (data.maxMarks !== undefined && data.passMarks > data.maxMarks) {
+        throw new Error("Pass marks cannot be greater than maximum marks.");
+      }
+    }
+
+    if (data.subject !== undefined) {
+      if (typeof data.subject !== "string" || data.subject.trim().length === 0) {
+        throw new Error(ExamErrors.INVALID_SUBJECT);
+      }
+    }
+
+    if (data.description && data.description.length > 500) {
+      throw new Error(ExamErrors.DESCRIPTION_LENGTH);
+    }
+  }
+
   public static validateDate(date: Date): void {
     const examDate = new Date(date);
     const currentDate = new Date();
-
     examDate.setHours(0, 0, 0, 0);
     currentDate.setHours(0, 0, 0, 0);
-
     if (examDate < currentDate) {
       throw new Error("Exam date cannot be in the past");
     }

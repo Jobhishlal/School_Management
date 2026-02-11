@@ -5,7 +5,7 @@ import { IGetClassStudentLeavesUseCase } from "../../../../applications/interfac
 import { IProcessStudentLeaveUseCase } from "../../../../applications/interface/UseCaseInterface/StudentLeave/IProcessStudentLeaveUseCase";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
-import { ValidateLeaveCreate } from "../../../../applications/validators/LeaveValidation/LeaveCreateValidation";
+import { validateLeaveCreate } from '../../../validators/LeaveValidation/LeaveValidators';
 
 export class StudentLeaveController {
     constructor(
@@ -19,24 +19,7 @@ export class StudentLeaveController {
         try {
             const { reason, startDate, endDate, leaveType } = req.body;
 
-            if (!reason) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Reason is required" });
-            }
-            if (!startDate) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Start date is required" });
-            }
-            if (!endDate) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "End date is required" });
-            }
-            if (!leaveType) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Leave type is required" });
-            }
-
-            try {
-                ValidateLeaveCreate(req.body);
-            } catch (error: any) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: error.message });
-            }
+            validateLeaveCreate(req.body);
 
             const parentId = req.user?.id || req.body.parentId;
 

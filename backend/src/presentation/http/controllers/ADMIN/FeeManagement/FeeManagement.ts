@@ -4,7 +4,7 @@ import { StatusCodes } from "../../../../../shared/constants/statusCodes";
 import { IStudentFullFeePaymentStatusUseCase } from "../../../../../applications/interface/UseCaseInterface/FeeStructure/IStudentFeePaidDetails";
 import { IStudentPaymentHistorySeeAdmin } from "../../../../../applications/interface/UseCaseInterface/FeeStructure/StudentBasePaymentHistorSee";
 import { IGetAllFeeStructures } from "../../../../../applications/interface/UseCaseInterface/FeeStructure/IGetAllFeeStructures";
-import { CreateValidationFeeStructure } from "../../../../validators/FeeStructureValidation/FeeStructurevalidation";
+import { validateFeeStructureCreate } from "../../../../validators/FinanceValidation/FinanceValidators";
 
 export class FeeStructureManageController {
   constructor(
@@ -14,7 +14,7 @@ export class FeeStructureManageController {
     private getAllFeeStructuresUseCase: IGetAllFeeStructures
   ) { }
 
- 
+
 
   async getAll(req: Request, res: Response): Promise<void> {
     try {
@@ -37,7 +37,7 @@ export class FeeStructureManageController {
     try {
       const { name, classId, academicYear, feeItems, notes, startDate, expiryDate } = req.body;
 
-      CreateValidationFeeStructure(req.body);
+      validateFeeStructureCreate(req.body);
 
       const result = await this.createFeeUseCase.execute({
         name,
@@ -80,7 +80,7 @@ export class FeeStructureManageController {
         return;
       }
       res.status(StatusCodes.OK)
-        .json({ message: "data fetch successfully", success: true, ...result }) // Spread result to include data (students) and total
+        .json({ message: "data fetch successfully", success: true, ...result }) 
 
     } catch (error) {
       console.log(error)

@@ -27,8 +27,8 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
       Assignment_Due_Date: entity.Assignment_Due_Date,
       attachments: entity.attachments.map(a => ({
         url: a.url,
-        fileName: a.filename,
-        uploadedAt: a.uploadedAt,
+        fileName: a.fileName,
+        uploadedAt: new Date(),
       })),
       maxMarks: entity.maxMarks,
       teacherId: new Types.ObjectId(entity.teacherId),
@@ -44,8 +44,7 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
       doc.Assignment_Due_Date,
       doc.attachments.map(a => ({
         url: a.url,
-        filename: a.fileName,
-        uploadedAt: a.uploadedAt,
+        fileName: a.fileName,
       })),
       doc.maxMarks,
       doc.teacherId.toString()
@@ -66,8 +65,7 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
       doc.Assignment_Due_Date,
       doc.attachments.map(a => ({
         url: a.url,
-        filename: a.fileName,
-        uploadedAt: a.uploadedAt,
+        fileName: a.fileName,
       })),
       doc.maxMarks,
       doc.teacherId.toString()
@@ -186,8 +184,7 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
       doc.Assignment_Due_Date,
       doc.attachments.map(a => ({
         url: a.url,
-        filename: a.fileName,
-        uploadedAt: a.uploadedAt,
+        fileName: a.fileName,
       })),
       doc.maxMarks,
       doc.teacherId.toString(),
@@ -216,8 +213,7 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
         doc.Assignment_Due_Date,
         doc.attachments.map(a => ({
           url: a.url,
-          filename: a.fileName,
-          uploadedAt: a.uploadedAt
+          fileName: a.fileName,
         })),
         doc.maxMarks,
         doc.teacherId.toString(),
@@ -259,8 +255,7 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
         doc.Assignment_Due_Date,
         doc.attachments.map((a) => ({
           url: a.url,
-          filename: a.fileName,
-          uploadedAt: a.uploadedAt,
+          fileName: a.fileName,
         })),
         doc.maxMarks,
         doc.teacherId.toString(),

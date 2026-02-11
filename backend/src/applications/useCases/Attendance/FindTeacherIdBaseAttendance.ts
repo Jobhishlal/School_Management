@@ -15,7 +15,7 @@ export class FindStudentsByTeacherUseCase implements IFindStudentsByTeacherUseCa
     if (!classData) throw new Error("No class assigned to this teacher");
 
 
-    const students = await this.studentRepo.findByStudentClassIdBase(classData._id);
+    const students = await this.studentRepo.findByStudentClassIdBase(classData.id);
     if (!students.length) throw new Error("No students found for this class");
 
     return students; 

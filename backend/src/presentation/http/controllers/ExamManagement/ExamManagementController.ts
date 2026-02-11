@@ -8,8 +8,7 @@ import { IExamUpdateTeacherUseCase } from "../../../../applications/interface/Us
 import { UpdateExamDTO } from "../../../../applications/dto/Exam/UpdateExamDTO";
 import { IGetTeacherExamsUseCase } from "../../../../applications/interface/UseCaseInterface/Exam/IExamFindTeacherIdbase";
 import { IExamFindByClassUseCase } from "../../../../applications/interface/UseCaseInterface/Exam/IExamFindClassBase";
-import { ValidateExamCreate } from "../../../validators/Examvalidation/ExamCreateValidation";
-import { ValidateExamUpdate } from "../../../validators/Examvalidation/ExamUpdateValidation";
+import { validateExamCreate, validateExamUpdate } from "../../../validators/ExamValidation/ExamValidators";
 
 
 
@@ -56,7 +55,7 @@ export class ExamManagementController {
         description: req.body.description || "",
       };
 
-      ValidateExamCreate(examData);
+      validateExamCreate(examData);
 
       const data = await this.repo.execute(examData);
 
@@ -79,7 +78,7 @@ export class ExamManagementController {
       const data: UpdateExamDTO = req.body;
       console.log("reached here", data)
 
-      ValidateExamUpdate(data);
+      validateExamUpdate(data);
 
 
 

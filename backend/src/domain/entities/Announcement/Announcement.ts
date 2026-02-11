@@ -1,3 +1,6 @@
+import { AnnouncementErrors } from "../../enums/AnnouncementError";
+import { isValidText } from "../../../shared/constants/utils/textValidation";
+
 export class Announcement {
   private _id?: string;
   private _title: string;
@@ -63,11 +66,55 @@ export class Announcement {
   get status(): "DRAFT" | "ACTIVE" { return this._status; }
   set status(value: "DRAFT" | "ACTIVE") { this._status = value; }
 
+  public static validate(data: {
+    title?: string;
+    content?: string;
+    scope?: string;
+    activeTime?: string | Date;
+    endTime?: string | Date;
+    attachment?: any;
+    status?: string;
+  }): void {
+    if (data.title !== undefined) {
+      if (data.title.trim().length < 3 || data.title.trim().length > 100 || !isValidText(data.title)) {
+        throw new Error(AnnouncementErrors.INVALID_TITLE);
+      }
+    }
+
+    if (data.content !== undefined) {
+      if (data.content.trim().length < 5 || data.content.trim().length > 5000 || !isValidText(data.content)) {
+        throw new Error(AnnouncementErrors.INVALID_CONTENT);
+      }
+    }
+
+    if (data.scope !== undefined) {
+      if (!["GLOBAL", "CLASS", "DIVISION"].includes(data.scope)) {
+        throw new Error(AnnouncementErrors.INVALID_SCOPE);
+      }
+    }
+
+    if (data.activeTime !== undefined && data.endTime !== undefined) {
+      this.validateDate(data.activeTime, data.endTime);
+    }
+
+    if (data.attachment) {
+      if (!data.attachment.url || !data.attachment.filename || !data.attachment.uploadAt) {
+        throw new Error(AnnouncementErrors.INVALID_ATTACHMENT);
+      }
+    }
+
+    if (data.status !== undefined) {
+      if (!["DRAFT", "ACTIVE"].includes(data.status)) {
+        throw new Error(AnnouncementErrors.INVALID_STATUS);
+      }
+    }
+  }
+
   public static validateDate(activeTime: Date | string, endTime: Date | string): void {
     const start = new Date(activeTime);
     const end = new Date(endTime);
     if (end < start) {
-      throw new Error("End time cannot be before active time");
+      throw new Error(AnnouncementErrors.INVALID_DATE);
     }
   }
 }

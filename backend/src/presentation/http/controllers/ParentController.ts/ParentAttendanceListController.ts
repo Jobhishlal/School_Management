@@ -4,6 +4,7 @@ import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { IParentDateBaseAttendance } from "../../../../applications/interface/UseCaseInterface/Attandance/IParentDateBaseAttendance";
 import { AttendanceErrorEnums } from "../../../../shared/constants/AttendanceErrorEnums";
+import { validateAttendanceFilter } from '../../../validators/AttendanceValidation/AttendanceValidators';
 
 export class ParentAttendanceListController {
   constructor(
@@ -64,13 +65,7 @@ export class ParentAttendanceListController {
         return;
       }
 
-      if (!startDate || !endDate) {
-        
-        res.status(StatusCodes.BAD_REQUEST).json({
-          message: "startDate and endDate are required",
-        });
-        return;
-      }
+      validateAttendanceFilter(startDate, endDate);
 
       const result = await this.datebase.execute(
         parentId,

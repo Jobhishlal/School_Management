@@ -8,6 +8,7 @@ import { IUPDATETIMETABLE } from "../../../../../applications/interface/UseCaseI
 import { CreateTimetableDTO } from "../../../../../applications/dto/CreateTImeTableDTO";
 import { Request, Response } from "express";
 import logger from "../../../../../shared/constants/Logger";
+import { validateTimetableFormat } from "../../../../validators/Timetable/TimetableValidators";
 
 
 export class TimeTableManageController {
@@ -24,9 +25,10 @@ export class TimeTableManageController {
     try {
       console.log("i am reached")
       const dto: CreateTimetableDTO = req.body;
+      validateTimetableFormat(dto);
       logger.info(JSON.stringify(dto))
       const created = await this.createrepo.execute(dto);
-    
+
       res.status(StatusCodes.CREATED).json({
         success: true,
         message: "Timetable created successfully",
@@ -67,9 +69,10 @@ export class TimeTableManageController {
 
   async UpdateTimeTable(req: Request, res: Response): Promise<void> {
     try {
-     
+
       const dto: CreateTimetableDTO = req.body;
-      
+      validateTimetableFormat(dto);
+
       const updated = await this.updatetimetable.execute(dto);
       res.status(StatusCodes.CREATED).json({
         success: true,
@@ -93,7 +96,7 @@ export class TimeTableManageController {
       await this.deletetimetable.execute(id);
       res.status(StatusCodes.CREATED).json({ message: "Timetable deleted successfully" });
     } catch (error: any) {
-    
+
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message || "Internal Server Error" });
     }
   }

@@ -5,6 +5,7 @@ import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { StudentAttendanceDashboardUseCase } from "../../../../applications/useCases/Students/StudentAttendanceDashboardUseCase";
 import { StudentDateBaseAttendanceSearchUseCase } from "../../../../applications/useCases/Students/StudentDateBaseAttendanceSearchUseCase";
 import { AttendanceErrorEnums } from "../../../../shared/constants/AttendanceErrorEnums";
+import { validateAttendanceFilter } from '../../../validators/AttendanceValidation/AttendanceValidators';
 
 export class StudentAttendanceController {
     constructor(
@@ -14,7 +15,7 @@ export class StudentAttendanceController {
 
     async getAttendanceDashboard(req: AuthRequest, res: Response): Promise<void> {
         try {
-            const studentId = req.user?.id; // Assuming student ID is used for auth token
+            const studentId = req.user?.id; 
 
             if (!studentId) {
                 res.status(StatusCodes.UNAUTHORIZED).json({
@@ -52,13 +53,7 @@ export class StudentAttendanceController {
                 return;
             }
 
-            if (!startDate || !endDate) {
-                res.status(StatusCodes.BAD_REQUEST).json({
-                    success: false,
-                    message: "startDate and endDate are required",
-                });
-                return;
-            }
+            validateAttendanceFilter(startDate, endDate);
 
             const result = await this.databaseSearchUseCase.execute(
                 studentId,

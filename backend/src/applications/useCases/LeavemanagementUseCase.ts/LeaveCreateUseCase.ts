@@ -3,7 +3,6 @@ import { ICreateLeaveusecase } from "../../interface/UseCaseInterface/LeaveManag
 import { InterfaceLeaveManagement } from "../../interface/RepositoryInterface/ILeaveManagement/ILeaveManagement";
 import { LeaveManagementEntity } from "../../../domain/entities/LeaveManagement/LeaveManagementEntity";
 import { ITeacherCreate } from "../../interface/RepositoryInterface/TeacherCreate";
-import { ValidateLeaveCreate } from "../../validators/LeaveValidation/LeaveCreateValidation";
 
 export class CreateLeaveUseCase implements ICreateLeaveusecase {
   constructor(
@@ -16,7 +15,6 @@ export class CreateLeaveUseCase implements ICreateLeaveusecase {
     data: CreateLeaveDTO
   ): Promise<LeaveManagementEntity> {
 
-    ValidateLeaveCreate(data)
 
     const startDate = new Date(data.startDate);
     const endDate = new Date(data.endDate);
@@ -80,8 +78,8 @@ export class CreateLeaveUseCase implements ICreateLeaveusecase {
     const leaveEntity = new LeaveManagementEntity(
       "",
       teacherId,
-      undefined, 
-      "TEACHER", 
+      undefined,
+      "TEACHER",
       data.leaveType,
       startDate,
       endDate,

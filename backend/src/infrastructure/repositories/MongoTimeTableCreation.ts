@@ -1,30 +1,84 @@
 import { TimetableModel } from "../database/models/Admin/TimeTableCraete";
 import { ITimeTableRepository } from "../../applications/interface/RepositoryInterface/Admin/ITimeTableCreate";
-import { TimetableEntity, DayScheduleEntity, PeriodEntity } from "../../domain/entities/TimeTableEntity";
+import { TimetableEntity, DayScheduleEntity, PeriodEntity, BreakEntity } from "../../domain/entities/TimeTableEntity";
 import { TeacherModel } from "../database/models/Teachers";
 import { ClassModel } from "../database/models/ClassModel";
 import { CreateTimetableDTO } from "../../applications/dto/CreateTImeTableDTO";
 import { StudentModel } from "../database/models/StudentModel";
-import { validateTimetable } from "../../applications/validators/Timetable/TimetableValidator";
-
 import mongoose from "mongoose";
 import { TeacherDailyScheduleDTO } from "../../applications/dto/TeacherDailyScheduleDTO";
 
 
 export class MongoTimeTableCreate implements ITimeTableRepository {
+  private parseTime(time: string): number {
+    const match = time.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?$/i);
+    if (!match) throw new Error(`Invalid time format: ${time}`);
+
+    let hour = parseInt(match[1]);
+    const minutes = parseInt(match[2] || "0");
+    const period = match[3]?.toUpperCase();
+
+    if (period === "PM" && hour !== 12) hour += 12;
+    if (period === "AM" && hour === 12) hour = 0;
+
+    return hour + minutes / 60;
+  }
+
+  private async checkTeacherAvailability(
+    day: string,
+    startHour: number,
+    endHour: number,
+    teacherId: string,
+    currentClassId: string
+  ): Promise<void> {
+    const timetables = await TimetableModel.find({
+      "days.day": day,
+      classId: { $ne: new mongoose.Types.ObjectId(currentClassId) },
+    }).populate("days.periods.teacherId");
+
+    let periodsCount = 0;
+
+    for (const timetable of timetables) {
+      const daySchedule = timetable.days.find(d => d.day === day);
+      if (!daySchedule) continue;
+
+      for (const period of daySchedule.periods) {
+        const teacherObj = period.teacherId as any;
+        if (!teacherObj || !teacherObj._id) continue;
+
+        if (teacherObj._id.toString() === teacherId) {
+          periodsCount++;
+
+          const periodStart = this.parseTime(period.startTime);
+          const periodEnd = this.parseTime(period.endTime);
+
+          if (!(endHour <= periodStart || startHour >= periodEnd)) {
+            throw new Error(
+              `${teacherObj.name} is already assigned in class ${timetable.className}-${timetable.division} from ${period.startTime} to ${period.endTime}`
+            );
+          }
+        }
+      }
+    }
+
+    // Also check current payload's periods for this teacher
+    // (This part is tricky if we only have the teacherId here. 
+    // Usually we check the whole DTO in validateAndCheck)
+  }
 
   async validateAndCheck(dto: CreateTimetableDTO): Promise<void> {
     const cls = await ClassModel.findById(dto.classId);
     if (!cls) throw new Error("Class not found");
 
     for (const day of dto.days) {
+      let teacherPeriodsToday: Record<string, number> = {};
+
       for (const period of day.periods) {
         if (!period.teacherId || period.teacherId === "") continue;
 
         const teacher = await TeacherModel.findById(period.teacherId);
         if (!teacher) throw new Error(`Teacher not found: ${period.teacherId}`);
 
-        // Check if the teacher teaches the subject
         const subjectExists = teacher.subjects.some(
           (sub) => sub.name === period.subject
         );
@@ -34,16 +88,23 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
             `Teacher ${teacher.name} does not teach ${period.subject}`
           );
         }
+
+        const startHour = this.parseTime(period.startTime);
+        const endHour = this.parseTime(period.endTime);
+
+        await this.checkTeacherAvailability(day.day, startHour, endHour, period.teacherId, dto.classId);
+
+        teacherPeriodsToday[period.teacherId] = (teacherPeriodsToday[period.teacherId] || 0) + 1;
+        if (teacherPeriodsToday[period.teacherId] > 5) {
+          throw new Error(`Teacher ${teacher.name} cannot be assigned more than 5 periods per day on ${day.day}`);
+        }
       }
     }
-
   }
 
 
 
   async create(timetable: TimetableEntity): Promise<TimetableEntity> {
-    await validateTimetable(timetable);
-
     const classObjectId = new mongoose.Types.ObjectId(timetable.classId);
 
     const existing = await TimetableModel.findOne({
@@ -100,7 +161,7 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
           p.subject,
           (p.teacherId as any)?._id?.toString() || p.teacherId.toString()
         )),
-        (d.breaks || []).map(b => ({ startTime: b.startTime, endTime: b.endTime, name: b.name }))
+        (d.breaks || []).map(b => new BreakEntity(b.startTime, b.endTime, b.name))
       ))
     );
   }
@@ -132,14 +193,13 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
           p.subject,
           (p.teacherId as any)?._id?.toString() || p.teacherId.toString()
         )),
-        (d.breaks || []).map(b => ({ startTime: b.startTime, endTime: b.endTime, name: b.name }))
+        (d.breaks || []).map(b => new BreakEntity(b.startTime, b.endTime, b.name))
       ))
     );
   }
 
 
   async update(timetable: TimetableEntity): Promise<TimetableEntity> {
-    await validateTimetable(timetable)
     const doc = await TimetableModel.findByIdAndUpdate(
       timetable.id,
       {
@@ -180,7 +240,7 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
           p.subject,
           (p.teacherId as any)._id?.toString() || p.teacherId.toString()
         )),
-        (d.breaks || []).map(b => ({ startTime: b.startTime, endTime: b.endTime, name: b.name }))
+        (d.breaks || []).map(b => new BreakEntity(b.startTime, b.endTime, b.name))
       ))
     );
   }
@@ -206,7 +266,7 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
           p.subject,
           (p.teacherId as any)._id?.toString() || p.teacherId.toString()
         )),
-        (d.breaks || []).map(b => ({ startTime: b.startTime, endTime: b.endTime, name: b.name }))
+        (d.breaks || []).map(b => new BreakEntity(b.startTime, b.endTime, b.name))
       ))
     );
   }
@@ -241,7 +301,7 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
               p.teacherId ? (p.teacherId as any)?.name || "" : ""
             )
           ),
-          (d.breaks || []).map(b => ({ startTime: b.startTime, endTime: b.endTime, name: b.name }))
+          (d.breaks || []).map(b => new BreakEntity(b.startTime, b.endTime, b.name))
         )
       )
     );
@@ -279,7 +339,7 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
           p.subject,
           (p.teacherId as any)?.name || ""
         )),
-        (d.breaks || []).map(b => ({ startTime: b.startTime, endTime: b.endTime, name: b.name }))
+        (d.breaks || []).map(b => new BreakEntity(b.startTime, b.endTime, b.name))
       ))
     ) : null;
   }

@@ -6,23 +6,21 @@ import { ISubAdminCreate } from '../../interface/ISubAdminController';
 import logger from '../../../../shared/constants/Logger';
 import { UpdateDetails } from '../../../../applications/useCases/admin/UpdateSubAdmin';
 import { SubAdminBlock } from '../../../../applications/useCases/admin/SubAdminBlock';
+import { validateSubAdminCreate, validateSubAdminUpdate } from '../../../validators/SubAdminValidation/SubAdminValidators';
 
 export class SubAdminCreateController implements ISubAdminCreate {
   constructor(
     private createsubUseCase: CreateSubAdmin,
     private updatesubUseCase: UpdateDetails,
     private subadminblockUseCase: SubAdminBlock
-  ) {}
+  ) { }
 
   async createSubAdmin(req: Request, res: Response): Promise<void> {
     try {
       const { name, email, phone, role, blocked, major_role, dateOfBirth, gender, documents, addressId, photo } = req.body;
       logger.info(JSON.stringify(req.body));
 
-      if (!Object.values(AdminRole).includes(role)) {
-        res.status(StatusCodes.BAD_REQUEST).json({ message: "Role is not valid" });
-        return;
-      }
+      validateSubAdminCreate(req.body);
 
       const result = await this.createsubUseCase.execute({
         name,
@@ -70,10 +68,7 @@ export class SubAdminCreateController implements ISubAdminCreate {
       const { name, email, phone, role, dateOfBirth, gender, documents, addressId, photo } = req.body;
       const { id } = req.params;
 
-      if (role && !Object.values(AdminRole).includes(role)) {
-        res.status(StatusCodes.BAD_REQUEST).json({ message: "This role is not valid" });
-        return;
-      }
+      validateSubAdminUpdate(req.body);
 
       const update = await this.updatesubUseCase.execute(id, {
         name,

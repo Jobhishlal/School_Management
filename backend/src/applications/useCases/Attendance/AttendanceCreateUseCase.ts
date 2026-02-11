@@ -4,7 +4,6 @@ import { IAttendanceCreateUseCase } from "../../interface/UseCaseInterface/Attan
 import { IAttandanceRepository } from "../../interface/RepositoryInterface/Attandance/IAttendanceRepository";
 import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudnetRepository";
 import { IClassRepository } from "../../interface/RepositoryInterface/Classrepo/IClassRepository";
-import { ValidateAttendanceCreate } from "../../validators/AttendanceValidation/AttendanceValidation";
 import { SendEMail } from "../../../infrastructure/providers/EmailService";
 import { IParentRepository } from "../../interface/RepositoryInterface/IParentsRepository";
 import { EMAIL_SUBJECTS, EmailTemplates } from "../../../shared/constants/utils/Email/emailTemplates";
@@ -18,16 +17,8 @@ export class AttendanceCreateUseCase implements IAttendanceCreateUseCase {
   ) { }
 
   async execute(data: TakeAttendance): Promise<AttendanceEntity> {
-    ValidateAttendanceCreate(data);
-
     const { classId, teacherId, attendance, session } = data;
 
-    if (!session) {
-      throw new Error("Session is required");
-    }
-
-    // Date Logic: Force UTC Midnight to avoid timezone offsets
-    // Uses the provided date or defaults to now, then constructs a clean UTC date object
     const inputDate = data.date ? new Date(data.date) : new Date();
     const today = new Date(Date.UTC(inputDate.getFullYear(), inputDate.getMonth(), inputDate.getDate()));
 
@@ -103,7 +94,6 @@ export class AttendanceCreateUseCase implements IAttendanceCreateUseCase {
           }
         } catch (emailError) {
           console.error(`Failed to send email for student ${item.studentId}:`, emailError);
-
         }
       }
     }

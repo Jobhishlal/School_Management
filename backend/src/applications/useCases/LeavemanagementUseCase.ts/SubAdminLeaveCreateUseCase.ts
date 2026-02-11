@@ -1,7 +1,6 @@
 import { CreateLeaveDTO } from "../../dto/LeaveManagement/CreateLeaveManagementDTO";
 import { InterfaceLeaveManagement } from "../../interface/RepositoryInterface/ILeaveManagement/ILeaveManagement";
 import { LeaveManagementEntity } from "../../../domain/entities/LeaveManagement/LeaveManagementEntity";
-import { ValidateLeaveCreate } from "../../validators/LeaveValidation/LeaveCreateValidation";
 import { SubAdminRepository } from "../../interface/RepositoryInterface/SubAdminCreate";
 
 export interface ICreateSubAdminLeaveUseCase {
@@ -19,7 +18,6 @@ export class SubAdminLeaveCreateUseCase implements ICreateSubAdminLeaveUseCase {
         data: CreateLeaveDTO
     ): Promise<LeaveManagementEntity> {
 
-        ValidateLeaveCreate(data)
 
         const startDate = new Date(data.startDate);
         const endDate = new Date(data.endDate);

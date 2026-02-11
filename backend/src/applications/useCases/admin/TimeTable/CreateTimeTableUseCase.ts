@@ -1,5 +1,5 @@
 import { ICreateTimeTable } from "../../../interface/UseCaseInterface/TimeTable/ICreateTimeTable";
-import { TimetableEntity, DayScheduleEntity, PeriodEntity } from "../../../../domain/entities/TimeTableEntity";
+import { TimetableEntity, DayScheduleEntity, PeriodEntity, BreakEntity } from "../../../../domain/entities/TimeTableEntity";
 import { ITimeTableRepository } from "../../../interface/RepositoryInterface/Admin/ITimeTableCreate";
 import { CreateTimetableDTO } from "../../../dto/CreateTImeTableDTO";
 
@@ -22,11 +22,7 @@ export class CreateTimeTable implements ICreateTimeTable {
             d.periods.map(
               p => new PeriodEntity(p.startTime, p.endTime, p.subject, p.teacherId)
             ),
-            (d.breaks || []).map(b => ({
-              startTime: b.startTime,
-              endTime: b.endTime,
-              name: b.name
-            }))
+            (d.breaks || []).map(b => new BreakEntity(b.startTime, b.endTime, b.name))
           )
       )
     );

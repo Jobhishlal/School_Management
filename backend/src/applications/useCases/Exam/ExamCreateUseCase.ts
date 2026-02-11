@@ -14,7 +14,6 @@ export class ExamCreateUseCase implements IExamCreateRepository {
   ) { }
 
   async execute(data: CreateExamDTO): Promise<ExamEntity> {
-    ExamEntity.validateDate(data.examDate);
 
     const classData = await this.classRepo.findById(data.classId);
     if (!classData) {

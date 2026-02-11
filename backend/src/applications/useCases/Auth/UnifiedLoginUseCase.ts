@@ -120,7 +120,7 @@ export class UnifiedLoginUseCase implements IUnifiedLoginUseCase {
                 console.log(otp);
                 await this.emailService.send(email, "Sub Admin OTP", `Your OTP is: ${otp}`);
 
-                const otpToken = this.tokenService.generateOtpToken({ role: "sub_admin", id: subadmin._id, email }, otp);
+                const otpToken = this.tokenService.generateOtpToken({ role: "sub_admin", id: subadmin.id, email }, otp);
                 return { otpToken, role: "sub_admin" };
             }
         }

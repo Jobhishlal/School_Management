@@ -9,6 +9,7 @@ import { IAttendanceList } from "../../../../applications/interface/UseCaseInter
 import { IGetAttendanceReportUseCase } from "../../../../applications/interface/UseCaseInterface/Attandance/IGetAttendanceReportUseCase";
 import { IGetStudentAttendanceHistoryUseCase } from "../../../../applications/interface/UseCaseInterface/Attandance/IGetStudentAttendanceHistoryUseCase";
 import { IUpdateAttendanceUseCase } from "../../../../applications/interface/UseCaseInterface/Attandance/IUpdateAttendanceUseCase";
+import { validateAttendanceTake } from '../../../validators/AttendanceValidation/AttendanceValidators';
 
 
 
@@ -21,7 +22,7 @@ export class AttendanceController {
     private getReportUseCase: IGetAttendanceReportUseCase,
     private getStudentHistoryUseCase: IGetStudentAttendanceHistoryUseCase,
     private updateAttendanceUseCase: IUpdateAttendanceUseCase
-  ) {}
+  ) { }
 
   async Create(req: AuthRequest, res: Response): Promise<void> {
     try {
@@ -30,12 +31,14 @@ export class AttendanceController {
         ...req.body,
         teacherId: req.user?.id,
       };
-      
+
+      validateAttendanceTake(data);
+
       const create = await this.repo.execute(data);
-     
+
 
       if (!create) {
-       
+
         res.status(StatusCodes.BAD_REQUEST).json({
           message: "Attendance creation failed",
           success: false,

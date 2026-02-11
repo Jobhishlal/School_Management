@@ -54,7 +54,21 @@ export class GetTeacherClassDetailsUseCase implements IGetTeacherClassDetailsUse
         const studentsWithStats = studentData.students.map(student => {
             const id = student.id?.toString() || "";
             return {
-                ...student,
+                id: student.id,
+                fullName: student.fullName,
+                dateOfBirth: student.dateOfBirth,
+                gender: student.gender,
+                studentId: student.studentId,
+                parentId: student.parentId,
+                addressId: student.addressId,
+                classId: student.classId,
+                photos: student.photos,
+                Password: student.Password,
+                parent: student.parent,
+                classDetails: student.classDetails,
+                blocked: student.blocked,
+                address: student.address,
+                role: student.role,
                 attendancePercentage: studentPercentages[id] || 0
             };
         });
