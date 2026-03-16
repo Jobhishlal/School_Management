@@ -17,16 +17,20 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ~/School_Management
+            git reset --hard
             git pull origin main
 
             # 🔹 Backend
             cd backend
             npm install
-            pm2 restart backend || pm2 start server.js --name backend
+            # Use npx to ensure pm2 is found even if not in PATH
+            npx pm2 restart backend || npx pm2 start server.js --name backend
 
             # 🔹 Frontend
             cd ../Frontend/school
             npm install
             NODE_OPTIONS="--max-old-space-size=4096" npm run build
+            # Ensure target directory exists
+            sudo mkdir -p /var/www/html/
             sudo rm -rf /var/www/html/*
             sudo cp -r dist/* /var/www/html/
