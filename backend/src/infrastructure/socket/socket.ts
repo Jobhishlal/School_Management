@@ -1,5 +1,6 @@
 import { Server } from "socket.io";
 import { Server as HttpServer } from "http";
+import { webrtcConfig } from "../config/webrtc.config";
 
 let io: Server;
 
@@ -18,8 +19,7 @@ const chatSocketMap = new Map<string, string>();
 
 export const initSocket = (httpServer: HttpServer) => {
   const allowedOrigins = [
-    'http://localhost:5173',
-    'https://localhost:5173',
+    ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : []),
     process.env.CLIENT_URL,
     process.env.SERVER_URL
   ].filter((origin): origin is string => typeof origin === 'string');
@@ -31,6 +31,7 @@ export const initSocket = (httpServer: HttpServer) => {
       origin: allowedOrigins,
       credentials: true,
     },
+    path: webrtcConfig.signalingPath,
     transports: ['websocket', 'polling'],
     pingTimeout: 60000,
     pingInterval: 25000,

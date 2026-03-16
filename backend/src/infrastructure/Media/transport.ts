@@ -1,3 +1,4 @@
+import { webrtcConfig } from "../config/webrtc.config";
 import { getRoom } from "../services/rooms/roomManager";
 import { WebRtcTransport } from "mediasoup/node/lib/WebRtcTransportTypes";
 
@@ -15,7 +16,7 @@ export async function  createWebRtcTransport(roomId:string){
         listenIps: [
       {
        ip: "0.0.0.0",
-       announcedIp: process.env.PUBLIC_IP
+       announcedIp: webrtcConfig.publicIp
        }
       ],
      enableUdp: true,
