@@ -43,7 +43,6 @@ const AssignmentSchema = new Schema<AssignmentDocument>(
     Assignment_Due_Date: { type: Date, required: true },
     attachments: [
       {
-        studentId: { type: Schema.Types.ObjectId, ref: "Student" },
         url: { type: String },
         fileName: { type: String },
         uploadedAt: { type: Date, default: Date.now },
@@ -53,7 +52,7 @@ const AssignmentSchema = new Schema<AssignmentDocument>(
     teacherId: { type: Schema.Types.ObjectId, ref: "Teacher", required: true },
     assignmentSubmitFile: [
       {
-        studentId: { type: Schema.Types.ObjectId, ref: "Student" },
+        studentId: { type: Schema.Types.ObjectId, ref: "Students" },
         url: { type: String },
         fileName: { type: String },
         uploadedAt: { type: Date, default: Date.now },

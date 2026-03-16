@@ -18,10 +18,6 @@ const chatSocketMap = new Map<string, string>();
 
 export const initSocket = (httpServer: HttpServer) => {
   const allowedOrigins = [
-    'https://brainnots.ddns.net',
-    'http://brainnots.ddns.net',
-    'https://13.54.178.155',
-    'http://13.54.178.155',
     'http://localhost:5173',
     'https://localhost:5173',
     process.env.CLIENT_URL,

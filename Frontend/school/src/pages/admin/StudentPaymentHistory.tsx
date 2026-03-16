@@ -123,11 +123,11 @@ const ClassPaymentView: React.FC<{
               >
                 <option value="">Select Class</option>
                 {classes.map((cls) => (
-                  <option key={cls._id} value={cls._id}>
+                  <option key={cls?._id} value={cls?._id}>
                     {cls.className} - {cls.division}
                   </option>
                 ))}
-              </select>
+            </select>
             </div>
             <div>
               <label className={`block text-sm mb-2 ${textSecondary}`}>Action</label>
@@ -180,9 +180,9 @@ const ClassPaymentView: React.FC<{
                       </tr>
                     </thead>
                     <tbody>
-                      {students.map((s) => (
+                      {students.map((s, index) => (
                         <tr
-                          key={s.studentId}
+                          key={s.studentId || `student-${index}`}
                           className={`border-b transition-colors duration-200 ${borderColor} ${tableRowHover}`}
                         >
                           <td className={`py-4 px-4 ${textPrimary}`}>{s.studentName}</td>
@@ -217,8 +217,8 @@ const ClassPaymentView: React.FC<{
 
               {/* Mobile Cards */}
               <div className="md:hidden space-y-4">
-                {students.map((s) => (
-                  <div key={s.studentId} className={`rounded-lg border p-4 ${tableBg}`}>
+                {students.map((s, index) => (
+                  <div key={s.studentId || `student-card-${index}`} className={`rounded-lg border p-4 ${tableBg}`}>
                     <div className="flex justify-between items-start mb-2">
                       <h4 className={`font-semibold ${textPrimary}`}>{s.studentName}</h4>
                       <span
@@ -300,7 +300,7 @@ const ClassPaymentView: React.FC<{
                         <tbody>
                           {s.feeStructure.items.filter(Boolean).map((item, idx) => (
                             <tr
-                              key={idx}
+                              key={`item-${s.studentId}-${idx}`}
                               className={`border-t transition-colors duration-200 ${borderColor}`}
                             >
                               <td className={`py-2 px-3 text-sm ${textPrimary}`}>
@@ -421,8 +421,8 @@ const PaymentHistoryLogView: React.FC<{ theme: any }> = ({ theme }) => {
             className={`w-full rounded-lg px-4 py-3 border focus:outline-none focus:border-blue-500 transition-colors duration-200 ${inputBg}`}
           >
             <option value="">All Fee Structures</option>
-            {feeStructures.map((fs: any) => (
-              <option key={fs.id} value={fs.id}>
+            {feeStructures.map((fs: any, idx: number) => (
+              <option key={fs.id || fs._id || `fs-${idx}`} value={fs.id || fs._id}>
                 {fs.name}
               </option>
             ))}
@@ -482,8 +482,8 @@ const PaymentHistoryLogView: React.FC<{ theme: any }> = ({ theme }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {historyData.map((item: any) => (
-                    <tr key={item.id} className={`border-b transition-colors duration-200 ${borderColor} ${tableRowHover}`}>
+                  {historyData.map((item: any, idx: number) => (
+                    <tr key={item.id || item._id || `history-${idx}`} className={`border-b transition-colors duration-200 ${borderColor} ${tableRowHover}`}>
                       <td className={`py-4 px-4 ${textPrimary}`}>{item.studentId?.fullName}</td>
                       <td className={`py-4 px-4 ${textPrimary}`}>
                         {item.studentFeeId?.name || "N/A"}
@@ -508,8 +508,8 @@ const PaymentHistoryLogView: React.FC<{ theme: any }> = ({ theme }) => {
 
           {/* Mobile Cards */}
           <div className="md:hidden space-y-3">
-            {historyData.map((item: any) => (
-              <div key={item.id} className={`rounded-lg border p-4 ${tableBg}`}>
+            {historyData.map((item: any, idx: number) => (
+              <div key={item.id || item._id || `history-card-${idx}`} className={`rounded-lg border p-4 ${tableBg}`}>
                 <div className="flex justify-between items-start mb-2">
                   <div>
                     <h4 className={`font-semibold ${textPrimary}`}>{item.studentId?.fullName}</h4>

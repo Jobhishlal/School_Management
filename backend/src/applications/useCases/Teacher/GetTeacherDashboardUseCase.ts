@@ -27,9 +27,9 @@ export class GetTeacherDashboardUseCase implements IGetTeacherDashboardUseCase {
 
         if (teacherClass) {
 
-            totalClassStudents = await this.studentRepo.countByClassId(teacherClass._id);
+            totalClassStudents = await this.studentRepo.countByClassId(teacherClass.id);
 
-            topStudents = await this.examMarkRepo.getTopPerformingStudents(teacherClass._id, 3);
+            topStudents = await this.examMarkRepo.getTopPerformingStudents(teacherClass.id, 3);
         }
 
         const totalSchoolStudents = await this.studentRepo.countAll();

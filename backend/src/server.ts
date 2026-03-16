@@ -25,10 +25,8 @@ const app = express();
 import cookieParser from 'cookie-parser';
 
 const allowedOrigins = [
-  'https://brainnots.ddns.net',
-  'http://brainnots.ddns.net',
-  'http://13.54.178.155',
   'http://localhost:5173',
+  'http://127.0.0.1:5173',
   process.env.CLIENT_URL
 ].filter(Boolean);
 

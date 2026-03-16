@@ -12,4 +12,7 @@ export interface IAnnouncementRepository {
   ): Promise<Announcement>;
   delete(id: string): Promise<void>;
   findLatest(limit: number): Promise<Announcement[]>;
+   
+
+
 }

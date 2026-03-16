@@ -200,4 +200,28 @@ export class ExamEntity {
       throw new Error("Exam date cannot be in the past");
     }
   }
+
+  public toJSON() {
+    return {
+      id: this._id,
+      examId: this._examId,
+      title: this._title,
+      type: this._type,
+      classId: this._classId,
+      className: this._className,
+      division: this._division,
+      subject: this._subject,
+      teacherId: this._teacherId,
+      teacherName: this._teacherName,
+      examDate: this._examDate,
+      startTime: this._startTime,
+      endTime: this._endTime,
+      maxMarks: this._maxMarks,
+      passMarks: this._passMarks,
+      description: this._description,
+      status: this._status,
+      pendingConcerns: this._pendingConcerns,
+      concerns: this._concerns
+    };
+  }
 }

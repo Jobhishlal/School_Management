@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import { Plus, Eye, Edit, UserX } from "lucide-react";
 import { FaSearch } from "react-icons/fa";
 import { showToast } from "../../utils/toast";
@@ -8,7 +7,6 @@ import { useTheme } from "../../components/layout/ThemeContext";
 import { Pagination } from "../../components/common/Pagination";
 import { Modal } from "../../components/common/Modal";
 import { AddStudentForm } from '../../pages/admin/StudentManagement'
-
 import { Table, type Column } from "../../components/Table/Table";
 import { blockStudent } from "../../services/authapi";
 

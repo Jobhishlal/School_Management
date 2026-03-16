@@ -4,9 +4,9 @@ import { ISubAdminProfileGetUseCase } from "../../interface/UseCaseInterface/ISu
 import { SubAdminEntities } from "../../../domain/entities/SubAdmin";
 
 export class SubAdminProfileGetUseCase implements ISubAdminProfileGetUseCase {
-  constructor(private subadminrepo: SubAdminRepository) {}
+  constructor(private _subadminrepo: SubAdminRepository) {}
 
   async execute(id: string): Promise<SubAdminEntities | null> {
-    return await this.subadminrepo.findById(id);
+    return await this._subadminrepo.findById(id);
   }
 }

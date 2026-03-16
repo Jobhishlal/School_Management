@@ -117,4 +117,19 @@ export class Announcement {
       throw new Error(AnnouncementErrors.INVALID_DATE);
     }
   }
+
+  public toJSON() {
+    return {
+      id: this._id,
+      title: this._title,
+      content: this._content,
+      scope: this._scope,
+      classes: this._classes,
+      division: this._division,
+      attachment: this._attachment,
+      activeTime: this._activeTime,
+      endTime: this._endTime,
+      status: this._status
+    };
+  }
 }

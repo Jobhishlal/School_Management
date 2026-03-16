@@ -44,7 +44,7 @@ const TeacherStudentLeavePage: React.FC = () => {
             const classData = await authapi.getTeacherClass();
             console.log("TeacherStudentLeavePage fetched classData:", classData);
             if (classData && classData.data && classData.data.classInfo) {
-                const classId = classData.data.classInfo._id;
+                const classId = classData.data.classInfo.id || classData.data.classInfo._id;
                 console.log("Teacher Class ID used for fetching leaves:", classId);
                 const leavesData = await authapi.getClassStudentLeaves(classId);
                 console.log("Fetched Leaves Response:", leavesData);

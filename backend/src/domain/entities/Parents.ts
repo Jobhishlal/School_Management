@@ -86,4 +86,15 @@ export class ParentEntity {
       }
     }
   }
+
+  public toJSON() {
+    return {
+      id: this._id,
+      name: this._name,
+      contactNumber: this._contactNumber,
+      whatsappNumber: this._whatsappNumber,
+      email: this._email,
+      relationship: this._relationship
+    };
+  }
 }

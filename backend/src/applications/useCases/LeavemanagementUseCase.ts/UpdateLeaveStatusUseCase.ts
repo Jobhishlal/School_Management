@@ -9,10 +9,10 @@ import { SubAdminRepository } from "../../interface/RepositoryInterface/SubAdmin
 
 export class UpdateLeaveStatusUseCase implements IUpdateLeaveStatusUseCase {
     constructor(
-        private leaveRepo: InterfaceLeaveManagement,
-        private teacherRepo: ITeacherCreate,
-        private instituteRepo: IInstituterepo,
-        private subAdminRepo: SubAdminRepository
+        private _leaveRepo: InterfaceLeaveManagement,
+        private _teacherRepo: ITeacherCreate,
+        private _instituteRepo: IInstituterepo,
+        private _subAdminRepo: SubAdminRepository
     ) { }
 
     async execute(
@@ -22,7 +22,7 @@ export class UpdateLeaveStatusUseCase implements IUpdateLeaveStatusUseCase {
         adminRemark?: string
     ): Promise<LeaveManagementEntity | null> {
 
-        const existingLeave = await this.leaveRepo.findById(leaveId);
+        const existingLeave = await this._leaveRepo.findById(leaveId);
         if (!existingLeave) {
             return null;
         }
@@ -30,7 +30,7 @@ export class UpdateLeaveStatusUseCase implements IUpdateLeaveStatusUseCase {
       
         if (status === "APPROVED" && (existingLeave.leaveType === "SICK" || existingLeave.leaveType === "CASUAL")) {
             if (existingLeave.teacherId) {
-                const teacher = await this.teacherRepo.findById(existingLeave.teacherId);
+                const teacher = await this._teacherRepo.findById(existingLeave.teacherId);
                 if (teacher && teacher.leaveBalance) {
                     const currentBalance = existingLeave.leaveType === "SICK"
                         ? teacher.leaveBalance.sickLeave
@@ -41,7 +41,7 @@ export class UpdateLeaveStatusUseCase implements IUpdateLeaveStatusUseCase {
                     }
                 }
             } else if (existingLeave.subAdminId) {
-                const subAdmin = await this.subAdminRepo.findById(existingLeave.subAdminId);
+                const subAdmin = await this._subAdminRepo.findById(existingLeave.subAdminId);
                 if (subAdmin) {
                   
                     const sickBalance = subAdmin.leaveBalance?.sickLeave ?? 5;
@@ -58,7 +58,7 @@ export class UpdateLeaveStatusUseCase implements IUpdateLeaveStatusUseCase {
             }
         }
 
-        const updatedLeave = await this.leaveRepo.updateStatus(
+        const updatedLeave = await this._leaveRepo.updateStatus(
             leaveId,
             status,
             actionBy,
@@ -66,13 +66,13 @@ export class UpdateLeaveStatusUseCase implements IUpdateLeaveStatusUseCase {
         );
 
         if (updatedLeave) {
-            const institutes = await this.instituteRepo.getAll();
+            const institutes = await this._instituteRepo.getAll();
             const institute = institutes.length > 0 ? institutes[0] : null;
             const instituteName = institute?.instituteName || "School Administration";
             const instituteLogo = institute?.logo && institute.logo.length > 0 ? institute.logo[0].url : undefined;
 
             if (updatedLeave.teacherId) {
-                const teacher = await this.teacherRepo.findById(updatedLeave.teacherId);
+                const teacher = await this._teacherRepo.findById(updatedLeave.teacherId);
                 if (teacher) {
                     if (status === "APPROVED" && teacher.leaveBalance) {
                         if (updatedLeave.leaveType === "SICK") {
@@ -81,7 +81,7 @@ export class UpdateLeaveStatusUseCase implements IUpdateLeaveStatusUseCase {
                             teacher.leaveBalance.casualLeave -= updatedLeave.totalDays;
                         }
 
-                        await this.teacherRepo.update(teacher.id, {
+                        await this._teacherRepo.update(teacher.id, {
                             leaveBalance: teacher.leaveBalance,
                         });
                     }
@@ -91,7 +91,7 @@ export class UpdateLeaveStatusUseCase implements IUpdateLeaveStatusUseCase {
                 }
             } else if (updatedLeave.subAdminId) {
                 console.log("Updating leave for SubAdmin:", updatedLeave.subAdminId);
-                const subAdmin = await this.subAdminRepo.findById(updatedLeave.subAdminId);
+                const subAdmin = await this._subAdminRepo.findById(updatedLeave.subAdminId);
                 console.log("SubAdmin found:", subAdmin ? "yes" : "no", subAdmin?.leaveBalance);
 
                 if (subAdmin) {
@@ -119,7 +119,7 @@ export class UpdateLeaveStatusUseCase implements IUpdateLeaveStatusUseCase {
 
                      
 
-                        const updateResult = await this.subAdminRepo.update(subAdmin.id, {
+                        const updateResult = await this._subAdminRepo.update(subAdmin.id, {
                             leaveBalance: subAdmin.leaveBalance
                         });
                         console.log("Update Result:", updateResult?.leaveBalance);

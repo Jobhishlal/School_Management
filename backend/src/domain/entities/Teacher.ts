@@ -87,4 +87,22 @@ export class Teeacher {
 
   get leaveBalance(): { sickLeave: number; casualLeave: number } | undefined { return this._leaveBalance; }
   set leaveBalance(value: { sickLeave: number; casualLeave: number } | undefined) { this._leaveBalance = value; }
+
+  public toJSON() {
+    return {
+      id: this._id,
+      name: this._name,
+      email: this._email,
+      phone: this._phone,
+      gender: this._gender,
+      role: this._role,
+      createdAt: this._createdAt,
+      updatedAt: this._updatedAt,
+      blocked: this._blocked,
+      documents: this._documents,
+      subjects: this._subjects,
+      department: this._department,
+      leaveBalance: this._leaveBalance
+    };
+  }
 }

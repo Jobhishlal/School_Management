@@ -35,14 +35,14 @@ export class GetTeacherClassDetailsUseCase implements IGetTeacherClassDetailsUse
             topStudents,
             weakStudents
         ] = await Promise.all([
-            this._studentRepo.findByClassIdWithSearch(classInfo._id, search, page, limit),
+            this._studentRepo.findByClassIdWithSearch(classInfo.id, search, page, limit),
             this._teacherRepo.findById(teacherId),
-            this._attendanceRepo.calculateClassAttendancePercentage(classInfo._id),
-            this._examMarkRepo.calculateClassAverage(classInfo._id),
+            this._attendanceRepo.calculateClassAttendancePercentage(classInfo.id),
+            this._examMarkRepo.calculateClassAverage(classInfo.id),
             this._examMarkRepo.calculateSchoolAverage(),
-            this._examMarkRepo.getClassPerformanceHistory(classInfo._id),
-            this._examMarkRepo.getTopPerformingStudents(classInfo._id, 2),
-            this._examMarkRepo.getLowPerformingStudents(classInfo._id, 2)
+            this._examMarkRepo.getClassPerformanceHistory(classInfo.id),
+            this._examMarkRepo.getTopPerformingStudents(classInfo.id, 2),
+            this._examMarkRepo.getLowPerformingStudents(classInfo.id, 2)
         ]);
 
         const teacherName = teacher ? teacher.name : "Unknown Teacher";

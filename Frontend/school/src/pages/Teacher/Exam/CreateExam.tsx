@@ -493,7 +493,7 @@ const ExamForm: React.FC = () => {
                             {exam.title}
                           </td>
                           <td className="px-4 py-4 text-sm font-medium">
-                            {exam.type.replace("_", " ")}
+                            {exam.type?.replace("_", " ") || "Internal"}
                           </td>
                           <td className="px-4 py-4 text-sm font-medium">
                             {exam.className} - {exam.division}

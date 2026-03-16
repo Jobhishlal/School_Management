@@ -4,7 +4,7 @@ import { ISubAdminProfileUpdateUseCase } from '../../../applications/interface/U
 import bcrypt from "bcryptjs";
 
 export class SubAdminProfileUpdateUseCase implements ISubAdminProfileUpdateUseCase {
-  constructor(private subAdminRepo: SubAdminRepository) { }
+  constructor(private _subAdminRepo: SubAdminRepository) { }
 
   async execute(id: string, updates: Partial<SubAdminEntities>): Promise<SubAdminEntities | null> {
     const allowedUpdates: Partial<SubAdminEntities> = {
@@ -23,7 +23,7 @@ export class SubAdminProfileUpdateUseCase implements ISubAdminProfileUpdateUseCa
       allowedUpdates.password = await bcrypt.hash(updates.password, salt);
     }
 
-    const updatedProfile = await this.subAdminRepo.update(id, allowedUpdates);
+    const updatedProfile = await this._subAdminRepo.update(id, allowedUpdates);
     return updatedProfile;
   }
 }

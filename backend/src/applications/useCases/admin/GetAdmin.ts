@@ -1,6 +1,6 @@
 import { IAdminRepository } from "../../interface/RepositoryInterface/AdminRepository";
 import { AdminResponseDTO } from "../../dto/Admin";
-import { IGetAdmin } from "../../../domain/UseCaseInterface/IGetAdmin";
+import { IGetAdmin } from "../../interface/UseCaseInterface/IGetAdmin";
 
 export class GetAdmin implements IGetAdmin{
     constructor(private adminRepo : IAdminRepository){}

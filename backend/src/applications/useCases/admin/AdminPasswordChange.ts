@@ -5,10 +5,10 @@ import { genarateotptoken } from "../../../infrastructure/security/otpJwtService
 import { IRequestPasswordOtpUseCase } from "../../interface/UseCaseInterface/IPasswordUpdateUseCase";
 
 export class RequestSubAdminPasswordOtpUseCase  implements IRequestPasswordOtpUseCase{
-  constructor(private subAdminRepo: SubAdminRepository) {}
+  constructor(private _subAdminRepo: SubAdminRepository) {}
 
   async execute(email: string) {
-    const user = await this.subAdminRepo.findByEmail(email);
+    const user = await this._subAdminRepo.findByEmail(email);
     if (!user) throw new Error("SubAdmin not found");
 
     const otp = GenarateOtp(6);

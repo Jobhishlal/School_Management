@@ -1,4 +1,4 @@
-import { SubAdminEntities } from "../entities/SubAdmin";
+import { SubAdminEntities } from "../../../domain/entities/SubAdmin";
 
 
 export interface IAdminBlock {

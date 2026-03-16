@@ -1,4 +1,4 @@
-import { StudentLeaveEntity } from "../../entities/StudentLeave/StudentLeaveEntity";
+import { StudentLeaveEntity } from "../../../../domain/entities/StudentLeave/StudentLeaveEntity";
 
 export interface IGetStudentLeaveHistoryUseCase {
     execute(studentId: string): Promise<StudentLeaveEntity[]>;

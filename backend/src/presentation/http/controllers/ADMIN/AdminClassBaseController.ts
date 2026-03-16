@@ -69,7 +69,7 @@ export class AdminClassController {
     try {
 
       const data = await this.listoutteacherlist.execute();
-
+        
       if (!data) {
         res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "No teachers found" });
       }

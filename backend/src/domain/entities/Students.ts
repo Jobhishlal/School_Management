@@ -139,4 +139,23 @@ export class Students {
       });
     }
   }
+
+  public toJSON() {
+    return {
+      id: this._id,
+      fullName: this._fullName,
+      dateOfBirth: this._dateOfBirth,
+      gender: this._gender,
+      studentId: this._studentId,
+      parentId: this._parentId,
+      addressId: this._addressId,
+      classId: this._classId,
+      photos: this._photos,
+      parent: this._parent,
+      classDetails: this._classDetails,
+      blocked: this._blocked,
+      address: this._address,
+      role: this._role
+    };
+  }
 }

@@ -124,7 +124,7 @@ export class UnifiedAdminAuthService implements IUnifiedAuthService {
         console.log(otp)
         await SendEMail(email, "Sub Admin OTP", `Your OTP is: ${otp}`);
 
-        const otpToken = genarateotptoken(email, otp, { role: "sub_admin", id: subadmin._id });
+        const otpToken = genarateotptoken(email, otp, { role: "sub_admin", id: subadmin.id });
         return { otpToken, role: "sub_admin" };
       }
     }

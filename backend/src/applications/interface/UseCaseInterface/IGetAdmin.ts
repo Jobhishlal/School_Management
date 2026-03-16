@@ -1,4 +1,4 @@
-import { AdminResponseDTO } from "../../applications/dto/Admin"
+import { AdminResponseDTO } from "../../dto/Admin"
 
 export interface IGetAdmin {
   execute(): Promise<AdminResponseDTO[]>; 

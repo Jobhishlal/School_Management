@@ -103,4 +103,20 @@ export class Expense {
       }
     }
   }
+
+  public toJSON() {
+    return {
+      id: this._id,
+      title: this._title,
+      description: this._description,
+      amount: this._amount,
+      expenseDate: this._expenseDate,
+      paymentMode: this._paymentMode,
+      status: this._status,
+      createdBy: this._createdBy,
+      approvedBy: this._approvedBy,
+      createdAt: this._createdAt,
+      updatedAt: this._updatedAt
+    };
+  }
 }

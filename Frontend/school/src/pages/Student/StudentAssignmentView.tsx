@@ -277,9 +277,9 @@ export const StudentAssignmentList: React.FC = () => {
                     : "bg-white border-slate-200 text-slate-700 focus:ring-blue-500/20"
                     } focus:outline-none focus:ring-2`}
                 >
-                  <option value="all">All Classes</option>
+                  <option key="all" value="all">All Classes</option>
                   {uniqueClasses.map((cls) => (
-                    <option key={cls} value={cls}>{cls}</option>
+                    <option key={`class-${cls}`} value={cls}>{cls}</option>
                   ))}
                 </select>
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
@@ -305,9 +305,9 @@ export const StudentAssignmentList: React.FC = () => {
                     : "bg-white border-slate-200 text-slate-700 focus:ring-blue-500/20"
                     } focus:outline-none focus:ring-2`}
                 >
-                  <option value="all">All Subjects</option>
+                  <option key="all" value="all">All Subjects</option>
                   {uniqueSubjects.map((subject) => (
-                    <option key={subject} value={subject}>{subject}</option>
+                    <option key={`subject-${subject}`} value={subject}>{subject}</option>
                   ))}
                 </select>
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
@@ -333,7 +333,7 @@ export const StudentAssignmentList: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {currentAssignments.map((assignment) => {
+            {currentAssignments.map((assignment, index) => {
               const daysLeft = getDaysUntilDue(assignment.Assignment_Due_Date);
               const isExpanded = expandedAssignment === assignment.id;
               const assignmentFiles = selectedFiles[assignment.id] || [];
@@ -342,7 +342,7 @@ export const StudentAssignmentList: React.FC = () => {
 
               return (
                 <div
-                  key={assignment.id}
+                  key={assignment.id || `assignment-${index}`}
                   className={`${cardBg} rounded-xl shadow-lg border ${borderColor} overflow-hidden transition-all duration-300`}
                 >
                   {/* Assignment Header */}

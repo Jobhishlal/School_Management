@@ -1,4 +1,4 @@
-import { Students } from "../entities/Students";
+import { Students } from "../../../domain/entities/Students";
 
 export interface IStudentBlock {
   execute(id: string, blocked: boolean): Promise<Students>;

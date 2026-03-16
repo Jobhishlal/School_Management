@@ -6,8 +6,8 @@ import { ITeacherCreate } from "../../interface/RepositoryInterface/TeacherCreat
 
 export class CreateLeaveUseCase implements ICreateLeaveusecase {
   constructor(
-    private readonly create: InterfaceLeaveManagement,
-    private readonly teacherRepo: ITeacherCreate
+    private readonly _create: InterfaceLeaveManagement,
+    private readonly _teacherRepo: ITeacherCreate
   ) { }
 
   async execute(
@@ -23,7 +23,7 @@ export class CreateLeaveUseCase implements ICreateLeaveusecase {
       throw new Error("Invalid date format");
     }
 
-    const overlap = await this.create.findOverlappingLeave(
+    const overlap = await this._create.findOverlappingLeave(
       teacherId,
       startDate,
       endDate
@@ -40,7 +40,7 @@ export class CreateLeaveUseCase implements ICreateLeaveusecase {
 
 
     if (data.leaveType === "CASUAL" || data.leaveType === "SICK") {
-      const teacher = await this.teacherRepo.findById(teacherId);
+      const teacher = await this._teacherRepo.findById(teacherId);
       if (!teacher) {
         throw new Error("Teacher not found");
       }
@@ -60,7 +60,7 @@ export class CreateLeaveUseCase implements ICreateLeaveusecase {
     const leaveMonth = startDate.getMonth() + 1;
     const leaveYear = startDate.getFullYear();
 
-    const currentMonthLeaves = await this.create.countLeavesByTypeAndMonth(
+    const currentMonthLeaves = await this._create.countLeavesByTypeAndMonth(
       teacherId,
       data.leaveType,
       leaveMonth,
@@ -93,6 +93,6 @@ export class CreateLeaveUseCase implements ICreateLeaveusecase {
       warningMessage
     );
 
-    return await this.create.create(leaveEntity);
+    return await this._create.create(leaveEntity);
   }
 }

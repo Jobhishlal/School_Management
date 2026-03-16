@@ -27,6 +27,15 @@ export class PeriodEntity {
 
   get teacherId(): string { return this._teacherId; }
   set teacherId(value: string) { this._teacherId = value; }
+
+  public toJSON() {
+    return {
+      startTime: this._startTime,
+      endTime: this._endTime,
+      subject: this._subject,
+      teacherId: this._teacherId
+    };
+  }
 }
 
 export class BreakEntity {
@@ -52,6 +61,14 @@ export class BreakEntity {
 
   get name(): string | undefined { return this._name; }
   set name(value: string | undefined) { this._name = value; }
+
+  public toJSON() {
+    return {
+      startTime: this._startTime,
+      endTime: this._endTime,
+      name: this._name
+    };
+  }
 }
 
 export class DayScheduleEntity {
@@ -77,6 +94,14 @@ export class DayScheduleEntity {
 
   get breaks(): BreakEntity[] { return this._breaks; }
   set breaks(value: BreakEntity[]) { this._breaks = value; }
+
+  public toJSON() {
+    return {
+      day: this._day,
+      periods: this._periods,
+      breaks: this._breaks
+    };
+  }
 }
 
 export class TimetableEntity {
@@ -114,6 +139,16 @@ export class TimetableEntity {
 
   get days(): DayScheduleEntity[] { return this._days; }
   set days(value: DayScheduleEntity[]) { this._days = value; }
+
+  public toJSON() {
+    return {
+      id: this._id,
+      classId: this._classId,
+      className: this._className,
+      division: this._division,
+      days: this._days
+    };
+  }
 
   public static parseTime(time: string): number {
     const match = time.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?$/i);

@@ -64,4 +64,6 @@ export class AnnouncementMongo implements IAnnouncementRepository {
 
     return data.map(doc => AnnouncementMapper.toDomain(doc));
   }
+
+ 
 }

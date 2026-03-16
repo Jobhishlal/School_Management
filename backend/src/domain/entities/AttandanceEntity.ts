@@ -28,6 +28,14 @@ export class AttendanceItemEntity {
 
   get remarks(): string | undefined { return this._remarks; }
   set remarks(value: string | undefined) { this._remarks = value; }
+
+  public toJSON() {
+    return {
+      studentId: this._studentId,
+      status: this._status,
+      remarks: this._remarks
+    };
+  }
 }
 
 export class AttendanceEntity {
@@ -140,5 +148,17 @@ export class AttendanceEntity {
     if (start > end) {
       throw new Error(AttendanceErrorEnums.INVALID_DATE_RANGE);
     }
+  }
+
+  public toJSON() {
+    return {
+      classId: this._classId,
+      teacherId: this._teacherId,
+      date: this._date,
+      session: this._session,
+      attendanceItems: this._attendanceItems,
+      createdAt: this._createdAt,
+      updatedAt: this._updatedAt
+    };
   }
 }

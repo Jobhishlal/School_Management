@@ -88,4 +88,21 @@ export class ExamMarkEntity {
     if (marks >= 40) return "NEEDS_IMPROVEMENT";
     return "POOR";
   }
+
+  public toJSON() {
+    return {
+      id: this._id,
+      examId: this._examId,
+      studentId: this._studentId,
+      teacherId: this._teacherId,
+      marksObtained: this._marksObtained,
+      progress: this._progress,
+      remarks: this._remarks,
+      concern: this._concern,
+      concernStatus: this._concernStatus,
+      concernResponse: this._concernResponse,
+      createdAt: this._createdAt,
+      updatedAt: this._updatedAt
+    };
+  }
 }

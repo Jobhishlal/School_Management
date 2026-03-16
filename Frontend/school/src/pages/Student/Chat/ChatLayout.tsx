@@ -52,9 +52,7 @@ export default function ChatLayout() {
             }
         }
 
-        const socketUrl = import.meta.env.VITE_SERVER_URL?.startsWith('/')
-            ? window.location.origin
-            : (import.meta.env.VITE_SERVER_URL || 'https://brainnots.ddns.net');
+        const socketUrl = import.meta.env.VITE_SERVER_URL || 'http://localhost:5000';
 
         console.log("ChatLayout: Initializing socket with URL:", socketUrl);
 

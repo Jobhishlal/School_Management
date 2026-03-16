@@ -1,5 +1,5 @@
-import { SubAdminEntities } from "../entities/SubAdmin";
-import { AdminRole } from "../enums/AdminRole";
+import { SubAdminEntities } from "../../../domain/entities/SubAdmin";
+import { AdminRole } from "../../../domain/enums/AdminRole";
 
 
 

@@ -47,7 +47,7 @@ export class AssignmentViewStudentsController {
     console.error("Error fetching assignments:", error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: "Internal server error",
+      message: error.message || "Internal server error",
     });
   }
 }

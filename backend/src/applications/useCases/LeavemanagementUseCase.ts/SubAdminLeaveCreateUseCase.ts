@@ -9,8 +9,8 @@ export interface ICreateSubAdminLeaveUseCase {
 
 export class SubAdminLeaveCreateUseCase implements ICreateSubAdminLeaveUseCase {
     constructor(
-        private readonly create: InterfaceLeaveManagement,
-        private readonly subAdminRepo: SubAdminRepository
+        private readonly _create: InterfaceLeaveManagement,
+        private readonly _subAdminRepo: SubAdminRepository
     ) { }
 
     async execute(
@@ -32,7 +32,7 @@ export class SubAdminLeaveCreateUseCase implements ICreateSubAdminLeaveUseCase {
             1;
 
         if (data.leaveType === "CASUAL" || data.leaveType === "SICK") {
-            const subAdmin = await this.subAdminRepo.findById(subAdminId);
+            const subAdmin = await this._subAdminRepo.findById(subAdminId);
             if (!subAdmin) {
                 throw new Error("SubAdmin not found");
             }
@@ -67,6 +67,6 @@ export class SubAdminLeaveCreateUseCase implements ICreateSubAdminLeaveUseCase {
             undefined
         );
 
-        return await this.create.create(leaveEntity);
+        return await this._create.create(leaveEntity);
     }
 }

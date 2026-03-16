@@ -7,6 +7,7 @@ export class StudentFeeInstallment {
   ) {}
 }
 
+
 export class StudentFeeRecord {
   constructor(
     public id: string,

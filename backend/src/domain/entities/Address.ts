@@ -66,4 +66,14 @@ export class AddressEntity {
             throw new Error(AddressErrors.PINCODE_INVALID);
         }
     }
+
+    public toJSON() {
+        return {
+            id: this._id,
+            street: this._street,
+            city: this._city,
+            state: this._state,
+            pincode: this._pincode
+        };
+    }
 }

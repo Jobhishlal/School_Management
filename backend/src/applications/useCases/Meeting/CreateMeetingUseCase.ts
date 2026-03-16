@@ -14,21 +14,22 @@ export class CreateMeetingUseCase implements ICreateMeetingUseCase {
             meetingData.link = Math.random().toString(36).substring(2, 12);
         }
 
-        const titleRegex = /^[a-zA-Z\s]+$/;
+        const titleRegex = /^[a-zA-Z0-9\s\-_.,!?:()]+$/;
         if (!titleRegex.test(meetingData.title) || !meetingData.title.trim()) {
-            throw new Error('Title must contain only alphabets and spaces');
+            throw new Error('Title contains invalid characters or is empty');
         }
 
         if (meetingData.description) {
             if (!titleRegex.test(meetingData.description) || !meetingData.description.trim()) {
-                throw new Error('Description must contain only alphabets and spaces');
+                throw new Error('Description contains invalid characters');
             }
         }
 
         const startTime = new Date(meetingData.startTime);
         const now = new Date();
+        const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
 
-        if (startTime < now) {
+        if (startTime < fiveMinutesAgo) {
             throw new Error('Meeting cannot be scheduled in the past');
         }
 

@@ -3,9 +3,9 @@ import { LeaveManagementEntity } from "../../../domain/entities/LeaveManagement/
 import { IGetAllLeavesUseCase } from "../../interface/UseCaseInterface/LeaveManagement/IGetAllLeavesUseCase";
 
 export class GetAllLeavesUseCase implements IGetAllLeavesUseCase{
-    constructor(private leaveRepo: InterfaceLeaveManagement) { }
+    constructor(private _leaveRepo: InterfaceLeaveManagement) { }
 
     async execute(): Promise<LeaveManagementEntity[]> {
-        return this.leaveRepo.getAllLeaves();
+        return this._leaveRepo.getAllLeaves();
     }
 }

@@ -9,9 +9,9 @@ export interface IGetSubAdminLeavesUseCase {
 }
 
 export class GetSubAdminLeavesUseCase implements IGetSubAdminLeavesUseCase {
-    constructor(private readonly leaveRepo: InterfaceLeaveManagement) { }
+    constructor(private readonly _leaveRepo: InterfaceLeaveManagement) { }
 
     async execute(subAdminId: string): Promise<LeaveManagementEntity[]> {
-        return await this.leaveRepo.getLeavesBySubAdminId(subAdminId);
+        return await this._leaveRepo.getLeavesBySubAdminId(subAdminId);
     }
 }

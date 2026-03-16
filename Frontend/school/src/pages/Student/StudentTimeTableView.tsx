@@ -76,9 +76,11 @@ const StudentTimeTableView: React.FC = () => {
 
         if (res?.success && res.data) {
           console.log("Timetable Data Days:", res.data.days);
-          res.data.days.forEach((d: any, i: number) => {
-            console.log(`Day ${i} breaks:`, d.breaks);
-          });
+          if (Array.isArray(res.data.days)) {
+            res.data.days.forEach((d: any, i: number) => {
+              console.log(`Day ${i} breaks:`, d.breaks);
+            });
+          }
           setTimetable(res.data);
         } else {
           setError("Timetable not available.");

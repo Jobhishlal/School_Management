@@ -1,4 +1,4 @@
-import { SubAdminEntities } from "../entities/SubAdmin";
+import { SubAdminEntities } from "../../../domain/entities/SubAdmin";
 
 export interface IUpdateSubAdminPasswordUseCase {
   execute(email: string, newPassword: string): Promise<SubAdminEntities | null>;

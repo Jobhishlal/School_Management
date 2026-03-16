@@ -3,10 +3,10 @@ import { IClassDivisionRepository } from "../../interface/RepositoryInterface/Cl
 
 
 export class ClassAndDivision implements IClassDivision {
-  constructor(private readonly classRepo: IClassDivisionRepository) { }
+  constructor(private readonly _classRepo: IClassDivisionRepository) { }
   async execute(): Promise<Record<string, { classId: string; className: string; division: string; classTeacher?: { teacherId: string; name: string; } | null; students: { fullName: string; studentId: string; gender: string; photos: { url: string; filename: string; }[]; }[]; }>> {
     console.log(">>>>>>>> DEBUG: ClassAndDivision.execute EXECUTING <<<<<<<<");
-    const datacheck = await this.classRepo.getStudentsByClassAndDivision();
+    const datacheck = await this._classRepo.getStudentsByClassAndDivision();
 
     const result: Record<string, any> = {};
 

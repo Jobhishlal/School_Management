@@ -1,6 +1,7 @@
 import { IAdminRepository } from '../../interface/RepositoryInterface/AdminRepository';
 import { Passwordservices } from '../../../infrastructure/security/PasswordService';
 import { CreateAdminDTO, AdminResponseDTO } from '../../dto/Admin';
+import { Admin } from '../../../domain/entities/Admin';
 import { AdminError } from '../../../domain/enums/Adminsinguperror';
 import { verifiedOtptoken } from '../../../infrastructure/security/otpJwtService';
 
@@ -22,12 +23,12 @@ export class SignupAdmin {
 
     const hashPassword = await Passwordservices.hashpassword(data.password);
 
-    
-    const adminToSave: AdminResponseDTO = {
-      id: "",
-      username: data.username,
-      email: data.email
-    };
+    const adminToSave = new Admin(
+      null,
+      data.username,
+      data.email,
+      hashPassword
+    );
 
     const savedAdmin = await this.adminRepo.create(adminToSave);
 

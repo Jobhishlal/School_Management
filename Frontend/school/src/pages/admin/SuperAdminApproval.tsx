@@ -369,7 +369,7 @@ export default function SuperAdminExpenseApproval() {
                             </div>
                           </td>
                           <td className={`py-4 px-4 ${textPrimary} font-semibold`}>
-                            ₹{exp.amount.toLocaleString()}
+                            ₹{exp.amount?.toLocaleString() ?? "0"}
                           </td>
                           <td className={`py-4 px-4`}>
                             <div className="flex items-center gap-2">
@@ -443,7 +443,7 @@ export default function SuperAdminExpenseApproval() {
                     <div className="mb-4 space-y-2">
                       <div className="flex justify-between items-center">
                         <span className={`text-sm ${textSecondary}`}>Amount:</span>
-                        <span className={`font-bold ${textPrimary}`}>₹{exp.amount.toLocaleString()}</span>
+                        <span className={`font-bold ${textPrimary}`}>₹{exp.amount?.toLocaleString() ?? "0"}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className={`text-sm ${textSecondary}`}>By:</span>
@@ -530,7 +530,7 @@ export default function SuperAdminExpenseApproval() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className={`text-sm ${textSecondary}`}>Amount</p>
-                      <p className={`text-xl font-bold ${textPrimary}`}>₹{selectedExpense.amount.toLocaleString()}</p>
+                      <p className={`text-xl font-bold ${textPrimary}`}>₹{selectedExpense.amount?.toLocaleString() ?? "0"}</p>
                     </div>
 
                     <div>

@@ -89,4 +89,17 @@ export class Institute {
             throw new Error(AdminInstituteProfileError.INVALID_PHONE);
         }
     }
+
+    public toJSON() {
+        return {
+            id: this._id,
+            instituteName: this._instituteName,
+            contactInformation: this._contactInformation,
+            email: this._email,
+            phone: this._phone,
+            address: this._address,
+            principalName: this._principalName,
+            logo: this._logo
+        };
+    }
 }

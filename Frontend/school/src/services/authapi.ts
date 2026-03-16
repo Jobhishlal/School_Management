@@ -492,13 +492,7 @@ export const createAssignment = async (data: CreateAssignmentDTO, files: File[])
     formData.append("documents", file);
   });
 
-  const token = localStorage.getItem("token");
-  const res = await api.post("/teacher/assignment", formData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data"
-    }
-  });
+  const res = await api.post("/teacher/assignment", formData);
 
   return res.data;
 };
@@ -517,10 +511,7 @@ export const GetAllClassesAPI = async () => {
 
 
 export const UpdateExistedAssignment = async (id: string, formData: FormData) => {
-
-  const res = await api.put(`/teacher/assignment/${id}`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const res = await api.put(`/teacher/assignment/${id}`, formData);
   return res.data;
 };
 
@@ -602,17 +593,9 @@ export const ExpenseCreate = async (data: ExpenseFormDTO) => {
 
 
 export const ExpanceApproval = async (expenseId: string, action: "APPROVED" | "REJECTED") => {
-  const token = localStorage.getItem("accessToken");
-  if (!token) throw new Error("Not authorized");
-
   const res = await api.patch(
     "/admin/expense/approve",
-    { expenseId, action },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
+    { expenseId, action }
   );
 
   return res.data;
@@ -688,11 +671,7 @@ export const ExpenseReport = async () => {
 
 
 export const AnnouncementCreate = async (data: FormData) => {
-  const res = await api.post('/admin/announcement', data, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  const res = await api.post('/admin/announcement', data);
   return res.data;
 };
 
@@ -713,11 +692,7 @@ export const AnnouncementFetch = async () => {
 //   return res.data
 // }
 export const UpdateAnnouncement = async (id: string, data: FormData) => {
-  const res = await api.put(`/admin/update-announcement/${id}`, data, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  const res = await api.put(`/admin/update-announcement/${id}`, data);
   return res.data;
 };
 
@@ -963,10 +938,7 @@ export const attendacedatebasefilterparents = async (
 };
 
 export const StudentAttendanceList = async () => {
-  const token = localStorage.getItem("studentAccessToken") || localStorage.getItem("accessToken");
-  const res = await api.get(`/student/attendance/today`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  const res = await api.get(`/student/attendance/today`);
   return res.data;
 }
 
@@ -974,10 +946,8 @@ export const studentAttendanceDateFilter = async (
   startDate: string,
   endDate: string
 ) => {
-  const token = localStorage.getItem("studentAccessToken") || localStorage.getItem("accessToken");
   const res = await api.get(`/student/attendance/filter`, {
-    params: { startDate, endDate },
-    headers: { Authorization: `Bearer ${token}` }
+    params: { startDate, endDate }
   });
 
   return res.data;
@@ -991,18 +961,9 @@ export const updateExamMark = async (data: any, config = {}) => {
 
 
 export const LeaveRequest = async (leavedata: CreateLeaveDTO) => {
-  const token = localStorage.getItem("token");
-
   const response = await api.post(
-
     "/teacher/leave/request",
-    leavedata,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    }
+    leavedata
   );
   console.log("i am reached heree", response)
 
@@ -1010,18 +971,12 @@ export const LeaveRequest = async (leavedata: CreateLeaveDTO) => {
 }
 
 export const GetTeacherLeaves = async () => {
-  const token = localStorage.getItem("token");
-  const res = await api.get("/teacher/leave/teacher-history", {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  const res = await api.get("/teacher/leave/teacher-history");
   return res.data.leaves;
 };
 
 export const GetAllLeavesRequest = async () => {
-  const token = localStorage.getItem("token");
-  const res = await api.get("/admin/leave/all-requests", {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  const res = await api.get("/admin/leave/all-requests");
   return res.data.leaves;
 };
 
@@ -1030,22 +985,16 @@ export const UpdateLeaveStatus = async (
   status: string,
   adminRemark?: string
 ) => {
-  const token = localStorage.getItem("token");
   const res = await api.put("/admin/leave/update-status", {
     leaveId,
     status,
     adminRemark,
-  }, {
-    headers: { Authorization: `Bearer ${token}` }
   });
   return res.data;
 };
 
 export const getAdminProfile = async () => {
-  const token = localStorage.getItem("token");
-  const res = await api.get("/admin/adminprofile", {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  const res = await api.get("/admin/adminprofile");
   return res.data;
 };
 

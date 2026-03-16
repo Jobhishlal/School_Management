@@ -1,4 +1,4 @@
-import { ExamMarkEntity } from "../../entities/Exam/ExamMarkEntity";
+import { ExamMarkEntity } from "../../../../domain/entities/Exam/ExamMarkEntity";
 
 export interface IExamMarkRepository {
   create(mark: ExamMarkEntity): Promise<ExamMarkEntity>;

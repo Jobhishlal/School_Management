@@ -2,9 +2,9 @@ import { AddressEntity } from "../../../domain/entities/Address";
 import { IAddrressRepository } from "../../interface/RepositoryInterface/IAddresssRepository";
 
 export class AddressGetAll{
-    constructor (private readonly getAll:IAddrressRepository){}
+    constructor (private readonly _getAll:IAddrressRepository){}
     async execute():Promise<AddressEntity[]>{
-        const address= await this.getAll.getAll()
+        const address= await this._getAll.getAll()
         return address
     }
 }

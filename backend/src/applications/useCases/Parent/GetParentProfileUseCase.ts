@@ -27,7 +27,7 @@ export class GetParentProfileUseCase implements IGetParentProfileUseCase {
 
         const data = {
             parent: {
-                id: parent?._id?.toString() ?? signup._id.toString(),
+                id: parent?.id?.toString() ?? signup.id.toString(),
                 name: parent?.name ?? signup.name ?? "Parent",
                 email: parent?.email ?? signup.email,
                 contactNumber: parent?.contactNumber ?? "",
@@ -35,15 +35,15 @@ export class GetParentProfileUseCase implements IGetParentProfileUseCase {
                 relationship: parent?.relationship ?? "Parent",
             },
             student: {
-                id: student._id.toString(),
-                _id: student._id.toString(),
+                id: student.id.toString(),
+                _id: student.id.toString(),
                 fullName: student.fullName,
                 studentId: student.studentId ?? "N/A",
                 dob: student.dateOfBirth ?? null,
                 gender: student.gender ?? "N/A",
                 photo: student.photos?.[0]?.url ?? "",
                 classDetails: cls
-                    ? { _id: cls._id.toString(), className: cls.className, division: cls.division }
+                    ? { _id: cls.id.toString(), className: cls.className, division: cls.division }
                     : undefined,
             },
             address: address

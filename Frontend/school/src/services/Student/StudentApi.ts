@@ -3,10 +3,7 @@ import api from "../api";
 
 
 export const StudentProfile = async () => {
-  const token = localStorage.getItem("token");
-  const res = await api.get("/student/profile", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const res = await api.get("/student/profile");
   return res;
 };
 
@@ -49,9 +46,7 @@ export const StudentSubmitAssignment = async (
   formData.append("assignmentId", assignmentId);
   if (description) formData.append("studentDescription", description);
 
-  const res = await api.post("/student/assignment-submit", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const res = await api.post("/student/assignment-submit", formData);
 
   return res.data;
 };

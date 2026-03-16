@@ -90,7 +90,7 @@ export const InstituteManagementPage: React.FC = () => {
       if (!institute) {
 
         const addressRes = await CreateAddress({ street, city, state, pincode });
-        const addressId = addressRes.address?._id;
+        const addressId = addressRes.address?.id || addressRes.address?._id;
         if (!addressId) throw new Error("Failed to create address.");
 
         const instRes = await CreateInstituteProfile(
@@ -113,7 +113,7 @@ export const InstituteManagementPage: React.FC = () => {
 
         const addressId = typeof institute.address === 'string'
           ? institute.address
-          : institute.address?._id;
+          : (institute.address?.id || institute.address?._id);
 
         if (!addressId) {
           console.error("Failed to get addressId. Institute:", institute);
@@ -123,7 +123,7 @@ export const InstituteManagementPage: React.FC = () => {
         await UpdateAddress(addressId, street, city, state, pincode);
 
         await UpdateInstituteProfile(
-          institute._id,
+          (institute.id || institute._id),
           instituteName,
           contact,
           email,

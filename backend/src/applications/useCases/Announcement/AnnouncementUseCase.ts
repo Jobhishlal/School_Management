@@ -4,6 +4,7 @@ import { IAnnouncementRepository } from "../../interface/RepositoryInterface/Ann
 import { IAnnoucementUseCase } from "../../interface/UseCaseInterface/Announcement/IAnnouncementUseCase";
 import { NotificationPort } from "../../../infrastructure/services/ports/NotificationPort";
 import { AnnouncementNotificationDTO } from "../../dto/AnnouncementNotificationDTO";
+
 export class AnnouncementUseCase implements IAnnoucementUseCase {
   constructor(
     private repo: IAnnouncementRepository,
@@ -24,9 +25,13 @@ export class AnnouncementUseCase implements IAnnoucementUseCase {
       data.status ?? "DRAFT"
     );
 
+     
+    
 
     const result = await this.repo.create(announcement);
-
+   
+   
+      
     const notificationDTO: AnnouncementNotificationDTO = {
       title: result.title ?? '',
       content: result.content ?? '',

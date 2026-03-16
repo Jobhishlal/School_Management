@@ -42,7 +42,7 @@ export class MongoInstituteProfileManage implements IInstituterepo{
             {
                 $set:{
                     ...(udpate.instituteName &&{instituteName:udpate.instituteName}),
-                    ...(udpate.instituteName&&{contactInformation:udpate.instituteName}),
+                    ...(udpate.contactInformation && { contactInformation: udpate.contactInformation }),
                     ...(udpate.email&&{email:udpate.email}),
                     ...(udpate.phone&&{phone:udpate.phone}),
                     ...(udpate.address&&{address:this.toObjectId(udpate.address)}),

@@ -184,4 +184,24 @@ export class SubAdminEntities {
       throw new Error(passwordError.PASSWORD_MISSING_SPECIAL);
     }
   }
+
+  public toJSON() {
+    return {
+      id: this._id,
+      name: this._name,
+      email: this._email,
+      phone: this._phone,
+      role: this._role,
+      createdAt: this._createdAt,
+      updatedAt: this._updatedAt,
+      blocked: this._blocked,
+      major_role: this._major_role,
+      dateOfBirth: this._dateOfBirth,
+      gender: this._gender,
+      documents: this._documents,
+      address: this._address,
+      photo: this._photo,
+      leaveBalance: this._leaveBalance
+    };
+  }
 }

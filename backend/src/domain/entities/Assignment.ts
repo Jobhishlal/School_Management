@@ -150,4 +150,23 @@ export class AssignmentEntity {
       });
     }
   }
+
+  public toJSON() {
+    return {
+      id: this._id,
+      Assignment_Title: this._Assignment_Title,
+      title: this._Assignment_Title, // Frontend alias
+      description: this._description,
+      subject: this._subject,
+      classId: this._classId,
+      Assignment_date: this._Assignment_date,
+      Assignment_Due_Date: this._Assignment_Due_Date,
+      attachments: this._attachments,
+      maxMarks: this._maxMarks,
+      teacherId: this._teacherId,
+      className: this._className,
+      division: this._division,
+      assignmentSubmitFile: this._assignmentSubmitFile
+    };
+  }
 }

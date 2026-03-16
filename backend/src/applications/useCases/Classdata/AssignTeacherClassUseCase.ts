@@ -17,7 +17,7 @@ export class TeacherAssignClassUseCase implements IAssignTeacherOnClass {
 
     if (
       existingTeacherClass && 
-      existingTeacherClass._id !== classId 
+      existingTeacherClass.id !== classId 
     ) {
       throw new Error("This teacher is already assigned as a class teacher to another class");
     }

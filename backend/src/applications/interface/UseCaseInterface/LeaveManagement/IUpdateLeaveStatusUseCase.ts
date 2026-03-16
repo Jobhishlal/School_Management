@@ -1,4 +1,4 @@
-import { LeaveManagementEntity } from "../../../domain/entities/LeaveManagement/LeaveManagementEntity";
+import { LeaveManagementEntity } from "../../../../domain/entities/LeaveManagement/LeaveManagementEntity";
 
 export interface IUpdateLeaveStatusUseCase {
   execute(

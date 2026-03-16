@@ -1,7 +1,7 @@
-import { TimetableEntity } from "../../entities/TimeTableEntity";
-import { CreateTimetableDTO } from "../../../applications/dto/CreateTImeTableDTO";
-import { Students } from "../../entities/Students";
-import { TeacherDailyScheduleDTO } from "../../../applications/dto/TeacherDailyScheduleDTO";
+import { TimetableEntity } from "../../../../domain/entities/TimeTableEntity";
+import { CreateTimetableDTO } from "../../../dto/CreateTImeTableDTO";
+import { Students } from "../../../../domain/entities/Students";
+import { TeacherDailyScheduleDTO } from "../../../dto/TeacherDailyScheduleDTO";
 
 export interface ITimeTableRepository{
     create(timetable:TimetableEntity):Promise<TimetableEntity>;

@@ -73,7 +73,7 @@ export class GetStudentExamResultsUseCase
     const classes = await this.classRepo.findClassesByIds(classIds);
     console.log("DEBUG: Fetched Classes:", classes);
     // Fixed: Use c._id.toString() or c.id depending on entity structure, usually _id is reliable from repo
-    const classMap = new Map(classes.map(c => [c._id.toString(), c]));
+    const classMap = new Map(classes.map(c => [c.id.toString(), c]));
 
     console.log("DEBUG: Final Exam List:", exams);
 

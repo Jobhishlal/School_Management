@@ -72,4 +72,16 @@ export class Class {
       throw new Error(ClassErrors.INVALID_SELECTION);
     }
   }
+
+  public toJSON() {
+    return {
+      id: this._id,
+      className: this._className,
+      division: this._division,
+      rollNumber: this._rollNumber,
+      department: this._department,
+      subjects: this._subjects,
+      classTeacher: this._classTeacher
+    };
+  }
 }

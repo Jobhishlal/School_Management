@@ -1,4 +1,4 @@
-import { ExamEntity } from "../../entities/Exam/ExamEntity";
+import { ExamEntity } from "../../../../domain/entities/Exam/ExamEntity";
 
 export interface IExamRepository {
   createExam(exam: ExamEntity): Promise<ExamEntity>;

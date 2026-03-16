@@ -1,4 +1,4 @@
-import { LeaveManagementEntity } from "../../entities/LeaveManagement/LeaveManagementEntity";
+import { LeaveManagementEntity } from "../../../../domain/entities/LeaveManagement/LeaveManagementEntity";
 
 
 export interface IGetAllLeavesUseCase{

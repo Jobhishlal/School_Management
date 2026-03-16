@@ -98,8 +98,8 @@ const CreateMeeting: React.FC = () => {
                                 {...register('title', {
                                     required: 'Title is required',
                                     pattern: {
-                                        value: /^[a-zA-Z\s]+$/,
-                                        message: 'Title must contain only alphabets and spaces'
+                                        value: /^[a-zA-Z0-9\s\-_.,!?:()]+$/,
+                                        message: 'Title contains invalid characters'
                                     },
                                     validate: (value) => !!value.trim() || 'Title cannot be empty'
                                 })}
@@ -113,8 +113,8 @@ const CreateMeeting: React.FC = () => {
                             <textarea
                                 {...register('description', {
                                     pattern: {
-                                        value: /^[a-zA-Z\s]+$/,
-                                        message: 'Description must contain only alphabets and spaces'
+                                        value: /^[a-zA-Z0-9\s\-_.,!?:()]+$/,
+                                        message: 'Description contains invalid characters'
                                     },
                                     validate: (value) => !value || !!value.trim() || 'Description cannot be empty spaces'
                                 })}
@@ -143,8 +143,8 @@ const CreateMeeting: React.FC = () => {
                                     className={`w-full p-2 rounded border ${isDark ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
                                 >
                                     <option value="">Select a Class</option>
-                                    {classes.map((cls) => (
-                                        <option key={cls.classId} value={cls.classId}>
+                                    {classes.map((cls, idx) => (
+                                        <option key={cls.classId || cls._id || `class-${idx}`} value={cls.classId || cls._id}>
                                             {cls.className} - {cls.division}
                                         </option>
                                     ))}

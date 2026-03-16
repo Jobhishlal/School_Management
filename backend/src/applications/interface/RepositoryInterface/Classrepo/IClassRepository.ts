@@ -1,4 +1,4 @@
-import { Class } from "../../entities/Class";
+import { Class } from "../../../../domain/entities/Class";
 export interface IClassRepository {
   getAll(): Promise<Class[]>;
   create(data: Class): Promise<Class>;

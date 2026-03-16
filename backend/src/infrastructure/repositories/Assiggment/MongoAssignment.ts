@@ -225,6 +225,10 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
 
 
   async getAssignmetEachStudent(studentId: string): Promise<AssignmentEntity[]> {
+    if (!mongoose.Types.ObjectId.isValid(studentId)) {
+      throw new Error(`Invalid studentId: ${studentId}`);
+    }
+
     const student = await StudentModel.findById(studentId)
       .populate("classId", "className division")
       .lean();
@@ -283,6 +287,9 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
     fileName: string,
     studentDescription?: string
   ): Promise<SubmitDTO[]> {
+    if (!mongoose.Types.ObjectId.isValid(assignmentId)) {
+      throw new Error(`Invalid assignmentId: ${assignmentId}`);
+    }
     const assignment = await AssignmentModel.findById(assignmentId);
     if (!assignment) {
       throw new Error("Assignment Id does not exist");
