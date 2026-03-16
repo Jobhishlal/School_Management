@@ -30,7 +30,15 @@ jobs:
             cd ../Frontend/school
             npm install
             NODE_OPTIONS="--max-old-space-size=4096" npm run build
-            # Ensure target directory exists
+            # Ensure target directory exists and copy files
             sudo mkdir -p /var/www/html/
             sudo rm -rf /var/www/html/*
             sudo cp -r dist/* /var/www/html/
+
+            # 🔹 Nginx Config
+            sudo cp ~/School_Management/nginx.conf /etc/nginx/sites-available/default
+            sudo systemctl restart nginx
+
+            # 🔹 Restart Backend
+            cd ~/School_Management/backend
+            npx pm2 restart backend || npx pm2 start dist/server.js --name backend

@@ -11,21 +11,25 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
     let token = localStorage.getItem("accessToken");
+    const url = config.url || "";
+    
+    // console.log("Axios Request Interceptor: URL =", url);
 
     // Select specific token based on route prefix to allow multi-role login
-    if (config.url?.startsWith('/admin') || config.url?.startsWith('/superadmin')) {
+    // Using includes() and regex to be more robust against /api prefixes or varied slashes
+    if (url.includes('/admin') || url.includes('/superadmin')) {
         const adminToken = localStorage.getItem("adminAccessToken");
         if (adminToken) token = adminToken;
-    } else if (config.url?.startsWith('/teacher')) {
+    } else if (url.includes('/teacher')) {
         const teacherToken = localStorage.getItem("teacherAccessToken");
         if (teacherToken) token = teacherToken;
-    } else if (config.url?.startsWith('/student')) {
+    } else if (url.includes('/student')) {
         const studentToken = localStorage.getItem("studentAccessToken");
         if (studentToken) token = studentToken;
-    } else if (config.url?.startsWith('/parents')) {
+    } else if (url.includes('/parents')) {
         const parentToken = localStorage.getItem("parentAccessToken");
         if (parentToken) token = parentToken;
-    }else if (config.url?.startsWith('/meeting')) {
+    } else if (url.includes('/meeting') || url.includes('/chat')) {
         // Shared routes, check for any available token
         token = localStorage.getItem("adminAccessToken") ||
             localStorage.getItem("teacherAccessToken") ||
@@ -35,7 +39,9 @@ api.interceptors.request.use((config) => {
     }
 
     if (token) {
-        config.headers.Authorization = `Bearer ${token}`
+        config.headers.Authorization = `Bearer ${token}`;
+    } else {
+        // console.warn("Axios Request Interceptor: No token found for URL:", url);
     }
     return config
 })

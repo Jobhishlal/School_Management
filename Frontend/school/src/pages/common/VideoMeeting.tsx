@@ -241,15 +241,20 @@ const VideoMeeting: React.FC = () => {
 
 
 
-                const socketUrl = import.meta.env.VITE_SERVER_URL?.startsWith('/')
-                    ? window.location.origin
-                    : (import.meta.env.VITE_SERVER_URL || 'http://localhost:5000');
+                let socketUrl = import.meta.env.VITE_SERVER_URL || 'http://localhost:5000';
+                if (socketUrl.startsWith('/')) {
+                    socketUrl = window.location.origin;
+                } else if (socketUrl.endsWith('/api')) {
+                    socketUrl = socketUrl.replace(/\/api$/, '');
+                } else if (socketUrl.includes('/api/')) {
+                    socketUrl = socketUrl.split('/api/')[0];
+                }
 
                 console.log("VideoMeeting: Initializing socket with URL:", socketUrl);
 
                 socketRef.current = io(socketUrl, {
                     withCredentials: true,
-                    path: '/socket.io',
+                    path: import.meta.env.VITE_RTC_SIGNALING_PATH || '/socket.io',
                     transports: ["websocket", "polling"], // Allow polling fallback for aggressive mobile networks
                     reconnectionAttempts: 5,
                     timeout: 20000
@@ -457,22 +462,9 @@ const VideoMeeting: React.FC = () => {
         peersRef.current.forEach(p => p.peer.destroy());
     }
 
-    const ICE_SERVERS = [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' },
-        { urls: 'stun:stun2.l.google.com:19302' },
-        { urls: 'stun:stun3.l.google.com:19302' },
-        { urls: 'stun:stun4.l.google.com:19302' },
-        { urls: 'stun:stun.ekiga.net' },
-        { urls: 'stun:stun.ideasip.com' },
-        { urls: 'stun:stun.rixtelecom.se' },
-        { urls: 'stun:stun.schlund.de' },
-        { urls: 'stun:stun.stunprotocol.org:3478' },
-        { urls: 'stun:stun.voiparound.com' },
-        { urls: 'stun:stun.voipbuster.com' },
-        { urls: 'stun:stun.voipstunt.com' },
-        { urls: 'stun:stun.voxgratia.org' }
-    ];
+    const ICE_SERVERS = (import.meta.env.VITE_ICE_SERVERS || 'stun:stun.l.google.com:19302')
+        .split(',')
+        .map((url: string) => ({ urls: url.trim() }));
 
     const createPeer = (userToSignal: string, stream: MediaStream | undefined) => {
         console.log("Creating Peer (Initiator) for:", userToSignal);
