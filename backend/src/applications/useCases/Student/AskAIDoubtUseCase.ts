@@ -2,7 +2,7 @@ import { IAIService } from "../../interface/RepositoryInterface/AI/IAIService";
 import { IYouTubeService, IYouTubeVideo } from "../../interface/RepositoryInterface/AI/IYouTubeService";
 import { IAISessionRepository } from "../../interface/RepositoryInterface/AI/IAISessionRepository";
 import { AISession, AIChatMessage } from "../../../domain/entities/AISession";
-import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
 import { IAskAIDoubtUseCase } from "./interfaces/IAskAIDoubtUseCase";
 
 const bannedWords = [
@@ -58,14 +58,14 @@ export class AskAIDoubtUseCase implements IAskAIDoubtUseCase {
             let currentSessionId = sessionId;
 
             const userMessage: AIChatMessage = {
-                id: uuidv4(),
+                id: crypto.randomUUID(),
                 role: 'user',
                 content: question,
                 timestamp: new Date()
             };
 
             const aiMessage: AIChatMessage = {
-                id: uuidv4(),
+                id: crypto.randomUUID(),
                 role: 'ai',
                 content: answer,
                 videos: videos, 
