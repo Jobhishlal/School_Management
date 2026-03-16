@@ -231,6 +231,12 @@ const VideoMeeting: React.FC = () => {
         if (!meeting || error || !profileLoaded) return;
 
 
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            setError('Your browser does not support WebRTC or you are using an insecure connection (HTTP). Please use HTTPS or a supported browser.');
+            setLoading(false);
+            return;
+        }
+
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             .then(currentStream => {
                 setStream(currentStream);
