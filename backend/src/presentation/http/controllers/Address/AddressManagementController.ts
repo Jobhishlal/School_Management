@@ -8,9 +8,9 @@ import { validateAddressCreate, validateAddressUpdate } from '../../../validator
 
 export class AddressManagementController {
     constructor(
-        private readonly addressgetall: AddressGetAll,
-        private readonly createaddress: CreatAddressUseCase,
-        private readonly addressupdate: IAddressUpdateUseCase
+        private readonly _addressgetall: AddressGetAll,
+        private readonly _createaddress: CreatAddressUseCase,
+        private readonly _addressupdate: IAddressUpdateUseCase
     ) { }
 
     async create(req: Request, res: Response): Promise<void> {
@@ -29,7 +29,7 @@ export class AddressManagementController {
 
 
 
-            const addressCreated = await this.createaddress.execute(newAddress);
+            const addressCreated = await this._createaddress.execute(newAddress);
             console.log("created", addressCreated)
             res.status(StatusCodes.OK).json({
                 message: "Successfully created address",
@@ -51,7 +51,7 @@ export class AddressManagementController {
 
     async getAll(req: Request, res: Response): Promise<void> {
         try {
-            const getall = await this.addressgetall.execute();
+            const getall = await this._addressgetall.execute();
             res.status(StatusCodes.OK).json({ message: "List all", getall });
         } catch (error: any) {
             res.status(StatusCodes.BAD_REQUEST).json({
@@ -67,7 +67,7 @@ export class AddressManagementController {
             const update = req.body;
 
             validateAddressUpdate(update);
-            const updateaddress = await this.addressupdate.execute(id, update)
+            const updateaddress = await this._addressupdate.execute(id, update)
             console.log(updateaddress)
             if (!updateaddress) {
                 res.status(StatusCodes.UNAUTHORIZED).json({ message: "Does not existed" })

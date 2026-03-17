@@ -8,8 +8,8 @@ import { validateFeeTypeCreate } from "../../../../validators/FinanceValidation/
 
 export class FeeTypeCreateController {
   constructor(
-    private createFeeTypeUseCase: ITypeCreateUseCase,
-    private getAllFeeTypeUseCase: IGetAllFeeType
+    private _createFeeTypeUseCase: ITypeCreateUseCase,
+    private _getAllFeeTypeUseCase: IGetAllFeeType
   ) { }
 
   async create(req: Request, res: Response): Promise<void> {
@@ -19,7 +19,7 @@ export class FeeTypeCreateController {
 
       validateFeeTypeCreate(payload);
 
-      const createdFeeType = await this.createFeeTypeUseCase.execute(payload);
+      const createdFeeType = await this._createFeeTypeUseCase.execute(payload);
 
       res.status(StatusCodes.CREATED).json({
         success: true,
@@ -39,7 +39,7 @@ export class FeeTypeCreateController {
 
   async getAllFeeTypes(req: Request, res: Response): Promise<void> {
     try {
-      const data = await this.getAllFeeTypeUseCase.execute();
+      const data = await this._getAllFeeTypeUseCase.execute();
 
       if (!data || data.length === 0) {
         res.status(StatusCodes.NOT_FOUND).json({

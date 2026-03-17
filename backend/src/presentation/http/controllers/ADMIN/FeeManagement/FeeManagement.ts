@@ -8,17 +8,17 @@ import { validateFeeStructureCreate } from "../../../../validators/FinanceValida
 
 export class FeeStructureManageController {
   constructor(
-    private createFeeUseCase: ICreateFeeStructureUseCase,
-    private feepaymentcompletedetails: IStudentFullFeePaymentStatusUseCase,
-    private search: IStudentPaymentHistorySeeAdmin,
-    private getAllFeeStructuresUseCase: IGetAllFeeStructures
+    private _createFeeUseCase: ICreateFeeStructureUseCase,
+    private _feepaymentcompletedetails: IStudentFullFeePaymentStatusUseCase,
+    private _search: IStudentPaymentHistorySeeAdmin,
+    private _getAllFeeStructuresUseCase: IGetAllFeeStructures
   ) { }
 
 
 
   async getAll(req: Request, res: Response): Promise<void> {
     try {
-      const result = await this.getAllFeeStructuresUseCase.execute();
+      const result = await this._getAllFeeStructuresUseCase.execute();
       res.status(StatusCodes.OK).json({
         success: true,
         data: result,
@@ -39,7 +39,7 @@ export class FeeStructureManageController {
 
       validateFeeStructureCreate(req.body);
 
-      const result = await this.createFeeUseCase.execute({
+      const result = await this._createFeeUseCase.execute({
         name,
         classId,
         academicYear,
@@ -73,7 +73,7 @@ export class FeeStructureManageController {
 
       console.log("classId", classId, "page", page, "limit", limit);
 
-      const result = await this.feepaymentcompletedetails.execute(classId, page, limit);
+      const result = await this._feepaymentcompletedetails.execute(classId, page, limit);
 
       if (!result) {
         res.status(StatusCodes.BAD_REQUEST).json({ message: "does not get classId", success: false })
@@ -101,7 +101,7 @@ export class FeeStructureManageController {
           .json({ message: "STUDENT_NAME_REQUIRED" });
       }
 
-      const data = await this.search.execute(studentName);
+      const data = await this._search.execute(studentName);
 
       if (!data || data.length === 0) {
         res

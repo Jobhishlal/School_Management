@@ -13,10 +13,10 @@ import { validateTimetableFormat } from "../../../../validators/Timetable/Timeta
 
 export class TimeTableManageController {
   constructor(
-    private readonly createrepo: ICreateTimeTable,
-    private readonly gettimetable: IGETTIMETABLECLASS,
-    private readonly updatetimetable: IUPDATETIMETABLE,
-    private readonly deletetimetable: IDeleteTimeTable,
+    private readonly _createrepo: ICreateTimeTable,
+    private readonly _gettimetable: IGETTIMETABLECLASS,
+    private readonly _updatetimetable: IUPDATETIMETABLE,
+    private readonly _deletetimetable: IDeleteTimeTable,
 
 
   ) { }
@@ -27,7 +27,7 @@ export class TimeTableManageController {
       const dto: CreateTimetableDTO = req.body;
       validateTimetableFormat(dto);
       logger.info(JSON.stringify(dto))
-      const created = await this.createrepo.execute(dto);
+      const created = await this._createrepo.execute(dto);
 
       res.status(StatusCodes.CREATED).json({
         success: true,
@@ -49,7 +49,7 @@ export class TimeTableManageController {
   async GetByClass(req: Request, res: Response): Promise<void> {
     try {
       const { classId, division } = req.params;
-      const timetable = await this.gettimetable.execute(classId, division);
+      const timetable = await this._gettimetable.execute(classId, division);
 
       if (!timetable) {
         res.status(StatusCodes.NOT_FOUND).json({ success: false, message: "Timetable not found" });
@@ -73,7 +73,7 @@ export class TimeTableManageController {
       const dto: CreateTimetableDTO = req.body;
       validateTimetableFormat(dto);
 
-      const updated = await this.updatetimetable.execute(dto);
+      const updated = await this._updatetimetable.execute(dto);
       res.status(StatusCodes.CREATED).json({
         success: true,
         message: "Timetable updated successfully",
@@ -93,7 +93,7 @@ export class TimeTableManageController {
       const { id } = req.params;
       if (!id) res.status(StatusCodes.BAD_REQUEST).json({ message: "Timetable ID is required" });
 
-      await this.deletetimetable.execute(id);
+      await this._deletetimetable.execute(id);
       res.status(StatusCodes.CREATED).json({ message: "Timetable deleted successfully" });
     } catch (error: any) {
 

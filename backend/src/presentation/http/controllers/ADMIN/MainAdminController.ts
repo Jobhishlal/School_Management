@@ -11,10 +11,10 @@ import { IResendOtpUseCase } from "../../../../applications/interface/UseCaseInt
 
 export class AdminLoginController {
   constructor(
-    private loginUseCase: IUnifiedLoginUseCase,
-    private verifyOtpUseCase: IVerifyOtpUseCase,
-    private refreshTokenUseCase: IRefreshTokenUseCase,
-    private resendOtpUseCase: IResendOtpUseCase
+    private _loginUseCase: IUnifiedLoginUseCase,
+    private _verifyOtpUseCase: IVerifyOtpUseCase,
+    private _refreshTokenUseCase: IRefreshTokenUseCase,
+    private _resendOtpUseCase: IResendOtpUseCase
   ) { }
 
 
@@ -25,7 +25,7 @@ export class AdminLoginController {
 
       logger.info(JSON.stringify(req.body));
 
-      const result: any = await this.loginUseCase.execute(email, password, studentId);
+      const result: any = await this._loginUseCase.execute(email, password, studentId);
       logger.info(JSON.stringify(result));
 
 
@@ -97,7 +97,7 @@ export class AdminLoginController {
       console.log("token", req.body);
 
 
-      const { authToken, refreshToken, role, id, email } = await this.verifyOtpUseCase.execute(otpToken, otp);
+      const { authToken, refreshToken, role, id, email } = await this._verifyOtpUseCase.execute(otpToken, otp);
 
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
@@ -123,7 +123,7 @@ export class AdminLoginController {
   async resendOtp(req: Request, res: Response): Promise<void> {
     try {
       const { oldOtpToken } = req.body;
-      const { otpToken } = await this.resendOtpUseCase.execute(oldOtpToken);
+      const { otpToken } = await this._resendOtpUseCase.execute(oldOtpToken);
 
       res.status(StatusCodes.OK).json({
         message: OtpError.RESEND_OTP,
@@ -142,7 +142,7 @@ export class AdminLoginController {
         return;
       }
 
-      const result = await this.refreshTokenUseCase.execute(refreshToken);
+      const result = await this._refreshTokenUseCase.execute(refreshToken);
 
       res.status(StatusCodes.OK).json({
         success: true,

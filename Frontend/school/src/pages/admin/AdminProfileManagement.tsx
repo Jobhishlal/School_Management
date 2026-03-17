@@ -349,7 +349,7 @@ export function AdminProfileManagement() {
 
             {passwordStep === "update" && (
               <div className="space-y-2">
-                <TextInput label="Enter New Password" value={newPassword} onChange={setNewPassword} placeholder="New Password" type="password" className={inputBgClass} />
+                <TextInput label="Enter New Password" value={newPassword} onChange={setNewPassword} placeholder="New Password" type="password" className={inputBgClass} isDark={isDark} />
                 <DarkModeButton onClick={handleUpdatePassword} className="bg-red-600 hover:bg-red-700">Update Password</DarkModeButton>
               </div>
             )}

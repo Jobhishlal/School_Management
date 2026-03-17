@@ -1,5 +1,6 @@
 
 
+import { Eye, EyeOff } from "lucide-react";
 import { MainAdminLogin } from "../../services/Auth/Auth";
 import { useState } from "react";
 import { showToast } from "../../utils/toast";
@@ -16,6 +17,7 @@ export default function MainAdminLogincheck() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [loginType, setLoginType] = useState<LoginType>("staff");
+  const [showPassword, setShowPassword] = useState(false);
 
 
 
@@ -175,13 +177,22 @@ export default function MainAdminLogincheck() {
             />
           )}
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500 outline-none"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-3 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500 outline-none pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
 
           {loginType === "parent" && (
             <div className="text-right">

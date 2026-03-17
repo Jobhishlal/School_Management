@@ -15,13 +15,13 @@ import { validateAttendanceTake } from '../../../validators/AttendanceValidation
 
 export class AttendanceController {
   constructor(
-    private repo: IAttendanceCreateUseCase,
-    private studentclassrepofind: IGetStudentsByClassUseCase,
-    private findStudentsUseCase: IFindStudentsByTeacherUseCase,
-    private attendancelist: IAttendanceList,
-    private getReportUseCase: IGetAttendanceReportUseCase,
-    private getStudentHistoryUseCase: IGetStudentAttendanceHistoryUseCase,
-    private updateAttendanceUseCase: IUpdateAttendanceUseCase
+    private _repo: IAttendanceCreateUseCase,
+    private _studentclassrepofind: IGetStudentsByClassUseCase,
+    private _findStudentsUseCase: IFindStudentsByTeacherUseCase,
+    private _attendancelist: IAttendanceList,
+    private _getReportUseCase: IGetAttendanceReportUseCase,
+    private _getStudentHistoryUseCase: IGetStudentAttendanceHistoryUseCase,
+    private _updateAttendanceUseCase: IUpdateAttendanceUseCase
   ) { }
 
   async Create(req: AuthRequest, res: Response): Promise<void> {
@@ -34,7 +34,7 @@ export class AttendanceController {
 
       validateAttendanceTake(data);
 
-      const create = await this.repo.execute(data);
+      const create = await this._repo.execute(data);
 
 
       if (!create) {
@@ -65,7 +65,7 @@ export class AttendanceController {
       const { classId } = req.params
       const teacherId = req.user?.id
 
-      const student = await this.studentclassrepofind.execute(classId, teacherId)
+      const student = await this._studentclassrepofind.execute(classId, teacherId)
       console.log(student)
       if (!student) {
         console.log("stdent", student)
@@ -94,7 +94,7 @@ export class AttendanceController {
         return;
       }
 
-      const students = await this.findStudentsUseCase.execute(teacherId);
+      const students = await this._findStudentsUseCase.execute(teacherId);
 
       res.status(StatusCodes.OK).json({
         message: "Students fetched successfully",
@@ -130,7 +130,7 @@ export class AttendanceController {
         return;
       }
 
-      const attendance = await this.attendancelist.execute(classId, status as string);
+      const attendance = await this._attendancelist.execute(classId, status as string);
       console.log(attendance)
 
       res.status(StatusCodes.OK).json({
@@ -160,7 +160,7 @@ export class AttendanceController {
         return;
       }
 
-      const report = await this.getReportUseCase.execute(
+      const report = await this._getReportUseCase.execute(
         classId,
         new Date(startDate as string),
         new Date(endDate as string)
@@ -192,7 +192,7 @@ export class AttendanceController {
         return;
       }
 
-      const history = await this.getStudentHistoryUseCase.execute(
+      const history = await this._getStudentHistoryUseCase.execute(
         studentId,
         Number(month),
         Number(year)
@@ -223,7 +223,7 @@ export class AttendanceController {
         return;
       }
 
-      await this.updateAttendanceUseCase.execute(studentId, new Date(date), session, status);
+      await this._updateAttendanceUseCase.execute(studentId, new Date(date), session, status);
 
       res.status(StatusCodes.OK).json({
         success: true,

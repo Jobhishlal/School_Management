@@ -11,11 +11,11 @@ import { validateSubAdminUpdate, validatePasswordUpdate } from '../../../validat
 
 export class AdminOwnProfileManagement {
   constructor(
-    private admingetUseCase: ISubAdminProfileGetUseCase,
-    private adminUpdateUseCase: ISubAdminProfileUpdateUseCase,
-    private requesetpasswordUseCase: IRequestPasswordOtpUseCase,
-    private udpatesubadminpassword: IUpdateSubAdminPasswordUseCase,
-    private iverifypasswordUseCase: IVerifySubAdminPasswordOtpUseCase
+    private _admingetUseCase: ISubAdminProfileGetUseCase,
+    private _adminUpdateUseCase: ISubAdminProfileUpdateUseCase,
+    private _requesetpasswordUseCase: IRequestPasswordOtpUseCase,
+    private _udpatesubadminpassword: IUpdateSubAdminPasswordUseCase,
+    private _iverifypasswordUseCase: IVerifySubAdminPasswordOtpUseCase
   ) { }
   async getProfile(req: AuthRequest, res: Response) {
     console.log("id get frst", req.user?.id)
@@ -26,7 +26,7 @@ export class AdminOwnProfileManagement {
 
     try {
 
-      const profile = await this.admingetUseCase.execute(req.user.id);
+      const profile = await this._admingetUseCase.execute(req.user.id);
 
       if (!profile) return res.status(StatusCodes.NOT_FOUND).json({ message: "Profile not found" });
 
@@ -98,7 +98,7 @@ export class AdminOwnProfileManagement {
 
 
     try {
-      const updatedProfile = await this.adminUpdateUseCase.execute(req.user.id, updates);
+      const updatedProfile = await this._adminUpdateUseCase.execute(req.user.id, updates);
 
       if (!updatedProfile) {
         return res.status(StatusCodes.NOT_FOUND).json({ message: "Profile not found" });
@@ -118,7 +118,7 @@ export class AdminOwnProfileManagement {
     if (!email) res.status(StatusCodes.BAD_REQUEST).json({ message: "Email is required" });
 
     try {
-      const { otpToken } = await this.requesetpasswordUseCase.execute(email);
+      const { otpToken } = await this._requesetpasswordUseCase.execute(email);
       console.log("danjkdbad", email)
       res.status(StatusCodes.OK).json({ otpToken });
     } catch (err: any) {
@@ -134,7 +134,7 @@ export class AdminOwnProfileManagement {
       const { otpToken, otp } = req.body;
 
 
-      const result = await this.iverifypasswordUseCase.execute(otpToken, otp);
+      const result = await this._iverifypasswordUseCase.execute(otpToken, otp);
 
 
 
@@ -159,7 +159,7 @@ export class AdminOwnProfileManagement {
     validatePasswordUpdate(newPassword);
 
     try {
-      const updatedUser = await this.udpatesubadminpassword.execute(userId, newPassword);
+      const updatedUser = await this._udpatesubadminpassword.execute(userId, newPassword);
       console.log("Password updated for user:", userId);
       return res.status(StatusCodes.CREATED).json({ message: "Password updated successfully", updatedUser });
     } catch (err: any) {

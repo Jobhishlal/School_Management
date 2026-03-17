@@ -12,11 +12,15 @@ import { validateInstituteProfile } from '../../../validators/InstituteValidatio
 
 
 export class InstituteProfileController {
-    constructor(private createInstituteUseCase: IInstituteUsecase, private getInstitute: IGetInstituteInterface, private updateinsti: IIInstituteProfileUpdate) { }
+    constructor(
+        private _createInstituteUseCase: IInstituteUsecase,
+        private _getInstitute: IGetInstituteInterface,
+         private _updateinsti: IIInstituteProfileUpdate
+        ) { }
     async createInstitute(req: Request, res: Response): Promise<void> {
         try {
 
-            const existingInstitutes = await this.getInstitute.execute();
+            const existingInstitutes = await this._getInstitute.execute();
             if (existingInstitutes.length > 0) {
                 res.status(StatusCodes.FORBIDDEN).json({
                     message: "Institute profile already exists. You can only update it.",
@@ -50,7 +54,7 @@ export class InstituteProfileController {
                 logo
             );
 
-            const createInstitute = await this.createInstituteUseCase.execute(InstituteEntity);
+            const createInstitute = await this._createInstituteUseCase.execute(InstituteEntity);
             res.status(StatusCodes.CREATED).json({ message: "Institute Created successfully", createInstitute });
         } catch (error: any) {
             console.error(error.message);
@@ -63,7 +67,7 @@ export class InstituteProfileController {
 
     async getAll(req: Request, res: Response): Promise<void> {
         try {
-            const institute = await this.getInstitute.execute()
+            const institute = await this._getInstitute.execute()
             res.status(StatusCodes.CREATED).json({ message: "Its Server Error", institute })
         } catch (error: any) {
             console.error(error.message);
@@ -90,7 +94,7 @@ export class InstituteProfileController {
 
             validateInstituteProfile(update, true);
 
-            const updateinstprofile = await this.updateinsti.execute(id, update);
+            const updateinstprofile = await this._updateinsti.execute(id, update);
             res.status(StatusCodes.CREATED).json({ message: "Profile update successful", data: updateinstprofile });
 
         } catch (error: any) {

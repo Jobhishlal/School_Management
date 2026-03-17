@@ -7,8 +7,8 @@ import { IGetAllPendingStatus } from "../../../../../applications/interface/UseC
 
 export class SuperadminApprovalController {
     constructor(
-        private approve :IApprovalUsecase,
-         private Getallpendingstatus:IGetAllPendingStatus
+        private _approve :IApprovalUsecase,
+         private _Getallpendingstatus:IGetAllPendingStatus
     ){}
     
 
@@ -22,20 +22,20 @@ export class SuperadminApprovalController {
       });
     }
 
-    const expense = await this.approve.execute({
+    const expense = await this._approve.execute({
       expenseId,
       action,
       approvedBy: req.user.id, 
     });
 
-    return res.status(200).json({
+    return res.status(StatusCodes.OK).json({
       success: true,
       message: `Expense ${action.toLowerCase()} successfully`,
       data: expense,
     });
   } catch (error: any) {
     console.log(error)
-    return res.status(400).json({ message: error.message });
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
   }
   }
 
@@ -46,7 +46,7 @@ export class SuperadminApprovalController {
          return res.status(403).json({ message: "Only super admin can access" });
        }
   
-      const expenses = await this.Getallpendingstatus.execute();
+      const expenses = await this._Getallpendingstatus.execute();
       res.status(StatusCodes.CREATED).json(expenses);
     } catch (err: any) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message || "Failed to fetch expenses" });

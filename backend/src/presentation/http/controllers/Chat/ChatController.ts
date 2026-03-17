@@ -16,21 +16,21 @@ import { ConversationParticipant } from "../../../../domain/entities/Conversatio
 
 export class ChatController {
     constructor(
-        private sendMessageUseCase: ISendMessageUseCase,
-        private getConversationsUseCase: IGetConversationsUseCase,
-        private getMessagesUseCase: IGetMessagesUseCase,
-        private markMessagesReadUseCase: IMarkMessagesReadUseCase,
-        private teacherRepo: MongoTeacher,
-        private createClassGroupChatUseCase: ICreateClassGroupChatUseCase,
-        private chatRepo: IChatRepository,
-        private editMessageUseCase: IEditMessageUseCase,
+        private _sendMessageUseCase: ISendMessageUseCase,
+        private _getConversationsUseCase: IGetConversationsUseCase,
+        private _getMessagesUseCase: IGetMessagesUseCase,
+        private _markMessagesReadUseCase: IMarkMessagesReadUseCase,
+        private _teacherRepo: MongoTeacher,
+        private _createClassGroupChatUseCase: ICreateClassGroupChatUseCase,
+        private _chatRepo: IChatRepository,
+        private _editMessageUseCase: IEditMessageUseCase,
         private searchchatUsecase: ISearchChatUsersUseCase
     ) { }
 
 
     getTeachersForStudent = async (req: Request, res: Response) => {
         try {
-            const teachers = await this.teacherRepo.findAll();
+            const teachers = await this._teacherRepo.findAll();
             const formattedTeachers = teachers.map(t => ({
                 _id: t.id,
                 name: t.name,
@@ -66,14 +66,14 @@ export class ChatController {
             const senderModel = mapRoleToModel(senderRole) as 'Students' | 'Teacher';
             const receiverModel = mapRoleToModel(receiverRole || 'teacher') as 'Students' | 'Teacher' | 'Conversation';
 
-            const message = await this.sendMessageUseCase.execute(senderId, senderModel, receiverId, receiverModel, content, type);
+            const message = await this._sendMessageUseCase.execute(senderId, senderModel, receiverId, receiverModel, content, type);
 
 
             try {
                 const io = getIO();
 
                 if (receiverModel === 'Conversation') {
-                    const conversation = await this.chatRepo.findConversationById(receiverId);
+                    const conversation = await this._chatRepo.findConversationById(receiverId);
                     if (conversation && conversation.participants) {
                         conversation.participants.forEach((participant: ConversationParticipant) => {
 
@@ -109,7 +109,7 @@ export class ChatController {
             const userId = authReq.user?.id;
             if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
 
-            const conversations = await this.getConversationsUseCase.execute(userId);
+            const conversations = await this._getConversationsUseCase.execute(userId);
             res.status(StatusCodes.OK).json({ success: true, data: conversations });
         } catch (error) {
             console.error("Error fetching conversations:", error);
@@ -127,7 +127,7 @@ export class ChatController {
                 return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
             }
 
-            const messages = await this.getMessagesUseCase.execute(userId, otherUserId);
+            const messages = await this._getMessagesUseCase.execute(userId, otherUserId);
             res.status(StatusCodes.OK).json({ success: true, data: messages });
         } catch (error) {
             console.error("Error fetching chat history:", error);
@@ -143,7 +143,7 @@ export class ChatController {
 
             if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
 
-            await this.markMessagesReadUseCase.execute(otherUserId, userId);
+            await this._markMessagesReadUseCase.execute(otherUserId, userId);
 
             try {
                 const io = getIO();
@@ -195,7 +195,7 @@ export class ChatController {
                 return res.status(StatusCodes.BAD_REQUEST).json({ message: "Class ID is required" });
             }
 
-            const conversation = await this.createClassGroupChatUseCase.execute(classId, creatorId, customName);
+            const conversation = await this._createClassGroupChatUseCase.execute(classId, creatorId, customName);
 
             res.status(StatusCodes.OK).json({ success: true, data: conversation });
         } catch (error) {
@@ -214,7 +214,7 @@ export class ChatController {
                 return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
             }
 
-            const updatedMessage = await this.editMessageUseCase.execute(messageId, userId, content);
+            const updatedMessage = await this._editMessageUseCase.execute(messageId, userId, content);
 
             try {
                 const io = getIO();
@@ -222,7 +222,7 @@ export class ChatController {
                 if (updatedMessage.receiverModel === 'Conversation') {
 
                     const convId = updatedMessage.receiverId.toString();
-                    const conversation = await this.chatRepo.findConversationById(convId);
+                    const conversation = await this._chatRepo.findConversationById(convId);
                     if (conversation && conversation.participants) {
                         conversation.participants.forEach((p: ConversationParticipant) => {
                             const pId = (p.participantId as any)._id

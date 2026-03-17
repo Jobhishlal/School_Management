@@ -10,18 +10,18 @@ import logger from "../../../../shared/constants/Logger";
 export class AdminClassController {
 
   constructor(
-    private readonly classUseCase: IClassDivision,
-    private readonly assignTeacherUseCase: IAssignTeacherOnClass,
-    private readonly getTeacherUseCase: IGetClassTeacher,
-    private readonly listoutteacherlist: IGETALLCLASSTEACHER,
-    private readonly Iassignstudenttoclassdivision: IAssignStudentToClassDivision
+    private readonly _classUseCase: IClassDivision,
+    private readonly _assignTeacherUseCase: IAssignTeacherOnClass,
+    private readonly _getTeacherUseCase: IGetClassTeacher,
+    private readonly _listoutteacherlist: IGETALLCLASSTEACHER,
+    private readonly _Iassignstudenttoclassdivision: IAssignStudentToClassDivision
   ) { }
 
 
   async getClassBasestudent(req: Request, res: Response) {
     console.log(">>>>>>>> DEBUG: AdminClassController.getClassBasestudent EXECUTING <<<<<<<<");
     try {
-      const data = await this.classUseCase.execute();
+      const data = await this._classUseCase.execute();
 
 
       res.status(StatusCodes.OK).json({ success: true, data });
@@ -34,7 +34,7 @@ export class AdminClassController {
     try {
       const { classId, teacherId } = req.body;
 
-      const result = await this.assignTeacherUseCase.execute(classId, teacherId);
+      const result = await this._assignTeacherUseCase.execute(classId, teacherId);
 
       res.status(StatusCodes.CREATED).json({
         success: true,
@@ -59,7 +59,7 @@ export class AdminClassController {
       if (!classId)
         return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "ClassId required" });
 
-      const teacher = await this.getTeacherUseCase.execute(classId);
+      const teacher = await this._getTeacherUseCase.execute(classId);
       res.json({ success: true, data: teacher ? [teacher] : [] });
     } catch (err) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, error: err });
@@ -68,7 +68,7 @@ export class AdminClassController {
   async GetAllTeachers(req: Request, res: Response): Promise<void> {
     try {
 
-      const data = await this.listoutteacherlist.execute();
+      const data = await this._listoutteacherlist.execute();
         
       if (!data) {
         res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "No teachers found" });
@@ -83,7 +83,7 @@ export class AdminClassController {
   async StudentDivisionSepareate(req: Request, res: Response): Promise<void> {
     try {
       const { studentId, classId } = req.body;
-      const data = await this.Iassignstudenttoclassdivision.execute(studentId, classId)
+      const data = await this._Iassignstudenttoclassdivision.execute(studentId, classId)
       if (!data) {
         res.status(StatusCodes.BAD_REQUEST)
           .json({ message: "division setup is not possible" })

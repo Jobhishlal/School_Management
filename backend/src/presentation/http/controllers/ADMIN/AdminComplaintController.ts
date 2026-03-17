@@ -5,8 +5,8 @@ import { StatusCodes } from "../../../../shared/constants/statusCodes";
 
 export class AdminComplaintController {
     constructor(
-        private getAllParentComplaintsUseCase: IGetAllParentComplaintsUseCase,
-        private resolveComplaintUseCase: IResolveComplaintUseCase
+        private _getAllParentComplaintsUseCase: IGetAllParentComplaintsUseCase,
+        private _resolveComplaintUseCase: IResolveComplaintUseCase
     ) { }
 
     async getAllComplaints(req: Request, res: Response): Promise<void> {
@@ -14,7 +14,7 @@ export class AdminComplaintController {
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 10;
 
-            const result = await this.getAllParentComplaintsUseCase.execute(page, limit);
+            const result = await this._getAllParentComplaintsUseCase.execute(page, limit);
             res.status(StatusCodes.OK).json(result);
         } catch (error) {
             console.error("Error fetching all complaints:", error);
@@ -32,7 +32,7 @@ export class AdminComplaintController {
                 return;
             }
 
-            const updatedComplaint = await this.resolveComplaintUseCase.execute(id, feedback);
+            const updatedComplaint = await this._resolveComplaintUseCase.execute(id, feedback);
 
             if (!updatedComplaint) {
                 res.status(StatusCodes.NOT_FOUND).json({ message: "Complaint not found" });

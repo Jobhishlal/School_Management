@@ -3,7 +3,7 @@ import { IParentSignupUseCase } from "../../../../applications/interface/UseCase
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 
 export class SignupParentController {
-  constructor(private useCase: IParentSignupUseCase) {}
+  constructor(private _useCase: IParentSignupUseCase) {}
 
   async signUp(req: Request, res: Response) {
     try {
@@ -30,7 +30,7 @@ export class SignupParentController {
       }
 
   
-      const parent = await this.useCase.execute(studentId, email, password);
+      const parent = await this._useCase.execute(studentId, email, password);
 
       res.status(StatusCodes.CREATED).json({
         message: "Parent registered successfully",

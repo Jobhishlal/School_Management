@@ -12,10 +12,10 @@ import { validateAnnouncementCreate, validateAnnouncementUpdate } from "../../..
 
 export class AnnouncementController {
   constructor(
-    private readonly repo: IAnnoucementUseCase,
-    private readonly updaterepo: IAnnouncementUpdateUseCase,
-    private readonly findall: FindAllaanouncement,
-    private readonly deleteUseCase: DeleteAnnouncementUseCase
+    private readonly _repo: IAnnoucementUseCase,
+    private readonly _updaterepo: IAnnouncementUpdateUseCase,
+    private readonly _findall: FindAllaanouncement,
+    private readonly _deleteUseCase: DeleteAnnouncementUseCase
 
   ) { }
 
@@ -41,7 +41,7 @@ export class AnnouncementController {
       }
 
 
-      const data = await this.repo.execute({
+      const data = await this._repo.execute({
         ...values,
         attachment,
         activeTime: new Date(values.activeTime),
@@ -87,7 +87,7 @@ export class AnnouncementController {
 
       validateAnnouncementUpdate(data);
 
-      const update = await this.updaterepo.execute(id, data);
+      const update = await this._updaterepo.execute(id, data);
 
       if (!update) {
         res.status(StatusCodes.BAD_REQUEST).json({ message: "It is not possible to update", success: false });
@@ -106,7 +106,7 @@ export class AnnouncementController {
 
   async FindAllAnnouncement(req: Request, res: Response): Promise<void> {
     try {
-      const data = await this.findall.execute()
+      const data = await this._findall.execute()
       if (!data) {
         res.status(StatusCodes.BAD_REQUEST)
           .json({ message: "data fetching is not possible", suuccess: false })
@@ -126,7 +126,7 @@ export class AnnouncementController {
   async delete(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      await this.deleteUseCase.execute(id);
+      await this._deleteUseCase.execute(id);
       res.status(StatusCodes.OK).json({ success: true, message: "Announcement deleted successfully" });
     } catch (error: any) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

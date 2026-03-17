@@ -10,9 +10,9 @@ import { validateSubAdminCreate, validateSubAdminUpdate } from '../../../validat
 
 export class SubAdminCreateController implements ISubAdminCreate {
   constructor(
-    private createsubUseCase: CreateSubAdmin,
-    private updatesubUseCase: UpdateDetails,
-    private subadminblockUseCase: SubAdminBlock
+    private _createsubUseCase: CreateSubAdmin,
+    private _updatesubUseCase: UpdateDetails,
+    private _subadminblockUseCase: SubAdminBlock
   ) { }
 
   async createSubAdmin(req: Request, res: Response): Promise<void> {
@@ -22,7 +22,7 @@ export class SubAdminCreateController implements ISubAdminCreate {
 
       validateSubAdminCreate(req.body);
 
-      const result = await this.createsubUseCase.execute({
+      const result = await this._createsubUseCase.execute({
         name,
         email,
         phone,
@@ -56,7 +56,7 @@ export class SubAdminCreateController implements ISubAdminCreate {
 
   async getAllSubAdmins(req: Request, res: Response): Promise<void> {
     try {
-      const subAdmins = await this.createsubUseCase.getAll();
+      const subAdmins = await this._createsubUseCase.getAll();
       res.status(StatusCodes.OK).json(subAdmins);
     } catch (error: any) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
@@ -70,7 +70,7 @@ export class SubAdminCreateController implements ISubAdminCreate {
 
       validateSubAdminUpdate(req.body);
 
-      const update = await this.updatesubUseCase.execute(id, {
+      const update = await this._updatesubUseCase.execute(id, {
         name,
         email,
         phone,
@@ -96,7 +96,7 @@ export class SubAdminCreateController implements ISubAdminCreate {
       const { id } = req.params;
       const { blocked } = req.body;
 
-      const updated = await this.subadminblockUseCase.execute(id, blocked);
+      const updated = await this._subadminblockUseCase.execute(id, blocked);
       res.status(StatusCodes.OK).json({
         message: blocked ? "SubAdmin blocked successfully" : "SubAdmin unblocked successfully",
         data: updated,

@@ -10,17 +10,17 @@ import { ResendOtp } from "../../../../applications/useCases/Auth/ResenOtp";
 
 export class AdminController implements IAdminController {
   constructor(
-    private signupUseCase: SignupAdmin,
-    private getAdminUseCase: GetAdmin,
-    private generateOtpUseCase: GenarateOtpP,
-    private resendOtpUseCase:ResendOtp
+    private _signupUseCase: SignupAdmin,
+    private _getAdminUseCase: GetAdmin,
+    private _generateOtpUseCase: GenarateOtpP,
+    private _resendOtpUseCase:ResendOtp
   ) {}
 
 
   async signupRequest(req: Request, res: Response): Promise<void> {
     try {
       const { username, email, password } = req.body;
-      const { otpToken } = await this.generateOtpUseCase.execute(
+      const { otpToken } = await this._generateOtpUseCase.execute(
         username,
         email,
         password
@@ -78,7 +78,7 @@ async verifyOtp(req: Request, res: Response): Promise<void> {
     }
 
    
-    const admin = await this.signupUseCase.execute({
+    const admin = await this._signupUseCase.execute({
       username,
       email,
       password,
@@ -116,7 +116,7 @@ async resentOtp(req:Request,res:Response):Promise<void>{
    const { oldOtpToken } = req.body;
   
 
-   const { otpToken } = await this.resendOtpUseCase.execute(oldOtpToken);
+   const { otpToken } = await this._resendOtpUseCase.execute(oldOtpToken);
 
 res.status(StatusCodes.OK).json({
   message: "New Otp share Your Email",
@@ -141,7 +141,7 @@ res.status(StatusCodes.OK).json({
 
   async getAll(req: Request, res: Response): Promise<void> {
     try {
-      const admin = await this.getAdminUseCase.execute();
+      const admin = await this._getAdminUseCase.execute();
       res.status(StatusCodes.OK).json(admin);
     } catch (err: any) {
       res.status(StatusCodes.BAD_REQUEST).json({ error: err.message });

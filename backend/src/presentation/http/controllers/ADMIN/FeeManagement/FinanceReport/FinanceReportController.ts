@@ -6,8 +6,8 @@ import { IExpenseReportGenarate } from "../../../../../../applications/interface
 
 export class FinanceReportManagementController {
     constructor(
-        private readonly revenue:IRevenueGenarateUseCase,
-        private readonly expense : IExpenseReportGenarate
+        private readonly _revenue:IRevenueGenarateUseCase,
+        private readonly _expense : IExpenseReportGenarate
     
     ){}
 
@@ -18,7 +18,7 @@ export class FinanceReportManagementController {
               res.status(StatusCodes.BAD_REQUEST)
               .json({message:"start date and end date required",success:false})
             }
-            const data = await this.revenue.execute(
+            const data = await this._revenue.execute(
                 startDate as string,
                 endDate as string
             )
@@ -33,7 +33,7 @@ export class FinanceReportManagementController {
 
     async ExpenseGenarage(req:Request,res:Response):Promise<void>{
         try {
-            const data = await this.expense.execute()
+            const data = await this._expense.execute()
            
             if(!data){
                 res.status(StatusCodes.BAD_REQUEST)

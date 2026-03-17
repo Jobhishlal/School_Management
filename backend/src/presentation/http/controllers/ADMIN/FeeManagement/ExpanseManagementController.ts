@@ -15,16 +15,16 @@ import { validateExpenseCreate, validateExpenseUpdate } from "../../../../valida
 export class ExpenseManagementController {
 
   constructor(
-    private Createexpenseuse: IExpenseCreateUseCase,
-    private ExpenseListout: IExpenseFUllListout,
-    private Pendingstatusupdate: IUpdatePendingExpense
+    private _Createexpenseuse: IExpenseCreateUseCase,
+    private _ExpenseListout: IExpenseFUllListout,
+    private _Pendingstatusupdate: IUpdatePendingExpense
 
   ) { }
   async create(req: Request, res: Response): Promise<void> {
 
     try {
       validateExpenseCreate(req.body);
-      const expense = await this.Createexpenseuse.execute(req.body)
+      const expense = await this._Createexpenseuse.execute(req.body)
 
       console.log("expense full details", expense)
       res.status(StatusCodes.CREATED)
@@ -46,7 +46,7 @@ export class ExpenseManagementController {
     try {
 
 
-      const expenses = await this.ExpenseListout.execute();
+      const expenses = await this._ExpenseListout.execute();
 
       return res.status(StatusCodes.OK).json({
         success: true,
@@ -71,7 +71,7 @@ export class ExpenseManagementController {
         data: req.body
       }
 
-      const update = await this.Pendingstatusupdate.execute(dto)
+      const update = await this._Pendingstatusupdate.execute(dto)
       if (!update) {
         res.status(StatusCodes.BAD_REQUEST).json({ message: "pending status does not update", success: false })
       }
