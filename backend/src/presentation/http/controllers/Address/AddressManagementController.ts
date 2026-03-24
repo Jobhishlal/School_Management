@@ -15,21 +15,7 @@ export class AddressManagementController {
 
     async create(req: Request, res: Response): Promise<void> {
         try {
-            const { street, city, state, pincode } = req.body;
-
-            validateAddressCreate(req.body);
-
-            const newAddress = new AddressEntity(
-                "",
-                street,
-                city,
-                state,
-                pincode
-            );
-
-
-
-            const addressCreated = await this._createaddress.execute(newAddress);
+            const addressCreated = await this._createaddress.execute(req.body);
             console.log("created", addressCreated)
             res.status(StatusCodes.OK).json({
                 message: "Successfully created address",
@@ -67,7 +53,7 @@ export class AddressManagementController {
             const update = req.body;
 
             validateAddressUpdate(update);
-            const updateaddress = await this._addressupdate.execute(id, update)
+            const updateaddress = await this._addressupdate.execute({ id, ...update })
             console.log(updateaddress)
             if (!updateaddress) {
                 res.status(StatusCodes.UNAUTHORIZED).json({ message: "Does not existed" })

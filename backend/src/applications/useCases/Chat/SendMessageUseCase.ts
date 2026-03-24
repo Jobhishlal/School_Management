@@ -3,6 +3,7 @@ import { Message } from "../../../domain/entities/Message";
 import { IChatSocketService } from "../../../infrastructure/services/IChatSocketService";
 import { ISendMessageUseCase } from "../../interface/UseCaseInterface/Chat/ISendMessageUseCase";
 import { ConversationParticipant } from "../../../domain/entities/Conversation";
+import { SendMessageRequestDTO } from "../../dto/ChatDTOs";
 
 export class SendMessageUseCase implements ISendMessageUseCase {
     constructor(
@@ -10,7 +11,8 @@ export class SendMessageUseCase implements ISendMessageUseCase {
         private chatSocketService: IChatSocketService
     ) { }
 
-    async execute(senderId: string, senderRole: string, receiverId: string, receiverRole: string, content: string, type: 'text' | 'image' | 'file' = 'text'): Promise<Message> {
+    async execute(dto: SendMessageRequestDTO, senderId: string, senderRole: string): Promise<Message> {
+        const { receiverId, receiverRole, content, type = 'text' } = dto;
 
         const mapRoleToModel = (role: string) => {
             if (role.toLowerCase() === 'student') return 'Students';

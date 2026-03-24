@@ -66,7 +66,7 @@ export class ChatController {
             const senderModel = mapRoleToModel(senderRole) as 'Students' | 'Teacher';
             const receiverModel = mapRoleToModel(receiverRole || 'teacher') as 'Students' | 'Teacher' | 'Conversation';
 
-            const message = await this._sendMessageUseCase.execute(senderId, senderModel, receiverId, receiverModel, content, type);
+            const message = await this._sendMessageUseCase.execute({ receiverId, receiverRole, content, type }, senderId, senderRole);
 
 
             try {
@@ -214,7 +214,7 @@ export class ChatController {
                 return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
             }
 
-            const updatedMessage = await this._editMessageUseCase.execute(messageId, userId, content);
+            const updatedMessage = await this._editMessageUseCase.execute({ messageId, content }, userId);
 
             try {
                 const io = getIO();

@@ -223,7 +223,7 @@ export class AttendanceController {
         return;
       }
 
-      await this._updateAttendanceUseCase.execute(studentId, new Date(date), session, status);
+      await this._updateAttendanceUseCase.execute({ studentId, date: new Date(date), session, status, teacherId: req.user?.id as string });
 
       res.status(StatusCodes.OK).json({
         success: true,

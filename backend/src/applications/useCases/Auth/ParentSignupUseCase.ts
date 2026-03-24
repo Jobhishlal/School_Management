@@ -2,12 +2,13 @@ import { ParentSignUpEntity } from "../../../domain/entities/ParentSignupEntity"
 import { IParentRepositorySign } from '../../interface/RepositoryInterface/Auth/IParentRepository'
 import bcrypt from "bcrypt";
 import { IParentSignupUseCase } from "../../interface/UseCaseInterface/IParentSignupUseCase";
-
+import { ParentLoginDTO } from "../../dto/ParentLoginDTO";
 
 export class SignupParentUseCase implements IParentSignupUseCase {
   constructor(private repo: IParentRepositorySign) {}
 
-  async execute(studentId: string, email: string, password: string) {
+  async execute(dto: ParentLoginDTO) {
+    const { studentId, email, password } = dto;
     const student = await this.repo.findStudentById(studentId);
     if (!student) throw new Error("Student not found");
 

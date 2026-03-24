@@ -1,4 +1,5 @@
 import { AddressEntity } from "../../../domain/entities/Address";
+import { UpdateAddressDTO } from "../../dto/AddressDTO";
 export interface IAddressUpdateUseCase {
-  execute(id: string, update: Partial<AddressEntity>): Promise<AddressEntity | null>;
+  execute(dto: UpdateAddressDTO): Promise<AddressEntity | null>;
 }

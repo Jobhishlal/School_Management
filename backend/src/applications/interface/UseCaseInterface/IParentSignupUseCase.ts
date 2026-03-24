@@ -1,6 +1,6 @@
 import { ParentSignUpEntity } from "../../../domain/entities/ParentSignupEntity";
+import { ParentLoginDTO } from "../../dto/ParentLoginDTO";
 
 export interface IParentSignupUseCase {
-  execute(id?: string, studentId?: string, email?: string,password?: string,
-  ): Promise<ParentSignUpEntity>;
+  execute(dto: ParentLoginDTO): Promise<ParentSignUpEntity>;
 }

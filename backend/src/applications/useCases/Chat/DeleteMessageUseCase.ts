@@ -3,6 +3,7 @@ import { Message } from "../../../domain/entities/Message";
 import { IChatSocketService } from "../../../infrastructure/services/IChatSocketService";
 import { IDeleteMessageUseCase } from "../../interface/UseCaseInterface/Chat/IDeleteMessageUseCase";
 import { ConversationParticipant } from "../../../domain/entities/Conversation";
+import { DeleteMessageRequestDTO } from "../../dto/ChatDTOs";
 
 export class DeleteMessageUseCase implements IDeleteMessageUseCase {
     constructor(
@@ -10,7 +11,8 @@ export class DeleteMessageUseCase implements IDeleteMessageUseCase {
         private chatSocketService: IChatSocketService
     ) { }
 
-    async execute(messageId: string, userId: string): Promise<Message> {
+    async execute(dto: DeleteMessageRequestDTO, userId: string): Promise<Message> {
+        const { messageId } = dto;
         console.log(`[DeleteMessageUseCase] Executing delete for messageId: ${messageId} by userId: ${userId}`);
         const message = await this.chatRepo.findMessageById(messageId);
 

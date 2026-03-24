@@ -1,4 +1,6 @@
 import { Students } from "../../../domain/entities/Students";
+import { CreateStudentDTO } from "../../dto/StudentDTO";
+
 export interface IStudentAddUsecase {
-  execute(student: Students): Promise<{ student: Students; tempPassword: string }>;
+  execute(dto: CreateStudentDTO): Promise<{ student: Students; tempPassword: string }>;
 }

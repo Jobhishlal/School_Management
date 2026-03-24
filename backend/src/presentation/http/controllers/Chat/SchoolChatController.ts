@@ -49,7 +49,7 @@ export class SchoolChatController {
                 return res.status(StatusCodes.UNAUTHORIZED).json({ message: CHAT_ERRORS.UNAUTHORIZED });
             }
 
-            const message = await this.sendMessageUseCase.execute(senderId, senderRole, receiverId, receiverRole, content, type);
+            const message = await this.sendMessageUseCase.execute({ receiverId, receiverRole, content, type }, senderId, senderRole);
 
             res.status(StatusCodes.OK).json({ success: true, data: ChatDTOMapper.toMessageDTO(message) });
         } catch (error) {
@@ -168,7 +168,7 @@ export class SchoolChatController {
                 return res.status(StatusCodes.UNAUTHORIZED).json({ message: CHAT_ERRORS.UNAUTHORIZED });
             }
 
-            const updatedMessage = await this.editMessageUseCase.execute(messageId, userId, content);
+            const updatedMessage = await this.editMessageUseCase.execute({ messageId, content }, userId);
 
             res.status(StatusCodes.OK).json({ success: true, data: ChatDTOMapper.toMessageDTO(updatedMessage) });
         } catch (error: any) {
@@ -190,7 +190,7 @@ export class SchoolChatController {
                 return res.status(StatusCodes.UNAUTHORIZED).json({ message: CHAT_ERRORS.UNAUTHORIZED });
             }
 
-            const deletedMessage = await this.deleteMessageUseCase.execute(messageId, userId);
+            const deletedMessage = await this.deleteMessageUseCase.execute({ messageId }, userId);
 
             res.status(StatusCodes.OK).json({ success: true, data: ChatDTOMapper.toMessageDTO(deletedMessage) });
         } catch (error: any) {

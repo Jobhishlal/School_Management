@@ -30,7 +30,7 @@ export class SignupParentController {
       }
 
   
-      const parent = await this._useCase.execute(studentId, email, password);
+      const parent = await this._useCase.execute({ studentId, email, password });
 
       res.status(StatusCodes.CREATED).json({
         message: "Parent registered successfully",

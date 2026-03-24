@@ -1,3 +1,5 @@
+import { UpdateAttendanceDTO } from "../../../dto/Attendance/UpdateAttendanceDTO";
+
 export interface IUpdateAttendanceUseCase {
-    execute(studentId: string, date: Date, session: string, status: string): Promise<boolean>;
+    execute(dto: UpdateAttendanceDTO): Promise<boolean>;
 }

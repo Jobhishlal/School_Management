@@ -5,6 +5,7 @@ import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudn
 import { IEmailServiceShare } from "../../interface/UseCaseInterface/StudentCreate/IEmailSendUsecase";
 import { IGenarateTempPassword } from "../../interface/UseCaseInterface/StudentCreate/GenaratePassword";
 import { IStudentIdGenarate } from "../../interface/UseCaseInterface/StudentCreate/GenarateStudentId";
+import { CreateStudentDTO } from "../../dto/StudentDTO";
 
 export class StudentAddUseCase implements IStudentAddUsecase {
   constructor(
@@ -14,11 +15,28 @@ export class StudentAddUseCase implements IStudentAddUsecase {
     private readonly tempasswordgenarate: IGenarateTempPassword,
     private readonly emailserviceshare: IEmailServiceShare
   ) { }
-  async execute(student: Students): Promise<{ student: Students; tempPassword: string; }> {
+  async execute(dto: CreateStudentDTO): Promise<{ student: Students; tempPassword: string; }> {
     const studentId = this.studentIdgenarate.execute()
     const { plain: tempPassword, hashed } = await this.tempasswordgenarate.execute()
-    student.studentId = studentId;
-    student.Password = hashed;
+    
+    const student = new Students(
+      "",
+      dto.fullName,
+      new Date(dto.dateOfBirth),
+      dto.gender,
+      hashed,
+      dto.parentId,
+      dto.addressId,
+      dto.classId,
+      dto.photos || [],
+      studentId,
+      undefined,
+      undefined,
+      dto.blocked || false,
+      undefined,
+      "student"
+    );
+
     const created = await this.studentRepo.create(student)
     const parent = await this.parentRepo.getById(created.parentId)
     if (parent?.email) {

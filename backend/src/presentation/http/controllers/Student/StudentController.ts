@@ -38,26 +38,16 @@ export class StudentCreateController {
           uploadedAt: new Date(),
         })) || [];
 
-      const student = new Students(
-        "",
+      const { student: created, tempPassword } = await this.addStudent.execute({
         fullName,
-        new Date(dateOfBirth),
+        dateOfBirth,
         gender,
-        "",
         parentId,
         addressId,
         classId,
         photos,
-        "",
-        undefined,
-        undefined,
-        blocked,
-        undefined,
-        "student"
-      );
-
-
-      const { student: created, tempPassword } = await this.addStudent.execute(student);
+        blocked: blocked || false
+      });
 
       res.status(StatusCodes.CREATED).json({
         message: "Student created successfully",
@@ -136,7 +126,7 @@ export class StudentCreateController {
 
       validateStudentUpdate(updates);
 
-      const updatedStudent = await this.studentupdate.execute(id, updates);
+      const updatedStudent = await this.studentupdate.execute({ id, ...updates });
 
       if (!updatedStudent) {
         res.status(StatusCodes.NOT_FOUND).json({ message: "Student Not Found" });

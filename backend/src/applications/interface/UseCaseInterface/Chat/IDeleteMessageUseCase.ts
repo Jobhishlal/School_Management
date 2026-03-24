@@ -1,5 +1,6 @@
 import { Message } from "../../../../domain/entities/Message";
+import { DeleteMessageRequestDTO } from "../../../dto/ChatDTOs";
 
 export interface IDeleteMessageUseCase {
-    execute(messageId: string, userId: string): Promise<Message>;
+    execute(dto: DeleteMessageRequestDTO, userId: string): Promise<Message>;
 }

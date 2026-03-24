@@ -3,13 +3,15 @@ import { Message } from "../../../domain/entities/Message";
 import { IChatSocketService } from "../../../infrastructure/services/IChatSocketService";
 import { IEditMessageUseCase } from "../../interface/UseCaseInterface/Chat/IEditMessageUseCase";
 import { ConversationParticipant } from "../../../domain/entities/Conversation";
+import { EditMessageRequestDTO } from "../../dto/ChatDTOs";
 export class EditMessageUseCase implements IEditMessageUseCase {
     constructor(
         private chatRepo: IChatRepository,
         private chatSocketService: IChatSocketService
     ) { }
 
-    async execute(messageId: string, userId: string, newContent: string): Promise<Message> {
+    async execute(dto: EditMessageRequestDTO, userId: string): Promise<Message> {
+        const { messageId, content: newContent } = dto;
         const message = await this.chatRepo.findMessageById(messageId);
 
         if (!message) {

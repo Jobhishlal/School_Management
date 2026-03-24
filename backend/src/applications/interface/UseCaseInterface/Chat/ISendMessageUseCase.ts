@@ -1,5 +1,6 @@
 import { Message } from "../../../../domain/entities/Message";
+import { SendMessageRequestDTO } from "../../../dto/ChatDTOs";
 
 export interface ISendMessageUseCase {
-    execute(senderId: string, senderRole: string, receiverId: string, receiverRole: string, content: string, type?: 'text' | 'image' | 'file'): Promise<Message>;
+    execute(dto: SendMessageRequestDTO, senderId: string, senderRole: string): Promise<Message>;
 }
