@@ -4,7 +4,7 @@ export interface Photo {
   url: string;
   filename: string;
   uploadedAt: Date;
-}
+} 
 
 export interface StudentInterface extends Document {
    _id:string; 
