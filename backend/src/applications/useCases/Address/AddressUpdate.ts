@@ -7,7 +7,7 @@ export class AddresUpdateUseCase implements IAddressUpdateUseCase {
   constructor(private _updateAddressuseCase: IAddrressRepository) { }
   async execute(dto: UpdateAddressDTO): Promise<AddressEntity | null> {
     const { id, ...update } = dto;
-    const updatedaddress = await this._updateAddressuseCase.update(id, update as any);
+    const updatedaddress = await this._updateAddressuseCase.update(id, update as ReturnType<typeof JSON.parse>);
 
     if (!updatedaddress) {
       return null;

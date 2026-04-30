@@ -34,12 +34,12 @@ export class TimeTableManageController {
         message: "Timetable created successfully",
         data: created
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log("error solved", error);
       res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
-        message: error.message || "Failed to create timetable",
-        error: error.message
+        message: (error as Error).message || "Failed to create timetable",
+        error: (error as Error).message
       });
     }
   }
@@ -79,9 +79,9 @@ export class TimeTableManageController {
         message: "Timetable updated successfully",
         data: updated
       });
-    } catch (error: any) {
-      console.error("Error updating timetable:", error.message);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message || "Failed to update timetable" });
+    } catch (error: unknown) {
+      console.error("Error updating timetable:", (error as Error).message);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message || "Failed to update timetable" });
     }
 
   }
@@ -95,9 +95,9 @@ export class TimeTableManageController {
 
       await this._deletetimetable.execute(id);
       res.status(StatusCodes.CREATED).json({ message: "Timetable deleted successfully" });
-    } catch (error: any) {
+    } catch (error: unknown) {
 
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message || "Internal Server Error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message || "Internal Server Error" });
     }
   }
 

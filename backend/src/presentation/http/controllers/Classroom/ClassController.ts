@@ -45,19 +45,19 @@ export class ClassManagementController {
         class: created,
       });
 
-    } catch (err: any) {
-      console.error(err.message);
+    } catch (err: unknown) {
+      console.error((err as Error).message);
 
 
-      if (err.message.includes("already exists")) {
+      if ((err as Error).message.includes("already exists")) {
         res.status(StatusCodes.BAD_REQUEST).json({
           success: false,
-          message: err.message,
+          message: (err as Error).message,
         });
       } else {
         res.status(StatusCodes.BAD_REQUEST).json({
           success: false,
-          message: err.message || "Failed to create class",
+          message: (err as Error).message || "Failed to create class",
         });
       }
     }
@@ -67,9 +67,9 @@ export class ClassManagementController {
     try {
       const data = await this.getAllClass.execute();
       res.status(StatusCodes.OK).json({ data });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(" Error getting classes:", error);
-      res.status(StatusCodes.BAD_REQUEST).json({ message: "Server error", error: error.message });
+      res.status(StatusCodes.BAD_REQUEST).json({ message: "Server error", error: (error as Error).message });
     }
   }
   async updateclass(req: Request, res: Response): Promise<void> {
@@ -90,10 +90,10 @@ export class ClassManagementController {
         message: "Class updated successfully",
         class: updatedClass
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error updating class:", error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        message: error.message || "Failed to update class"
+        message: (error as Error).message || "Failed to update class"
       });
     }
   }
@@ -109,7 +109,7 @@ export class ClassManagementController {
         res.status(StatusCodes.BAD_REQUEST).json({ message: `No available division find from ${className}` })
       }
       res.status(StatusCodes.OK).json({ message: `Next availble division from  ${className}` })
-    } catch (error: any) {
+    } catch (error: unknown) {
 
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error cannot find " })
     }
@@ -120,9 +120,9 @@ export class ClassManagementController {
       const { id } = req.params;
       await this.deleteClassUseCase.execute(id);
       res.status(StatusCodes.OK).json({ success: true, message: "Class deleted successfully" });
-    } catch (error: any) {
+    } catch (error: unknown) {
 
-      res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: error.message });
+      res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: (error as Error).message });
     }
   }
 }

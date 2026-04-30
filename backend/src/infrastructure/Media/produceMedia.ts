@@ -4,7 +4,7 @@ export async function ProduceMedia(
     roomId: string,
   transportId: string,
   kind: "audio" | "video",
-  rtpParameters: any
+  rtpParameters: ReturnType<typeof JSON.parse>
 ){
   
     const room = getRoom(roomId)

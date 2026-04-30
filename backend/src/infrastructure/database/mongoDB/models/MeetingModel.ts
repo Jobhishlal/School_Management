@@ -10,7 +10,7 @@ const MeetingSchema: Schema = new Schema({
     description: { type: String },
     link: { type: String, required: true, unique: true },
     type: { type: String, enum: ['staff', 'parent', 'class', 'PTA', 'pta'], required: true },
-    classId: { type: Schema.Types.ObjectId, ref: 'Classes', required: function (this: any) { return this.type === 'class'; } },
+    classId: { type: Schema.Types.ObjectId, ref: 'Classes', required: function (this: ReturnType<typeof JSON.parse>) { return this.type === 'class'; } },
     className: { type: String },
     createdBy: { type: String, required: true },
     startTime: { type: Date, required: true },

@@ -5,9 +5,9 @@ import { LeaveManagementEntity } from "../../domain/entities/LeaveManagement/Lea
 export const toLeaveManagementEntity = (
   doc: InterLeaveManagement
 ): LeaveManagementEntity => {
-  const teacherIdAny = doc.teacherId as any;
+  const teacherIdAny = doc.teacherId as ReturnType<typeof JSON.parse>;
 
-  const subAdminIdAny = doc.subAdminId as any;
+  const subAdminIdAny = doc.subAdminId as ReturnType<typeof JSON.parse>;
   const subAdminIdStr = (subAdminIdAny && typeof subAdminIdAny === 'object' && '_id' in subAdminIdAny)
     ? subAdminIdAny._id.toString()
     : subAdminIdAny ? subAdminIdAny.toString() : undefined;

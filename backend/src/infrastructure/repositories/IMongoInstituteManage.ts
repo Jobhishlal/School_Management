@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 
 
 export class MongoInstituteProfileManage implements IInstituterepo{
-   private toObjectId(id: any) {
+   private toObjectId(id: ReturnType<typeof JSON.parse>) {
       if (!id || !mongoose.Types.ObjectId.isValid(id)) {
         throw new Error(`Invalid ObjectId: ${id}`);
       }
@@ -56,7 +56,7 @@ export class MongoInstituteProfileManage implements IInstituterepo{
     }
     
     private mapTODomainPopulate(
-  institute: InstituteProfileInterface & { address: any }
+  institute: InstituteProfileInterface & { address: ReturnType<typeof JSON.parse> }
 ): Institute {
   return new Institute(
     institute._id.toString(),

@@ -47,7 +47,7 @@ export class GetStudentDashboardUseCase implements IStudentDashboardUseCase {
         const today = new Date();
         const dayName = today.toLocaleDateString("en-US", { weekday: "long" });
 
-        let todayClasses: any[] = [];
+        let todayClasses: ReturnType<typeof JSON.parse>[] = [];
         if (classId && division) {
             try {
                 const timeTable = await this.timeTableRepo.getByClass(classId, division);
@@ -73,7 +73,7 @@ export class GetStudentDashboardUseCase implements IStudentDashboardUseCase {
             console.error("Error fetching attendance:", error);
         }
 
-        let pendingAssignments: any[] = [];
+        let pendingAssignments: ReturnType<typeof JSON.parse>[] = [];
         try {
             const allAssignments = await this.assignmentRepo.getAssignmetEachStudent(studentId);
             pendingAssignments = allAssignments.filter((a: AssignmentEntity) => {
@@ -85,7 +85,7 @@ export class GetStudentDashboardUseCase implements IStudentDashboardUseCase {
         }
 
 
-        let upcomingExams: any[] = [];
+        let upcomingExams: ReturnType<typeof JSON.parse>[] = [];
         if (classId) {
             try {
                 const exams = await this.examRepo.findPublishedExamsByClass(classId);
@@ -99,7 +99,7 @@ export class GetStudentDashboardUseCase implements IStudentDashboardUseCase {
         }
 
         // 5. Get Announcements
-        let announcements: any[] = [];
+        let announcements: ReturnType<typeof JSON.parse>[] = [];
         if (classId) {
             try {
                 announcements = await this.announcementRepo.findForClass(classId);

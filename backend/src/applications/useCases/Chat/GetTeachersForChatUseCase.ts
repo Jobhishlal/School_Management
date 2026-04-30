@@ -4,9 +4,9 @@ import { IGetTeachersForChatUseCase } from "../../interface/UseCaseInterface/Cha
 export class GetTeachersForChatUseCase implements IGetTeachersForChatUseCase {
     constructor(private teacherRepo: ITeacherCreate) { }
 
-    async execute(): Promise<any[]> {
+    async execute(): Promise<ReturnType<typeof JSON.parse>[]> {
         const teachers = await this.teacherRepo.findAll();
-        return teachers.map((t: any) => ({
+        return teachers.map((t: ReturnType<typeof JSON.parse>) => ({
             _id: t.id,
             name: t.name,
             email: t.email,

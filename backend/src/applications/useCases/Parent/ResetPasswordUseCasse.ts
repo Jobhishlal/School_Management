@@ -1,6 +1,8 @@
 
 import { IParentRepositorySign } from "../../interface/RepositoryInterface/Auth/IParentRepository";
-export class ResetParentPasswordUseCase {
+import { IResetParentPasswordUseCase } from "../../interface/UseCaseInterface/Parent/IResetParentPasswordUseCase";
+
+export class ResetParentPasswordUseCase implements IResetParentPasswordUseCase {
   constructor(private parentRepo: IParentRepositorySign) {}
 
   async execute(email: string, newPassword: string) {

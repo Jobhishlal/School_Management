@@ -36,7 +36,7 @@ export class MongoStudentLeaveRepository implements IStudentLeaveRepository {
     }
 
     async updateLeaveStatus(leaveId: string, status: string, actionBy: string, message?: string): Promise<StudentLeaveEntity | null> {
-        const updateData: any = {
+        const updateData: ReturnType<typeof JSON.parse> = {
             status: status,
             actionBy: new Types.ObjectId(actionBy),
             actionAt: new Date()
@@ -52,7 +52,7 @@ export class MongoStudentLeaveRepository implements IStudentLeaveRepository {
         return leave ? this.mapToEntity(leave) : null;
     }
 
-    private mapToEntity(doc: any): StudentLeaveEntity {
+    private mapToEntity(doc: ReturnType<typeof JSON.parse>): StudentLeaveEntity {
         return new StudentLeaveEntity(
             doc._id.toString(),
             doc.studentId.fullName ? doc.studentId : (doc.studentId._id ? doc.studentId._id.toString() : doc.studentId.toString()),

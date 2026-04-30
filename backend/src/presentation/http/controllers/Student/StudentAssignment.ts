@@ -43,11 +43,11 @@ export class AssignmentViewStudentsController {
       message: "Assignments fetched successfully",
       data: assignment,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching assignments:", error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: error.message || "Internal server error",
+      message: (error as Error).message || "Internal server error",
     });
   }
 }
@@ -96,9 +96,9 @@ async SubmitData(req: Request, res: Response): Promise<void> {
       data: results,
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(error);
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: (error as Error).message });
   }
 }
 

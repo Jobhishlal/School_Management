@@ -33,9 +33,9 @@ export class SuperadminApprovalController {
       message: `Expense ${action.toLowerCase()} successfully`,
       data: expense,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.log(error)
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message });
   }
   }
 
@@ -48,8 +48,8 @@ export class SuperadminApprovalController {
   
       const expenses = await this._Getallpendingstatus.execute();
       res.status(StatusCodes.CREATED).json(expenses);
-    } catch (err: any) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message || "Failed to fetch expenses" });
+    } catch (err: unknown) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (err as Error).message || "Failed to fetch expenses" });
     }
   }
 }

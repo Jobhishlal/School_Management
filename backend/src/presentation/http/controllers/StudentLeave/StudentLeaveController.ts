@@ -31,14 +31,14 @@ export class StudentLeaveController {
             const result = await this.applyLeaveUseCase.execute(data);
             console.log("result", result)
             return res.status(StatusCodes.CREATED).json({ success: true, data: result });
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error applying for student leave:", error);
-            if (error.name === 'ValidationError') {
+            if ((error as Error).name === 'ValidationError') {
                 // Mongoose validation error
-                const messages = Object.values(error.errors).map((val: any) => val.message);
+                const messages = Object.values((error as ReturnType<typeof JSON.parse>).errors).map((val: ReturnType<typeof JSON.parse>) => val.message);
                 return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: messages.join(', ') });
             }
-            return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: error.message });
+            return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: (error as Error).message });
         }
     }
 
@@ -49,9 +49,9 @@ export class StudentLeaveController {
             const result = await this.getHistoryUseCase.execute(studentId);
             console.log("student result", result)
             return res.status(StatusCodes.OK).json({ success: true, data: result });
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error fetching student leave history:", error);
-            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: (error as Error).message });
         }
     }
 
@@ -62,9 +62,9 @@ export class StudentLeaveController {
             const result = await this.getClassLeavesUseCase.execute(classId);
             console.log("Found leaves count:", result.length);
             return res.status(StatusCodes.OK).json({ success: true, data: result });
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error fetching class leaves:", error);
-            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: (error as Error).message });
         }
     }
 
@@ -88,9 +88,9 @@ export class StudentLeaveController {
             }
 
             return res.status(StatusCodes.OK).json({ success: true, data: result });
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error updating leave status:", error);
-            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: (error as Error).message });
         }
     }
 }

@@ -8,7 +8,7 @@ export class UpdateStudentUseCase implements IStudentUpdateUseCase {
 
   async execute(dto: UpdateStudentDTO): Promise<Students | null> {
     const { id, ...updates } = dto;
-    const updatedStudent = await this.studentRepo.updateAll(id, updates as any);
+    const updatedStudent = await this.studentRepo.updateAll(id, updates as ReturnType<typeof JSON.parse>);
 
     if (!updatedStudent) {
       return null;

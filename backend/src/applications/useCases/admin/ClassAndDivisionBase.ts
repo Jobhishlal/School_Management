@@ -8,7 +8,7 @@ export class ClassAndDivision implements IClassDivision {
     console.log(">>>>>>>> DEBUG: ClassAndDivision.execute EXECUTING <<<<<<<<");
     const datacheck = await this._classRepo.getStudentsByClassAndDivision();
 
-    const result: Record<string, any> = {};
+    const result: Record<string, ReturnType<typeof JSON.parse>> = {};
 
     datacheck.forEach((cls) => {
       const key = `${cls.className}-${cls.division}`;

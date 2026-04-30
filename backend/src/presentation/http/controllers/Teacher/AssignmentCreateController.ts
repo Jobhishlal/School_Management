@@ -54,10 +54,10 @@ export class AssignmentManageController {
         message: "Assignment created successfully",
         data
       });
-    } catch (err: any) {
-      console.error(err.message);
+    } catch (err: unknown) {
+      console.error((err as Error).message);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        message: err.message || "Failed to create parent"
+        message: (err as Error).message || "Failed to create parent"
       });
     }
   }
@@ -76,11 +76,11 @@ export class AssignmentManageController {
         data: info
       })
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log(error)
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: error.message || "Something went wrong"
+        message: (error as Error).message || "Something went wrong"
       });
     }
 
@@ -116,11 +116,11 @@ export class AssignmentManageController {
         return;
       }
       res.status(StatusCodes.OK).json({ success: true, message: "Updated successfully", data });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log("Error", error)
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: error.message || "Something went wrong"
+        message: (error as Error).message || "Something went wrong"
       });
     }
   }
@@ -149,12 +149,12 @@ export class AssignmentManageController {
         message: "Assignments fetched successfully",
         data,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error fetching teacher assignments:", error);
 
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: error.message || "Something went wrong",
+        message: (error as Error).message || "Something went wrong",
       });
     }
   }
@@ -170,8 +170,8 @@ export class AssignmentManageController {
         return;
       }
       res.status(StatusCodes.OK).json({ success: true, message: "Assignment validated", data: result });
-    } catch (error: any) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
+    } catch (error: unknown) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: (error as Error).message });
     }
   }
 
@@ -180,8 +180,8 @@ export class AssignmentManageController {
       const { id } = req.params;
       const result = await this.getSubmissionsUseCase.execute(id);
       res.status(StatusCodes.OK).json({ success: true, message: "Submissions fetched", data: result });
-    } catch (error: any) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
+    } catch (error: unknown) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: (error as Error).message });
     }
   }
 

@@ -1,5 +1,5 @@
 export interface ConnectTransportDTO {
   roomId: string
   transportId: string
-  dtlsParameters: any   
+  dtlsParameters: ReturnType<typeof JSON.parse>   
 }

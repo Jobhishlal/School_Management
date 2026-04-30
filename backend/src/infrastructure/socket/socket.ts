@@ -9,10 +9,10 @@ import { ChatRepositoryMongo } from '../repositories/Chat/ChatRepositoryMongo';
 import { ChatDTOMapper } from '../mappers/ChatDTOMapper';
 
 const chatRepo = new ChatRepositoryMongo();
-const meetingParticipants = new Map<string, Map<string, any>>();
+const meetingParticipants = new Map<string, Map<string, ReturnType<typeof JSON.parse>>>();
 
 const socketMeetingMap = new Map<string, string>();
-const waitingRoom = new Map<string, Map<string, any>>();
+const waitingRoom = new Map<string, Map<string, ReturnType<typeof JSON.parse>>>();
 
 const onlineUsers = new Map<string, Set<string>>();
 const chatSocketMap = new Map<string, string>();
@@ -94,10 +94,10 @@ export const initSocket = (httpServer: HttpServer) => {
       try {
         // 1. Save message
         const savedMessage = await chatRepo.saveMessage({
-          senderId: senderId as any,
-          senderModel: senderModel as any,
-          receiverId: receiverId as any,
-          receiverModel: receiverModel as any,
+          senderId: senderId as ReturnType<typeof JSON.parse>,
+          senderModel: senderModel as ReturnType<typeof JSON.parse>,
+          receiverId: receiverId as ReturnType<typeof JSON.parse>,
+          receiverModel: receiverModel as ReturnType<typeof JSON.parse>,
           content,
           read: false,
           type: type

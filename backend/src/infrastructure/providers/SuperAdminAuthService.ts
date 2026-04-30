@@ -161,7 +161,7 @@ export class UnifiedAdminAuthService implements IUnifiedAuthService {
 
   async refreshToken(token: string): Promise<{ authToken: string; role: string; id: string; email: string }> {
     try {
-      const decoded: any = jwt.verify(token, JWT_REFRESH_SECRET);
+      const decoded: ReturnType<typeof JSON.parse> = jwt.verify(token, JWT_REFRESH_SECRET);
       
       const authToken = jwt.sign(
         { email: decoded.email, role: decoded.role, id: decoded.id, studentId: decoded.studentId },

@@ -14,7 +14,7 @@ AuthRouter.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/login", session: false }),
   (req, res) => {
-    const { user, accessToken, refreshToken, error } = req.user as any;
+    const { user, accessToken, refreshToken, error } = req.user as ReturnType<typeof JSON.parse>;
 
     const CLIENT_URL = process.env.CLIENT_URL;
 

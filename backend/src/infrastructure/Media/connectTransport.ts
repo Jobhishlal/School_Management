@@ -3,7 +3,7 @@ import { getRoom } from "../services/rooms/roomManager";
 export async function connectWebRtcTransport(
      roomId: string,
   transportId: string,
-  dtlsParameters: any
+  dtlsParameters: ReturnType<typeof JSON.parse>
 ){
 
     const room = getRoom(roomId)

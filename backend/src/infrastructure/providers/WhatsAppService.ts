@@ -19,8 +19,8 @@ export async function sendWatsApp(to: string, message: string) {
     });
 
     console.log(`WhatsApp sent to ${formattedTo}: ${message}`);
-  } catch (err: any) {
-    console.error("WhatsApp Error:", err.message);
+  } catch (err: unknown) {
+    console.error("WhatsApp Error:", (err as Error).message);
     throw err;
   }
 }

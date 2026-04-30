@@ -1,7 +1,7 @@
 import { TimetableEntity } from "../../../domain/entities/TimeTableEntity";
 import { TimeTableError } from "../../../domain/enums/TimeTable/TimeTableError";
 
-export function validateTimetableFormat(data: any): void {
+export function validateTimetableFormat(data: ReturnType<typeof JSON.parse>): void {
     if (!data.classId || !data.division || !data.days || data.days.length === 0) {
         throw new Error(TimeTableError.REQUIRED);
     }

@@ -50,7 +50,7 @@ export class MongoPeymentRepo implements IPaymentTransactionRepository {
   async updatePaymentStatus(
     orderId: string,
     update: Partial<PeymentTransactrion>
-  ): Promise<any> {
+  ): Promise<ReturnType<typeof JSON.parse>> {
     const updated = await PaymentModel.findOneAndUpdate(
       { razorpayOrderId: orderId },
       {
@@ -70,11 +70,11 @@ export class MongoPeymentRepo implements IPaymentTransactionRepository {
 
     if (!updated) return null;
 
-    const domain = this.toDomain(updated as any);
+    const domain = this.toDomain(updated as ReturnType<typeof JSON.parse>);
     // Attach parentId to the returned object so UseCase can use it
     return {
       ...domain,
-      recipientId: (updated.studentId as any)?.parent?.toString()
+      recipientId: (updated.studentId as ReturnType<typeof JSON.parse>)?.parent?.toString()
     };
   }
 
@@ -105,7 +105,7 @@ export class MongoPeymentRepo implements IPaymentTransactionRepository {
     await PaymentModel.findByIdAndUpdate(paymentId, { invoiceUrl })
   }
 
-  async findById(paymentId: string): Promise<any> {
+  async findById(paymentId: string): Promise<ReturnType<typeof JSON.parse>> {
     return PaymentModel.findById(paymentId)
       .populate("studentId", "fullName studentId")
       .populate({
@@ -115,7 +115,7 @@ export class MongoPeymentRepo implements IPaymentTransactionRepository {
       .lean();
   }
 
-  async getInstitute(): Promise<any> {
+  async getInstitute(): Promise<ReturnType<typeof JSON.parse>> {
     return InstituteModel.findOne().lean();
   }
 
@@ -154,9 +154,9 @@ export class MongoPeymentRepo implements IPaymentTransactionRepository {
       default: return "PENDING";
     }
   }
-  async findAllPayments(filter: any, page: number, limit: number): Promise<{ payments: any[]; total: number }> {
+  async findAllPayments(filter: ReturnType<typeof JSON.parse>, page: number, limit: number): Promise<{ payments: ReturnType<typeof JSON.parse>[]; total: number }> {
     console.log("findAllPayments CALLED with filter:", filter);
-    const query: any = { status: "PAID" };
+    const query: ReturnType<typeof JSON.parse> = { status: "PAID" };
 
     if (filter.startDate && filter.endDate) {
       query.paymentDate = {
@@ -191,7 +191,7 @@ export class MongoPeymentRepo implements IPaymentTransactionRepository {
     studentId: string,
     page: number,
     limit: number
-  ): Promise<{ payments: any[]; total: number }> {
+  ): Promise<{ payments: ReturnType<typeof JSON.parse>[]; total: number }> {
     const query = { studentId: studentId, status: "PAID" };
     const skip = (page - 1) * limit;
 

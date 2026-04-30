@@ -26,7 +26,7 @@ export class YouTubeService implements IYouTubeService {
                 }
             });
 
-            return response.data.items.map((item: any) => ({
+            return response.data.items.map((item: ReturnType<typeof JSON.parse>) => ({
                 id: item.id.videoId,
                 title: item.snippet.title,
                 thumbnail: item.snippet.thumbnails.medium.url,

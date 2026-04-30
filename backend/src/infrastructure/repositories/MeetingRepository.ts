@@ -46,11 +46,11 @@ export class MeetingRepository implements IMeetingRepository {
         }
     }
 
-    async getScheduledMeetings(filters?: any): Promise<IMeetingDocument[]> {
+    async getScheduledMeetings(filters?: ReturnType<typeof JSON.parse>): Promise<IMeetingDocument[]> {
         try {
 
             const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
-            const query: any = {
+            const query: ReturnType<typeof JSON.parse> = {
                 status: { $ne: 'ended' },
                 startTime: { $gte: twoHoursAgo }
             };

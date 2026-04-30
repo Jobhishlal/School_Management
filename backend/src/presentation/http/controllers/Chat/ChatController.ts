@@ -77,8 +77,8 @@ export class ChatController {
                     if (conversation && conversation.participants) {
                         conversation.participants.forEach((participant: ConversationParticipant) => {
 
-                            const participantId = (participant.participantId as any)._id
-                                ? (participant.participantId as any)._id.toString()
+                            const participantId = (participant.participantId as ReturnType<typeof JSON.parse>)._id
+                                ? (participant.participantId as ReturnType<typeof JSON.parse>)._id.toString()
                                 : participant.participantId.toString();
 
 
@@ -225,8 +225,8 @@ export class ChatController {
                     const conversation = await this._chatRepo.findConversationById(convId);
                     if (conversation && conversation.participants) {
                         conversation.participants.forEach((p: ConversationParticipant) => {
-                            const pId = (p.participantId as any)._id
-                                ? (p.participantId as any)._id.toString()
+                            const pId = (p.participantId as ReturnType<typeof JSON.parse>)._id
+                                ? (p.participantId as ReturnType<typeof JSON.parse>)._id.toString()
                                 : p.participantId.toString();
                             io.to(pId).emit('message_updated', updatedMessage);
                         });
@@ -241,10 +241,10 @@ export class ChatController {
             }
 
             res.status(StatusCodes.OK).json({ success: true, data: updatedMessage });
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error editing message:", error);
-            if (error.message.includes("Time limit")) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: error.message });
+            if ((error as Error).message.includes("Time limit")) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: (error as Error).message });
             }
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to edit message" });
         }

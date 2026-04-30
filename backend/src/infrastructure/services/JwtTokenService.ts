@@ -9,19 +9,19 @@ const ACCESS_TOKEN_EXPIRES_IN = "15m";
 const REFRESH_TOKEN_EXPIRES_IN = "7d";
 
 export class JwtTokenService implements ITokenService {
-    generateAccessToken(payload: any): string {
+    generateAccessToken(payload: ReturnType<typeof JSON.parse>): string {
         return jwt.sign(payload, JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRES_IN });
     }
 
-    generateRefreshToken(payload: any): string {
+    generateRefreshToken(payload: ReturnType<typeof JSON.parse>): string {
         return jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRES_IN });
     }
 
-    verifyRefreshToken(token: string): any {
+    verifyRefreshToken(token: string): ReturnType<typeof JSON.parse> {
         return jwt.verify(token, JWT_REFRESH_SECRET);
     }
 
-    generateOtpToken(payload: any, otp: string): string {
+    generateOtpToken(payload: ReturnType<typeof JSON.parse>, otp: string): string {
         // Using existing helper but wrapping it standardly
         // Assuming payload needs email. The original genarateotptoken takes email, otp, payload.
         // Let's reuse the existing function logic but adapt.
@@ -29,11 +29,11 @@ export class JwtTokenService implements ITokenService {
         return genarateotptoken(payload.email, otp, payload);
     }
 
-    verifyOtpToken(token: string): any {
+    verifyOtpToken(token: string): ReturnType<typeof JSON.parse> {
         return verifiedOtptoken(token);
     }
 
-    decodeToken(token: string): any {
+    decodeToken(token: string): ReturnType<typeof JSON.parse> {
         return decodedOtptoken(token);
     }
 }

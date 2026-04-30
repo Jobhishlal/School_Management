@@ -57,7 +57,7 @@ export class MongoRevenueGenarateReport  implements IRevenueGenerateRepository{
       pendingRevenue: 0
     };
 
-    const monthlyRevenue = (result[0]?.monthlyRevenue || []).map((m: any) => ({
+    const monthlyRevenue = (result[0]?.monthlyRevenue || []).map((m: ReturnType<typeof JSON.parse>) => ({
       month: this.getMonthName(m._id),
       totalAmount: m.totalAmount
     }));

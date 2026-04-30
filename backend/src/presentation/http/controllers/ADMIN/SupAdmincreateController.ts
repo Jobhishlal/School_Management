@@ -40,16 +40,16 @@ export class SubAdminCreateController implements ISubAdminCreate {
         message: "Successfully created New Admin. Password sent to email.",
         subAdmin: result,
       });
-    } catch (error: any) {
-      logger.error(error.message);
+    } catch (error: unknown) {
+      logger.error((error as Error).message);
 
       if (
-        error.message === "This email already exists" ||
-        error.message === "This phone number already exists"
+        (error as Error).message === "This email already exists" ||
+        (error as Error).message === "This phone number already exists"
       ) {
-        res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+        res.status(StatusCodes.BAD_REQUEST).json({ message: (error as Error).message });
       } else {
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message || "Internal Server Error" });
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message || "Internal Server Error" });
       }
     }
   }
@@ -58,8 +58,8 @@ export class SubAdminCreateController implements ISubAdminCreate {
     try {
       const subAdmins = await this._createsubUseCase.getAll();
       res.status(StatusCodes.OK).json(subAdmins);
-    } catch (error: any) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    } catch (error: unknown) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: (error as Error).message });
     }
   }
 
@@ -86,7 +86,7 @@ export class SubAdminCreateController implements ISubAdminCreate {
         message: "Successfully updated SubAdmin",
         subAdmin: update
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
     }
   }
@@ -101,7 +101,7 @@ export class SubAdminCreateController implements ISubAdminCreate {
         message: blocked ? "SubAdmin blocked successfully" : "SubAdmin unblocked successfully",
         data: updated,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server Error" });
     }
   }

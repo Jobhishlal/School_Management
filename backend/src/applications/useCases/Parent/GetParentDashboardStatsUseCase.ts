@@ -4,7 +4,9 @@ import { StudentDetails } from "../../interface/RepositoryInterface/Admin/IStudn
 import { ParentDashboardStatsDTO } from "../../dto/Parent/ParentDashboardStatsDTO";
 import { IParentRepositorySign } from "../../interface/RepositoryInterface/Auth/IParentRepository";
 
-export class GetParentDashboardStatsUseCase {
+import { IGetParentDashboardStatsUseCase } from "../../interface/UseCaseInterface/Parent/IGetParentDashboardStatsUseCase";
+
+export class GetParentDashboardStatsUseCase implements IGetParentDashboardStatsUseCase {
     constructor(
         private studentRepo: StudentDetails,
         private attendanceRepo: IAttandanceRepository,
@@ -43,15 +45,14 @@ export class GetParentDashboardStatsUseCase {
             percentage: attendanceDashboard.summary.percentage
         };
 
-        // 4. Fetch Exam Stats
+      
         const allMarks = await this.examRepo.findAllMarksByStudentId(studentId);
 
-        // Process Marks Trend (Average per Exam)
+       
         const marksTrendMap = new Map<string, { total: number; count: number }>();
         allMarks.forEach(mark => {
-            const examData = mark.examId as any;
-            // Use exam title or type + date for the label. 
-            // If populated, examData has 'title', 'subject', 'type' etc.
+            const examData = mark.examId as ReturnType<typeof JSON.parse>;
+      
             const examLabel = examData.title || `Exam`;
 
             if (!marksTrendMap.has(examLabel)) {
@@ -62,11 +63,10 @@ export class GetParentDashboardStatsUseCase {
             current.count += 1;
         });
 
-        // Subject Comparison
         const subjectMap = new Map<string, { total: number; count: number }>();
         allMarks.forEach(mark => {
-            const examData = mark.examId as any;
-            // Use populated subject if available
+            const examData = mark.examId as ReturnType<typeof JSON.parse>;
+      
             const subject = examData.subject || "General";
 
             if (!subjectMap.has(subject)) {
@@ -95,7 +95,7 @@ export class GetParentDashboardStatsUseCase {
         const examsMap = new Map<string, { total: number; count: number; name: string }>();
 
         allMarks.forEach(mark => {
-            const examData = mark.examId as any;
+            const examData = mark.examId as ReturnType<typeof JSON.parse>;
             const examIdStr = examData._id ? examData._id.toString() : mark.examId.toString();
             const examName = examData.title || `Exam`;
 

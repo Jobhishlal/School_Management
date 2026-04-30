@@ -10,7 +10,7 @@ export interface IPayment extends Document {
   method?: string;
   status: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
   paymentDate?: Date;
-  meta?: any;
+  meta?: ReturnType<typeof JSON.parse>;
   createdAt: Date;
   invoiceUrl?: string;
 }

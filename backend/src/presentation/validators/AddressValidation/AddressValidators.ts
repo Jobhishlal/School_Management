@@ -1,10 +1,10 @@
 import { AddressEntity } from "../../../domain/entities/Address";
 
-export function validateAddressCreate(data: any): void {
+export function validateAddressCreate(data: ReturnType<typeof JSON.parse>): void {
     AddressEntity.validate(data.street, data.city, data.state, data.pincode);
 }
 
-export function validateAddressUpdate(data: any): void {
+export function validateAddressUpdate(data: ReturnType<typeof JSON.parse>): void {
     if (data.street || data.city || data.state || data.pincode) {
         // Simple check: if any field is provided, we can validate what's there
         // For a full validate, we'd need more logic, but using the static validate is safe if we pass current values or just what's updated

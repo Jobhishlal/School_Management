@@ -39,11 +39,11 @@ export class AIController {
             console.log("AIController: Successfully generated response");
             res.status(StatusCodes.OK).json({ success: true, data: result });
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("AI Controller Error:", error);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 success: false,
-                message: error.message || "Something went wrong"
+                message: (error as Error).message || "Something went wrong"
             });
         }
     }
@@ -63,11 +63,11 @@ export class AIController {
 
             const history = await this.getStudentChatHistoryUseCase.execute(studentId);
             res.status(StatusCodes.OK).json({ success: true, data: history });
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("AI Controller Error (History):", error);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 success: false,
-                message: error.message || "Failed to fetch history"
+                message: (error as Error).message || "Failed to fetch history"
             });
         }
     }
@@ -83,11 +83,11 @@ export class AIController {
             }
 
             res.status(StatusCodes.OK).json({ success: true, data: session });
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("AI Controller Error (Session):", error);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 success: false,
-                message: error.message || "Failed to fetch session"
+                message: (error as Error).message || "Failed to fetch session"
             });
         }
     }
@@ -103,17 +103,15 @@ export class AIController {
                 return;
             }
 
-            // Ideally we should verify if the session belongs to the student before deleting
-            // But for now we rely on the ID being correct and authenticated user being allowed to delete
-
+           
             await this.deleteChatSessionUseCase.execute(id);
 
             res.status(StatusCodes.OK).json({ success: true, message: "Session deleted successfully" });
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("AI Controller Error (Delete):", error);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 success: false,
-                message: error.message || "Failed to delete session"
+                message: (error as Error).message || "Failed to delete session"
             });
         }
     }

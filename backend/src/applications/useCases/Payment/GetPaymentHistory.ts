@@ -4,7 +4,7 @@ import { IPaymentTransactionRepository } from "../../interface/RepositoryInterfa
 export class GetPaymentHistory implements IGetPaymentHistory {
     constructor(private readonly paymentRepo: IPaymentTransactionRepository) { }
 
-    async execute(filter: any, page: number, limit: number): Promise<{ payments: any[]; total: number }> {
+    async execute(filter: ReturnType<typeof JSON.parse>, page: number, limit: number): Promise<{ payments: ReturnType<typeof JSON.parse>[]; total: number }> {
         return this.paymentRepo.findAllPayments(filter, page, limit);
     }
 }

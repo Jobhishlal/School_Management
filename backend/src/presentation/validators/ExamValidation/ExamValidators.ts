@@ -1,7 +1,7 @@
 import { ExamEntity } from "../../../domain/entities/Exam/ExamEntity";
 import { ExamErrors } from "../../../domain/enums/ExamErrorMessages/ExamError";
 
-export function validateExamCreate(data: any): void {
+export function validateExamCreate(data: ReturnType<typeof JSON.parse>): void {
     if (
         !data.title ||
         !data.type ||
@@ -18,6 +18,6 @@ export function validateExamCreate(data: any): void {
     ExamEntity.validate(data);
 }
 
-export function validateExamUpdate(data: any): void {
+export function validateExamUpdate(data: ReturnType<typeof JSON.parse>): void {
     ExamEntity.validate(data);
 }

@@ -10,11 +10,11 @@ export class RepoMongoInvoice implements IPaymentTransactionRepositoryInvoice{
      
   }
 
-  async findById(paymentId: string): Promise<any> {
+  async findById(paymentId: string): Promise<ReturnType<typeof JSON.parse>> {
       return PaymentModel.findById(paymentId).lean()
   }
    
-  async findsttudentBypayment(feeId: string): Promise<any> {
+  async findsttudentBypayment(feeId: string): Promise<ReturnType<typeof JSON.parse>> {
       return StudentModel.findOne({feeStructures:{$in:[feeId]}}).lean()
   }
 }

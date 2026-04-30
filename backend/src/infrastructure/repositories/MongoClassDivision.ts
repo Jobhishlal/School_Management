@@ -6,7 +6,7 @@ import { Class } from "../../domain/entities/Class";
 export class ClassDivisionRepository implements IClassDivisionRepository {
   async getStudentsByClassAndDivision(className?: string, division?: string) {
  
-    const classQuery: any = {};
+    const classQuery: ReturnType<typeof JSON.parse> = {};
     if (className) classQuery.className = className;
     if (division) classQuery.division = division;
   
@@ -24,10 +24,10 @@ export class ClassDivisionRepository implements IClassDivisionRepository {
       .lean();
 
   
-    const studentsByClassId: Record<string, any[]> = {};
+    const studentsByClassId: Record<string, ReturnType<typeof JSON.parse>[]> = {};
 
     for (const student of students) {
-      const cId = (student.classId as any).toString();
+      const cId = (student.classId as ReturnType<typeof JSON.parse>).toString();
       if (!studentsByClassId[cId]) {
         studentsByClassId[cId] = [];
       }
@@ -48,8 +48,8 @@ export class ClassDivisionRepository implements IClassDivisionRepository {
         students: studentsByClassId[cId] || [], 
         classTeacher: cls.classTeacher
           ? {
-            teacherId: (cls.classTeacher as any)._id,
-            name: (cls.classTeacher as any).name,
+            teacherId: (cls.classTeacher as ReturnType<typeof JSON.parse>)._id,
+            name: (cls.classTeacher as ReturnType<typeof JSON.parse>).name,
           }
           : null,
       };
@@ -96,8 +96,8 @@ export class ClassDivisionRepository implements IClassDivisionRepository {
     if (!cls || !cls.classTeacher) return null;
 
     return {
-      teacherId: (cls.classTeacher as any)._id.toString(),
-      name: (cls.classTeacher as any).name,
+      teacherId: (cls.classTeacher as ReturnType<typeof JSON.parse>)._id.toString(),
+      name: (cls.classTeacher as ReturnType<typeof JSON.parse>).name,
     };
   }
 

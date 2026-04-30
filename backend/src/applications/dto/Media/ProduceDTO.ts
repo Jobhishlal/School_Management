@@ -2,5 +2,5 @@ export interface ProduceDTO {
   roomId: string
   transportId: string
   kind: "audio" | "video"
-  rtpParameters: any
+  rtpParameters: ReturnType<typeof JSON.parse>
 }

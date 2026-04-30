@@ -2,7 +2,7 @@ import { Announcement } from "../../domain/entities/Announcement/Announcement";
 import { IAnnouncement } from "../database/models/Announcement/Announcement";
 
 export class AnnouncementMapper {
-    static toDomain(doc: any): Announcement {
+    static toDomain(doc: ReturnType<typeof JSON.parse>): Announcement {
         return new Announcement(
             doc._id?.toString(),
             doc.title,
@@ -23,7 +23,7 @@ export class AnnouncementMapper {
         );
     }
 
-    static toPersistence(entity: Announcement): any {
+    static toPersistence(entity: Announcement): ReturnType<typeof JSON.parse> {
         return {
             title: entity.title,
             content: entity.content,

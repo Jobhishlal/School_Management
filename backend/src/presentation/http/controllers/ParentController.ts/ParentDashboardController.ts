@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { GetParentDashboardStatsUseCase } from "../../../../applications/useCases/Parent/GetParentDashboardStatsUseCase";
+import { IGetParentDashboardStatsUseCase } from "../../../../applications/interface/UseCaseInterface/Parent/IGetParentDashboardStatsUseCase";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 
 
 export class ParentDashboardController {
-    constructor(private getParentDashboardStatsUseCase: GetParentDashboardStatsUseCase) { }
+    constructor(private getParentDashboardStatsUseCase: IGetParentDashboardStatsUseCase) { }
 
     async getDashboardStats(req: Request, res: Response): Promise<void> {
         try {
@@ -20,10 +20,10 @@ export class ParentDashboardController {
             const stats = await this.getParentDashboardStatsUseCase.execute(parentId);
            
             res.status(StatusCodes.OK).json(stats);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error fetching dashboard stats:", error);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                message: error.message || "Failed to fetch dashboard statistics"
+                message: (error as Error).message || "Failed to fetch dashboard statistics"
             });
         }
     }

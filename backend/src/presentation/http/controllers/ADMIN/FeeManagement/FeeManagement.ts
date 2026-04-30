@@ -23,12 +23,12 @@ export class FeeStructureManageController {
         success: true,
         data: result,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error fetching fee structures:", error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: "Failed to fetch fee structures",
-        error: error.message,
+        error: (error as Error).message,
       });
     }
   }
@@ -55,12 +55,12 @@ export class FeeStructureManageController {
         data: result,
       });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("error happened", error);
 
       res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
-        message: error.message || "Failed to create fee structure",
+        message: (error as Error).message || "Failed to create fee structure",
       });
     }
   }

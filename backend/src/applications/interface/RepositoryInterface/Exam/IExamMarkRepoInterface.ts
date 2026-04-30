@@ -5,7 +5,7 @@ export interface IExamMarkRepository {
   update(id: string, data: Partial<ExamMarkEntity>): Promise<ExamMarkEntity | null>;
   findByExamAndStudent(examId: string, studentId: string): Promise<ExamMarkEntity | null>;
   updateMark(id: string, updates: Partial<ExamMarkEntity>): Promise<ExamMarkEntity | null>;
-  findClassResults(classId: string, teacherId: string, examId: string): Promise<any[]>;
+  findClassResults(classId: string, teacherId: string, examId: string): Promise<ReturnType<typeof JSON.parse>[]>;
   findMarksForStudent(studentId: string, examIds: string[]): Promise<ExamMarkEntity[]>;
   updateConcern(id: string, concern: string): Promise<boolean>;
   resolveConcern(id: string, status: "Resolved" | "Rejected", newMarks?: number, responseMessage?: string): Promise<boolean>;
@@ -14,6 +14,6 @@ export interface IExamMarkRepository {
   calculateClassAverage(classId: string): Promise<{ average: number, trend: number }>;
   calculateSchoolAverage(): Promise<number>;
   getClassPerformanceHistory(classId: string): Promise<Array<{ month: string, avg: number }>>;
-  getTopPerformingStudents(classId: string, limit: number): Promise<any[]>;
-  getLowPerformingStudents(classId: string, limit: number): Promise<any[]>;
+  getTopPerformingStudents(classId: string, limit: number): Promise<ReturnType<typeof JSON.parse>[]>;
+  getLowPerformingStudents(classId: string, limit: number): Promise<ReturnType<typeof JSON.parse>[]>;
 }

@@ -31,10 +31,10 @@ export class ExamMarkManagementController {
       } else {
         return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Failed to resolve concern" });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: error.message || "Internal server error",
+        message: (error as Error).message || "Internal server error",
       });
     }
   }
@@ -64,10 +64,10 @@ export class ExamMarkManagementController {
         success: true,
         data,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log("error", error)
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        message: error.message || "Internal server error",
+        message: (error as Error).message || "Internal server error",
         success: false,
         error,
       });
@@ -93,11 +93,11 @@ export class ExamMarkManagementController {
         success: true,
         data: students,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: error.message,
+        message: (error as Error).message,
       });
     }
   }
@@ -122,9 +122,9 @@ export class ExamMarkManagementController {
         success: true,
         data,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        message: error.message || "Internal server error",
+        message: (error as Error).message || "Internal server error",
         success: false,
         error,
       });

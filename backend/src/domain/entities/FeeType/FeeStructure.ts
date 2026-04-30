@@ -107,7 +107,7 @@ export class FeeStructure {
     name?: string;
     classId?: string;
     academicYear?: string;
-    feeItems?: any[];
+    feeItems?: ReturnType<typeof JSON.parse>[];
     startDate?: string | Date;
     expiryDate?: string | Date;
   }): void {

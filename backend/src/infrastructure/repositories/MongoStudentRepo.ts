@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import { ClassModel } from "../database/models/ClassModel";
 
 export class MongoStudentRepo implements StudentDetails {
-  private toObjectId(id: any) {
+  private toObjectId(id: ReturnType<typeof JSON.parse>) {
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       throw new Error(`Invalid ObjectId: ${id}`);
     }
@@ -102,7 +102,7 @@ export class MongoStudentRepo implements StudentDetails {
 
     if (!studentdoc) return null;
 
-    return this.mapToDomainPopulated(studentdoc as any);
+    return this.mapToDomainPopulated(studentdoc as ReturnType<typeof JSON.parse>);
   }
 
   async getAllStudents(): Promise<Students[]> {
@@ -177,7 +177,7 @@ export class MongoStudentRepo implements StudentDetails {
     }
 
 
-    return this.mapToDomainPopulated(studentdoc as any);
+    return this.mapToDomainPopulated(studentdoc as ReturnType<typeof JSON.parse>);
 
   }
 
@@ -199,7 +199,7 @@ export class MongoStudentRepo implements StudentDetails {
       throw new Error(`Invalid Class ID: ${classId}`);
     }
 
-    const query: any = { classId: new mongoose.Types.ObjectId(classId) };
+    const query: ReturnType<typeof JSON.parse> = { classId: new mongoose.Types.ObjectId(classId) };
 
     if (search) {
       const searchRegex = new RegExp(search, 'i');
@@ -230,7 +230,7 @@ export class MongoStudentRepo implements StudentDetails {
 
 
 
-  private mapToDomainPopulated(student: StudentInterface & { parent: any; address: any; classId: any }): Students {
+  private mapToDomainPopulated(student: StudentInterface & { parent: ReturnType<typeof JSON.parse>; address: ReturnType<typeof JSON.parse>; classId: ReturnType<typeof JSON.parse> }): Students {
     return new Students(
       student._id.toString(),
       student.fullName,

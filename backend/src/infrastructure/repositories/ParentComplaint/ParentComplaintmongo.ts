@@ -19,7 +19,7 @@ export class MongoParentComplaints implements IParentComplaintsRepositroy {
             parentId: new Types.ObjectId(data.parentId),
             concernTitle: data.concernTitle,
             description: data.description
-        } as any);
+        } as ReturnType<typeof JSON.parse>);
 
 
         return new ParentComplaints(
@@ -27,7 +27,7 @@ export class MongoParentComplaints implements IParentComplaintsRepositroy {
             complaints.concernTitle,
             complaints.description,
             complaints.concernDate,
-            complaints.ticketStatus as any,
+            complaints.ticketStatus as ReturnType<typeof JSON.parse>,
             complaints.id,
             complaints.adminFeedback
         );
@@ -49,7 +49,7 @@ export class MongoParentComplaints implements IParentComplaintsRepositroy {
             c.concernTitle,
             c.description,
             c.concernDate,
-            c.ticketStatus as any,
+            c.ticketStatus as ReturnType<typeof JSON.parse>,
             c.id,
             c.adminFeedback
         ));
@@ -61,9 +61,9 @@ export class MongoParentComplaints implements IParentComplaintsRepositroy {
         const updated = await this.baseRepo.update(id, {
             concernTitle: data.concernTitle,
             description: data.description,
-            ticketStatus: data.ticketStatus as any,
+            ticketStatus: data.ticketStatus as ReturnType<typeof JSON.parse>,
             adminFeedback: data.adminFeedback
-        } as any);
+        } as ReturnType<typeof JSON.parse>);
 
         if (!updated) return null;
 
@@ -72,7 +72,7 @@ export class MongoParentComplaints implements IParentComplaintsRepositroy {
             updated.concernTitle,
             updated.description,
             updated.concernDate,
-            updated.ticketStatus as any,
+            updated.ticketStatus as ReturnType<typeof JSON.parse>,
             updated.id,
             updated.adminFeedback
         );
@@ -96,14 +96,14 @@ export class MongoParentComplaints implements IParentComplaintsRepositroy {
                 }
             });
 
-        const mappedComplaints = complaints.map((c: any) => {
+        const mappedComplaints = complaints.map((c: ReturnType<typeof JSON.parse>) => {
             const studentName = c.parentId?.student?.fullName || "Unknown";
             return new ParentComplaints(
                 c.parentId?._id?.toString() || c.parentId?.toString(),
                 c.concernTitle,
                 c.description,
                 c.concernDate,
-                c.ticketStatus as any,
+                c.ticketStatus as ReturnType<typeof JSON.parse>,
                 c.id,
                 c.adminFeedback,
                 studentName

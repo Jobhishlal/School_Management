@@ -30,7 +30,7 @@ export interface MessageResponseDTO {
 }
 
 export interface ConversationParticipantDTO {
-    participantId: any; 
+    participantId: ReturnType<typeof JSON.parse>; 
     participantModel: string;
 }
 

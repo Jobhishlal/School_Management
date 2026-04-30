@@ -33,12 +33,12 @@ export class InstituteProfileController {
                 return res.status(StatusCodes.BAD_REQUEST).json({
                     message: "Invalid or missing addressId",
                 }) as unknown as void;
-            }
-
+            } 
+ 
             validateInstituteProfile(req.body);
 
             const logo = (req.files as Express.Multer.File[])?.map(file => ({
-                url: (file as any).path,
+                url: file.path,
                 filename: file.filename,
                 uploadedAt: new Date(),
             })) || [];
@@ -56,10 +56,11 @@ export class InstituteProfileController {
 
             const createInstitute = await this._createInstituteUseCase.execute(InstituteEntity);
             res.status(StatusCodes.CREATED).json({ message: "Institute Created successfully", createInstitute });
-        } catch (error: any) {
-            console.error(error.message);
+        } catch (error: unknown) {
+            const err = error as Error;
+            console.error(err.message);
             res.status(StatusCodes.BAD_REQUEST).json({
-                message: error.message || "Failed to create parent"
+                message: err.message || "Failed to create parent"
             });
         }
     }
@@ -69,10 +70,11 @@ export class InstituteProfileController {
         try {
             const institute = await this._getInstitute.execute()
             res.status(StatusCodes.CREATED).json({ message: "Its Server Error", institute })
-        } catch (error: any) {
-            console.error(error.message);
+        } catch (error: unknown) {
+            const err = error as Error;
+            console.error(err.message);
             res.status(StatusCodes.BAD_REQUEST).json({
-                message: error.message || "Failed to create parent"
+                message: err.message || "Failed to create parent"
             });
         }
     }
@@ -84,7 +86,7 @@ export class InstituteProfileController {
 
 
             if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-                const newPhotos = req.files.map((file: any) => ({
+                const newPhotos = req.files.map((file: Express.Multer.File) => ({
                     url: file.path,
                     filename: file.filename,
                     uploadedAt: new Date(),
@@ -97,14 +99,15 @@ export class InstituteProfileController {
             const updateinstprofile = await this._updateinsti.execute(id, update);
             res.status(StatusCodes.CREATED).json({ message: "Profile update successful", data: updateinstprofile });
 
-        } catch (error: any) {
-            logger.info(error.message);
-            const statusCode = error.message?.includes("required") ||
-                error.message?.includes("Invalid") ?
+        } catch (error: unknown) {
+            const err = error as Error;
+            logger.info(err.message);
+            const statusCode = err.message?.includes("required") ||
+                err.message?.includes("Invalid") ?
                 StatusCodes.BAD_REQUEST : StatusCodes.INTERNAL_SERVER_ERROR;
 
             res.status(statusCode).json({
-                message: error.message || "Failed to update student",
+                message: err.message || "Failed to update student",
             });
         }
     }

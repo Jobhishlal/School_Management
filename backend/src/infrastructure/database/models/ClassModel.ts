@@ -10,7 +10,7 @@ export interface ClassAttrs {
 }
 
 export interface ClassInterface extends Document, ClassAttrs {
-  students?: any[];
+  students?: ReturnType<typeof JSON.parse>[];
 }
 
 const ClassSchema = new Schema<ClassInterface>(

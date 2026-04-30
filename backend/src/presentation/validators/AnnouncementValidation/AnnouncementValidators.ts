@@ -1,7 +1,7 @@
 import { Announcement } from "../../../domain/entities/Announcement/Announcement";
 import { AnnouncementErrors } from "../../../domain/enums/AnnouncementError";
 
-export function validateAnnouncementCreate(data: any): void {
+export function validateAnnouncementCreate(data: ReturnType<typeof JSON.parse>): void {
     if (
         !data.title ||
         !data.content ||
@@ -14,6 +14,6 @@ export function validateAnnouncementCreate(data: any): void {
     Announcement.validate(data);
 }
 
-export function validateAnnouncementUpdate(data: any): void {
+export function validateAnnouncementUpdate(data: ReturnType<typeof JSON.parse>): void {
     Announcement.validate(data);
 }

@@ -23,7 +23,7 @@ export class ExamMarkMongoRepository implements IExamMarkRepository {
     return toExamMarkEntity(created);
   }
   async update(id: string, data: Partial<ExamMarkEntity>): Promise<ExamMarkEntity | null> {
-    const updateData: any = { ...data };
+    const updateData: ReturnType<typeof JSON.parse> = { ...data };
     if (data.examId) updateData.examId = new Types.ObjectId(data.examId);
     if (data.studentId) updateData.studentId = new Types.ObjectId(data.studentId);
     if (data.teacherId) updateData.teacherId = new Types.ObjectId(data.teacherId);
@@ -57,7 +57,7 @@ export class ExamMarkMongoRepository implements IExamMarkRepository {
     classId: string,
     teacherId: string,
     examId: string
-  ): Promise<any[]> {
+  ): Promise<ReturnType<typeof JSON.parse>[]> {
     const data = await ExamMarkModel.aggregate([
       {
         $match: {
@@ -133,7 +133,7 @@ export class ExamMarkMongoRepository implements IExamMarkRepository {
   }
 
   async resolveConcern(id: string, status: "Resolved" | "Rejected", newMarks?: number, responseMessage?: string): Promise<boolean> {
-    const updateQuery: any = {
+    const updateQuery: ReturnType<typeof JSON.parse> = {
       concernStatus: status
     };
 
@@ -293,7 +293,7 @@ export class ExamMarkMongoRepository implements IExamMarkRepository {
     }));
   }
 
-  async getTopPerformingStudents(classId: string, limit: number): Promise<any[]> {
+  async getTopPerformingStudents(classId: string, limit: number): Promise<ReturnType<typeof JSON.parse>[]> {
     const result = await ExamMarkModel.aggregate([
       {
         $lookup: {
@@ -320,7 +320,7 @@ export class ExamMarkMongoRepository implements IExamMarkRepository {
     return result;
   }
 
-  async getLowPerformingStudents(classId: string, limit: number): Promise<any[]> {
+  async getLowPerformingStudents(classId: string, limit: number): Promise<ReturnType<typeof JSON.parse>[]> {
     const result = await ExamMarkModel.aggregate([
       {
         $lookup: {

@@ -31,11 +31,11 @@ export class StudentAttendanceController {
                 success: true,
                 data: attendance,
             });
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(error);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 success: false,
-                message: error.message || "Internal server error",
+                message: (error as Error).message || "Internal server error",
             });
         }
     }
@@ -66,17 +66,17 @@ export class StudentAttendanceController {
                 message: "Attendance details fetched successfully",
                 result,
             });
-        } catch (error: any) {
-            if (Object.values(AttendanceErrorEnums).includes(error.message)) {
+        } catch (error: unknown) {
+            if (Object.values(AttendanceErrorEnums).includes((error as Error).message as AttendanceErrorEnums)) {
                 res.status(StatusCodes.BAD_REQUEST).json({
                     success: false,
-                    message: error.message,
+                    message: (error as Error).message,
                 });
                 return;
             }
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 success: false,
-                message: error?.message ?? "Internal server error",
+                message: (error as Error).message ?? "Internal server error",
             });
         }
     }

@@ -11,7 +11,7 @@ const getClassId = async () => {
         await mongoose.connect(process.env.MONGO_URI as string);
         const cls = await import("../src/infrastructure/database/models/ClassModel").then(m => m.ClassModel.findOne());
         if (cls) {
-            console.log("VALID_CLASS_ID:", (cls._id as any).toString());
+            console.log("VALID_CLASS_ID:", (cls._id as ReturnType<typeof JSON.parse>).toString());
         } else {
             console.log("NO_CLASSES_FOUND");
         }

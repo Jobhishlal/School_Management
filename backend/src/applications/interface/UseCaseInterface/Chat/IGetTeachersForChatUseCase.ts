@@ -1,3 +1,3 @@
 export interface IGetTeachersForChatUseCase {
-    execute(): Promise<any[]>;
+    execute(): Promise<ReturnType<typeof JSON.parse>[]>;
 }

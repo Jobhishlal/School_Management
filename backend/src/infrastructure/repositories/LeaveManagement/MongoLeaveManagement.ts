@@ -20,8 +20,8 @@ export class LeaveManagementMongoRepo implements InterfaceLeaveManagement {
 
     async create(leave: LeaveManagementEntity): Promise<LeaveManagementEntity> {
         const doc = await this.baseRepo.create({
-            teacherId: leave.teacherId as any,
-            subAdminId: leave.subAdminId as any,
+            teacherId: leave.teacherId as ReturnType<typeof JSON.parse>,
+            subAdminId: leave.subAdminId as ReturnType<typeof JSON.parse>,
             applicantRole: leave.applicantRole,
             leaveType: leave.leaveType,
             startDate: leave.startDate,
@@ -84,7 +84,7 @@ export class LeaveManagementMongoRepo implements InterfaceLeaveManagement {
     }
 
     async updateStatus(leaveId: string, status: string, actionBy: string, adminRemark?: string): Promise<LeaveManagementEntity | null> {
-        const updateData: any = {
+        const updateData: ReturnType<typeof JSON.parse> = {
             status: status,
             actionBy: actionBy,
             actionAt: new Date(),

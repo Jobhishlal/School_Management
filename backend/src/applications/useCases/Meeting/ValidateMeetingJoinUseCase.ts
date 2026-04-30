@@ -20,7 +20,7 @@ export class ValidateMeetingJoinUseCase implements IValidateMeetingJoinUseCase {
             try {
                 const student = await this.studentRepository.findById(userStudentId);
                 if (student && student.classId && typeof student.classId === 'object') {
-                    classIdToCheck = (student.classId as any).id;
+                    classIdToCheck = (student.classId as ReturnType<typeof JSON.parse>).id;
                     console.log(`Found classId for student: ${classIdToCheck}`);
                 }
             } catch (err) {

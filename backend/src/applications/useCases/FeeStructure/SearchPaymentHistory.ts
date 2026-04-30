@@ -5,7 +5,7 @@ import { IFeeStructureRepository } from "../../interface/RepositoryInterface/Fee
 export class SearchStudentName implements IStudentPaymentHistorySeeAdmin {
   constructor(private repo: IFeeStructureRepository) {}
 
-  async execute(studentName?: string): Promise<any[]> {
+  async execute(studentName?: string): Promise<ReturnType<typeof JSON.parse>[]> {
     if (!studentName || studentName.trim() === "") {
         console.log("what was the error",studentName)
       throw new Error("STUDENT_NAME_REQUIRED");

@@ -17,8 +17,8 @@ passport.use(
       try {
         const { user, accessToken, refreshToken } = await authUseCase.loginwithgoogle(profile);
         return done(null, { user, accessToken, refreshToken });
-      } catch (err: any) {
-        return done(null, { error: err.message });
+      } catch (err: unknown) {
+        return done(null, { error: (err as Error).message });
       }
     }
   )

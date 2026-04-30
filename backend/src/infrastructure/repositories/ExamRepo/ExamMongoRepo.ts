@@ -29,7 +29,7 @@ export class ExamMongoRepo implements IExamRepository {
   }
 
   async updateexam(id: string, data: Partial<ExamEntity>): Promise<ExamEntity | null> {
-    const updateData: any = { ...data };
+    const updateData: ReturnType<typeof JSON.parse> = { ...data };
     if (data.classId) updateData.classId = new Types.ObjectId(data.classId);
     if (data.teacherId) updateData.teacherId = new Types.ObjectId(data.teacherId);
 

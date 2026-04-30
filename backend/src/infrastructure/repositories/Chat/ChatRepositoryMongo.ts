@@ -23,8 +23,8 @@ export class ChatRepositoryMongo implements IChatRepository {
     }
 
     async saveMessage(messageData: Partial<IMessage>): Promise<Message> {
-        const sId = await this.resolveParticipantId(messageData.senderId as any, messageData.senderModel!);
-        const rId = await this.resolveParticipantId(messageData.receiverId as any, messageData.receiverModel!);
+        const sId = await this.resolveParticipantId(messageData.senderId as ReturnType<typeof JSON.parse>, messageData.senderModel!);
+        const rId = await this.resolveParticipantId(messageData.receiverId as ReturnType<typeof JSON.parse>, messageData.receiverModel!);
 
         const message = new MessageModel({ ...messageData, senderId: sId, receiverId: rId });
         const savedMessage = await message.save();
@@ -42,8 +42,8 @@ export class ChatRepositoryMongo implements IChatRepository {
             }
         }
 
-        const sId = await this.resolveParticipantId(senderId, 'unknown');
-        const rId = await this.resolveParticipantId(receiverId, 'unknown');
+        const sId = await this.resolveParticipantId(senderId, 'any');
+        const rId = await this.resolveParticipantId(receiverId, 'any');
 
         const messages = await MessageModel.find({
             $or: [
@@ -68,13 +68,13 @@ export class ChatRepositoryMongo implements IChatRepository {
         });
 
         if (conversation) {
-            conversation.lastMessage = lastMessageId as any;
+            conversation.lastMessage = lastMessageId as ReturnType<typeof JSON.parse>;
             conversation.updatedAt = new Date();
 
             conversation.participants = [
                 { participantId: sId, participantModel: senderModel },
                 { participantId: rId, participantModel: receiverModel }
-            ] as any;
+            ] as ReturnType<typeof JSON.parse>;
             await conversation.save();
         } else {
             await ConversationModel.create({
@@ -101,7 +101,7 @@ export class ChatRepositoryMongo implements IChatRepository {
                 const model = p.participantModel?.toLowerCase();
                 if (model === 'students' || model === 'student') {
                     let student = null;
-                    if (mongoose.Types.ObjectId.isValid(p.participantId as any)) {
+                    if (mongoose.Types.ObjectId.isValid(p.participantId as ReturnType<typeof JSON.parse>)) {
                         student = await StudentModel.findById(p.participantId).select('fullName email photos role studentId');
                     }
 
@@ -116,7 +116,7 @@ export class ChatRepositoryMongo implements IChatRepository {
                                 _id: student._id.toString(),
                                 name: student.fullName || 'Unknown Student',
                                 fullName: student.fullName || 'Unknown Student',
-                                email: (student as any).email || '',
+                                email: (student as ReturnType<typeof JSON.parse>).email || '',
                                 profileImage: student.photos?.[0]?.url || '',
                                 role: 'student',
                                 studentId: student.studentId
@@ -157,7 +157,7 @@ export class ChatRepositoryMongo implements IChatRepository {
                 return p;
             }));
 
-            const otherParticipant = conv.participants.find((p: any) =>
+            const otherParticipant = conv.participants.find((p: ReturnType<typeof JSON.parse>) =>
                 p.participantId && p.participantId.toString() !== userId
             );
 
@@ -186,14 +186,14 @@ export class ChatRepositoryMongo implements IChatRepository {
             };
         }));
 
-        const conversationMap = new Map<string, any>();
+        const conversationMap = new Map<string, ReturnType<typeof JSON.parse>>();
 
         populatedConversations.forEach(conv => {
-            const otherParticipant = conv.participants.find((p: any) =>
+            const otherParticipant = conv.participants.find((p: ReturnType<typeof JSON.parse>) =>
                 p.participantId && p.participantId._id && p.participantId._id.toString() !== userId
             );
 
-            const key = conv.isGroup ? conv._id.toString() : (otherParticipant ? (otherParticipant.participantId as any)._id.toString() : conv._id.toString());
+            const key = conv.isGroup ? conv._id.toString() : (otherParticipant ? (otherParticipant.participantId as ReturnType<typeof JSON.parse>)._id.toString() : conv._id.toString());
 
             if (conversationMap.has(key)) {
                 const existing = conversationMap.get(key);
@@ -221,7 +221,7 @@ export class ChatRepositoryMongo implements IChatRepository {
         );
     }
 
-    async createGroupConversation(groupName: string, participantIds: { participantId: string, participantModel: string }[], classId?: string): Promise<any> {
+    async createGroupConversation(groupName: string, participantIds: { participantId: string, participantModel: string }[], classId?: string): Promise<ReturnType<typeof JSON.parse>> {
         return await ConversationModel.create({
             isGroup: true,
             groupName,

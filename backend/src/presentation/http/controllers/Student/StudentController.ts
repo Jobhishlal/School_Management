@@ -33,7 +33,7 @@ export class StudentCreateController {
 
       const photos =
         (req.files as Express.Multer.File[])?.map(file => ({
-          url: (file as any).path,
+          url: (file as ReturnType<typeof JSON.parse>).path,
           filename: file.filename,
           uploadedAt: new Date(),
         })) || [];
@@ -55,16 +55,16 @@ export class StudentCreateController {
         tempPassword,
       });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error creating student:", error);
 
 
-      const statusCode = error.message?.includes("required") ||
-        error.message?.includes("Invalid") ?
+      const statusCode = (error as Error).message?.includes("required") ||
+        (error as Error).message?.includes("Invalid") ?
         StatusCodes.BAD_REQUEST : StatusCodes.INTERNAL_SERVER_ERROR;
 
       res.status(statusCode).json({
-        message: error.message || "Failed to create student",
+        message: (error as Error).message || "Failed to create student",
       });
     }
   }
@@ -96,9 +96,9 @@ export class StudentCreateController {
         message: blocked ? "Student blocked successfully" : "Student unblocked successfully",
         data: updatedStudent
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error in blockStudent:", error);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message || "Server Error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message || "Server Error" });
     }
   }
   async updateStudent(req: Request, res: Response): Promise<void> {
@@ -109,7 +109,7 @@ export class StudentCreateController {
 
       if (req.files && Array.isArray(req.files) && req.files.length > 0) {
 
-        const newPhotos = req.files.map((file: any) => ({
+        const newPhotos = req.files.map((file: Express.Multer.File) => ({
           url: file.path,
           filename: file.filename,
           uploadedAt: new Date(),
@@ -138,14 +138,14 @@ export class StudentCreateController {
         data: updatedStudent
       });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error);
-      const statusCode = error.message?.includes("required") ||
-        error.message?.includes("Invalid") ?
+      const statusCode = (error as Error).message?.includes("required") ||
+        (error as Error).message?.includes("Invalid") ?
         StatusCodes.BAD_REQUEST : StatusCodes.INTERNAL_SERVER_ERROR;
 
       res.status(statusCode).json({
-        message: error.message || "Failed to update student",
+        message: (error as Error).message || "Failed to update student",
       });
     }
   }

@@ -6,7 +6,7 @@ import { randomBytes } from "crypto";
 import { AdminError } from "../../../domain/enums/Adminsinguperror";
 
 export class AuthGoogle {
-  async loginwithgoogle(profile: any) {
+  async loginwithgoogle(profile: ReturnType<typeof JSON.parse>) {
    
     const { ParentSignupModel } = await import("../../../infrastructure/database/models/ParentSignupModel");
     const parentUser = await ParentSignupModel.findOne({ email: profile.emails?.[0].value }).populate("student");
@@ -14,7 +14,7 @@ export class AuthGoogle {
     if (parentUser) {
       const role = "parent";
      
-      const tokenUser: any = {
+      const tokenUser: ReturnType<typeof JSON.parse> = {
         _id: parentUser._id,
         email: parentUser.email,
         username: "Parent", 

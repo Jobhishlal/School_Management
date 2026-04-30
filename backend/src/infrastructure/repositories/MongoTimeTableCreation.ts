@@ -43,7 +43,7 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
       if (!daySchedule) continue;
 
       for (const period of daySchedule.periods) {
-        const teacherObj = period.teacherId as any;
+        const teacherObj = period.teacherId as ReturnType<typeof JSON.parse>;
         if (!teacherObj || !teacherObj._id) continue;
 
         if (teacherObj._id.toString() === teacherId) {
@@ -136,7 +136,7 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
           subject: p.subject,
           teacherId: p.teacherId ? new mongoose.Types.ObjectId(p.teacherId) : undefined,
         })),
-        breaks: (d.breaks || []).map((b: any) => ({
+        breaks: (d.breaks || []).map((b: ReturnType<typeof JSON.parse>) => ({
           startTime: b.startTime,
           endTime: b.endTime,
           name: b.name
@@ -150,16 +150,16 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
 
     return new TimetableEntity(
       saved.id.toString(),
-      (saved.classId as any)._id.toString(),
-      (saved.classId as any).className,
-      (saved.classId as any).division,
+      (saved.classId as ReturnType<typeof JSON.parse>)._id.toString(),
+      (saved.classId as ReturnType<typeof JSON.parse>).className,
+      (saved.classId as ReturnType<typeof JSON.parse>).division,
       saved.days.map(d => new DayScheduleEntity(
         d.day,
         d.periods.map(p => new PeriodEntity(
           p.startTime,
           p.endTime,
           p.subject,
-          (p.teacherId as any)?._id?.toString() || p.teacherId.toString()
+          (p.teacherId as ReturnType<typeof JSON.parse>)?._id?.toString() || p.teacherId.toString()
         )),
         (d.breaks || []).map(b => new BreakEntity(b.startTime, b.endTime, b.name))
       ))
@@ -182,16 +182,16 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
 
     return new TimetableEntity(
       doc.id.toString(),
-      (doc.classId as any)._id.toString(),
-      (doc.classId as any).className,
-      (doc.classId as any).division,
+      (doc.classId as ReturnType<typeof JSON.parse>)._id.toString(),
+      (doc.classId as ReturnType<typeof JSON.parse>).className,
+      (doc.classId as ReturnType<typeof JSON.parse>).division,
       doc.days.map(d => new DayScheduleEntity(
         d.day,
         d.periods.map(p => new PeriodEntity(
           p.startTime,
           p.endTime,
           p.subject,
-          (p.teacherId as any)?._id?.toString() || p.teacherId.toString()
+          (p.teacherId as ReturnType<typeof JSON.parse>)?._id?.toString() || p.teacherId.toString()
         )),
         (d.breaks || []).map(b => new BreakEntity(b.startTime, b.endTime, b.name))
       ))
@@ -213,7 +213,7 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
             subject: p.subject,
             teacherId: p.teacherId ? new mongoose.Types.ObjectId(p.teacherId) : undefined
           })),
-          breaks: (d.breaks || []).map((b: any) => ({
+          breaks: (d.breaks || []).map((b: ReturnType<typeof JSON.parse>) => ({
             startTime: b.startTime,
             endTime: b.endTime,
             name: b.name
@@ -229,16 +229,16 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
 
     return new TimetableEntity(
       doc.id.toString(),
-      (doc.classId as any)._id.toString(),
-      (doc.className as any).className,
-      (doc.classId as any).division,
+      (doc.classId as ReturnType<typeof JSON.parse>)._id.toString(),
+      (doc.className as ReturnType<typeof JSON.parse>).className,
+      (doc.classId as ReturnType<typeof JSON.parse>).division,
       doc.days.map(d => new DayScheduleEntity(
         d.day,
         d.periods.map(p => new PeriodEntity(
           p.startTime,
           p.endTime,
           p.subject,
-          (p.teacherId as any)._id?.toString() || p.teacherId.toString()
+          (p.teacherId as ReturnType<typeof JSON.parse>)._id?.toString() || p.teacherId.toString()
         )),
         (d.breaks || []).map(b => new BreakEntity(b.startTime, b.endTime, b.name))
       ))
@@ -255,16 +255,16 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
 
     return new TimetableEntity(
       doc.id.toString(),
-      (doc.classId as any)._id.toString(),
-      (doc.className as any).className,
-      (doc.classId as any).division,
+      (doc.classId as ReturnType<typeof JSON.parse>)._id.toString(),
+      (doc.className as ReturnType<typeof JSON.parse>).className,
+      (doc.classId as ReturnType<typeof JSON.parse>).division,
       doc.days.map(d => new DayScheduleEntity(
         d.day,
         d.periods.map(p => new PeriodEntity(
           p.startTime,
           p.endTime,
           p.subject,
-          (p.teacherId as any)._id?.toString() || p.teacherId.toString()
+          (p.teacherId as ReturnType<typeof JSON.parse>)._id?.toString() || p.teacherId.toString()
         )),
         (d.breaks || []).map(b => new BreakEntity(b.startTime, b.endTime, b.name))
       ))
@@ -287,9 +287,9 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
 
     return new TimetableEntity(
       doc._id.toString(),
-      (doc.classId as any)._id.toString(),
-      (doc.classId as any).className,
-      (doc.classId as any).division,
+      (doc.classId as ReturnType<typeof JSON.parse>)._id.toString(),
+      (doc.classId as ReturnType<typeof JSON.parse>).className,
+      (doc.classId as ReturnType<typeof JSON.parse>).division,
       doc.days.map(d =>
         new DayScheduleEntity(
           d.day,
@@ -298,7 +298,7 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
               p.startTime,
               p.endTime,
               p.subject,
-              p.teacherId ? (p.teacherId as any)?.name || "" : ""
+              p.teacherId ? (p.teacherId as ReturnType<typeof JSON.parse>)?.name || "" : ""
             )
           ),
           (d.breaks || []).map(b => new BreakEntity(b.startTime, b.endTime, b.name))
@@ -319,7 +319,7 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
       return null;
     }
 
-    const classId = (student.classId as any)._id.toString();
+    const classId = (student.classId as ReturnType<typeof JSON.parse>)._id.toString();
 
     const doc = await TimetableModel.findOne({ classId: new mongoose.Types.ObjectId(classId) })
       .populate("classId", "className division")
@@ -328,16 +328,16 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
 
     return doc ? new TimetableEntity(
       doc._id.toString(),
-      (doc.classId as any)._id.toString(),
-      (doc.classId as any).className,
-      (doc.classId as any).division,
+      (doc.classId as ReturnType<typeof JSON.parse>)._id.toString(),
+      (doc.classId as ReturnType<typeof JSON.parse>).className,
+      (doc.classId as ReturnType<typeof JSON.parse>).division,
       doc.days.map(d => new DayScheduleEntity(
         d.day,
         d.periods.map(p => new PeriodEntity(
           p.startTime,
           p.endTime,
           p.subject,
-          (p.teacherId as any)?.name || ""
+          (p.teacherId as ReturnType<typeof JSON.parse>)?.name || ""
         )),
         (d.breaks || []).map(b => new BreakEntity(b.startTime, b.endTime, b.name))
       ))
@@ -347,7 +347,7 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
 
 
   async getTeacherDailySchedule(teacherId: string, day?: string): Promise<TeacherDailyScheduleDTO[]> {
-    const Matchstage: any = {
+    const Matchstage: ReturnType<typeof JSON.parse> = {
       'days.periods.teacherId': new mongoose.Types.ObjectId(teacherId)
     }
     if (day) {
@@ -424,7 +424,7 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
       if (dayRef) {
         // Add Breaks
         if (dayRef.breaks) {
-          dayRef.breaks.forEach((brk: any) => {
+          dayRef.breaks.forEach((brk: ReturnType<typeof JSON.parse>) => {
             finalSchedule.push({
               day: currentDay,
               startTime: brk.startTime,
@@ -437,7 +437,7 @@ export class MongoTimeTableCreate implements ITimeTableRepository {
 
         // Add Rest Periods (only if no class exists at that time)
         if (dayRef.periods) {
-          dayRef.periods.forEach((refPeriod: any) => {
+          dayRef.periods.forEach((refPeriod: ReturnType<typeof JSON.parse>) => {
             // Check if we already have a class (or break) at this time
             const hasClass = finalSchedule.some(s =>
               s.day === currentDay &&

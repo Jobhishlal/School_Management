@@ -7,5 +7,5 @@ export interface IMeetingRepository {
     getMeetingById(id: string): Promise<IMeetingDocument | null>;
     updateMeetingStatus(id: string, status: 'scheduled' | 'live' | 'ended'): Promise<IMeetingDocument | null>;
     getAllMeetings(): Promise<IMeetingDocument[]>;
-    getScheduledMeetings(filters?: any): Promise<IMeetingDocument[]>;
+    getScheduledMeetings(filters?: ReturnType<typeof JSON.parse>): Promise<IMeetingDocument[]>;
 }

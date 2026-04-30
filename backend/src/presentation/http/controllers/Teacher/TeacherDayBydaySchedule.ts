@@ -28,11 +28,11 @@ export class TeacherDailyScheduleView {
             res.status(StatusCodes.OK).json({ success: true, data: result });
             console.log("all datas fetched", result)
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error in TeacherViewSchedule:', error);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 message: 'Internal Server Error',
-                error: error.message
+                error: (error as Error).message
             });
         }
     }

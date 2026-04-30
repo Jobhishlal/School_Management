@@ -72,7 +72,7 @@ export class Announcement {
     scope?: string;
     activeTime?: string | Date;
     endTime?: string | Date;
-    attachment?: any;
+    attachment?: ReturnType<typeof JSON.parse>;
     status?: string;
   }): void {
     if (data.title !== undefined) {

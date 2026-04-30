@@ -35,8 +35,8 @@ Studentrouter.post(
   async (req, res) => {
     try {
       await studentAssignmentController.SubmitData(req, res);
-    } catch (err: any) {
-      res.status(500).json({ success: false, message: err.message });
+    } catch (err: unknown) {
+      res.status(500).json({ success: false, message: (err as Error).message });
     }
   }
 );

@@ -27,10 +27,10 @@ export class AddressManagementController {
                     pincode: addressCreated.pincode
                 }
             });
-        } catch (err: any) {
-            console.error(err.message);
+        } catch (err: unknown) {
+            console.error((err as Error).message);
             res.status(StatusCodes.BAD_REQUEST).json({
-                message: err.message || "Failed to create parent"
+                message: (err as Error).message || "Failed to create parent"
             });
         }
     }
@@ -39,10 +39,10 @@ export class AddressManagementController {
         try {
             const getall = await this._addressgetall.execute();
             res.status(StatusCodes.OK).json({ message: "List all", getall });
-        } catch (error: any) {
+        } catch (error: unknown) {
             res.status(StatusCodes.BAD_REQUEST).json({
                 message: "Cannot list address data",
-                error: error.message || error
+                error: (error as Error).message || error
             });
         }
     }
@@ -60,10 +60,10 @@ export class AddressManagementController {
             }
             res.status(StatusCodes.CREATED).json({ message: "Address update succesfuly", address: updateaddress })
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error updating class:", error);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                message: error.message || "Failed to update class"
+                message: (error as Error).message || "Failed to update class"
             });
         }
 

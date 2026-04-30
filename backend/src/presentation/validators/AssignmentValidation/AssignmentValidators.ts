@@ -1,7 +1,7 @@
 import { AssignmentEntity } from "../../../domain/entities/Assignment";
 import { AssignmentErrors } from "../../../domain/enums/AssignmentMess.ts/Assignment";
 
-export function validateAssignmentCreate(data: any): void {
+export function validateAssignmentCreate(data: ReturnType<typeof JSON.parse>): void {
     const requiredFields = ["Assignment_Title", "description", "subject", "classId", "Assignment_date", "Assignment_Due_Date", "maxMarks", "teacherId"];
     for (const field of requiredFields) {
         if (data[field] === undefined || data[field] === "") {
@@ -11,6 +11,6 @@ export function validateAssignmentCreate(data: any): void {
     AssignmentEntity.validate(data);
 }
 
-export function validateAssignmentUpdate(data: any): void {
+export function validateAssignmentUpdate(data: ReturnType<typeof JSON.parse>): void {
     AssignmentEntity.validate(data);
 }

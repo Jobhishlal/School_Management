@@ -45,10 +45,10 @@ export class AdminOwnProfileManagement {
 
       return res.status(StatusCodes.OK).json({ profile: profileResponse });
 
-    } catch (err: any) {
-      console.error(err.message);
+    } catch (err: unknown) {
+      console.error((err as Error).message);
       res.status(StatusCodes.BAD_REQUEST).json({
-        message: err.message || "Failed to create parent"
+        message: (err as Error).message || "Failed to create parent"
       });
     }
   }
@@ -105,10 +105,10 @@ export class AdminOwnProfileManagement {
       }
 
       return res.status(StatusCodes.OK).json({ profile: updatedProfile });
-    } catch (err: any) {
-      console.error(err.message);
+    } catch (err: unknown) {
+      console.error((err as Error).message);
       res.status(StatusCodes.BAD_REQUEST).json({
-        message: err.message || "Failed to create parent"
+        message: (err as Error).message || "Failed to create parent"
       });
     }
   }
@@ -121,10 +121,10 @@ export class AdminOwnProfileManagement {
       const { otpToken } = await this._requesetpasswordUseCase.execute(email);
       console.log("danjkdbad", email)
       res.status(StatusCodes.OK).json({ otpToken });
-    } catch (err: any) {
-      console.error(err.message);
+    } catch (err: unknown) {
+      console.error((err as Error).message);
       res.status(StatusCodes.BAD_REQUEST).json({
-        message: err.message || "Failed to create parent"
+        message: (err as Error).message || "Failed to create parent"
       });
     }
   }
@@ -139,10 +139,10 @@ export class AdminOwnProfileManagement {
 
 
       res.status(StatusCodes.CREATED).json({ message: "OTP verified", email: result.email });
-    } catch (err: any) {
-      console.error(err.message);
+    } catch (err: unknown) {
+      console.error((err as Error).message);
       res.status(StatusCodes.BAD_REQUEST).json({
-        message: err.message || "Failed to create parent"
+        message: (err as Error).message || "Failed to create parent"
       });
     }
   }
@@ -162,10 +162,10 @@ export class AdminOwnProfileManagement {
       const updatedUser = await this._udpatesubadminpassword.execute(userId, newPassword);
       console.log("Password updated for user:", userId);
       return res.status(StatusCodes.CREATED).json({ message: "Password updated successfully", updatedUser });
-    } catch (err: any) {
-      console.error(err.message);
+    } catch (err: unknown) {
+      console.error((err as Error).message);
       res.status(StatusCodes.BAD_REQUEST).json({
-        message: err.message || "Failed to create parent"
+        message: (err as Error).message || "Failed to create parent"
       });
     }
   }

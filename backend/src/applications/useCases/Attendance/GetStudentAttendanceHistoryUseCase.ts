@@ -4,7 +4,7 @@ import { IAttandanceRepository } from "../../interface/RepositoryInterface/Attan
 export class GetStudentAttendanceHistoryUseCase implements IGetStudentAttendanceHistoryUseCase {
     constructor(private repo: IAttandanceRepository) { }
 
-    async execute(studentId: string, month: number, year: number): Promise<any> {
+    async execute(studentId: string, month: number, year: number): Promise<ReturnType<typeof JSON.parse>> {
         return await this.repo.getStudentAttendanceHistory(studentId, month, year);
     }
 }

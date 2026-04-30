@@ -8,7 +8,7 @@ export class Googlauthcontroller implements IGoogleController {
   async callback(req: Request, res: Response): Promise<void> {
     try {
       const { user, accessToken, refreshToken, error } = req.user as {
-        user: any;
+        user: ReturnType<typeof JSON.parse>;
         accessToken: string;
         refreshToken: string;
         error: string;
@@ -44,8 +44,8 @@ export class Googlauthcontroller implements IGoogleController {
         </script>
       `);
       return;
-    } catch (err: any) {
-      if (err.message === AdminError.Useralreadyexisted) {
+    } catch (err: unknown) {
+      if ((err as Error).message === AdminError.Useralreadyexisted) {
         res.status(StatusCodes.BAD_REQUEST).json({
           message: AdminError.Useralreadyexisted,
         });

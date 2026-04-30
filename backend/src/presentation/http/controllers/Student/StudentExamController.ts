@@ -112,10 +112,10 @@ export class StudentviewExamController {
         return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Failed to raise concern" });
       }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: error.message || "Internal server error",
+        message: (error as Error).message || "Internal server error",
       });
     }
   }

@@ -1,7 +1,8 @@
 import { Teeacher } from "../../../domain/entities/Teacher";
 import {ITeacherCreate} from '../../interface/RepositoryInterface/TeacherCreate'
+import { IBlockTeacherUseCase } from "../../interface/UseCaseInterface/Teacher/IBlockTeacherUseCase";
 
-export class BlockTeacher{
+export class BlockTeacher implements IBlockTeacherUseCase {
     constructor(private teacherblock:ITeacherCreate){}
     async execute(id:string,blocked:boolean):Promise<Teeacher>{
         const teacher = await this.teacherblock.findById(id)

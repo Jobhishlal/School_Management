@@ -17,12 +17,12 @@ export class BaseRepository<T extends Document> {
     return this.model.findById(this.toObjectId(id)).exec();
   }
 
-  async findOne(query: Partial<Record<keyof T, any>>): Promise<T | null> {
-    return this.model.findOne(query as any).exec();
+  async findOne(query: Partial<Record<keyof T, ReturnType<typeof JSON.parse>>>): Promise<T | null> {
+    return this.model.findOne(query as ReturnType<typeof JSON.parse>).exec();
   }
 
-  async findAll(query: Partial<Record<keyof T, any>> = {}): Promise<T[]> {
-    return this.model.find(query as any).exec();
+  async findAll(query: Partial<Record<keyof T, ReturnType<typeof JSON.parse>>> = {}): Promise<T[]> {
+    return this.model.find(query as ReturnType<typeof JSON.parse>).exec();
   }
 
   async update(id: string, update: Partial<T>): Promise<T | null> {

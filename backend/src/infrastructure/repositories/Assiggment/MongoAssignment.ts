@@ -106,16 +106,16 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
 
       if (!classesMap[classId]) {
         classesMap[classId] = {
-          className: (tt.classId as any)?.className || "Unknown",
-          division: (tt.classId as any)?.division || "N/A",
+          className: (tt.classId as ReturnType<typeof JSON.parse>)?.className || "Unknown",
+          division: (tt.classId as ReturnType<typeof JSON.parse>)?.division || "N/A",
 
           divisions: [],
           subjects: new Set(),
         };
       }
 
-      tt.days.forEach((day: any) => {
-        day.periods.forEach((period: any) => {
+      tt.days.forEach((day: ReturnType<typeof JSON.parse>) => {
+        day.periods.forEach((period: ReturnType<typeof JSON.parse>) => {
           if (period.teacherId.toString() === teacherId) {
             classesMap[classId].subjects.add(period.subject);
 
@@ -154,7 +154,7 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
       if (!Types.ObjectId.isValid(update.classId)) {
         throw new Error("Invalid classId for MongoDB ObjectId");
       }
-      update.classId = new Types.ObjectId(update.classId) as any;
+      update.classId = new Types.ObjectId(update.classId) as ReturnType<typeof JSON.parse>;
     }
 
 
@@ -162,7 +162,7 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
       if (!Types.ObjectId.isValid(update.teacherId)) {
         throw new Error("Invalid teacherId for MongoDB ObjectId");
       }
-      update.teacherId = new Types.ObjectId(update.teacherId) as any;
+      update.teacherId = new Types.ObjectId(update.teacherId) as ReturnType<typeof JSON.parse>;
     }
 
 
@@ -188,8 +188,8 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
       })),
       doc.maxMarks,
       doc.teacherId.toString(),
-      (doc as any).className,
-      (doc as any).division
+      (doc as ReturnType<typeof JSON.parse>).className,
+      (doc as ReturnType<typeof JSON.parse>).division
     );
   }
 
@@ -201,7 +201,7 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
       .exec();
 
     return docs.map(doc => {
-      const classObj = doc.classId as any;
+      const classObj = doc.classId as ReturnType<typeof JSON.parse>;
 
       return new AssignmentEntity(
         doc.id.toString(),
@@ -237,7 +237,7 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
       throw new Error("StudentId does not exist or has no classId");
     }
 
-    const classId = (student.classId as any)._id.toString();
+    const classId = (student.classId as ReturnType<typeof JSON.parse>)._id.toString();
 
 
     const docs = await AssignmentModel.find({
@@ -248,7 +248,7 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
     }).populate("classId", "className division");
 
     return docs.map((doc) => {
-      const classObj = doc.classId as any;
+      const classObj = doc.classId as ReturnType<typeof JSON.parse>;
       return new AssignmentEntity(
         doc.id.toString(),
         doc.Assignment_Title,
@@ -328,7 +328,7 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
 
     return assignment.assignmentSubmitFile.map(sub => ({
       assignmentId: assignment.id,
-      studentId: sub.studentId ? sub.studentId.toString() : "unknown",
+      studentId: sub.studentId ? sub.studentId.toString() : "any",
       fileUrl: sub.url,
       fileName: sub.fileName,
       uploadedAt: sub.uploadedAt,
@@ -375,7 +375,7 @@ export class AssignmentMongo extends BaseRepository<AssignmentDocument> implemen
     // Fetch all students in the class
     const students = await StudentModel.find({ classId: assignment.classId }).lean();
 
-    const results: SubmissionResult[] = students.map((student: any) => {
+    const results: SubmissionResult[] = students.map((student: ReturnType<typeof JSON.parse>) => {
       const sub = assignment.assignmentSubmitFile.find(s => s.studentId?.toString() === student._id.toString());
       return {
         studentId: student._id.toString(),

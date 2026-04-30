@@ -56,7 +56,7 @@ export class MongoParentSignUp implements IParentRepositorySign {
     parent.password = hashedPassword;
     await parent.save();
 
-    const studentId = parent.student ? (parent.student as any).studentId : "";
+    const studentId = parent.student ? (parent.student as ReturnType<typeof JSON.parse>).studentId : "";
     return new ParentSignUpEntity(parent._id.toString(), parent.email, parent.password, studentId);
   }
 
@@ -67,7 +67,7 @@ export class MongoParentSignUp implements IParentRepositorySign {
       strictPopulate: false,
     });
     if (!parent) return null;
-    const studentId = parent.student ? (parent.student as any).studentId : "";
+    const studentId = parent.student ? (parent.student as ReturnType<typeof JSON.parse>).studentId : "";
     return new ParentSignUpEntity(parent._id.toString(), parent.email, parent.password, studentId);
   }
 }

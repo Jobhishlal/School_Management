@@ -17,8 +17,8 @@ export interface IAttandanceRepository {
 
   getParentAttendanceDashboard(parentId: string): Promise<ParentAttendanceDashboardDTO>;
 
-  getAttendanceByDateRange(classId: string, startDate: Date, endDate: Date): Promise<any[]>;
-  getStudentAttendanceHistory(studentId: string, month: number, year: number): Promise<any>;
+  getAttendanceByDateRange(classId: string, startDate: Date, endDate: Date): Promise<ReturnType<typeof JSON.parse>[]>;
+  getStudentAttendanceHistory(studentId: string, month: number, year: number): Promise<ReturnType<typeof JSON.parse>>;
   updateStudentAttendance(studentId: string, date: Date, session: string, status: string): Promise<boolean>;
   getParentAttendanceByDateRange(parentId: string, startDate: Date, endDate: Date): Promise<ParentAttendanceHistory>;
   getStudentOwnAttendanceDashboard(studentId: string): Promise<ParentAttendanceDashboardDTO>;

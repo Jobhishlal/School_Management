@@ -107,7 +107,7 @@ export class GetStudentExamResultsUseCase
         _id: mark?.id,
         concern: mark?.concern ?? null,
         concernStatus: mark?.concernStatus ?? null,
-        concernResponse: (mark as any)?.concernResponse ?? null,
+        concernResponse: (mark as ReturnType<typeof JSON.parse>)?.concernResponse ?? null,
         updatedAt: mark?.updatedAt ?? null,
         status,
         className: examClass?.className,

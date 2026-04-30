@@ -1,8 +1,8 @@
 import { Message } from "../../domain/entities/Message";
 
 export interface IChatSocketService {
-    emitMessageToUser(userId: string, event: string, data: any): void;
-    emitMessageToParticipants(participantIds: string[], event: string, data: any): void;
+    emitMessageToUser(userId: string, event: string, data: ReturnType<typeof JSON.parse>): void;
+    emitMessageToParticipants(participantIds: string[], event: string, data: ReturnType<typeof JSON.parse>): void;
     emitNewMessage(receiverId: string, message: Message, isGroup: boolean, participantIds?: string[]): void;
     emitMessageUpdate(receiverId: string, message: Message, isGroup: boolean, participantIds?: string[]): void;
     emitMessageDeleteWithSender(senderId: string, receiverId: string, messageId: string, isGroup: boolean, participantIds?: string[]): void;

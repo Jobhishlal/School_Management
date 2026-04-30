@@ -171,10 +171,10 @@ export class SchoolChatController {
             const updatedMessage = await this.editMessageUseCase.execute({ messageId, content }, userId);
 
             res.status(StatusCodes.OK).json({ success: true, data: ChatDTOMapper.toMessageDTO(updatedMessage) });
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error editing message:", error);
-            if (error.message.includes("Time limit")) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: error.message });
+            if ((error as Error).message.includes("Time limit")) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: (error as Error).message });
             }
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: CHAT_ERRORS.EDIT_MESSAGE_FAILED });
         }
@@ -193,7 +193,7 @@ export class SchoolChatController {
             const deletedMessage = await this.deleteMessageUseCase.execute({ messageId }, userId);
 
             res.status(StatusCodes.OK).json({ success: true, data: ChatDTOMapper.toMessageDTO(deletedMessage) });
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error deleting message:", error);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: CHAT_ERRORS.DELETE_MESSAGE_FAILED });
         }

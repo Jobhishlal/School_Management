@@ -17,9 +17,9 @@ export class TeacherDashboardController {
 
             const stats = await this.useCase.execute(teacherId);
             res.status(200).json(stats);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Dashboard error:", error);
-            res.status(500).json({ message: error.message || "Internal Server Error" });
+            res.status(500).json({ message: (error as Error).message || "Internal Server Error" });
         }
     }
 }

@@ -3,7 +3,7 @@ import { ParentSignUpEntity } from "../../../../domain/entities/ParentSignupEnti
 export interface IParentRepositorySign {
     findByEmail(email: string): Promise<ParentSignUpEntity | null>;
     create(parent: ParentSignUpEntity): Promise<ParentSignUpEntity>;
-    findStudentById(studentId: string): Promise<any>;
+    findStudentById(studentId: string): Promise<ReturnType<typeof JSON.parse>>;
     linkParenttoStudent(studentId: string, parentId: string): Promise<void>
     updatePassword(email: string, hashedPassword: string): Promise<ParentSignUpEntity | null>;
     findById(id: string): Promise<ParentSignUpEntity | null>;

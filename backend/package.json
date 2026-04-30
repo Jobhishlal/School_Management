@@ -38,6 +38,7 @@
     "socket.io": "^4.8.1",
     "streamifier": "^0.1.1",
     "string-similarity": "^4.0.4",
+    "ts-morph": "^28.0.0",
     "twilio": "^5.10.0",
     "uuid": "^8.3.2",
     "winston": "^3.17.0"

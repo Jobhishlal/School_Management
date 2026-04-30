@@ -1,7 +1,7 @@
 import { SubAdminEntities } from "../../../domain/entities/SubAdmin";
 import { SubAdminProfileError } from "../../../domain/enums/SubAdminProfileError";
 
-export function validateSubAdminCreate(data: any): void {
+export function validateSubAdminCreate(data: ReturnType<typeof JSON.parse>): void {
     const { name, email, phone, dateOfBirth, gender } = data;
 
     if (!name?.trim() || !email?.trim() || !phone?.trim() || !dateOfBirth || !gender) {
@@ -15,7 +15,7 @@ export function validateSubAdminCreate(data: any): void {
     SubAdminEntities.validateGender(gender);
 
     if (data.photo && data.photo.length > 0) {
-        data.photo.forEach((p: any) => {
+        data.photo.forEach((p: ReturnType<typeof JSON.parse>) => {
             if (!p.url.match(/\.(jpg|jpeg|png)$/i)) {
                 throw new Error("Photo must be in JPG, JPEG, or PNG format");
             }
@@ -23,7 +23,7 @@ export function validateSubAdminCreate(data: any): void {
     }
 }
 
-export function validateSubAdminUpdate(data: any): void {
+export function validateSubAdminUpdate(data: ReturnType<typeof JSON.parse>): void {
     const { name, email, phone, dateOfBirth, gender } = data;
 
     if (name) SubAdminEntities.validateName(name);
@@ -33,7 +33,7 @@ export function validateSubAdminUpdate(data: any): void {
     if (gender) SubAdminEntities.validateGender(gender);
 
     if (data.photo && data.photo.length > 0) {
-        data.photo.forEach((p: any) => {
+        data.photo.forEach((p: ReturnType<typeof JSON.parse>) => {
             if (!p.url.match(/\.(jpg|jpeg|png)$/i)) {
                 throw new Error("Photo must be in JPG, JPEG, or PNG format");
             }

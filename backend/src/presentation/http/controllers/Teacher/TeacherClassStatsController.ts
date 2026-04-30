@@ -28,9 +28,9 @@ export class TeacherClassStatsController {
             }
 
             return res.status(StatusCodes.OK).json({ success: true, data: result });
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error fetching class details:", error);
-            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: (error as Error).message });
         }
     }
 
@@ -41,9 +41,9 @@ export class TeacherClassStatsController {
             const result = await this.getStudentPerformanceUseCase.execute(studentId);
 
             return res.status(StatusCodes.OK).json({ success: true, data: result });
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error fetching student performance:", error);
-            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: (error as Error).message });
         }
     }
 }

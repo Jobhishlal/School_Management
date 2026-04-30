@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { IAIService } from "../../applications/interface/RepositoryInterface/AI/IAIService";
 
 export class GeminiAIService implements IAIService {
-  private model: any;
+  private model: ReturnType<typeof JSON.parse>;
 
   constructor() {
     if (!process.env.GEMINI_API_KEY) {

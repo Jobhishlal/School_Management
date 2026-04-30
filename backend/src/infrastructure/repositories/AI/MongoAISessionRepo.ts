@@ -12,7 +12,7 @@ export class MongoAISessionRepo implements IAISessionRepository {
         });
 
         return new AISession(
-            (newSession as any)._id.toString(),
+            (newSession as ReturnType<typeof JSON.parse>)._id.toString(),
             newSession.studentId,
             newSession.title,
             newSession.messages,
@@ -26,7 +26,7 @@ export class MongoAISessionRepo implements IAISessionRepository {
         if (!session) return null;
 
         return new AISession(
-            (session as any)._id.toString(),
+            (session as ReturnType<typeof JSON.parse>)._id.toString(),
             session.studentId,
             session.title,
             session.messages,
@@ -39,7 +39,7 @@ export class MongoAISessionRepo implements IAISessionRepository {
         const sessions = await AISessionModel.find({ studentId }).sort({ updatedAt: -1 });
 
         return sessions.map(session => new AISession(
-            (session as any)._id.toString(),
+            (session as ReturnType<typeof JSON.parse>)._id.toString(),
             session.studentId,
             session.title,
             session.messages,

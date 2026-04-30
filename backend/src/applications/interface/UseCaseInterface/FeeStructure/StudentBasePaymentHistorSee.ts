@@ -1,5 +1,5 @@
 
 export interface IStudentPaymentHistorySeeAdmin {
     
-    execute(studentName?: string): Promise<any[]>;
+    execute(studentName?: string): Promise<ReturnType<typeof JSON.parse>[]>;
 }

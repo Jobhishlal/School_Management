@@ -6,7 +6,7 @@ import { IConversation } from "../../infrastructure/database/mongoDB/models/Conv
 export class ChatPersistenceMapper {
     static toDomainMessage(model: IMessage): Message {
         return new Message(
-            (model as any)._id.toString(),
+            (model as ReturnType<typeof JSON.parse>)._id.toString(),
             model.senderId.toString(),
             model.senderModel,
             model.receiverId.toString(),
@@ -20,9 +20,9 @@ export class ChatPersistenceMapper {
         );
     }
 
-    static toDomainConversation(model: any): Conversation {
+    static toDomainConversation(model: ReturnType<typeof JSON.parse>): Conversation {
 
-        const participants: ConversationParticipant[] = model.participants.map((p: any) => {
+        const participants: ConversationParticipant[] = model.participants.map((p: ReturnType<typeof JSON.parse>) => {
 
             const pId = p.participantId._id ? p.participantId._id.toString() : p.participantId.toString();
 

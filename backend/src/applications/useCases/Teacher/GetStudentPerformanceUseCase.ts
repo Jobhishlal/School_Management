@@ -27,7 +27,7 @@ export class GetStudentPerformanceUseCase implements IGetStudentPerformanceUseCa
 
         const examMarks = await this._examMarkRepo.findAllMarksByStudentId(studentId);
 
-        const examPerformance: any[] = [];
+        const examPerformance: ReturnType<typeof JSON.parse>[] = [];
         let totalMarks = 0;
         let totalMaxMarks = 0;
 

@@ -32,7 +32,7 @@ export class VerifyPaymentStatus implements IVerifyStatusChange {
         content: `Your payment of ₹${updated.amount} has been received successfully.`,
         type: "PAYMENT",
         scope: "USER",
-        recipientId: (updated as any).recipientId,
+        recipientId: (updated as ReturnType<typeof JSON.parse>).recipientId,
         classes: [],
         link: "/parent/finance"
       });

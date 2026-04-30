@@ -12,7 +12,7 @@ export class AdminDashboardController {
                 message: "Admin Dashboard data fetched successfully",
                 data: dashboardData
             });
-        } catch (error: any) {
+        } catch (error: unknown) {
             next(error);
         }
     }

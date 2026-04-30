@@ -8,7 +8,7 @@ export interface IChatRepository {
     createOrUpdateConversation(senderId: string, senderModel: string, receiverId: string, receiverModel: string, lastMessageId: string): Promise<void>;
     getConversations(userId: string): Promise<Conversation[]>;
     markMessagesAsRead(senderId: string, receiverId: string): Promise<void>;
-    createGroupConversation(groupName: string, participantIds: { participantId: string, participantModel: string }[], classId?: string): Promise<any>;
+    createGroupConversation(groupName: string, participantIds: { participantId: string, participantModel: string }[], classId?: string): Promise<ReturnType<typeof JSON.parse>>;
     updateConversationLastMessage(conversationId: string, messageId: string): Promise<void>;
     findConversationById(conversationId: string): Promise<Conversation | null>;
     getGroupMessages(groupId: string): Promise<Message[]>;

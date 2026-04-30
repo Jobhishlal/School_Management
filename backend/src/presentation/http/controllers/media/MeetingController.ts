@@ -24,7 +24,7 @@ export class MeetingController {
             const meetingData = req.body;
             console.log("meetingData", meetingData)
 
-            const user = (req as any).user;
+            const user = (req as ReturnType<typeof JSON.parse>).user;
             if (user) {
                 meetingData.createdBy = user.id;
             }
@@ -46,11 +46,11 @@ export class MeetingController {
             }
 
             res.status(StatusCodes.CREATED).json({ success: true, data: newMeeting });
-        } catch (error: any) {
-            if (error.message === 'Meeting cannot be scheduled in the past' ||
-                error.message === 'Title must contain only alphabets and spaces' ||
-                error.message === 'Description must contain only alphabets and spaces') {
-                res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: error.message });
+        } catch (error: unknown) {
+            if ((error as Error).message === 'Meeting cannot be scheduled in the past' ||
+                (error as Error).message === 'Title must contain only alphabets and spaces' ||
+                (error as Error).message === 'Description must contain only alphabets and spaces') {
+                res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: (error as Error).message });
             } else {
                 res.status(StatusCodes.INTERNAL_SERVER_ERROR)
                     .json({ message: 'internal server error', success: false });
@@ -60,7 +60,7 @@ export class MeetingController {
 
     getScheduledMeetings = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const user = (req as any).user;
+            const user = (req as ReturnType<typeof JSON.parse>).user;
             let role = 'admin';
             let classId = undefined;
 
@@ -82,7 +82,7 @@ export class MeetingController {
     validateJoin = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { link } = req.body;
-            const user = (req as any).user;
+            const user = (req as ReturnType<typeof JSON.parse>).user;
 
             if (!user) {
                 res.status(StatusCodes.UNAUTHORIZED).json({ success: false, message: 'Unauthorized' });

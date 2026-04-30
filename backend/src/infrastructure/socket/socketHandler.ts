@@ -3,8 +3,8 @@ import { ProduceDTO } from "../../applications/dto/Media/ProduceDTO"
 
 
 
-  export default function socketHandler(io: any) {
-      io.on("connection", (socket: any) => {
+  export default function socketHandler(io: ReturnType<typeof JSON.parse>) {
+      io.on("connection", (socket: ReturnType<typeof JSON.parse>) => {
 
     socket.on(
       "produce",
@@ -21,8 +21,8 @@ import { ProduceDTO } from "../../applications/dto/Media/ProduceDTO"
           )
 
           callback({ producerId })
-        } catch (error: any) {
-          callback({ error: error.message })
+        } catch (error: unknown) {
+          callback({ error: (error as Error).message })
         }
       }
     )

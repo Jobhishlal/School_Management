@@ -64,11 +64,11 @@ export class ExamManagementController {
         message: "Exam created successfully",
         data,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: error.message || ExamErrorMessages.INTERNAL_SERVER_ERROR,
+        message: (error as Error).message || ExamErrorMessages.INTERNAL_SERVER_ERROR,
       });
     }
   }
@@ -91,10 +91,10 @@ export class ExamManagementController {
         message: "Exam updated successfully",
         data: updatedExam,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        message: error.message || "Internal server error",
+        message: (error as Error).message || "Internal server error",
         success: false,
       });
     }

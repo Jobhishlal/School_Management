@@ -36,7 +36,7 @@ export class CreateMeetingUseCase implements ICreateMeetingUseCase {
         const createdMeeting = await this.meetingRepository.createMeeting(meetingData);
 
         // Emit Notification
-        let scope: any = "GLOBAL";
+        let scope: ReturnType<typeof JSON.parse> = "GLOBAL";
         if (meetingData.type === 'staff') {
             scope = "STAFF";
         } else if (meetingData.type === 'parent') {

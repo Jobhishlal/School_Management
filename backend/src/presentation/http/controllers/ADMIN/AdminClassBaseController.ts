@@ -43,10 +43,10 @@ export class AdminClassController {
             ? "Teacher reassigned successfully"
             : "Teacher assigned successfully",
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
-        message: err.message || "Teacher assignment failed",
+        message: (err as Error).message || "Teacher assignment failed",
       });
     }
   }

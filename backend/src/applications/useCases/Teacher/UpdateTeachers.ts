@@ -1,7 +1,8 @@
 import { Teeacher } from "../../../domain/entities/Teacher";
 import {ITeacherCreate} from '../../interface/RepositoryInterface/TeacherCreate';
+import { IUpdateTeacherUseCase } from "../../interface/UseCaseInterface/Teacher/IUpdateTeacherUseCase";
 
-export class UpdateTeacher{
+export class UpdateTeacher implements IUpdateTeacherUseCase {
     constructor(private teacherupdateres : ITeacherCreate){}
     async execute(id:string,update:Partial<{
         name:string,

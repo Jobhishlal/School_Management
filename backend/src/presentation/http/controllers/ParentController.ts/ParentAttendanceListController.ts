@@ -32,19 +32,19 @@ export class ParentAttendanceListController {
         success: true,
         data: attendance,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      if (error.message === "Parent or student not found" || error.message === "student does not found") {
+      if ((error as Error).message === "Parent or student not found" || (error as Error).message === "student does not found") {
         res.status(StatusCodes.NOT_FOUND).json({
           success: false,
-          message: error.message,
+          message: (error as Error).message,
         });
         return;
       }
 
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: error.message || "Internal server error",
+        message: (error as Error).message || "Internal server error",
       });
     }
   }
@@ -78,15 +78,15 @@ export class ParentAttendanceListController {
         message: "Attendance details fetched successfully",
         result,
       });
-    } catch (error: any) {
-      if (Object.values(AttendanceErrorEnums).includes(error.message)) {
+    } catch (error: unknown) {
+      if (Object.values(AttendanceErrorEnums).includes((error as Error).message as AttendanceErrorEnums)) {
         res.status(StatusCodes.BAD_REQUEST).json({
-          message: error.message,
+          message: (error as Error).message,
         });
         return;
       }
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        message: error?.message ?? "Internal server error",
+        message: (error as Error).message ?? "Internal server error",
       });
     }
   }

@@ -45,10 +45,10 @@ export class ParentManagementCOntroller {
                 }
             });
 
-        } catch (err: any) {
-            console.error(err.message);
+        } catch (err: unknown) {
+            console.error((err as Error).message);
             res.status(StatusCodes.BAD_REQUEST).json({
-                message: err.message || "Failed to create parent"
+                message: (err as Error).message || "Failed to create parent"
             });
         }
 
@@ -78,17 +78,17 @@ export class ParentManagementCOntroller {
 
 
             res.status(StatusCodes.OK).json({ message: "Parent Update Successfully", parent: updateparent });
-        } catch (error: any) {
-            console.error("Error updating parent:", error.message);
+        } catch (error: unknown) {
+            console.error("Error updating parent:", (error as Error).message);
 
-            const isValidationError = error.message.includes("valid") || error.message.includes("required");
+            const isValidationError = (error as Error).message.includes("valid") || (error as Error).message.includes("required");
 
             const statusCode = isValidationError ?
                 StatusCodes.BAD_REQUEST :
                 StatusCodes.INTERNAL_SERVER_ERROR;
 
             res.status(statusCode).json({
-                message: error.message || "Failed to update parent",
+                message: (error as Error).message || "Failed to update parent",
             });
         }
     }
@@ -101,10 +101,10 @@ export class ParentManagementCOntroller {
 
             const profile = await this.getParentProfile.execute(id);
             res.status(StatusCodes.OK).json(profile);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error fetching parent profile:", error);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                message: error.message || "Failed to fetch profile"
+                message: (error as Error).message || "Failed to fetch profile"
             });
         }
     }

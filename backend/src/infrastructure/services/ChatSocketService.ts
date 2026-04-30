@@ -4,7 +4,7 @@ import { Message } from "../../domain/entities/Message";
 
 export class ChatSocketService implements IChatSocketService {
 
-    emitMessageToUser(userId: string, event: string, data: any): void {
+    emitMessageToUser(userId: string, event: string, data: ReturnType<typeof JSON.parse>): void {
         try {
             const io = getIO();
             io.to(userId).emit(event, data);
@@ -13,7 +13,7 @@ export class ChatSocketService implements IChatSocketService {
         }
     }
 
-    emitMessageToParticipants(participantIds: string[], event: string, data: any): void {
+    emitMessageToParticipants(participantIds: string[], event: string, data: ReturnType<typeof JSON.parse>): void {
         try {
             const io = getIO();
             participantIds.forEach(pId => {

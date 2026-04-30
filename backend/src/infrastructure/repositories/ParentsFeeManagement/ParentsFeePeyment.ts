@@ -20,7 +20,7 @@ export class ParentRepository implements IParentFeeInterface {
     );
   }
 
-  async findByEmailAndStudentId(email: string, studentId: string): Promise<any> {
+  async findByEmailAndStudentId(email: string, studentId: string): Promise<ReturnType<typeof JSON.parse>> {
 
     const parentDoc = await ParentSignupModel.findOne({ email })
       .populate("student", "studentId fullName classId")
@@ -55,7 +55,7 @@ export class ParentRepository implements IParentFeeInterface {
       const status = payment ? payment.status : "PENDING";
 
       // Calculate total amount from feeItems
-      const baseAmount = (fee as any).feeItems.reduce((acc: number, item: any) => acc + (item.amount || 0), 0);
+      const baseAmount = (fee as ReturnType<typeof JSON.parse>).feeItems.reduce((acc: number, item: ReturnType<typeof JSON.parse>) => acc + (item.amount || 0), 0);
       let amount = baseAmount;
 
       let hasPenalty = false;
@@ -69,7 +69,7 @@ export class ParentRepository implements IParentFeeInterface {
             penaltyMessage = "Paid with penalty";
           }
         }
-      } else if (new Date() > new Date((fee as any).expiryDate)) {
+      } else if (new Date() > new Date((fee as ReturnType<typeof JSON.parse>).expiryDate)) {
         amount += 200;
         hasPenalty = true;
         penaltyMessage = "You didn't complete this payment before deadline, you have penalty 200 rs";

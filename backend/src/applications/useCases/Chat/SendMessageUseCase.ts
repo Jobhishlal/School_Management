@@ -25,9 +25,9 @@ export class SendMessageUseCase implements ISendMessageUseCase {
         const receiverModel = mapRoleToModel(receiverRole || 'teacher') as 'Students' | 'Teacher' | 'Conversation';
 
         const message = await this.chatRepo.saveMessage({
-            senderId: senderId as any,
+            senderId: senderId as ReturnType<typeof JSON.parse>,
             senderModel,
-            receiverId: receiverId as any,
+            receiverId: receiverId as ReturnType<typeof JSON.parse>,
             receiverModel,
             content,
             type,

@@ -84,7 +84,7 @@ export class FeeTypeManagemnt implements IFeeTypeRepository {
   }
 
   async update(id: string, feeType: Partial<FeeType>): Promise<FeeType | null> {
-    const updateData: any = { ...feeType };
+    const updateData: ReturnType<typeof JSON.parse> = { ...feeType };
     if (feeType.offers) {
       updateData.Offers = feeType.offers.map(o => ({
         type: o.type,

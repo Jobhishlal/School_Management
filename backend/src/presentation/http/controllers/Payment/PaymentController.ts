@@ -52,12 +52,12 @@ export class PeymentController {
         message: "Razorpay order created successfully",
         data: order,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(" Payment creation failed:", error);
 
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: error.message || "Something went wrong during payment creation",
+        message: (error as Error).message || "Something went wrong during payment creation",
       });
     }
   }
@@ -92,7 +92,7 @@ export class PeymentController {
           message: "Peyment status update successfully",
           data: result
         })
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log("error", error)
       res.status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: "internal server error", error })
@@ -155,10 +155,10 @@ export class PeymentController {
         "Content-Disposition": `attachment; filename=invoice-${paymentId}.pdf`,
       });
       res.send(pdfBuffer);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log("error", error)
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).
-        json({ error: error.message || "Failed to download invoice." });
+        json({ error: (error as Error).message || "Failed to download invoice." });
     }
   }
 
@@ -181,11 +181,11 @@ export class PeymentController {
         page,
         limit,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: "Failed to fetch payment history",
-        error: error.message,
+        error: (error as Error).message,
       });
     }
   }
@@ -217,12 +217,12 @@ export class PeymentController {
         page,
         limit,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error fetching parent payment history:", error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: "Failed to fetch payment history",
-        error: error.message,
+        error: (error as Error).message,
       });
     }
   }

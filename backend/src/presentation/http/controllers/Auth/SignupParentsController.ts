@@ -36,8 +36,8 @@ export class SignupParentController {
         message: "Parent registered successfully",
         parent,
       });
-    } catch (err: any) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
+    } catch (err: unknown) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (err as Error).message });
     }
   }
 }

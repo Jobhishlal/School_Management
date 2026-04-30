@@ -25,7 +25,7 @@ const listModels = async () => {
         const models = response.data.models;
 
         if (models && models.length > 0) {
-            models.forEach((m: any) => {
+            models.forEach((m: ReturnType<typeof JSON.parse>) => {
                 if (m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent")) {
                     console.log(`   - ${m.name.replace('models/', '')}`);
                 }
@@ -35,7 +35,7 @@ const listModels = async () => {
             console.warn("⚠️ No models found in the response.");
         }
 
-    } catch (error: any) {
+    } catch (error: ReturnType<typeof JSON.parse>) {
         console.error("\n❌ Error fetching models:");
         if (error.response) {
             console.error(`   Status: ${error.response.status}`);

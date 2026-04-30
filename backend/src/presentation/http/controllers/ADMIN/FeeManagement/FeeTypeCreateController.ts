@@ -28,11 +28,11 @@ export class FeeTypeCreateController {
       });
 
       console.log("FeeType created successfully:", createdFeeType.name);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log("error", error)
       res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
-        message: error.message,
+        message: (error as Error).message,
       });
     }
   }
@@ -54,12 +54,12 @@ export class FeeTypeCreateController {
         message: "Fee types fetched successfully",
         data,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
 
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: "Failed to get fee types",
-        error: error.message,
+        error: (error as Error).message,
       });
     }
   }

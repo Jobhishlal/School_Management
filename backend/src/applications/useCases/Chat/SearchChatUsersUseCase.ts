@@ -8,8 +8,8 @@ export class SearchChatUsersUseCase implements ISearchChatUsersUseCase {
         private teacherRepo: ITeacherCreate
     ) { }
 
-    async execute(query: string, role: string): Promise<any[]> {
-        let users: any[] = [];
+    async execute(query: string, role: string): Promise<ReturnType<typeof JSON.parse>[]> {
+        let users: ReturnType<typeof JSON.parse>[] = [];
 
         if (role === 'student') {
             const students = await this.studentRepo.search(query);

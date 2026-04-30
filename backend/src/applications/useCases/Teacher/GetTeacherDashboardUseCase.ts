@@ -23,7 +23,7 @@ export class GetTeacherDashboardUseCase implements IGetTeacherDashboardUseCase {
         const teacherClass = await this.classRepo.findByTeacherId(teacherId);
 
         let totalClassStudents = 0;
-        let topStudents: any[] = [];
+        let topStudents: ReturnType<typeof JSON.parse>[] = [];
 
         if (teacherClass) {
 

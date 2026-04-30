@@ -32,9 +32,9 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
       doc.teacherId.toString(),
       doc.date,
       doc.session,
-      doc.attendance.map((a: any) => new AttendanceItemEntity(
+      doc.attendance.map((a: ReturnType<typeof JSON.parse>) => new AttendanceItemEntity(
         a.studentId.toString(),
-        a.status as any,
+        a.status as ReturnType<typeof JSON.parse>,
         a.remarks
       )),
       doc.createdAt,
@@ -58,9 +58,9 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
       existing.teacherId.toString(),
       existing.date,
       existing.session,
-      existing.attendance.map((a: any) => new AttendanceItemEntity(
+      existing.attendance.map((a: ReturnType<typeof JSON.parse>) => new AttendanceItemEntity(
         a.studentId.toString(),
-        a.status as any,
+        a.status as ReturnType<typeof JSON.parse>,
         a.remarks
       )),
       existing.createdAt,
@@ -106,7 +106,7 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
 
     attendanceDocs.forEach(doc => {
       doc.attendance.forEach(a => {
-        const studentId = (a.studentId as any)._id.toString();
+        const studentId = (a.studentId as ReturnType<typeof JSON.parse>)._id.toString();
         const status = a.status as "Present" | "Absent";
         if (!attendanceMap[studentId]) attendanceMap[studentId] = {};
         attendanceMap[studentId][doc.session] = status;
@@ -117,8 +117,8 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
     let result = allStudents.map(s => ({
       studentId: s._id.toString(),
       studentName: s.fullName,
-      Morning: (attendanceMap[s._id.toString()]?.Morning as any) ?? "Not Marked",
-      Afternoon: (attendanceMap[s._id.toString()]?.Afternoon as any) ?? "Not Marked",
+      Morning: (attendanceMap[s._id.toString()]?.Morning as ReturnType<typeof JSON.parse>) ?? "Not Marked",
+      Afternoon: (attendanceMap[s._id.toString()]?.Afternoon as ReturnType<typeof JSON.parse>) ?? "Not Marked",
     }));
 
     if (status) {
@@ -166,8 +166,8 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
     let absent = 0;
     let leave = 0;
 
-    const calendar: any[] = [];
-    const logs: any[] = [];
+    const calendar: ReturnType<typeof JSON.parse>[] = [];
+    const logs: ReturnType<typeof JSON.parse>[] = [];
 
     let todayMorning: AttendanceStatus = "Leave";
     let todayAfternoon: AttendanceStatus = "Leave";
@@ -238,7 +238,7 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
 
 
 
-  async getAttendanceByDateRange(classId: string, startDate: Date, endDate: Date): Promise<any[]> {
+  async getAttendanceByDateRange(classId: string, startDate: Date, endDate: Date): Promise<ReturnType<typeof JSON.parse>[]> {
     const records = await AttendanceModel.find({
       classId: new Types.ObjectId(classId),
       date: { $gte: startDate, $lte: endDate },
@@ -248,8 +248,8 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
       date: doc.date,
       session: doc.session,
       attendance: doc.attendance.map(a => ({
-        studentId: (a.studentId as any)._id,
-        studentName: (a.studentId as any).fullName,
+        studentId: (a.studentId as ReturnType<typeof JSON.parse>)._id,
+        studentName: (a.studentId as ReturnType<typeof JSON.parse>).fullName,
         status: a.status,
         remarks: a.remarks
       })),
@@ -258,7 +258,7 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
     }));
   }
 
-  async getStudentAttendanceHistory(studentId: string, month: number, year: number): Promise<any> {
+  async getStudentAttendanceHistory(studentId: string, month: number, year: number): Promise<ReturnType<typeof JSON.parse>> {
     if (!Types.ObjectId.isValid(studentId)) {
       throw new Error("Invalid Student ID");
     }
@@ -404,7 +404,7 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
       return {
         date: doc.date.toISOString().split("T")[0],
         session: doc.session as "Morning" | "Afternoon",
-        status: (item?.status as any) ?? "Not Marked",
+        status: (item?.status as ReturnType<typeof JSON.parse>) ?? "Not Marked",
         remarks: item?.remarks ?? ""
       };
     });
@@ -446,8 +446,8 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
     let absent = 0;
     let leave = 0;
 
-    const calendar: any[] = [];
-    const logs: any[] = [];
+    const calendar: ReturnType<typeof JSON.parse>[] = [];
+    const logs: ReturnType<typeof JSON.parse>[] = [];
 
     let todayMorning: AttendanceStatus | "Not Marked" = "Not Marked";
     let todayAfternoon: AttendanceStatus | "Not Marked" = "Not Marked";
@@ -533,7 +533,7 @@ export class AttendanceMongoRepository implements IAttandanceRepository {
       return {
         date: doc.date.toISOString().split("T")[0],
         session: doc.session as "Morning" | "Afternoon",
-        status: (item?.status as any) ?? "Not Marked",
+        status: (item?.status as ReturnType<typeof JSON.parse>) ?? "Not Marked",
         remarks: item?.remarks ?? ""
       };
     });

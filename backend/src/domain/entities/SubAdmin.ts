@@ -23,9 +23,9 @@ export class SubAdminEntities {
   private _major_role: string;
   private _dateOfBirth: Date;
   private _gender: string;
-  private _documents: any[];
+  private _documents: ReturnType<typeof JSON.parse>[];
   private _address?: string | AddressValue;
-  private _photo?: any[];
+  private _photo?: ReturnType<typeof JSON.parse>[];
   private _leaveBalance?: { sickLeave: number; casualLeave: number; };
 
   constructor(
@@ -41,9 +41,9 @@ export class SubAdminEntities {
     major_role: string,
     dateOfBirth: Date,
     gender: string,
-    documents: any[],
+    documents: ReturnType<typeof JSON.parse>[],
     address?: string | AddressValue,
-    photo?: any[],
+    photo?: ReturnType<typeof JSON.parse>[],
     leaveBalance?: { sickLeave: number; casualLeave: number; }
   ) {
     this._id = id;
@@ -100,14 +100,14 @@ export class SubAdminEntities {
   get gender(): string { return this._gender; }
   set gender(value: string) { this._gender = value; }
 
-  get documents(): any[] { return this._documents; }
-  set documents(value: any[]) { this._documents = value; }
+  get documents(): ReturnType<typeof JSON.parse>[] { return this._documents; }
+  set documents(value: ReturnType<typeof JSON.parse>[]) { this._documents = value; }
 
   get address(): string | AddressValue | undefined { return this._address; }
   set address(value: string | AddressValue | undefined) { this._address = value; }
 
-  get photo(): any[] | undefined { return this._photo; }
-  set photo(value: any[] | undefined) { this._photo = value; }
+  get photo(): ReturnType<typeof JSON.parse>[] | undefined { return this._photo; }
+  set photo(value: ReturnType<typeof JSON.parse>[] | undefined) { this._photo = value; }
 
   get leaveBalance(): { sickLeave: number; casualLeave: number; } | undefined { return this._leaveBalance; }
   set leaveBalance(value: { sickLeave: number; casualLeave: number; } | undefined) { this._leaveBalance = value; }

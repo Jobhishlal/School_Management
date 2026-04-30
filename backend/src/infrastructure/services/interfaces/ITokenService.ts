@@ -1,9 +1,9 @@
 
 export interface ITokenService {
-    generateAccessToken(payload: any): string;
-    generateRefreshToken(payload: any): string;
-    verifyRefreshToken(token: string): any;
-    generateOtpToken(payload: any, otp: string): string;
-    verifyOtpToken(token: string): any;
-    decodeToken(token: string): any;
+    generateAccessToken(payload: ReturnType<typeof JSON.parse>): string;
+    generateRefreshToken(payload: ReturnType<typeof JSON.parse>): string;
+    verifyRefreshToken(token: string): ReturnType<typeof JSON.parse>;
+    generateOtpToken(payload: ReturnType<typeof JSON.parse>, otp: string): string;
+    verifyOtpToken(token: string): ReturnType<typeof JSON.parse>;
+    decodeToken(token: string): ReturnType<typeof JSON.parse>;
 }

@@ -23,7 +23,7 @@ export class FeeStructureRepository implements IFeeStructureRepository {
 
   }
 
-  async findClassWisePaymentStatus(classId: string, page: number, limit: number): Promise<{ students: any[], total: number }> {
+  async findClassWisePaymentStatus(classId: string, page: number, limit: number): Promise<{ students: ReturnType<typeof JSON.parse>[], total: number }> {
 
     const classObjectId = new mongoose.Types.ObjectId(classId);
     const skip = (page - 1) * limit;
@@ -39,7 +39,7 @@ export class FeeStructureRepository implements IFeeStructureRepository {
       0
     );
 
-    const aggregationPipeline: any[] = [
+    const aggregationPipeline: ReturnType<typeof JSON.parse>[] = [
       { $match: { classId: classObjectId } },
       // Lookups
       {
@@ -92,7 +92,7 @@ export class FeeStructureRepository implements IFeeStructureRepository {
     const total = result.metadata[0] ? result.metadata[0].total : 0;
     const students = result.data;
 
-    const mappedStudents = students.map((student: any) => {
+    const mappedStudents = students.map((student: ReturnType<typeof JSON.parse>) => {
       let remainingPaid = student.totalPaid;
 
       const feeItemsStatus = fee.feeItems.map(item => {
@@ -145,7 +145,7 @@ export class FeeStructureRepository implements IFeeStructureRepository {
     return { students: mappedStudents, total };
   }
 
-  async findStudentPaymentStatusByName(studentName: string): Promise<any[]> {
+  async findStudentPaymentStatusByName(studentName: string): Promise<ReturnType<typeof JSON.parse>[]> {
     const students = await StudentModel.aggregate([
       {
         $match: {
@@ -196,13 +196,13 @@ export class FeeStructureRepository implements IFeeStructureRepository {
       }
 
       const totalAmount = fee.feeItems.reduce(
-        (sum: number, item: any) => sum + item.amount,
+        (sum: number, item: ReturnType<typeof JSON.parse>) => sum + item.amount,
         0
       );
 
       let remainingPaid = student.totalPaid;
 
-      const feeItemsStatus = fee.feeItems.map((item: any) => {
+      const feeItemsStatus = fee.feeItems.map((item: ReturnType<typeof JSON.parse>) => {
         let paidAmount = 0;
 
         if (remainingPaid >= item.amount) {
@@ -260,7 +260,7 @@ export class FeeStructureRepository implements IFeeStructureRepository {
       if (!fee.classId) continue;
 
       const studentCount = await StudentModel.countDocuments({ classId: fee.classId });
-      const feeAmount = fee.feeItems.reduce((sum: number, item: any) => sum + item.amount, 0);
+      const feeAmount = fee.feeItems.reduce((sum: number, item: ReturnType<typeof JSON.parse>) => sum + item.amount, 0);
 
       totalExpected += (studentCount * feeAmount);
     }

@@ -4,7 +4,7 @@ import { IAttandanceRepository } from "../../interface/RepositoryInterface/Attan
 export class ParentDateBaseAttendanceSearch implements IParentDateBaseAttendance {
     constructor(private readonly repo: IAttandanceRepository) { }
 
-    async execute(parentId: string, startDate: Date, endDate: Date): Promise<any> {
+    async execute(parentId: string, startDate: Date, endDate: Date): Promise<ReturnType<typeof JSON.parse>> {
         const data = await this.repo.getParentAttendanceByDateRange(parentId, startDate, endDate)
         if (!data) {
             throw new Error("students not found")

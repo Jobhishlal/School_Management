@@ -32,11 +32,11 @@ export class ExpenseManagementController {
           message: "data create successfully", success: true,
           data: expense
         })
-    } catch (error: any) {
+    } catch (error: unknown) {
 
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: error.message,
+        message: (error as Error).message,
       });
     }
 
@@ -52,9 +52,9 @@ export class ExpenseManagementController {
         success: true,
         data: expenses,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        message: error.message || "Internal server error",
+        message: (error as Error).message || "Internal server error",
       });
     }
   }
@@ -77,11 +77,11 @@ export class ExpenseManagementController {
       }
       res.status(StatusCodes.OK)
         .json({ message: "expense update successfully ", success: true, update })
-    } catch (error: any) {
+    } catch (error: unknown) {
 
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: error.message,
+        message: (error as Error).message,
       });
     }
   }

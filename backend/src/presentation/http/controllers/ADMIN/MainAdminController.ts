@@ -25,7 +25,7 @@ export class AdminLoginController {
 
       logger.info(JSON.stringify(req.body));
 
-      const result: any = await this._loginUseCase.execute(email, password, studentId);
+      const result: ReturnType<typeof JSON.parse> = await this._loginUseCase.execute(email, password, studentId);
       logger.info(JSON.stringify(result));
 
 
@@ -53,29 +53,29 @@ export class AdminLoginController {
         });
         return;
       }
-    } catch (error: any) {
-      logger.info(error.message);
+    } catch (error: unknown) {
+      logger.info((error as Error).message);
 
-      if (error.message === "Invalid Teacher Credentials") {
+      if ((error as Error).message === "Invalid Teacher Credentials") {
         res.status(StatusCodes.UNAUTHORIZED).json({ message: "Invalid email or password" });
         return;
       }
 
-      if (error.message === "teacher blocked") {
+      if ((error as Error).message === "teacher blocked") {
         res.status(StatusCodes.FORBIDDEN).json({
           message: "Teacher is blocked, please contact your admin",
         });
         return;
       }
 
-      if (error.message === "subadmin blocked") {
+      if ((error as Error).message === "subadmin blocked") {
         res.status(StatusCodes.FORBIDDEN).json({
           message: "Sub Admin is blocked, please contact school management",
         });
         return;
       }
 
-      if (error.message === "UserDoesNotExist") {
+      if ((error as Error).message === "UserDoesNotExist") {
         console.log("user doesnot exist",)
 
         res.status(StatusCodes.NOT_FOUND).json({ message: "User does not exist" });
@@ -113,8 +113,8 @@ export class AdminLoginController {
         id,
         email,
       });
-    } catch (error: any) {
-      res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+    } catch (error: unknown) {
+      res.status(StatusCodes.BAD_REQUEST).json({ message: (error as Error).message });
     }
   }
 
@@ -129,8 +129,8 @@ export class AdminLoginController {
         message: OtpError.RESEND_OTP,
         otpToken,
       });
-    } catch (error: any) {
-      res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+    } catch (error: unknown) {
+      res.status(StatusCodes.BAD_REQUEST).json({ message: (error as Error).message });
     }
   }
 
@@ -149,7 +149,7 @@ export class AdminLoginController {
         accessToken: result.authToken,
         role: result.role
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       res.status(StatusCodes.UNAUTHORIZED).json({ message: "Invalid refresh token" });
     }
   }

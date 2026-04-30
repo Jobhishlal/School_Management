@@ -46,22 +46,22 @@ export class LeaveManagementController {
         leave,
       });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log("error", error)
       if (
-        error.message?.includes("already existed") ||
-        error.message?.includes("Insufficient") ||
-        Object.values(LeaveError).includes(error.message)
+        (error as Error).message?.includes("already existed") ||
+        (error as Error).message?.includes("Insufficient") ||
+        Object.values(LeaveError).includes((error as Error).message as LeaveError)
       ) {
         res.status(StatusCodes.BAD_REQUEST).json({
-          message: error.message,
+          message: (error as Error).message,
         });
         return;
       }
       console.error("Leave creation error:", error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: "Internal server error",
-        error: error.message
+        error: (error as Error).message
       });
     }
   }
@@ -87,10 +87,10 @@ export class LeaveManagementController {
         leave
       });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log(error)
-      if (Object.values(LeaveError).includes(error.message)) {
-        res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+      if (Object.values(LeaveError).includes((error as Error).message as LeaveError)) {
+        res.status(StatusCodes.BAD_REQUEST).json({ message: (error as Error).message });
         return;
       }
       console.log(error, "error")
@@ -160,10 +160,10 @@ export class LeaveManagementController {
       }
 
       res.status(StatusCodes.OK).json({ message: "Leave status updated successfully", leave: updatedLeave });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log("error", error)
-      if (error.message?.includes("Insufficient")) {
-        res.status(StatusCodes.BAD_REQUEST).json({ message: error.message });
+      if ((error as Error).message?.includes("Insufficient")) {
+        res.status(StatusCodes.BAD_REQUEST).json({ message: (error as Error).message });
       } else {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
       }

@@ -30,7 +30,7 @@ export class ProcessStudentLeaveUseCase implements IProcessStudentLeaveUseCase {
       if (parent?.email) {
 
         const studentName =
-          (updatedLeave.studentId as any)?.fullName || "Student";
+          (updatedLeave.studentId as ReturnType<typeof JSON.parse>)?.fullName || "Student";
 
         const { subject, html } = studentLeaveStatusTemplate({
           studentName,

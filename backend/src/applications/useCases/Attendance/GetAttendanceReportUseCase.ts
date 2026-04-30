@@ -4,7 +4,7 @@ import { IAttandanceRepository } from "../../interface/RepositoryInterface/Attan
 export class GetAttendanceReportUseCase implements IGetAttendanceReportUseCase {
     constructor(private repo: IAttandanceRepository) { }
 
-    async execute(classId: string, startDate: Date, endDate: Date): Promise<any> {
+    async execute(classId: string, startDate: Date, endDate: Date): Promise<ReturnType<typeof JSON.parse>> {
         return await this.repo.getAttendanceByDateRange(classId, startDate, endDate);
     }
 }

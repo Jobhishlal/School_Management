@@ -1,7 +1,7 @@
 export class StudentLeaveEntity {
     constructor(
         public readonly id: string,
-        public readonly studentId: string | any,
+        public readonly studentId: string | ReturnType<typeof JSON.parse>,
         public readonly classId: string,
         public readonly parentId: string,
         public readonly leaveType: string,

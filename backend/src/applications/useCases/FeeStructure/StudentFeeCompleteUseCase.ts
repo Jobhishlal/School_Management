@@ -4,7 +4,7 @@ import { IFeeStructureRepository } from "../../interface/RepositoryInterface/Fee
 export class StudentPaymentDetailList implements IStudentFullFeePaymentStatusUseCase {
     constructor(private readonly repo: IFeeStructureRepository) { }
 
-    async execute(classId: string, page: number, limit: number): Promise<{ students: any[], total: number }> {
+    async execute(classId: string, page: number, limit: number): Promise<{ students: ReturnType<typeof JSON.parse>[], total: number }> {
 
         if (!classId) {
             throw new Error("does no get class Id")

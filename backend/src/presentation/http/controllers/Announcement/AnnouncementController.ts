@@ -52,12 +52,12 @@ export class AnnouncementController {
 
       res.status(StatusCodes.OK).json({ success: true, data, message: "Announcement created" });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
 
 
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: error.message || "Something went wrong during payment creation",
+        message: (error as Error).message || "Something went wrong during payment creation",
       });
     }
   }
@@ -75,7 +75,7 @@ export class AnnouncementController {
 
 
       if (req.file) {
-        const file = req.file as any;
+        const file = req.file as ReturnType<typeof JSON.parse>;
         data.attachment = {
           url: file.path || file.url || file.secure_url,
           filename: file.originalname,
@@ -95,10 +95,10 @@ export class AnnouncementController {
       }
 
       res.status(StatusCodes.OK).json({ message: "Update successful", success: true });
-    } catch (error: any) {
+    } catch (error: unknown) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: error.message || "Something went wrong during payment creation",
+        message: (error as Error).message || "Something went wrong during payment creation",
       });
     }
   }
@@ -128,10 +128,10 @@ export class AnnouncementController {
       const { id } = req.params;
       await this._deleteUseCase.execute(id);
       res.status(StatusCodes.OK).json({ success: true, message: "Announcement deleted successfully" });
-    } catch (error: any) {
+    } catch (error: unknown) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: error.message || "Failed to delete announcement",
+        message: (error as Error).message || "Failed to delete announcement",
       });
     }
   }

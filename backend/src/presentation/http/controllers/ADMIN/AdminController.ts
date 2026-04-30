@@ -29,14 +29,14 @@ export class AdminController implements IAdminController {
       res
         .status(StatusCodes.OK)
         .json({ message: "OTP sent to email", otpToken });
-    } catch (err: any) {
-      if (err.message === AdminError.Useralreadyexisted) {
+    } catch (err: unknown) {
+      if ((err as Error).message === AdminError.Useralreadyexisted) {
         res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "user already existed" });
         return;
       }
-      if (err.message === AdminError.UniqueUser_id) {
+      if ((err as Error).message === AdminError.UniqueUser_id) {
         res
           .status(StatusCodes.BAD_REQUEST)
           .json({ message: "Create Unique UserName" });
@@ -92,15 +92,15 @@ async verifyOtp(req: Request, res: Response): Promise<void> {
       message: "Signup successful",
       admin,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Verify OTP error:", err);
 
-    if (err.message === AdminError.Useralreadyexisted) {
+    if ((err as Error).message === AdminError.Useralreadyexisted) {
       res.status(StatusCodes.BAD_REQUEST).json({ message: "User already existed" });
       return;
     }
 
-    if (err.message === AdminError.UniqueUser_id) {
+    if ((err as Error).message === AdminError.UniqueUser_id) {
       res.status(StatusCodes.BAD_REQUEST).json({ message: "Create unique username" });
       return;
     }
@@ -127,8 +127,8 @@ res.status(StatusCodes.OK).json({
 
 
     
-  } catch (error:any) {
- if (error.message === AdminError.Invalid_otp) {
+  } catch (error: unknown) {
+ if ((error as Error).message === AdminError.Invalid_otp) {
   res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid or expired OTP" });
   return;
 }
@@ -143,8 +143,8 @@ res.status(StatusCodes.OK).json({
     try {
       const admin = await this._getAdminUseCase.execute();
       res.status(StatusCodes.OK).json(admin);
-    } catch (err: any) {
-      res.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
+    } catch (err: unknown) {
+      res.status(StatusCodes.BAD_REQUEST).json({ error: (err as Error).message });
     }
   }
 }

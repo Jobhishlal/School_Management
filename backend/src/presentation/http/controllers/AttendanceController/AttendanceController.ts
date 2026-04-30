@@ -51,10 +51,10 @@ export class AttendanceController {
         success: true,
         create,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("error", error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        message: error.message || "Internal server error",
+        message: (error as Error).message || "Internal server error",
         success: false,
       });
     }
@@ -101,17 +101,17 @@ export class AttendanceController {
         success: true,
         students,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("error happend here", error);
-      if (error.message === "No class assigned to this teacher" || error.message === "No students found for this class") {
+      if ((error as Error).message === "No class assigned to this teacher" || (error as Error).message === "No students found for this class") {
         res.status(StatusCodes.NOT_FOUND).json({
-          message: error.message,
+          message: (error as Error).message,
           success: false
         });
         return;
       }
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        message: error.message || "Internal server error",
+        message: (error as Error).message || "Internal server error",
         success: false,
       });
     }
@@ -170,11 +170,11 @@ export class AttendanceController {
         success: true,
         report,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: error.message || "Failed to fetch report",
+        message: (error as Error).message || "Failed to fetch report",
       });
     }
   }
@@ -202,11 +202,11 @@ export class AttendanceController {
         success: true,
         history,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: error.message || "Failed to fetch student history",
+        message: (error as Error).message || "Failed to fetch student history",
       });
     }
   }
@@ -229,11 +229,11 @@ export class AttendanceController {
         success: true,
         message: "Attendance updated successfully",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: error.message || "Failed to update attendance",
+        message: (error as Error).message || "Failed to update attendance",
       });
     }
   }
