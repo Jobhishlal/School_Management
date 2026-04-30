@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { IParentStudentList } from "../../../../applications/interface/UseCaseInterface/FeeStructure/IParentStudentList";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
@@ -11,7 +12,7 @@ export class ParentFinanceList {
 
       if (!email || !studentId) {
         res.status(StatusCodes.BAD_REQUEST).json({
-          message: "Missing email or studentId",
+          message: RESPONSE_MESSAGES.MISSING_EMAIL_OR_STUDENTID,
         });
         return;
       }
@@ -20,20 +21,20 @@ export class ParentFinanceList {
 
       if (!parentdata) {
         res.status(StatusCodes.BAD_REQUEST).json({
-          message: "Parent not found for given email/studentId",
+          message: RESPONSE_MESSAGES.PARENT_NOT_FOUND_FOR_GIVEN_EMAIL_STUDENTID,
         });
         return;
       }
 
       res.status(StatusCodes.OK).json({
-        message: "Student and email matched",
+        message: RESPONSE_MESSAGES.STUDENT_AND_EMAIL_MATCHED,
         data: Array.isArray(parentdata) ? parentdata : [parentdata],
       });
 
     } catch (error) {
       console.error("ParentList error:", error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        message: "Internal server error",
+        message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
         success: false,
       });
     }

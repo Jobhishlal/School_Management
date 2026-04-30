@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../../../shared/constants/responseMessages";
 import { Request,Response } from "express";
 import { IRevenueGenarateUseCase } from "../../../../../../applications/interface/UseCaseInterface/FeeStructure/FinanceReport/IfinanceReport.RevanueUseCase";
 import { StatusCodes } from "../../../../../../shared/constants/statusCodes";
@@ -16,7 +17,7 @@ export class FinanceReportManagementController {
             const {startDate,endDate}=req.query
             if(!startDate || !endDate){
               res.status(StatusCodes.BAD_REQUEST)
-              .json({message:"start date and end date required",success:false})
+              .json({message: RESPONSE_MESSAGES.START_DATE_AND_END_DATE_REQUIRED,success:false})
             }
             const data = await this._revenue.execute(
                 startDate as string,
@@ -24,10 +25,10 @@ export class FinanceReportManagementController {
             )
                console.log(data)
             res.status(StatusCodes.OK)
-            .json({message:"successfully fetched revenue",data,success:true})
+            .json({message: RESPONSE_MESSAGES.SUCCESSFULLY_FETCHED_REVENUE,data,success:true})
         } catch (error) {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-            .json({message:"internal server error",error})
+            .json({message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR_1,error})
         }
     }
 
@@ -37,15 +38,15 @@ export class FinanceReportManagementController {
            
             if(!data){
                 res.status(StatusCodes.BAD_REQUEST)
-                .json({message:"not fetch expense details"})
+                .json({message: RESPONSE_MESSAGES.NOT_FETCH_EXPENSE_DETAILS})
             }
            
             res.status(StatusCodes.OK)
-            .json({message:"expense fetch successfully",data})
+            .json({message: RESPONSE_MESSAGES.EXPENSE_FETCH_SUCCESSFULLY,data})
         } catch (error) {
            
              res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-             .json({message:"internal server error",error})
+             .json({message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR_1,error})
         }
     }
 }

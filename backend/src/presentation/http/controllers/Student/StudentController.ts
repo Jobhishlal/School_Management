@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { StudentAddUseCase } from "../../../../applications/useCases/Students/CreateStudents";
 import { MongoStudentRepo } from "../../../../infrastructure/repositories/MongoStudentRepo";
@@ -50,7 +51,7 @@ export class StudentCreateController {
       });
 
       res.status(StatusCodes.CREATED).json({
-        message: "Student created successfully",
+        message: RESPONSE_MESSAGES.STUDENT_CREATED_SUCCESSFULLY,
         student: created,
         tempPassword,
       });
@@ -77,7 +78,7 @@ export class StudentCreateController {
       res.status(StatusCodes.OK).json(student)
 
     } catch (error) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Its Server Error" })
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: RESPONSE_MESSAGES.ITS_SERVER_ERROR })
     }
   }
   async blockStudent(req: Request, res: Response): Promise<void> {
@@ -86,7 +87,7 @@ export class StudentCreateController {
       const { blocked } = req.body;
 
       if (!id) {
-        res.status(StatusCodes.BAD_REQUEST).json({ message: "Student id is required" });
+        res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.STUDENT_ID_IS_REQUIRED_1 });
         return;
       }
 
@@ -129,12 +130,12 @@ export class StudentCreateController {
       const updatedStudent = await this.studentupdate.execute({ id, ...updates });
 
       if (!updatedStudent) {
-        res.status(StatusCodes.NOT_FOUND).json({ message: "Student Not Found" });
+        res.status(StatusCodes.NOT_FOUND).json({ message: RESPONSE_MESSAGES.STUDENT_NOT_FOUND });
         return;
       }
 
       res.status(StatusCodes.OK).json({
-        message: "Student updated successfully",
+        message: RESPONSE_MESSAGES.STUDENT_UPDATED_SUCCESSFULLY,
         data: updatedStudent
       });
 
@@ -158,13 +159,13 @@ export class StudentCreateController {
       const student = await this.studentclassrepofind.execute(classId, teacherId)
       if (!student) {
         res.status(StatusCodes.BAD_REQUEST)
-          .json({ message: "does not fetch student in classbase" })
+          .json({ message: RESPONSE_MESSAGES.DOES_NOT_FETCH_STUDENT_IN_CLASSBASE })
       }
       res.status(StatusCodes.OK)
-        .json({ message: "data fetching successfully", success: true, student })
+        .json({ message: RESPONSE_MESSAGES.DATA_FETCHING_SUCCESSFULLY, success: true, student })
     } catch (error) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "internal server error", error })
+        .json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR_1, error })
 
     }
   }

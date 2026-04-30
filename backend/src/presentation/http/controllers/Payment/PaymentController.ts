@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { ICreateRazorpayOrder } from "../../../../applications/interface/UseCaseInterface/Payment/RazorpayUseCase";
@@ -30,7 +31,7 @@ export class PeymentController {
       if (!amount || !studentId || !feeRecordId) {
         res.status(StatusCodes.BAD_REQUEST).json({
           success: false,
-          message: "Missing required fields: amount, studentId, or feeRecordId",
+          message: RESPONSE_MESSAGES.MISSING_REQUIRED_FIELDS_AMOUNT_STUDENTID_OR_FEEREC,
         });
         return;
       }
@@ -49,7 +50,7 @@ export class PeymentController {
 
       res.status(StatusCodes.OK).json({
         success: true,
-        message: "Razorpay order created successfully",
+        message: RESPONSE_MESSAGES.RAZORPAY_ORDER_CREATED_SUCCESSFULLY,
         data: order,
       });
     } catch (error: unknown) {
@@ -89,13 +90,13 @@ export class PeymentController {
       res.status(StatusCodes.CREATED)
         .json({
           success: true,
-          message: "Peyment status update successfully",
+          message: RESPONSE_MESSAGES.PEYMENT_STATUS_UPDATE_SUCCESSFULLY,
           data: result
         })
     } catch (error: unknown) {
       console.log("error", error)
       res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ success: false, message: "internal server error", error })
+        .json({ success: false, message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR_1, error })
 
     }
   }
@@ -109,7 +110,7 @@ export class PeymentController {
       console.log("req.body data", req.body)
 
       if (!feeId || !paymentId || !status) {
-        res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Missing required fields" });
+        res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: RESPONSE_MESSAGES.MISSING_REQUIRED_FIELDS });
         return;
       }
 
@@ -131,12 +132,12 @@ export class PeymentController {
 
       res.status(StatusCodes.CREATED).json({
         success: true,
-        message: "Payment status updated successfully",
+        message: RESPONSE_MESSAGES.PAYMENT_STATUS_UPDATED_SUCCESSFULLY,
         data: result
       });
     } catch (error) {
       console.error("Error updating payment status:", error);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal server error", error });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR, error });
     }
   }
 
@@ -184,7 +185,7 @@ export class PeymentController {
     } catch (error: unknown) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: "Failed to fetch payment history",
+        message: RESPONSE_MESSAGES.FAILED_TO_FETCH_PAYMENT_HISTORY,
         error: (error as Error).message,
       });
     }
@@ -199,7 +200,7 @@ export class PeymentController {
       if (!studentId) {
         res.status(StatusCodes.BAD_REQUEST).json({
           success: false,
-          message: "Student ID is required",
+          message: RESPONSE_MESSAGES.STUDENT_ID_IS_REQUIRED,
         });
         return;
       }
@@ -221,7 +222,7 @@ export class PeymentController {
       console.error("Error fetching parent payment history:", error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: "Failed to fetch payment history",
+        message: RESPONSE_MESSAGES.FAILED_TO_FETCH_PAYMENT_HISTORY,
         error: (error as Error).message,
       });
     }

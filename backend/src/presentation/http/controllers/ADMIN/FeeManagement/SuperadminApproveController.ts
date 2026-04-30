@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../../shared/constants/responseMessages";
 import { IApprovalUsecase } from "../../../../../applications/interface/UseCaseInterface/FeeStructure/IApprovel";
 import { Request,Response } from "express";
 import { AuthRequest } from "../../../../../infrastructure/types/AuthRequest";
@@ -18,7 +19,7 @@ export class SuperadminApprovalController {
 
     if (!req.user || req.user.role !== "super_admin") {
       return res.status(403).json({
-        message: "Only super admin can approve",
+        message: RESPONSE_MESSAGES.ONLY_SUPER_ADMIN_CAN_APPROVE,
       });
     }
 
@@ -43,7 +44,7 @@ export class SuperadminApprovalController {
     try {
        if (!req.user || req.user.role !== "super_admin") {
         console.log("user available here",req.user)
-         return res.status(403).json({ message: "Only super admin can access" });
+         return res.status(403).json({ message: RESPONSE_MESSAGES.ONLY_SUPER_ADMIN_CAN_ACCESS });
        }
   
       const expenses = await this._Getallpendingstatus.execute();

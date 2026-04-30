@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 
 import { GetAllParentsUseCase } from "../../../../applications/useCases/Parent/GetAllParents";
 import { ParentAddUseCase } from "../../../../applications/useCases/Parent/ParentUseCase";
@@ -34,7 +35,7 @@ export class ParentManagementCOntroller {
             console.log(req.body)
             const createParent = await this.ParentAddController.execute(Parent)
             res.status(StatusCodes.OK).json({
-                message: "Parent Create Successfully",
+                message: RESPONSE_MESSAGES.PARENT_CREATE_SUCCESSFULLY,
                 parent: {
                     _id: createParent.id || "",
                     name: createParent.name,
@@ -58,7 +59,7 @@ export class ParentManagementCOntroller {
             const parents = await this.getAllParents.execute()
             res.status(StatusCodes.OK).json(parents)
         } catch (error) {
-            res.status(StatusCodes.BAD_REQUEST).json({ message: "Its failed to fetch backend", error })
+            res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.ITS_FAILED_TO_FETCH_BACKEND, error })
         }
     }
 
@@ -72,12 +73,12 @@ export class ParentManagementCOntroller {
             const updateparent = await this.updateParents.execute(id, update);
 
             if (!updateparent) {
-                res.status(StatusCodes.NOT_FOUND).json({ message: "Parents Not Found" });
+                res.status(StatusCodes.NOT_FOUND).json({ message: RESPONSE_MESSAGES.PARENTS_NOT_FOUND });
                 return;
             }
 
 
-            res.status(StatusCodes.OK).json({ message: "Parent Update Successfully", parent: updateparent });
+            res.status(StatusCodes.OK).json({ message: RESPONSE_MESSAGES.PARENT_UPDATE_SUCCESSFULLY, parent: updateparent });
         } catch (error: unknown) {
             console.error("Error updating parent:", (error as Error).message);
 

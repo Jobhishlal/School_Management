@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { ICreateLeaveusecase } from "../../../../applications/interface/UseCaseInterface/LeaveManagement/ICreateLeaveUseCase";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
@@ -29,7 +30,7 @@ export class LeaveManagementController {
       if (!teacherId) {
         res
           .status(StatusCodes.UNAUTHORIZED)
-          .json({ message: "Unauthorized access" });
+          .json({ message: RESPONSE_MESSAGES.UNAUTHORIZED_ACCESS });
         return;
       }
       const data: CreateLeaveDTO = req.body;
@@ -42,7 +43,7 @@ export class LeaveManagementController {
       );
 
       res.status(StatusCodes.CREATED).json({
-        message: "Leave created successfully",
+        message: RESPONSE_MESSAGES.LEAVE_CREATED_SUCCESSFULLY,
         leave,
       });
 
@@ -60,7 +61,7 @@ export class LeaveManagementController {
       }
       console.error("Leave creation error:", error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        message: "Internal server error",
+        message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
         error: (error as Error).message
       });
     }
@@ -71,7 +72,7 @@ export class LeaveManagementController {
       const subAdminId = req.user?.id;
 
       if (!subAdminId) {
-        res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized access" });
+        res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED_ACCESS });
         return;
       }
 
@@ -83,7 +84,7 @@ export class LeaveManagementController {
       const leave = await this._subAdminLeaveCreate.execute(subAdminId, data);
 
       res.status(StatusCodes.CREATED).json({
-        message: "Leave request submitted successfully",
+        message: RESPONSE_MESSAGES.LEAVE_REQUEST_SUBMITTED_SUCCESSFULLY,
         leave
       });
 
@@ -94,7 +95,7 @@ export class LeaveManagementController {
         return;
       }
       console.log(error, "error")
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR });
     }
   }
 
@@ -102,13 +103,13 @@ export class LeaveManagementController {
     try {
       const teacherId = req.user?.id;
       if (!teacherId) {
-        res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized access" });
+        res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED_ACCESS });
         return;
       }
       const leaves = await this._getTeacherLeaves.execute(teacherId);
       res.status(StatusCodes.OK).json({ leaves });
     } catch (error) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR });
     }
   }
 
@@ -116,13 +117,13 @@ export class LeaveManagementController {
     try {
       const subAdminId = req.user?.id;
       if (!subAdminId) {
-        res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized access" });
+        res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED_ACCESS });
         return;
       }
       const leaves = await this._getSubAdminLeaves.execute(subAdminId);
       res.status(StatusCodes.OK).json({ leaves });
     } catch (error) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR });
     }
   }
 
@@ -131,7 +132,7 @@ export class LeaveManagementController {
       const leaves = await this._getAllLeaves.execute();
       res.status(StatusCodes.OK).json({ leaves });
     } catch (error) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR });
     }
   }
 
@@ -142,12 +143,12 @@ export class LeaveManagementController {
       const { leaveId, status, adminRemark } = req.body;
 
       if (!adminId) {
-        res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized access" });
+        res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED_ACCESS });
         return;
       }
 
       if (adminRemark && !/^[a-zA-Z\s.,]+$/.test(adminRemark)) {
-        res.status(StatusCodes.BAD_REQUEST).json({ message: "Remark must contain only alphabets, dots, and commas" });
+        res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.REMARK_MUST_CONTAIN_ONLY_ALPHABETS_DOTS_AND_COMMAS });
         return;
       }
 
@@ -155,17 +156,17 @@ export class LeaveManagementController {
       console.log("updateleave", updatedLeave)
 
       if (!updatedLeave) {
-        res.status(StatusCodes.NOT_FOUND).json({ message: "Leave request not found" });
+        res.status(StatusCodes.NOT_FOUND).json({ message: RESPONSE_MESSAGES.LEAVE_REQUEST_NOT_FOUND });
         return;
       }
 
-      res.status(StatusCodes.OK).json({ message: "Leave status updated successfully", leave: updatedLeave });
+      res.status(StatusCodes.OK).json({ message: RESPONSE_MESSAGES.LEAVE_STATUS_UPDATED_SUCCESSFULLY, leave: updatedLeave });
     } catch (error: unknown) {
       console.log("error", error)
       if ((error as Error).message?.includes("Insufficient")) {
         res.status(StatusCodes.BAD_REQUEST).json({ message: (error as Error).message });
       } else {
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR });
       }
     }
   }

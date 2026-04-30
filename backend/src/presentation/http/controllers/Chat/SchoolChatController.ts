@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 
 import { Request, Response } from "express";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
@@ -106,7 +107,7 @@ export class SchoolChatController {
 
             await this.markMessagesReadUseCase.execute(otherUserId, userId);
 
-            res.status(StatusCodes.OK).json({ success: true, message: "Marked as read" });
+            res.status(StatusCodes.OK).json({ success: true, message: RESPONSE_MESSAGES.MARKED_AS_READ });
         } catch (error) {
             console.error("Error marking messages as read:", error);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: CHAT_ERRORS.MARK_READ_FAILED });

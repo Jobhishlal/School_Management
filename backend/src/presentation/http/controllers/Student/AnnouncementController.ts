@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Response } from "express";
 import { IAnnoucementfindclassBase } from "../../../../applications/interface/UseCaseInterface/Announcement/IAnnouncementReadUseCase";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
@@ -21,7 +22,7 @@ export class AnnouncementReadController {
       if (!studentId) {
         res.status(StatusCodes.UNAUTHORIZED).json({
           success: false,
-          message: "Unauthorized",
+          message: RESPONSE_MESSAGES.UNAUTHORIZED,
         });
         return;
       }
@@ -33,7 +34,7 @@ export class AnnouncementReadController {
       if (!student || !student.classId) {
         res.status(StatusCodes.BAD_REQUEST).json({
           success: false,
-          message: "Student or class not found",
+          message: RESPONSE_MESSAGES.STUDENT_OR_CLASS_NOT_FOUND,
         });
         return;
       }
@@ -58,7 +59,7 @@ export class AnnouncementReadController {
       console.error(error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: "Internal server error",
+        message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
       });
     }
   }

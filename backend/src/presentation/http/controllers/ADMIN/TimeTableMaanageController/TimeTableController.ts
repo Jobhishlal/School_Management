@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../../shared/constants/responseMessages";
 import { StatusCodes } from "../../../../../shared/constants/statusCodes";
 import { ICreateTimeTable } from "../../../../../applications/interface/UseCaseInterface/TimeTable/ICreateTimeTable";
 import { IGETTIMETABLECLASS } from "../../../../../applications/interface/UseCaseInterface/TimeTable/IGetTimeTableClassUseCase";
@@ -31,7 +32,7 @@ export class TimeTableManageController {
 
       res.status(StatusCodes.CREATED).json({
         success: true,
-        message: "Timetable created successfully",
+        message: RESPONSE_MESSAGES.TIMETABLE_CREATED_SUCCESSFULLY,
         data: created
       });
     } catch (error: unknown) {
@@ -52,17 +53,17 @@ export class TimeTableManageController {
       const timetable = await this._gettimetable.execute(classId, division);
 
       if (!timetable) {
-        res.status(StatusCodes.NOT_FOUND).json({ success: false, message: "Timetable not found" });
+        res.status(StatusCodes.NOT_FOUND).json({ success: false, message: RESPONSE_MESSAGES.TIMETABLE_NOT_FOUND });
         return;
       }
 
       res.status(StatusCodes.CREATED).json({
         success: true,
-        message: "Timetable fetched successfully",
+        message: RESPONSE_MESSAGES.TIMETABLE_FETCHED_SUCCESSFULLY,
         data: timetable,
       });
     } catch (error) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Something went wrong", error });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: RESPONSE_MESSAGES.SOMETHING_WENT_WRONG_1, error });
     }
   }
 
@@ -76,7 +77,7 @@ export class TimeTableManageController {
       const updated = await this._updatetimetable.execute(dto);
       res.status(StatusCodes.CREATED).json({
         success: true,
-        message: "Timetable updated successfully",
+        message: RESPONSE_MESSAGES.TIMETABLE_UPDATED_SUCCESSFULLY,
         data: updated
       });
     } catch (error: unknown) {
@@ -91,10 +92,10 @@ export class TimeTableManageController {
   async DeleteTimeTable(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      if (!id) res.status(StatusCodes.BAD_REQUEST).json({ message: "Timetable ID is required" });
+      if (!id) res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.TIMETABLE_ID_IS_REQUIRED });
 
       await this._deletetimetable.execute(id);
-      res.status(StatusCodes.CREATED).json({ message: "Timetable deleted successfully" });
+      res.status(StatusCodes.CREATED).json({ message: RESPONSE_MESSAGES.TIMETABLE_DELETED_SUCCESSFULLY });
     } catch (error: unknown) {
 
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message || "Internal Server Error" });

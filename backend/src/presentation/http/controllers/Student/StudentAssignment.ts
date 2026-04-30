@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request,Response } from "express";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { IAssignmentGetstudent } from "../../../../applications/interface/UseCaseInterface/Assignment/IGetAssignmentStudent";
@@ -22,7 +23,7 @@ export class AssignmentViewStudentsController {
     if (!studentId) {
       res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
-        message: "studentId is required",
+        message: RESPONSE_MESSAGES.STUDENTID_IS_REQUIRED,
       });
       return;
     }
@@ -33,14 +34,14 @@ export class AssignmentViewStudentsController {
     if (!assignment || assignment.length === 0) {
       res.status(StatusCodes.NOT_FOUND).json({
         success: false,
-        message: "No assignments found for this student",
+        message: RESPONSE_MESSAGES.NO_ASSIGNMENTS_FOUND_FOR_THIS_STUDENT,
       });
       return;
     }
 
     res.status(StatusCodes.OK).json({
       success: true,
-      message: "Assignments fetched successfully",
+      message: RESPONSE_MESSAGES.ASSIGNMENTS_FETCHED_SUCCESSFULLY,
       data: assignment,
     });
   } catch (error: unknown) {
@@ -63,7 +64,7 @@ async SubmitData(req: Request, res: Response): Promise<void> {
     const files = req.files as Express.Multer.File[];
 
     if (!files || files.length === 0) {
-      res.status(400).json({ success: false, message: "At least one file is required" });
+      res.status(400).json({ success: false, message: RESPONSE_MESSAGES.AT_LEAST_ONE_FILE_IS_REQUIRED });
       return;
     }
 
@@ -92,7 +93,7 @@ async SubmitData(req: Request, res: Response): Promise<void> {
 
     res.status(200).json({
       success: true,
-      message: "Assignment submitted successfully",
+      message: RESPONSE_MESSAGES.ASSIGNMENT_SUBMITTED_SUCCESSFULLY,
       data: results,
     });
 

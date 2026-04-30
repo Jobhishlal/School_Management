@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { IAdminController } from "../../interface/IAdminController";
 import { SignupAdmin } from "../../../../applications/useCases/Auth/SignupAdmin";
@@ -28,23 +29,23 @@ export class AdminController implements IAdminController {
 
       res
         .status(StatusCodes.OK)
-        .json({ message: "OTP sent to email", otpToken });
+        .json({ message: RESPONSE_MESSAGES.OTP_SENT_TO_EMAIL, otpToken });
     } catch (err: unknown) {
       if ((err as Error).message === AdminError.Useralreadyexisted) {
         res
           .status(StatusCodes.BAD_REQUEST)
-          .json({ message: "user already existed" });
+          .json({ message: RESPONSE_MESSAGES.USER_ALREADY_EXISTED });
         return;
       }
       if ((err as Error).message === AdminError.UniqueUser_id) {
         res
           .status(StatusCodes.BAD_REQUEST)
-          .json({ message: "Create Unique UserName" });
+          .json({ message: RESPONSE_MESSAGES.CREATE_UNIQUE_USERNAME });
         return;
       }
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "something went wrong" });
+        .json({ message: RESPONSE_MESSAGES.SOMETHING_WENT_WRONG });
     }
   }
 
@@ -53,7 +54,7 @@ async verifyOtp(req: Request, res: Response): Promise<void> {
     const { otpToken, otp } = req.body;
 
     if (!otpToken || !otp) {
-      res.status(StatusCodes.BAD_REQUEST).json({ message: "OTP and token are required" });
+      res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.OTP_AND_TOKEN_ARE_REQUIRED });
       return;
     }
 
@@ -61,19 +62,19 @@ async verifyOtp(req: Request, res: Response): Promise<void> {
     const decoded = verifiedOtptoken(otpToken);
 
     if (!decoded) {
-      res.status(StatusCodes.UNAUTHORIZED).json({ message: "Invalid or expired OTP token" });
+      res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.INVALID_OR_EXPIRED_OTP_TOKEN });
       return;
     }
 
     if (decoded.otp !== otp) {
-      res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid OTP" });
+      res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.INVALID_OTP });
       return;
     }
 
     const { username, email, password } = decoded;
 
     if (!username || !email || !password) {
-      res.status(StatusCodes.BAD_REQUEST).json({ message: "Missing user data in OTP token" });
+      res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.MISSING_USER_DATA_IN_OTP_TOKEN });
       return;
     }
 
@@ -89,23 +90,23 @@ async verifyOtp(req: Request, res: Response): Promise<void> {
    
 
     res.status(StatusCodes.CREATED).json({
-      message: "Signup successful",
+      message: RESPONSE_MESSAGES.SIGNUP_SUCCESSFUL,
       admin,
     });
   } catch (err: unknown) {
     console.error("Verify OTP error:", err);
 
     if ((err as Error).message === AdminError.Useralreadyexisted) {
-      res.status(StatusCodes.BAD_REQUEST).json({ message: "User already existed" });
+      res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.USER_ALREADY_EXISTED_1 });
       return;
     }
 
     if ((err as Error).message === AdminError.UniqueUser_id) {
-      res.status(StatusCodes.BAD_REQUEST).json({ message: "Create unique username" });
+      res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.CREATE_UNIQUE_USERNAME_1 });
       return;
     }
 
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Something went wrong" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: RESPONSE_MESSAGES.SOMETHING_WENT_WRONG_1 });
   }
 }
 
@@ -119,7 +120,7 @@ async resentOtp(req:Request,res:Response):Promise<void>{
    const { otpToken } = await this._resendOtpUseCase.execute(oldOtpToken);
 
 res.status(StatusCodes.OK).json({
-  message: "New Otp share Your Email",
+  message: RESPONSE_MESSAGES.NEW_OTP_SHARE_YOUR_EMAIL,
   otpToken: otpToken
 })
 
@@ -129,12 +130,12 @@ res.status(StatusCodes.OK).json({
     
   } catch (error: unknown) {
  if ((error as Error).message === AdminError.Invalid_otp) {
-  res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid or expired OTP" });
+  res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.INVALID_OR_EXPIRED_OTP });
   return;
 }
 
 
-   res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:"Its Server Error"})
+   res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: RESPONSE_MESSAGES.ITS_SERVER_ERROR})
 
   }
 }

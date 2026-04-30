@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { CreateClassUseCase } from "../../../../applications/useCases/Classdata/CreateClass";
 import { GetAllClass } from "../../../../applications/useCases/Classdata/GeallClass";
@@ -69,7 +70,7 @@ export class ClassManagementController {
       res.status(StatusCodes.OK).json({ data });
     } catch (error: unknown) {
       console.error(" Error getting classes:", error);
-      res.status(StatusCodes.BAD_REQUEST).json({ message: "Server error", error: (error as Error).message });
+      res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.SERVER_ERROR_1, error: (error as Error).message });
     }
   }
   async updateclass(req: Request, res: Response): Promise<void> {
@@ -82,12 +83,12 @@ export class ClassManagementController {
       const updatedClass = await this.classupdate.execute(id, update)
 
       if (!updatedClass) {
-        res.status(StatusCodes.NOT_FOUND).json({ message: "Class not found" });
+        res.status(StatusCodes.NOT_FOUND).json({ message: RESPONSE_MESSAGES.CLASS_NOT_FOUND });
         return;
       }
 
       res.status(StatusCodes.OK).json({
-        message: "Class updated successfully",
+        message: RESPONSE_MESSAGES.CLASS_UPDATED_SUCCESSFULLY,
         class: updatedClass
       });
     } catch (error: unknown) {
@@ -101,7 +102,7 @@ export class ClassManagementController {
     try {
       const { className } = req.params;
       if (!className) {
-        res.status(StatusCodes.BAD_REQUEST).json({ message: "class id is not availble" })
+        res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.CLASS_ID_IS_NOT_AVAILBLE })
 
       }
       const assignclasses = await this.iassignclass.execute(className)
@@ -111,7 +112,7 @@ export class ClassManagementController {
       res.status(StatusCodes.OK).json({ message: `Next availble division from  ${className}` })
     } catch (error: unknown) {
 
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error cannot find " })
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR_CANNOT_FIND })
     }
   }
 
@@ -119,7 +120,7 @@ export class ClassManagementController {
     try {
       const { id } = req.params;
       await this.deleteClassUseCase.execute(id);
-      res.status(StatusCodes.OK).json({ success: true, message: "Class deleted successfully" });
+      res.status(StatusCodes.OK).json({ success: true, message: RESPONSE_MESSAGES.CLASS_DELETED_SUCCESSFULLY });
     } catch (error: unknown) {
 
       res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: (error as Error).message });

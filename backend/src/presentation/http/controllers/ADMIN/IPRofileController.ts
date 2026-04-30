@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 
 import { Request, Response } from "express";
 import { IInstituteUsecase } from "../../../../applications/interface/UseCaseInterface/IInstituteProfileUseCase";
@@ -23,7 +24,7 @@ export class InstituteProfileController {
             const existingInstitutes = await this._getInstitute.execute();
             if (existingInstitutes.length > 0) {
                 res.status(StatusCodes.FORBIDDEN).json({
-                    message: "Institute profile already exists. You can only update it.",
+                    message: RESPONSE_MESSAGES.INSTITUTE_PROFILE_ALREADY_EXISTS_YOU_CAN_ONLY_UPDA,
                 });
             }
 
@@ -31,7 +32,7 @@ export class InstituteProfileController {
 
             if (!dto.addressId || !mongoose.Types.ObjectId.isValid(dto.addressId)) {
                 return res.status(StatusCodes.BAD_REQUEST).json({
-                    message: "Invalid or missing addressId",
+                    message: RESPONSE_MESSAGES.INVALID_OR_MISSING_ADDRESSID,
                 }) as unknown as void;
             } 
  
@@ -55,7 +56,7 @@ export class InstituteProfileController {
             );
 
             const createInstitute = await this._createInstituteUseCase.execute(InstituteEntity);
-            res.status(StatusCodes.CREATED).json({ message: "Institute Created successfully", createInstitute });
+            res.status(StatusCodes.CREATED).json({ message: RESPONSE_MESSAGES.INSTITUTE_CREATED_SUCCESSFULLY, createInstitute });
         } catch (error: unknown) {
             const err = error as Error;
             console.error(err.message);
@@ -69,7 +70,7 @@ export class InstituteProfileController {
     async getAll(req: Request, res: Response): Promise<void> {
         try {
             const institute = await this._getInstitute.execute()
-            res.status(StatusCodes.CREATED).json({ message: "Its Server Error", institute })
+            res.status(StatusCodes.CREATED).json({ message: RESPONSE_MESSAGES.ITS_SERVER_ERROR, institute })
         } catch (error: unknown) {
             const err = error as Error;
             console.error(err.message);
@@ -97,7 +98,7 @@ export class InstituteProfileController {
             validateInstituteProfile(update, true);
 
             const updateinstprofile = await this._updateinsti.execute(id, update);
-            res.status(StatusCodes.CREATED).json({ message: "Profile update successful", data: updateinstprofile });
+            res.status(StatusCodes.CREATED).json({ message: RESPONSE_MESSAGES.PROFILE_UPDATE_SUCCESSFUL, data: updateinstprofile });
 
         } catch (error: unknown) {
             const err = error as Error;

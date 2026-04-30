@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { ITimeTableStudentview } from "../../../../applications/interface/UseCaseInterface/TimeTable/ITimeTableviewSTD";
@@ -17,7 +18,7 @@ export class StudentTimetableController {
         console.log("studentId", studentId)
         res.status(StatusCodes.BAD_REQUEST).json({
           success: false,
-          message: "studentId is Required",
+          message: RESPONSE_MESSAGES.STUDENTID_IS_REQUIRED_1,
         });
         return;
       }
@@ -34,21 +35,21 @@ export class StudentTimetableController {
       if (!timetable) {
         res.status(StatusCodes.NOT_FOUND).json({
           success: false,
-          message: "Timetable not found",
+          message: RESPONSE_MESSAGES.TIMETABLE_NOT_FOUND,
         });
         return;
       }
 
       res.status(StatusCodes.OK).json({
         success: true,
-        message: "Timetable fetched successfully",
+        message: RESPONSE_MESSAGES.TIMETABLE_FETCHED_SUCCESSFULLY,
         data: timetable,
       });
     } catch (error) {
       console.error("Error fetching timetable:", error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: "Internal server error",
+        message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
       });
     }
   }

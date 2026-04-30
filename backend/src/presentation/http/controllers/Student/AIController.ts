@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { IAskAIDoubtUseCase } from "../../../../applications/useCases/Student/interfaces/IAskAIDoubtUseCase";
 import { IGetStudentChatHistoryUseCase } from "../../../../applications/useCases/Student/interfaces/IGetStudentChatHistoryUseCase";
@@ -23,14 +24,14 @@ export class AIController {
 
             if (!studentId) {
                 console.warn("AIController: askDoubt Unauthorized - No studentId");
-                res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
+                res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED });
                 return;
             }
 
             if (!question || question.trim().length < 5) {
                 console.warn("AIController: Question too short");
                 res.status(StatusCodes.BAD_REQUEST).json({
-                    message: "Please ask a complete question (at least 5 characters)"
+                    message: RESPONSE_MESSAGES.PLEASE_ASK_A_COMPLETE_QUESTION_AT_LEAST_5_CHARACTE
                 });
                 return;
             }
@@ -57,7 +58,7 @@ export class AIController {
 
             if (!studentId) {
                 console.warn("AIController: getHistory Unauthorized - No studentId");
-                res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
+                res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED });
                 return;
             }
 
@@ -78,7 +79,7 @@ export class AIController {
             const session = await this.getChatSessionUseCase.execute(id);
 
             if (!session) {
-                res.status(StatusCodes.NOT_FOUND).json({ success: false, message: "Session not found" });
+                res.status(StatusCodes.NOT_FOUND).json({ success: false, message: RESPONSE_MESSAGES.SESSION_NOT_FOUND });
                 return;
             }
 
@@ -99,14 +100,14 @@ export class AIController {
             const studentId = req.user?.id;
 
             if (!studentId) {
-                res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
+                res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED });
                 return;
             }
 
            
             await this.deleteChatSessionUseCase.execute(id);
 
-            res.status(StatusCodes.OK).json({ success: true, message: "Session deleted successfully" });
+            res.status(StatusCodes.OK).json({ success: true, message: RESPONSE_MESSAGES.SESSION_DELETED_SUCCESSFULLY });
         } catch (error: unknown) {
             console.error("AI Controller Error (Delete):", error);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

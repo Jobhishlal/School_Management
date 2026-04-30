@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../../shared/constants/responseMessages";
 
 
 import { Request, Response } from "express";
@@ -29,7 +30,7 @@ export class ExpenseManagementController {
       console.log("expense full details", expense)
       res.status(StatusCodes.CREATED)
         .json({
-          message: "data create successfully", success: true,
+          message: RESPONSE_MESSAGES.DATA_CREATE_SUCCESSFULLY, success: true,
           data: expense
         })
     } catch (error: unknown) {
@@ -63,7 +64,7 @@ export class ExpenseManagementController {
     try {
       if (!req.user) {
         console.log("user", req.user)
-        res.status(StatusCodes.FORBIDDEN).json({ message: "does not have user" })
+        res.status(StatusCodes.FORBIDDEN).json({ message: RESPONSE_MESSAGES.DOES_NOT_HAVE_USER })
       }
       validateExpenseUpdate(req.body);
       const dto = {
@@ -73,10 +74,10 @@ export class ExpenseManagementController {
 
       const update = await this._Pendingstatusupdate.execute(dto)
       if (!update) {
-        res.status(StatusCodes.BAD_REQUEST).json({ message: "pending status does not update", success: false })
+        res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.PENDING_STATUS_DOES_NOT_UPDATE, success: false })
       }
       res.status(StatusCodes.OK)
-        .json({ message: "expense update successfully ", success: true, update })
+        .json({ message: RESPONSE_MESSAGES.EXPENSE_UPDATE_SUCCESSFULLY, success: true, update })
     } catch (error: unknown) {
 
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { IApplyStudentLeaveUseCase } from "../../../../applications/interface/UseCaseInterface/StudentLeave/IApplyStudentLeaveUseCase";
 import { IGetStudentLeaveHistoryUseCase } from "../../../../applications/interface/UseCaseInterface/StudentLeave/IGetStudentLeaveHistoryUseCase";
@@ -77,14 +78,14 @@ export class StudentLeaveController {
             const teacherId = req.user?.id;
 
             if (!teacherId) {
-                return res.status(StatusCodes.UNAUTHORIZED).json({ success: false, message: "Unauthorized action" });
+                return res.status(StatusCodes.UNAUTHORIZED).json({ success: false, message: RESPONSE_MESSAGES.UNAUTHORIZED_ACTION });
             }
 
             const result = await this.processLeaveUseCase.execute(id, status, teacherId, message);
             console.log("result", result)
 
             if (!result) {
-                return res.status(StatusCodes.NOT_FOUND).json({ success: false, message: "Leave not found" });
+                return res.status(StatusCodes.NOT_FOUND).json({ success: false, message: RESPONSE_MESSAGES.LEAVE_NOT_FOUND });
             }
 
             return res.status(StatusCodes.OK).json({ success: true, data: result });

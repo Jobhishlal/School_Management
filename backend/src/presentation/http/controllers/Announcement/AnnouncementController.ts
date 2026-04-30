@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { IAnnoucementUseCase } from "../../../../applications/interface/UseCaseInterface/Announcement/IAnnouncementUseCase";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
@@ -50,7 +51,7 @@ export class AnnouncementController {
 
 
 
-      res.status(StatusCodes.OK).json({ success: true, data, message: "Announcement created" });
+      res.status(StatusCodes.OK).json({ success: true, data, message: RESPONSE_MESSAGES.ANNOUNCEMENT_CREATED });
 
     } catch (error: unknown) {
 
@@ -67,7 +68,7 @@ export class AnnouncementController {
 
       if (!id || !mongoose.Types.ObjectId.isValid(id)) {
         console.log('id', id)
-        res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid announcement ID", success: false });
+        res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.INVALID_ANNOUNCEMENT_ID, success: false });
       }
 
       const data: UpdateAnnouncementDTO = req.body;
@@ -90,11 +91,11 @@ export class AnnouncementController {
       const update = await this._updaterepo.execute(id, data);
 
       if (!update) {
-        res.status(StatusCodes.BAD_REQUEST).json({ message: "It is not possible to update", success: false });
+        res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.IT_IS_NOT_POSSIBLE_TO_UPDATE, success: false });
         return;
       }
 
-      res.status(StatusCodes.OK).json({ message: "Update successful", success: true });
+      res.status(StatusCodes.OK).json({ message: RESPONSE_MESSAGES.UPDATE_SUCCESSFUL, success: true });
     } catch (error: unknown) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
@@ -109,15 +110,15 @@ export class AnnouncementController {
       const data = await this._findall.execute()
       if (!data) {
         res.status(StatusCodes.BAD_REQUEST)
-          .json({ message: "data fetching is not possible", suuccess: false })
+          .json({ message: RESPONSE_MESSAGES.DATA_FETCHING_IS_NOT_POSSIBLE, suuccess: false })
       }
       res.status(StatusCodes.OK)
-        .json({ message: "data fetching successfully", success: true, data })
+        .json({ message: RESPONSE_MESSAGES.DATA_FETCHING_SUCCESSFULLY, success: true, data })
 
 
     } catch (error) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "internal server error", error })
+        .json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR_1, error })
 
     }
 
@@ -127,7 +128,7 @@ export class AnnouncementController {
     try {
       const { id } = req.params;
       await this._deleteUseCase.execute(id);
-      res.status(StatusCodes.OK).json({ success: true, message: "Announcement deleted successfully" });
+      res.status(StatusCodes.OK).json({ success: true, message: RESPONSE_MESSAGES.ANNOUNCEMENT_DELETED_SUCCESSFULLY });
     } catch (error: unknown) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,

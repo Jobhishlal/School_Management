@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Response } from "express";
 import { IExamCreateRepository } from "../../../../applications/interface/UseCaseInterface/Exam/IExamCreateUseCase";
 import { CreateExamDTO } from "../../../../applications/dto/Exam/CreateExamDTO";
@@ -61,7 +62,7 @@ export class ExamManagementController {
 
       res.status(StatusCodes.CREATED).json({
         success: true,
-        message: "Exam created successfully",
+        message: RESPONSE_MESSAGES.EXAM_CREATED_SUCCESSFULLY,
         data,
       });
     } catch (error: unknown) {
@@ -88,7 +89,7 @@ export class ExamManagementController {
 
       res.status(StatusCodes.OK).json({
         success: true,
-        message: "Exam updated successfully",
+        message: RESPONSE_MESSAGES.EXAM_UPDATED_SUCCESSFULLY,
         data: updatedExam,
       });
     } catch (error: unknown) {
@@ -108,7 +109,7 @@ export class ExamManagementController {
         console.log("reached", teacherId)
         res.status(StatusCodes.UNAUTHORIZED).json({
           success: false,
-          message: "Unauthorized",
+          message: RESPONSE_MESSAGES.UNAUTHORIZED,
         });
         return;
       }
@@ -119,14 +120,14 @@ export class ExamManagementController {
 
       res.status(StatusCodes.OK).json({
         success: true,
-        message: "Teacher exams fetched successfully",
+        message: RESPONSE_MESSAGES.TEACHER_EXAMS_FETCHED_SUCCESSFULLY,
         data: exams,
       });
     } catch (error) {
       console.error(error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: "Internal server error",
+        message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
         error,
       });
     }
@@ -143,7 +144,7 @@ export class ExamManagementController {
       if (!classId || !teacherId) {
         res.status(StatusCodes.BAD_REQUEST).json({
           success: false,
-          message: "classId or teacherId missing",
+          message: RESPONSE_MESSAGES.CLASSID_OR_TEACHERID_MISSING,
         });
         return;
       }
@@ -156,13 +157,13 @@ export class ExamManagementController {
 
       res.status(StatusCodes.OK).json({
         success: true,
-        message: "successfully fetched class based exams",
+        message: RESPONSE_MESSAGES.SUCCESSFULLY_FETCHED_CLASS_BASED_EXAMS,
         data: exams,
       });
     } catch (error) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: "internal server error",
+        message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR_1,
         error,
       });
     }

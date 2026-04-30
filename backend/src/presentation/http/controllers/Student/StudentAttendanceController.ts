@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 
 import { Request, Response } from "express";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
@@ -20,7 +21,7 @@ export class StudentAttendanceController {
             if (!studentId) {
                 res.status(StatusCodes.UNAUTHORIZED).json({
                     success: false,
-                    message: "Student not authenticated",
+                    message: RESPONSE_MESSAGES.STUDENT_NOT_AUTHENTICATED,
                 });
                 return;
             }
@@ -48,7 +49,7 @@ export class StudentAttendanceController {
             if (!studentId) {
                 res.status(StatusCodes.UNAUTHORIZED).json({
                     success: false,
-                    message: "Student not authenticated",
+                    message: RESPONSE_MESSAGES.STUDENT_NOT_AUTHENTICATED,
                 });
                 return;
             }
@@ -63,7 +64,7 @@ export class StudentAttendanceController {
 
             res.status(StatusCodes.OK).json({
                 success: true,
-                message: "Attendance details fetched successfully",
+                message: RESPONSE_MESSAGES.ATTENDANCE_DETAILS_FETCHED_SUCCESSFULLY,
                 result,
             });
         } catch (error: unknown) {

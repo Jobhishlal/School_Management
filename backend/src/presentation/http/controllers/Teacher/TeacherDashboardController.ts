@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { GetTeacherDashboardUseCase } from "../../../../applications/useCases/Teacher/GetTeacherDashboardUseCase";
 import { Response } from "express";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
@@ -11,7 +12,7 @@ export class TeacherDashboardController {
             const teacherId = req.user?.id;
 
             if (!teacherId) {
-                res.status(401).json({ message: "Unauthorized" });
+                res.status(401).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED });
                 return;
             }
 

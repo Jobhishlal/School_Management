@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { ICreateParentComplaintUseCase } from "../../../../applications/useCases/Parent/ICreateParentComplaintUseCase";
 import { IGetParentComplaintsUseCase } from "../../../../applications/useCases/Parent/IGetParentComplaintsUseCase";
@@ -20,7 +21,7 @@ export class ParentComplaintController {
             const parentId = authReq.user?.id;
 
             if (!parentId) {
-                res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
+                res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED });
                 return;
             }
 
@@ -32,10 +33,10 @@ export class ParentComplaintController {
                 description
             });
 
-            res.status(StatusCodes.CREATED).json({ message: "Complaint created successfully", complaint });
+            res.status(StatusCodes.CREATED).json({ message: RESPONSE_MESSAGES.COMPLAINT_CREATED_SUCCESSFULLY, complaint });
         } catch (error) {
             console.error("Error creating complaint:", error);
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR_2 });
         }
     }
 
@@ -47,7 +48,7 @@ export class ParentComplaintController {
             const limit = parseInt(req.query.limit as string) || 5;
 
             if (!parentId) {
-                res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
+                res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED });
                 return;
             }
 
@@ -55,7 +56,7 @@ export class ParentComplaintController {
             res.status(StatusCodes.OK).json(result);
         } catch (error) {
             console.error("Error fetching complaints:", error);
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR_2 });
         }
     }
 
@@ -67,7 +68,7 @@ export class ParentComplaintController {
             const parentId = authReq.user?.id;
 
             if (!parentId) {
-                res.status(401).json({ message: "Unauthorized" });
+                res.status(401).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED });
                 return;
             }
 
@@ -79,14 +80,14 @@ export class ParentComplaintController {
             });
 
             if (!updatedComplaint) {
-                res.status(StatusCodes.NOT_FOUND).json({ message: "Complaint not found" });
+                res.status(StatusCodes.NOT_FOUND).json({ message: RESPONSE_MESSAGES.COMPLAINT_NOT_FOUND });
                 return;
             }
 
-            res.status(StatusCodes.CREATED).json({ message: "Complaint updated successfully", complaint: updatedComplaint });
+            res.status(StatusCodes.CREATED).json({ message: RESPONSE_MESSAGES.COMPLAINT_UPDATED_SUCCESSFULLY, complaint: updatedComplaint });
         } catch (error) {
             console.error("Error updating complaint:", error);
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR_2 });
         }
     }
 }

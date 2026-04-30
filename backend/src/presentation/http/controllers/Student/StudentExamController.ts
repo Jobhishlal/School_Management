@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { IStudentExamListUseCase } from "../../../../applications/interface/UseCaseInterface/Exam/IExamClassbaseviewusecase";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
@@ -21,7 +22,7 @@ export class StudentviewExamController {
 
       if (!teacherId) {
         res.status(StatusCodes.BAD_REQUEST).json({
-          message: "teacherId not found",
+          message: RESPONSE_MESSAGES.TEACHERID_NOT_FOUND,
           success: false,
         });
         return;
@@ -30,14 +31,14 @@ export class StudentviewExamController {
       const data = await this.classbaseviewpage.execute(teacherId);
       console.log("data", data)
       res.status(StatusCodes.OK).json({
-        message: "Data fetched successfully",
+        message: RESPONSE_MESSAGES.DATA_FETCHED_SUCCESSFULLY,
         success: true,
         data,
       });
     } catch (error) {
       console.error(error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        message: "Internal server error",
+        message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
         success: false,
         error,
       });
@@ -57,7 +58,7 @@ export class StudentviewExamController {
           .status(StatusCodes.BAD_REQUEST)
           .json({
             success: false,
-            message: "StudentId or ClassId missing",
+            message: RESPONSE_MESSAGES.STUDENTID_OR_CLASSID_MISSING,
           });
       }
 
@@ -69,7 +70,7 @@ export class StudentviewExamController {
       console.log(data)
       return res.status(StatusCodes.OK).json({
         success: true,
-        message: "Data fetched successfully",
+        message: RESPONSE_MESSAGES.DATA_FETCHED_SUCCESSFULLY,
         data,
       });
 
@@ -77,7 +78,7 @@ export class StudentviewExamController {
       console.error(error);
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: "Internal server error",
+        message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
       });
     }
   }
@@ -107,9 +108,9 @@ export class StudentviewExamController {
       const result = await this.raiseConcernUseCase.execute(examMarkId, concern);
 
       if (result) {
-        return res.status(StatusCodes.OK).json({ success: true, message: "Concern raised successfully" });
+        return res.status(StatusCodes.OK).json({ success: true, message: RESPONSE_MESSAGES.CONCERN_RAISED_SUCCESSFULLY });
       } else {
-        return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Failed to raise concern" });
+        return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: RESPONSE_MESSAGES.FAILED_TO_RAISE_CONCERN });
       }
 
     } catch (error: unknown) {

@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response, NextFunction } from "express";
 import { IGetAdminDashboardUseCase } from "../../../../applications/interface/UseCaseInterface/IGetAdminDashboardUseCase";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
@@ -9,7 +10,7 @@ export class AdminDashboardController {
             const dashboardData = await this._getAdminDashboardUseCase.execute();
             res.status(StatusCodes.OK).json({
                 success: true,
-                message: "Admin Dashboard data fetched successfully",
+                message: RESPONSE_MESSAGES.ADMIN_DASHBOARD_DATA_FETCHED_SUCCESSFULLY,
                 data: dashboardData
             });
         } catch (error: unknown) {

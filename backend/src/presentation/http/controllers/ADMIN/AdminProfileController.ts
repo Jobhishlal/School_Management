@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import { ISubAdminProfileGetUseCase } from "../../../../applications/interface/UseCaseInterface/ISubAdminProfile";
@@ -21,14 +22,14 @@ export class AdminOwnProfileManagement {
     console.log("id get frst", req.user?.id)
     if (!req.user?.id) {
 
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED });
     }
 
     try {
 
       const profile = await this._admingetUseCase.execute(req.user.id);
 
-      if (!profile) return res.status(StatusCodes.NOT_FOUND).json({ message: "Profile not found" });
+      if (!profile) return res.status(StatusCodes.NOT_FOUND).json({ message: RESPONSE_MESSAGES.PROFILE_NOT_FOUND });
 
       const profileResponse = {
         ...profile,
@@ -60,7 +61,7 @@ export class AdminOwnProfileManagement {
 
     if (!req.user?.id) {
       console.log("user id is here", req.user?.id)
-      return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
+      return res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED });
     }
 
 
@@ -101,7 +102,7 @@ export class AdminOwnProfileManagement {
       const updatedProfile = await this._adminUpdateUseCase.execute(req.user.id, updates);
 
       if (!updatedProfile) {
-        return res.status(StatusCodes.NOT_FOUND).json({ message: "Profile not found" });
+        return res.status(StatusCodes.NOT_FOUND).json({ message: RESPONSE_MESSAGES.PROFILE_NOT_FOUND });
       }
 
       return res.status(StatusCodes.OK).json({ profile: updatedProfile });
@@ -115,7 +116,7 @@ export class AdminOwnProfileManagement {
   async RequestPasswor(req: AuthRequest, res: Response): Promise<void> {
     const { email } = req.body;
     console.log("get this page", email)
-    if (!email) res.status(StatusCodes.BAD_REQUEST).json({ message: "Email is required" });
+    if (!email) res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.EMAIL_IS_REQUIRED });
 
     try {
       const { otpToken } = await this._requesetpasswordUseCase.execute(email);
@@ -138,7 +139,7 @@ export class AdminOwnProfileManagement {
 
 
 
-      res.status(StatusCodes.CREATED).json({ message: "OTP verified", email: result.email });
+      res.status(StatusCodes.CREATED).json({ message: RESPONSE_MESSAGES.OTP_VERIFIED, email: result.email });
     } catch (err: unknown) {
       console.error((err as Error).message);
       res.status(StatusCodes.BAD_REQUEST).json({
@@ -153,7 +154,7 @@ export class AdminOwnProfileManagement {
     const userId = req.user?.id;
 
     if (!userId || !newPassword) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: "User ID and new password required" });
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.USER_ID_AND_NEW_PASSWORD_REQUIRED });
     }
 
     validatePasswordUpdate(newPassword);
@@ -161,7 +162,7 @@ export class AdminOwnProfileManagement {
     try {
       const updatedUser = await this._udpatesubadminpassword.execute(userId, newPassword);
       console.log("Password updated for user:", userId);
-      return res.status(StatusCodes.CREATED).json({ message: "Password updated successfully", updatedUser });
+      return res.status(StatusCodes.CREATED).json({ message: RESPONSE_MESSAGES.PASSWORD_UPDATED_SUCCESSFULLY, updatedUser });
     } catch (err: unknown) {
       console.error((err as Error).message);
       res.status(StatusCodes.BAD_REQUEST).json({

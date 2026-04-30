@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { IGetTeacherClassDetailsUseCase } from "../../../../applications/interface/UseCaseInterface/Teacher/IGetTeacherClassDetailsUseCase";
 import { IGetStudentPerformanceUseCase } from "../../../../applications/interface/UseCaseInterface/Teacher/IGetStudentPerformanceUseCase";
@@ -14,7 +15,7 @@ export class TeacherClassStatsController {
         try {
             const teacherId = req.user?.id;
             if (!teacherId) {
-                return res.status(StatusCodes.UNAUTHORIZED).json({ success: false, message: "Unauthorized: No teacher ID found" });
+                return res.status(StatusCodes.UNAUTHORIZED).json({ success: false, message: RESPONSE_MESSAGES.UNAUTHORIZED_NO_TEACHER_ID_FOUND });
             }
 
             const search = req.query.search as string || "";
@@ -24,7 +25,7 @@ export class TeacherClassStatsController {
             const result = await this.getClassDetailsUseCase.execute(teacherId, search, page, limit);
 
             if (!result) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "No class assigned to this teacher as Class Teacher." });
+                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: RESPONSE_MESSAGES.NO_CLASS_ASSIGNED_TO_THIS_TEACHER_AS_CLASS_TEACHER });
             }
 
             return res.status(StatusCodes.OK).json({ success: true, data: result });

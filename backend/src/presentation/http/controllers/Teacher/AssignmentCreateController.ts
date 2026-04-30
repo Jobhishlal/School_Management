@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { ICreateAssignment } from "../../../../applications/interface/UseCaseInterface/Assignment/ICreateUseCase";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
@@ -44,14 +45,14 @@ export class AssignmentManageController {
       if (!data) {
         res.status(StatusCodes.BAD_REQUEST).json({
           success: false,
-          message: "Assignment creation failed"
+          message: RESPONSE_MESSAGES.ASSIGNMENT_CREATION_FAILED
         });
         return;
       }
 
       res.status(StatusCodes.CREATED).json({
         success: true,
-        message: "Assignment created successfully",
+        message: RESPONSE_MESSAGES.ASSIGNMENT_CREATED_SUCCESSFULLY,
         data
       });
     } catch (err: unknown) {
@@ -68,11 +69,11 @@ export class AssignmentManageController {
       console.log("teacherId", teacherId)
       const info = await this.getteacher.execute(teacherId)
       if (!teacherId) {
-        res.status(StatusCodes.BAD_REQUEST).json({ message: "TeacherId is Missing" })
+        res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.TEACHERID_IS_MISSING })
       }
       res.status(StatusCodes.OK).json({
         success: true,
-        message: "teacherlist fetch currectly",
+        message: RESPONSE_MESSAGES.TEACHERLIST_FETCH_CURRECTLY,
         data: info
       })
 
@@ -95,7 +96,7 @@ export class AssignmentManageController {
       console.log("rached", update)
 
       if (!update) {
-        res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Update data missing" });
+        res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: RESPONSE_MESSAGES.UPDATE_DATA_MISSING });
         return;
       }
 
@@ -112,10 +113,10 @@ export class AssignmentManageController {
       const data = await this.updateassignment.execute(id, update);
 
       if (!data) {
-        res.status(StatusCodes.NOT_FOUND).json({ success: false, message: "Assignment not found" });
+        res.status(StatusCodes.NOT_FOUND).json({ success: false, message: RESPONSE_MESSAGES.ASSIGNMENT_NOT_FOUND });
         return;
       }
-      res.status(StatusCodes.OK).json({ success: true, message: "Updated successfully", data });
+      res.status(StatusCodes.OK).json({ success: true, message: RESPONSE_MESSAGES.UPDATED_SUCCESSFULLY, data });
     } catch (error: unknown) {
       console.log("Error", error)
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -131,7 +132,7 @@ export class AssignmentManageController {
       if (!teacherId) {
         res.status(StatusCodes.BAD_REQUEST).json({
           success: false,
-          message: "Teacher ID not found in request",
+          message: RESPONSE_MESSAGES.TEACHER_ID_NOT_FOUND_IN_REQUEST,
 
         });
         return
@@ -140,13 +141,13 @@ export class AssignmentManageController {
       if (!data || data.length === 0) {
         res.status(StatusCodes.NOT_FOUND).json({
           success: false,
-          message: "No assignments found for this teacher",
+          message: RESPONSE_MESSAGES.NO_ASSIGNMENTS_FOUND_FOR_THIS_TEACHER,
         });
       }
 
       res.status(StatusCodes.OK).json({
         success: true,
-        message: "Assignments fetched successfully",
+        message: RESPONSE_MESSAGES.ASSIGNMENTS_FETCHED_SUCCESSFULLY,
         data,
       });
     } catch (error: unknown) {
@@ -166,10 +167,10 @@ export class AssignmentManageController {
       const result = await this.validateAssignmentUseCase.execute(data);
 
       if (!result) {
-        res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Validation failed" });
+        res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: RESPONSE_MESSAGES.VALIDATION_FAILED });
         return;
       }
-      res.status(StatusCodes.OK).json({ success: true, message: "Assignment validated", data: result });
+      res.status(StatusCodes.OK).json({ success: true, message: RESPONSE_MESSAGES.ASSIGNMENT_VALIDATED, data: result });
     } catch (error: unknown) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: (error as Error).message });
     }
@@ -179,7 +180,7 @@ export class AssignmentManageController {
     try {
       const { id } = req.params;
       const result = await this.getSubmissionsUseCase.execute(id);
-      res.status(StatusCodes.OK).json({ success: true, message: "Submissions fetched", data: result });
+      res.status(StatusCodes.OK).json({ success: true, message: RESPONSE_MESSAGES.SUBMISSIONS_FETCHED, data: result });
     } catch (error: unknown) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: (error as Error).message });
     }

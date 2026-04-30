@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { ITypeCreateUseCase } from "../../../../../applications/interface/UseCaseInterface/FeeStructure/IFeeTypeCreate";
 import { CreateFeeTypeDTO } from "../../../../../applications/dto/FeeDTO/CreateFeeTypeDTO";
@@ -23,7 +24,7 @@ export class FeeTypeCreateController {
 
       res.status(StatusCodes.CREATED).json({
         success: true,
-        message: "Fee Type created successfully",
+        message: RESPONSE_MESSAGES.FEE_TYPE_CREATED_SUCCESSFULLY,
         data: createdFeeType,
       });
 
@@ -44,21 +45,21 @@ export class FeeTypeCreateController {
       if (!data || data.length === 0) {
         res.status(StatusCodes.NOT_FOUND).json({
           success: false,
-          message: "No fee types found",
+          message: RESPONSE_MESSAGES.NO_FEE_TYPES_FOUND,
         });
         return;
       }
 
       res.status(StatusCodes.OK).json({
         success: true,
-        message: "Fee types fetched successfully",
+        message: RESPONSE_MESSAGES.FEE_TYPES_FETCHED_SUCCESSFULLY,
         data,
       });
     } catch (error: unknown) {
 
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: "Failed to get fee types",
+        message: RESPONSE_MESSAGES.FAILED_TO_GET_FEE_TYPES,
         error: (error as Error).message,
       });
     }

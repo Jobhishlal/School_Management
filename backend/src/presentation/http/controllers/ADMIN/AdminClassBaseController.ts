@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { IClassDivision } from "../../../../applications/interface/UseCaseInterface/ClassBase/ClassAndDivision";
 import { IAssignTeacherOnClass } from "../../../../applications/interface/UseCaseInterface/ClassBase/IClassAssignTeacher";
@@ -57,7 +58,7 @@ export class AdminClassController {
     try {
       const { classId } = req.params;
       if (!classId)
-        return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "ClassId required" });
+        return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: RESPONSE_MESSAGES.CLASSID_REQUIRED });
 
       const teacher = await this._getTeacherUseCase.execute(classId);
       res.json({ success: true, data: teacher ? [teacher] : [] });
@@ -71,12 +72,12 @@ export class AdminClassController {
       const data = await this._listoutteacherlist.execute();
         
       if (!data) {
-        res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "No teachers found" });
+        res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: RESPONSE_MESSAGES.NO_TEACHERS_FOUND });
       }
       res.status(StatusCodes.OK).json({ success: true, data });
     } catch (error) {
       console.error(error);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal server error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR });
     }
   }
 
@@ -86,14 +87,14 @@ export class AdminClassController {
       const data = await this._Iassignstudenttoclassdivision.execute(studentId, classId)
       if (!data) {
         res.status(StatusCodes.BAD_REQUEST)
-          .json({ message: "division setup is not possible" })
+          .json({ message: RESPONSE_MESSAGES.DIVISION_SETUP_IS_NOT_POSSIBLE })
       }
       res.status(StatusCodes.CREATED)
-        .json({ message: 'division setup successfully', data })
+        .json({ message: RESPONSE_MESSAGES.DIVISION_SETUP_SUCCESSFULLY, data })
 
     } catch (error) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "internal server error" })
+        .json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR_1 })
 
     }
   }

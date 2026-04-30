@@ -3,6 +3,7 @@ import { IResetParentPasswordUseCase } from "../../../../applications/interface/
 import { IRequestPasswordOtpUseCase } from '../../../../applications/interface/UseCaseInterface/IPasswordUpdateUseCase';
 import { IVerifyPasswordOtpUseCase } from '../../../../applications/interface/UseCaseInterface/IVerifyParentForgot';
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
+import { AUTH_MESSAGES } from "../../../../shared/constants/messages";
 
 
 export class ForgotPasswordController{
@@ -11,7 +12,7 @@ export class ForgotPasswordController{
    try {
       const { email } = req.body;
       const { otpToken } = await this.requestparent.execute(email);
-      res.status(StatusCodes.CREATED).json({ otpToken, message: "OTP sent to your email" });
+      res.status(StatusCodes.CREATED).json({ otpToken, message: AUTH_MESSAGES.OTP_SENT_SUCCESS });
     } catch (err: unknown) {
       res.status(StatusCodes.BAD_REQUEST).json({ message: (err as Error).message });
     }
@@ -23,7 +24,7 @@ export class ForgotPasswordController{
       console.log(req.body)
       const { email } = await this.verifyotp.execute(otpToken, otp);
 
-      res.status(StatusCodes.CREATED).json({ email, message: "OTP verified" });
+      res.status(StatusCodes.CREATED).json({ email, message: AUTH_MESSAGES.OTP_VERIFIED_SUCCESS });
     } catch (err: unknown) {
       res.status(StatusCodes.BAD_REQUEST).json({ message: (err as Error).message });
     }
@@ -35,7 +36,7 @@ export class ForgotPasswordController{
       console.log(newPassword)
       await this.resetpass.execute(email, newPassword);
       console.log("entere password",email,newPassword)
-      res.status(StatusCodes.CREATED).json({ message: "Password updated successfully" });
+      res.status(StatusCodes.CREATED).json({ message: AUTH_MESSAGES.PASSWORD_UPDATE_SUCCESS });
     } catch (err: unknown) {
       res.status(StatusCodes.BAD_REQUEST).json({ message: (err as Error).message });
     }

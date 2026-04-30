@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 
 import { Request, Response } from "express";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
@@ -48,7 +49,7 @@ export class AdminLoginController {
 
         res.status(StatusCodes.OK).json({
           role: result.role,
-          message: "Login successful",
+          message: RESPONSE_MESSAGES.LOGIN_SUCCESSFUL,
           authToken: result.authToken,
         });
         return;
@@ -57,20 +58,20 @@ export class AdminLoginController {
       logger.info((error as Error).message);
 
       if ((error as Error).message === "Invalid Teacher Credentials") {
-        res.status(StatusCodes.UNAUTHORIZED).json({ message: "Invalid email or password" });
+        res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.INVALID_EMAIL_OR_PASSWORD });
         return;
       }
 
       if ((error as Error).message === "teacher blocked") {
         res.status(StatusCodes.FORBIDDEN).json({
-          message: "Teacher is blocked, please contact your admin",
+          message: RESPONSE_MESSAGES.TEACHER_IS_BLOCKED_PLEASE_CONTACT_YOUR_ADMIN,
         });
         return;
       }
 
       if ((error as Error).message === "subadmin blocked") {
         res.status(StatusCodes.FORBIDDEN).json({
-          message: "Sub Admin is blocked, please contact school management",
+          message: RESPONSE_MESSAGES.SUB_ADMIN_IS_BLOCKED_PLEASE_CONTACT_SCHOOL_MANAGEM,
         });
         return;
       }
@@ -78,7 +79,7 @@ export class AdminLoginController {
       if ((error as Error).message === "UserDoesNotExist") {
         console.log("user doesnot exist",)
 
-        res.status(StatusCodes.NOT_FOUND).json({ message: "User does not exist" });
+        res.status(StatusCodes.NOT_FOUND).json({ message: RESPONSE_MESSAGES.USER_DOES_NOT_EXIST });
         return;
       }
 
@@ -138,7 +139,7 @@ export class AdminLoginController {
     try {
       const refreshToken = req.cookies?.refreshToken;
       if (!refreshToken) {
-        res.status(StatusCodes.UNAUTHORIZED).json({ message: "Refresh token missing" });
+        res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.REFRESH_TOKEN_MISSING });
         return;
       }
 
@@ -150,7 +151,7 @@ export class AdminLoginController {
         role: result.role
       });
     } catch (error: unknown) {
-      res.status(StatusCodes.UNAUTHORIZED).json({ message: "Invalid refresh token" });
+      res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.INVALID_REFRESH_TOKEN });
     }
   }
 }

@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { AddressGetAll } from "../../../../applications/useCases/Address/GetAllAddress";
 import { AddressEntity } from "../../../../domain/entities/Address";
@@ -18,7 +19,7 @@ export class AddressManagementController {
             const addressCreated = await this._createaddress.execute(req.body);
             console.log("created", addressCreated)
             res.status(StatusCodes.OK).json({
-                message: "Successfully created address",
+                message: RESPONSE_MESSAGES.SUCCESSFULLY_CREATED_ADDRESS,
                 address: {
                     _id: addressCreated.id || "",
                     street: addressCreated.street,
@@ -38,10 +39,10 @@ export class AddressManagementController {
     async getAll(req: Request, res: Response): Promise<void> {
         try {
             const getall = await this._addressgetall.execute();
-            res.status(StatusCodes.OK).json({ message: "List all", getall });
+            res.status(StatusCodes.OK).json({ message: RESPONSE_MESSAGES.LIST_ALL, getall });
         } catch (error: unknown) {
             res.status(StatusCodes.BAD_REQUEST).json({
-                message: "Cannot list address data",
+                message: RESPONSE_MESSAGES.CANNOT_LIST_ADDRESS_DATA,
                 error: (error as Error).message || error
             });
         }
@@ -56,9 +57,9 @@ export class AddressManagementController {
             const updateaddress = await this._addressupdate.execute({ id, ...update })
             console.log(updateaddress)
             if (!updateaddress) {
-                res.status(StatusCodes.UNAUTHORIZED).json({ message: "Does not existed" })
+                res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.DOES_NOT_EXISTED })
             }
-            res.status(StatusCodes.CREATED).json({ message: "Address update succesfuly", address: updateaddress })
+            res.status(StatusCodes.CREATED).json({ message: RESPONSE_MESSAGES.ADDRESS_UPDATE_SUCCESFULY, address: updateaddress })
 
         } catch (error: unknown) {
             console.error("Error updating class:", error);

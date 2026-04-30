@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response, NextFunction } from 'express';
 import { ICreateMeetingUseCase } from '../../../../applications/interface/UseCaseInterface/Meeting/ICreateMeetingUseCase';
 import { IGetScheduledMeetingsUseCase } from '../../../../applications/interface/UseCaseInterface/Meeting/IGetScheduledMeetingsUseCase';
@@ -53,7 +54,7 @@ export class MeetingController {
                 res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: (error as Error).message });
             } else {
                 res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-                    .json({ message: 'internal server error', success: false });
+                    .json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR_1, success: false });
             }
         }
     }
@@ -75,7 +76,7 @@ export class MeetingController {
             console.log("error", error)
 
             res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-                .json({ message: "internal server error", success: false })
+                .json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR_1, success: false })
         }
     }
 
@@ -85,7 +86,7 @@ export class MeetingController {
             const user = (req as ReturnType<typeof JSON.parse>).user;
 
             if (!user) {
-                res.status(StatusCodes.UNAUTHORIZED).json({ success: false, message: 'Unauthorized' });
+                res.status(StatusCodes.UNAUTHORIZED).json({ success: false, message: RESPONSE_MESSAGES.UNAUTHORIZED });
                 return;
             }
 

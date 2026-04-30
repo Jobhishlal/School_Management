@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { ExamMarkCreateUseCase } from "../../../../applications/useCases/Exam/ExamMarkCreateUseCase";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
@@ -22,14 +23,14 @@ export class ExamMarkManagementController {
       const { examMarkId, status, newMarks, responseMessage } = req.body;
       const teacherId = req.user?.id;
 
-      if (!teacherId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
+      if (!teacherId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED });
 
       const result = await this.resolveConcernUseCase.execute(examMarkId, status, newMarks, responseMessage);
 
       if (result) {
-        return res.status(StatusCodes.OK).json({ success: true, message: "Concern resolved successfully" });
+        return res.status(StatusCodes.OK).json({ success: true, message: RESPONSE_MESSAGES.CONCERN_RESOLVED_SUCCESSFULLY });
       } else {
-        return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Failed to resolve concern" });
+        return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: RESPONSE_MESSAGES.FAILED_TO_RESOLVE_CONCERN });
       }
     } catch (error: unknown) {
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -47,7 +48,7 @@ export class ExamMarkManagementController {
       console.log("teacherId", teacherId)
       if (!teacherId) {
         res.status(StatusCodes.BAD_REQUEST).json({
-          message: "Teacher ID not found",
+          message: RESPONSE_MESSAGES.TEACHER_ID_NOT_FOUND,
           success: false,
         });
         return;
@@ -60,7 +61,7 @@ export class ExamMarkManagementController {
       console.log("data bjadbjkbajk fjna df", data)
 
       res.status(StatusCodes.CREATED).json({
-        message: "Exam mark created successfully",
+        message: RESPONSE_MESSAGES.EXAM_MARK_CREATED_SUCCESSFULLY,
         success: true,
         data,
       });
@@ -83,8 +84,8 @@ export class ExamMarkManagementController {
       const { examId } = req.params;
       console.log("examId", examId);
 
-      if (!teacherId) return res.status(StatusCodes.BAD_REQUEST).json({ message: "Unauthorized" });
-      if (!examId) return res.status(StatusCodes.BAD_REQUEST).json({ message: "Exam ID missing" });
+      if (!teacherId) return res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED });
+      if (!examId) return res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.EXAM_ID_MISSING });
 
       const students = await this.getexammark.execute(teacherId, examId);
       console.log("student full details", students);
@@ -107,7 +108,7 @@ export class ExamMarkManagementController {
       const teacherId = req.user?.id;
       if (!teacherId) {
         res.status(StatusCodes.BAD_REQUEST).json({
-          message: "Teacher ID not found",
+          message: RESPONSE_MESSAGES.TEACHER_ID_NOT_FOUND,
           success: false,
         });
         return;
@@ -118,7 +119,7 @@ export class ExamMarkManagementController {
       console.log("data", data)
 
       res.status(StatusCodes.OK).json({
-        message: "Exam mark updated successfully",
+        message: RESPONSE_MESSAGES.EXAM_MARK_UPDATED_SUCCESSFULLY,
         success: true,
         data,
       });

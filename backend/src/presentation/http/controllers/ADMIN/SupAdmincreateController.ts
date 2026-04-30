@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { CreateSubAdmin } from '../../../../applications/useCases/admin/CreatetSubAdmin';
 import { Request, Response } from 'express';
 import { AdminRole } from '../../../../domain/enums/AdminRole';
@@ -37,7 +38,7 @@ export class SubAdminCreateController implements ISubAdminCreate {
       });
 
       res.status(StatusCodes.OK).json({
-        message: "Successfully created New Admin. Password sent to email.",
+        message: RESPONSE_MESSAGES.SUCCESSFULLY_CREATED_NEW_ADMIN_PASSWORD_SENT_TO_EM,
         subAdmin: result,
       });
     } catch (error: unknown) {
@@ -83,11 +84,11 @@ export class SubAdminCreateController implements ISubAdminCreate {
       });
 
       res.status(StatusCodes.OK).json({
-        message: "Successfully updated SubAdmin",
+        message: RESPONSE_MESSAGES.SUCCESSFULLY_UPDATED_SUBADMIN,
         subAdmin: update
       });
     } catch (error: unknown) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR_2 });
     }
   }
 
@@ -102,7 +103,7 @@ export class SubAdminCreateController implements ISubAdminCreate {
         data: updated,
       });
     } catch (error: unknown) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server Error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: RESPONSE_MESSAGES.SERVER_ERROR });
     }
   }
 }

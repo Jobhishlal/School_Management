@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
@@ -41,7 +42,7 @@ export class ChatController {
             res.status(StatusCodes.OK).json({ success: true, data: formattedTeachers });
         } catch (error) {
             console.error("Error fetching teachers for chat:", error);
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to fetch teachers" });
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: RESPONSE_MESSAGES.FAILED_TO_FETCH_TEACHERS });
         }
     }
 
@@ -53,7 +54,7 @@ export class ChatController {
             const { receiverId, receiverRole, content, type } = req.body;
 
             if (!senderId || !senderRole) {
-                return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
+                return res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED });
             }
 
             const mapRoleToModel = (role: string) => {
@@ -99,7 +100,7 @@ export class ChatController {
             res.status(StatusCodes.OK).json({ success: true, data: message });
         } catch (error) {
             console.error("Error sending message:", error);
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to send message" });
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: RESPONSE_MESSAGES.FAILED_TO_SEND_MESSAGE });
         }
     }
 
@@ -107,13 +108,13 @@ export class ChatController {
         try {
             const authReq = req as AuthRequest;
             const userId = authReq.user?.id;
-            if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
+            if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED });
 
             const conversations = await this._getConversationsUseCase.execute(userId);
             res.status(StatusCodes.OK).json({ success: true, data: conversations });
         } catch (error) {
             console.error("Error fetching conversations:", error);
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to fetch conversations" });
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: RESPONSE_MESSAGES.FAILED_TO_FETCH_CONVERSATIONS });
         }
     }
 
@@ -124,14 +125,14 @@ export class ChatController {
             const { otherUserId } = req.params;
 
             if (!userId) {
-                return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
+                return res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED });
             }
 
             const messages = await this._getMessagesUseCase.execute(userId, otherUserId);
             res.status(StatusCodes.OK).json({ success: true, data: messages });
         } catch (error) {
             console.error("Error fetching chat history:", error);
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to fetch history" });
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: RESPONSE_MESSAGES.FAILED_TO_FETCH_HISTORY });
         }
     }
 
@@ -141,7 +142,7 @@ export class ChatController {
             const userId = authReq.user?.id;
             const { otherUserId } = req.body;
 
-            if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
+            if (!userId) return res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED });
 
             await this._markMessagesReadUseCase.execute(otherUserId, userId);
 
@@ -152,16 +153,16 @@ export class ChatController {
                 console.error("Socket emit failed (ignoring)", e);
             }
 
-            res.status(StatusCodes.OK).json({ success: true, message: "Marked as read" });
+            res.status(StatusCodes.OK).json({ success: true, message: RESPONSE_MESSAGES.MARKED_AS_READ });
         } catch (error) {
             console.error("Error marking messages as read:", error);
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to mark read" });
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: RESPONSE_MESSAGES.FAILED_TO_MARK_READ });
         }
     }
     uploadFile = async (req: Request, res: Response) => {
         try {
             if (!req.file) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "No file uploaded" });
+                return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: RESPONSE_MESSAGES.NO_FILE_UPLOADED });
             }
 
             const fileUrl = req.file.path;
@@ -177,7 +178,7 @@ export class ChatController {
             });
         } catch (error) {
             console.error("Error uploading file:", error);
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "File upload failed" });
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: RESPONSE_MESSAGES.FILE_UPLOAD_FAILED });
         }
     }
 
@@ -188,11 +189,11 @@ export class ChatController {
             const { classId, customName } = req.body;
 
             if (!creatorId) {
-                return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
+                return res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED });
             }
 
             if (!classId) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ message: "Class ID is required" });
+                return res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.CLASS_ID_IS_REQUIRED });
             }
 
             const conversation = await this._createClassGroupChatUseCase.execute(classId, creatorId, customName);
@@ -200,7 +201,7 @@ export class ChatController {
             res.status(StatusCodes.OK).json({ success: true, data: conversation });
         } catch (error) {
             console.error("Error creating class group:", error);
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to create class group" });
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: RESPONSE_MESSAGES.FAILED_TO_CREATE_CLASS_GROUP });
         }
     }
 
@@ -211,7 +212,7 @@ export class ChatController {
             const { messageId, content } = req.body;
 
             if (!userId) {
-                return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
+                return res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED });
             }
 
             const updatedMessage = await this._editMessageUseCase.execute({ messageId, content }, userId);
@@ -246,7 +247,7 @@ export class ChatController {
             if ((error as Error).message.includes("Time limit")) {
                 return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: (error as Error).message });
             }
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to edit message" });
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: RESPONSE_MESSAGES.FAILED_TO_EDIT_MESSAGE });
         }
     }
 }

@@ -15,7 +15,7 @@ if (!apiKey) {
 const testModel = async (modelName) => {
     try {
         console.log(`Testing ${modelName}...`);
-        const response = await axios.post(
+        await axios.post(
             `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`,
             {
                 contents: [{ parts: [{ text: "Hi" }] }]

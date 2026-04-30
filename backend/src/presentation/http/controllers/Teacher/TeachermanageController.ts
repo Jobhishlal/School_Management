@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { TeacherCreateUseCase } from "../../../../applications/useCases/Teacher/CreateTeacher";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
 import logger from "../../../../shared/constants/Logger";
@@ -65,7 +66,7 @@ export class TeacherCreateController implements ITeacherCreatecontroller {
       });
 
       res.status(StatusCodes.OK).json({
-        message: "Successfully created teacher. Password sent to email.",
+        message: RESPONSE_MESSAGES.SUCCESSFULLY_CREATED_TEACHER_PASSWORD_SENT_TO_EMAI,
         teachers: result,
       });
     } catch (error: unknown) {
@@ -125,7 +126,7 @@ export class TeacherCreateController implements ITeacherCreatecontroller {
       const updatedTeacher = await this.updateTeacherUseCase.execute(id, updateData);
 
       res.status(StatusCodes.OK).json({
-        message: "Successfully updated teacher",
+        message: RESPONSE_MESSAGES.SUCCESSFULLY_UPDATED_TEACHER,
         teacher: updatedTeacher,
       });
 
@@ -133,7 +134,7 @@ export class TeacherCreateController implements ITeacherCreatecontroller {
 
 
     } catch (error) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" })
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR })
     }
 
   }
@@ -149,7 +150,7 @@ export class TeacherCreateController implements ITeacherCreatecontroller {
       })
     } catch (error: unknown) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "Internal Server Error" })
+        .json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR_2 })
     }
   }
 }

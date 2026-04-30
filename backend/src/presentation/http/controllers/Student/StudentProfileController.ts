@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { IStudentProfileUseCase } from '../../../../applications/interface/UseCaseInterface/StudentCreate/IStudentProfile';
 import { Request,Response } from 'express';
 import { StatusCodes } from '../../../../shared/constants/statusCodes';
@@ -15,14 +16,14 @@ export class StudentProfileController {
     
 
       if (!studentId) {
-         res.status(StatusCodes.BAD_REQUEST).json({ message: "Student ID missing" });
+         res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.STUDENT_ID_MISSING });
          return
       }
 
       const student = await this.studentprofile.execute(studentId);
       if (!student) {
         console.log("not get ",student)
-         res.status(StatusCodes.NOT_FOUND).json({ message: "Student not found" });
+         res.status(StatusCodes.NOT_FOUND).json({ message: RESPONSE_MESSAGES.STUDENT_NOT_FOUND_1 });
          return
       }
 
@@ -30,7 +31,7 @@ export class StudentProfileController {
        return
     } catch (error) {
       console.error(error);
-       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
+       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR });
        return
     }
   }

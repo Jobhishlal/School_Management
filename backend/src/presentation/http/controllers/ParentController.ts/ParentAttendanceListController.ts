@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { IParentAttendanceUseCase } from "../../../../applications/interface/UseCaseInterface/Attandance/IParentAttendanceListUseCase";
 import { Request, Response } from "express";
 import { AuthRequest } from "../../../../infrastructure/types/AuthRequest";
@@ -20,7 +21,7 @@ export class ParentAttendanceListController {
       if (!parentId) {
         res.status(StatusCodes.UNAUTHORIZED).json({
           success: false,
-          message: "Parent not authenticated",
+          message: RESPONSE_MESSAGES.PARENT_NOT_AUTHENTICATED,
         });
         return;
       }
@@ -60,7 +61,7 @@ export class ParentAttendanceListController {
 
       if (!parentId) {
         res.status(StatusCodes.UNAUTHORIZED).json({
-          message: "Parent not authenticated",
+          message: RESPONSE_MESSAGES.PARENT_NOT_AUTHENTICATED,
         });
         return;
       }
@@ -75,7 +76,7 @@ export class ParentAttendanceListController {
       console.log(result)
 
       res.status(StatusCodes.OK).json({
-        message: "Attendance details fetched successfully",
+        message: RESPONSE_MESSAGES.ATTENDANCE_DETAILS_FETCHED_SUCCESSFULLY,
         result,
       });
     } catch (error: unknown) {

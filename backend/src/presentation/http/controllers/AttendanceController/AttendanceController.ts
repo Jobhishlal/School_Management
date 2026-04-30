@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { IAttendanceCreateUseCase } from "../../../../applications/interface/UseCaseInterface/Attandance/ITakeAttendanceUseCase";
 import { Response } from "express";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
@@ -40,14 +41,14 @@ export class AttendanceController {
       if (!create) {
 
         res.status(StatusCodes.BAD_REQUEST).json({
-          message: "Attendance creation failed",
+          message: RESPONSE_MESSAGES.ATTENDANCE_CREATION_FAILED,
           success: false,
         });
       }
 
 
       res.status(StatusCodes.CREATED).json({
-        message: "Attendance created successfully",
+        message: RESPONSE_MESSAGES.ATTENDANCE_CREATED_SUCCESSFULLY,
         success: true,
         create,
       });
@@ -70,14 +71,14 @@ export class AttendanceController {
       if (!student) {
         console.log("stdent", student)
         res.status(StatusCodes.BAD_REQUEST)
-          .json({ message: "does not fetch student in classbase" })
+          .json({ message: RESPONSE_MESSAGES.DOES_NOT_FETCH_STUDENT_IN_CLASSBASE })
       }
       res.status(StatusCodes.OK)
-        .json({ message: "data fetching successfully", success: true, student })
+        .json({ message: RESPONSE_MESSAGES.DATA_FETCHING_SUCCESSFULLY, success: true, student })
     } catch (error) {
       console.log(error)
       res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "internal server error", error })
+        .json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR_1, error })
 
     }
   }
@@ -88,7 +89,7 @@ export class AttendanceController {
 
       if (!teacherId) {
         res.status(StatusCodes.UNAUTHORIZED).json({
-          message: "Unauthorized access",
+          message: RESPONSE_MESSAGES.UNAUTHORIZED_ACCESS,
           success: false,
         });
         return;
@@ -97,7 +98,7 @@ export class AttendanceController {
       const students = await this._findStudentsUseCase.execute(teacherId);
 
       res.status(StatusCodes.OK).json({
-        message: "Students fetched successfully",
+        message: RESPONSE_MESSAGES.STUDENTS_FETCHED_SUCCESSFULLY,
         success: true,
         students,
       });
@@ -126,7 +127,7 @@ export class AttendanceController {
       console.log(classId)
 
       if (!classId) {
-        res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Class ID is required" });
+        res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: RESPONSE_MESSAGES.CLASS_ID_IS_REQUIRED });
         return;
       }
 
@@ -142,7 +143,7 @@ export class AttendanceController {
       console.error(error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: "Failed to fetch attendance",
+        message: RESPONSE_MESSAGES.FAILED_TO_FETCH_ATTENDANCE,
       });
     }
   }
@@ -155,7 +156,7 @@ export class AttendanceController {
       if (!classId || !startDate || !endDate) {
         res.status(StatusCodes.BAD_REQUEST).json({
           success: false,
-          message: "Class Id, Start Date and End Date are required",
+          message: RESPONSE_MESSAGES.CLASS_ID_START_DATE_AND_END_DATE_ARE_REQUIRED,
         });
         return;
       }
@@ -187,7 +188,7 @@ export class AttendanceController {
       if (!studentId || !month || !year) {
         res.status(StatusCodes.BAD_REQUEST).json({
           success: false,
-          message: "Student ID, Month and Year are required",
+          message: RESPONSE_MESSAGES.STUDENT_ID_MONTH_AND_YEAR_ARE_REQUIRED,
         });
         return;
       }
@@ -218,7 +219,7 @@ export class AttendanceController {
       if (!studentId || !date || !session || !status) {
         res.status(StatusCodes.BAD_REQUEST).json({
           success: false,
-          message: "Student ID, Date, Session and Status are required",
+          message: RESPONSE_MESSAGES.STUDENT_ID_DATE_SESSION_AND_STATUS_ARE_REQUIRED,
         });
         return;
       }
@@ -227,7 +228,7 @@ export class AttendanceController {
 
       res.status(StatusCodes.OK).json({
         success: true,
-        message: "Attendance updated successfully",
+        message: RESPONSE_MESSAGES.ATTENDANCE_UPDATED_SUCCESSFULLY,
       });
     } catch (error: unknown) {
       console.error(error);

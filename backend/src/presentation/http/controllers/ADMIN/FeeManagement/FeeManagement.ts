@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { ICreateFeeStructureUseCase } from "../../../../../applications/interface/UseCaseInterface/IFeeCreateInterFace";
 import { StatusCodes } from "../../../../../shared/constants/statusCodes";
@@ -27,7 +28,7 @@ export class FeeStructureManageController {
       console.error("Error fetching fee structures:", error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: "Failed to fetch fee structures",
+        message: RESPONSE_MESSAGES.FAILED_TO_FETCH_FEE_STRUCTURES,
         error: (error as Error).message,
       });
     }
@@ -51,7 +52,7 @@ export class FeeStructureManageController {
 
 
       res.status(StatusCodes.CREATED).json({
-        message: "Fee Structure created successfully",
+        message: RESPONSE_MESSAGES.FEE_STRUCTURE_CREATED_SUCCESSFULLY,
         data: result,
       });
 
@@ -76,16 +77,16 @@ export class FeeStructureManageController {
       const result = await this._feepaymentcompletedetails.execute(classId, page, limit);
 
       if (!result) {
-        res.status(StatusCodes.BAD_REQUEST).json({ message: "does not get classId", success: false })
+        res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.DOES_NOT_GET_CLASSID, success: false })
         return;
       }
       res.status(StatusCodes.OK)
-        .json({ message: "data fetch successfully", success: true, ...result }) 
+        .json({ message: RESPONSE_MESSAGES.DATA_FETCH_SUCCESSFULLY, success: true, ...result }) 
 
     } catch (error) {
       console.log(error)
       res.status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "internal server error", error })
+        .json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR_1, error })
     }
   }
 
@@ -98,7 +99,7 @@ export class FeeStructureManageController {
       if (!studentName || studentName.trim() === "") {
         res
           .status(StatusCodes.BAD_REQUEST)
-          .json({ message: "STUDENT_NAME_REQUIRED" });
+          .json({ message: RESPONSE_MESSAGES.STUDENT_NAME_REQUIRED });
       }
 
       const data = await this._search.execute(studentName);
@@ -106,18 +107,18 @@ export class FeeStructureManageController {
       if (!data || data.length === 0) {
         res
           .status(StatusCodes.NOT_FOUND)
-          .json({ message: "No student found with this name" });
+          .json({ message: RESPONSE_MESSAGES.NO_STUDENT_FOUND_WITH_THIS_NAME });
       }
 
       res.status(StatusCodes.OK).json({
-        message: "Successfully searched student",
+        message: RESPONSE_MESSAGES.SUCCESSFULLY_SEARCHED_STUDENT,
         data,
       });
 
     } catch (error) {
       console.error(error);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        message: "Internal server error",
+        message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR,
       });
     }
   }

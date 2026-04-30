@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { IGetAllParentComplaintsUseCase } from "../../../../applications/useCases/Parent/IGetAllParentComplaintsUseCase";
 import { IResolveComplaintUseCase } from "../../../../applications/useCases/Parent/IResolveComplaintUseCase";
@@ -18,7 +19,7 @@ export class AdminComplaintController {
             res.status(StatusCodes.OK).json(result);
         } catch (error) {
             console.error("Error fetching all complaints:", error);
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR_2 });
         }
     }
 
@@ -28,21 +29,21 @@ export class AdminComplaintController {
             const { feedback } = req.body;
 
             if (!feedback) {
-                res.status(StatusCodes.BAD_REQUEST).json({ message: "Feedback is required" });
+                res.status(StatusCodes.BAD_REQUEST).json({ message: RESPONSE_MESSAGES.FEEDBACK_IS_REQUIRED });
                 return;
             }
 
             const updatedComplaint = await this._resolveComplaintUseCase.execute(id, feedback);
 
             if (!updatedComplaint) {
-                res.status(StatusCodes.NOT_FOUND).json({ message: "Complaint not found" });
+                res.status(StatusCodes.NOT_FOUND).json({ message: RESPONSE_MESSAGES.COMPLAINT_NOT_FOUND });
                 return;
             }
 
-            res.status(StatusCodes.OK).json({ message: "Complaint resolved successfully", complaint: updatedComplaint });
+            res.status(StatusCodes.OK).json({ message: RESPONSE_MESSAGES.COMPLAINT_RESOLVED_SUCCESSFULLY, complaint: updatedComplaint });
         } catch (error) {
             console.error("Error resolving complaint:", error);
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: RESPONSE_MESSAGES.INTERNAL_SERVER_ERROR_2 });
         }
     }
 }

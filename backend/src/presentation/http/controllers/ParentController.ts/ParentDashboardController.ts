@@ -1,3 +1,4 @@
+import { RESPONSE_MESSAGES } from "../../../../shared/constants/responseMessages";
 import { Request, Response } from "express";
 import { IGetParentDashboardStatsUseCase } from "../../../../applications/interface/UseCaseInterface/Parent/IGetParentDashboardStatsUseCase";
 import { StatusCodes } from "../../../../shared/constants/statusCodes";
@@ -13,7 +14,7 @@ export class ParentDashboardController {
             const parentId = authReq.user?.id;
 
             if (!parentId) {
-                res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
+                res.status(StatusCodes.UNAUTHORIZED).json({ message: RESPONSE_MESSAGES.UNAUTHORIZED });
                 return;
             }
 
